@@ -470,7 +470,7 @@
       </div>
 
       <div class="sidebar-field">
-        <label>Klient</label>
+        <label>Klient / Tellija</label>
         <input placeholder="nimi või kood" />
       </div>
 
@@ -1130,8 +1130,11 @@
       // saatja
       if (senderFilter.value.trim() && !sender.includes(senderFilter.value.toLowerCase())) visible = false;
 
-      // klient
-      if (clientFilter.value.trim() && !client.includes(clientFilter.value.toLowerCase())) visible = false;
+      // klient (otsib ka tellija nimest)
+      if (clientFilter.value.trim()) {
+        const tellijaVal = (row.dataset.tellija || '').toLowerCase();
+        if (!client.includes(clientFilter.value.toLowerCase()) && !tellijaVal.includes(clientFilter.value.toLowerCase())) visible = false;
+      }
 
       // kliendi puuduv allkirjastaja (külgriba)
       if (signerFilter.value.trim() && !missingPeople.includes(signerFilter.value.toLowerCase())) visible = false;
