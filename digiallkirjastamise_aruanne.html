@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<title>Digiallkirjastamise aruanne</title>
+<style>
+  body {
+    margin: 0;
+    background: #d7d5cf;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+  }
+
+  .page {
+    width: 1480px;
+    margin: 0 auto;
+    padding: 10px 8px 40px;
+    box-sizing: border-box;
+  }
+
+  .titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: normal;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    height: 30px;
+    background: #343251;
+    color: white;
+    border: 1px solid #201f37;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .filters {
+    background: #eceae6;
+    border: 1px solid #bebcb7;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 130px 180px 130px 180px 130px 180px;
+    gap: 8px 10px;
+    align-items: center;
+  }
+
+  label {
+    text-align: right;
+    font-size: 14px;
+    color: #333;
+  }
+
+  input, select {
+    height: 26px;
+    border: 1px solid #bfbfbf;
+    background: white;
+    padding: 2px 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .checkboxes {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    grid-column: span 4;
+  }
+
+  .checkboxes label {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .summary {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid #c9c7c1;
+    padding: 12px;
+  }
+
+  .card .big {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+
+  .card .desc {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .green { border-left: 6px solid #67a85b; }
+  .yellow { border-left: 6px solid #d7aa3c; }
+  .red { border-left: 6px solid #bf5757; }
+  .blue { border-left: 6px solid #5d83bf; }
+
+  .table-wrap {
+    width: 100%;
+    margin-top: 16px;
+    border: 1px solid #c1beb8;
+    background: white;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead {
+    background: #ece9e4;
+    border-bottom: 1px solid #c9c6bf;
+  }
+
+  th {
+    font-size: 13px;
+    overflow: hidden;
+    text-align: left;
+    padding: 7px 6px;
+    white-space: nowrap;
+  }
+
+  td {
+    font-size: 13px;
+    overflow: hidden;
+    padding: 7px 6px;
+    border-bottom: 1px solid #ece9e2;
+    vertical-align: top;
+    overflow-wrap: break-word;
+  }
+
+  tbody tr:hover {
+    background: #f7f6f3;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .status.signed {
+    background: #dff1dc;
+    color: #1d5a1a;
+  }
+
+  .status.partial {
+    background: #fff1cb;
+    color: #755100;
+  }
+
+  .status.missing {
+    background: #f5dcdc;
+    color: #7d1d1d;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #e7e7e7;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .person {
+    line-height: 1.45;
+  }
+
+  .missing-person {
+    color: #b12727;
+    font-weight: bold;
+  }
+
+  .muted {
+    color: #777;
+    font-size: 12px;
+  }
+
+  .row-focus {
+    background: white;
+  }
+
+  a {
+    color: #001db5;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .top-note {
+    margin-top: 10px;
+    background: #fff9d8;
+    border: 1px solid #e1d38a;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="titlebar">
+    <h1>Digiallkirjastamise aruanne</h1>
+
+    <div class="actions">
+      <button class="btn">Saada meeldetuletus</button>
+      <button class="btn">Export Excel</button>
+      <button class="btn">ARUANNE</button>
+    </div>
+  </div>
+
+  <div class="filters">
+    <label>Dokumendi tüüp</label>
+    <select>
+      <option>Kõik</option>
+      <option>Lepingud</option>
+      <option>Pakkumised</option>
+      <option>Arved</option>
+    </select>
+
+    <label>Staatus</label>
+    <select>
+      <option>Kõik</option>
+      <option>Allkirjastatud</option>
+      <option>Osaliselt allkirjastatud</option>
+      <option>Allkirjastamata</option>
+    </select>
+
+    <label>Saadetud alates</label>
+    <input placeholder="pp.kk.aaaa" />
+
+    <label>Saadetud kuni</label>
+    <input placeholder="pp.kk.aaaa" />
+
+    <label>Klient</label>
+    <input placeholder="nimi või kood" />
+
+    <label>Allkirjastaja</label>
+    <input placeholder="nimi / email" />
+
+    <label>Saatja</label>
+    <input placeholder="kasutaja" />
+
+    <label>Puuduolev allkirjastaja</label>
+    <input placeholder="kes pole allkirjastanud" />
+
+    <div class="checkboxes">
+      <label><input type="checkbox" checked /> Näita ainult osaliselt allkirjastatud</label>
+      <label><input type="checkbox" checked /> Näita ainult allkirjastamata</label>
+      <label><input type="checkbox" /> Näita täielikult allkirjastatud</label>
+      <label><input type="checkbox" /> Ainult minu saadetud</label>
+    </div>
+  </div>
+
+  <div class="top-note">
+    Aruande põhifookus on leida kiiresti dokumendid, millelt on veel allkirjad puudu, ning võimaldada kasutajal saata meeldetuletusi.
+  </div>
+
+  <div class="summary">
+    <div class="card yellow">
+      <div class="big">7</div>
+      <div class="desc">Pooleliolevat / allkirjastamata</div>
+    </div>
+
+    <div class="card red">
+      <div class="big">19 päeva</div>
+      <div class="desc">Vanim ootel dokument</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <colgroup>
+        <col style="width: 3%;">
+        <col style="width: 13%;">
+        <col style="width: 9%;">
+        <col style="width: 14%;">
+        <col style="width: 14%;">
+        <col style="width: 14%;">
+        <col style="width: 9%;">
+        <col style="width: 20%;">
+        <col style="width: 13%;">
+        <col style="width: 6%;">
+        <col style="width: 12%;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th style="width:34px;"><input type="checkbox" id="selectAllRows" title="Vali kõik" /></th>
+          <th>Dokument</th>
+          <th>Tüüp</th>
+          <th>Klient</th>
+          <th>Saadetud</th>
+          <th>Staatus</th>
+          <th>Allkirjastatud</th>
+          
+          <th>Puuduvad</th>
+          <th style="white-space:normal; line-height:1.1;">Viimane meeldetuletus</th>
+          <th style="padding-left:12px;">Saatja</th>
+          <th>Tegevus</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10293</a><br><span class="muted">Rendileping_2026.asice</span></td>
+          <td>Lepingud</td>
+          <td>ABC Ehitus OÜ</td>
+          <td>25.05.2026 10:12<br><span class="muted">3 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">2</span> / 3</td>
+          <td class="person"><span class="missing-person">Jaan Saar</span><br><span class="muted">jaan.saar@abc.ee</span></td>
+          <td>26.05.2026 09:00<br><span class="muted">2 päeva tagasi</span></td>
+          <td>JÜRI</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">P-100884</a><br><span class="muted">Pakkumine.asice</span></td>
+          <td>Pakkumised</td>
+          <td>Nordtek AS</td>
+          <td>24.05.2026 14:55<br><span class="muted">4 päeva tagasi</span></td>
+          <td><span class="status missing">Allkirjastamata</span></td>
+          <td><span style="color:#b12727;font-weight:bold">0</span> / 2</td>
+          <td class="person"><span class="missing-person">Mari Tamm</span><br><span class="muted">mari.tamm@nordtek.ee</span><br><span class="missing-person">Peeter Kask</span><br><span class="muted">peeter.kask@nordtek.ee</span></td>
+          <td>-</td>
+          <td>MARI</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10281</a><br><span class="muted">Teenusleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Buildex OÜ</td>
+          <td>21.05.2026 09:11<br><span class="muted">7 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">1</span> / 2</td>
+          <td class="person"><span class="missing-person">Kati Kask</span><br><span class="muted">kati.kask@buildex.ee</span></td>
+          <td>22.05.2026 10:15<br><span class="muted">6 päeva tagasi</span></td>
+          <td>PILLE</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10277</a><br><span class="muted">Raamleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Infra Grupp AS</td>
+          <td>18.05.2026 15:41<br><span class="muted">10 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>4 / 4</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td>PEETER</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10301</a><br><span class="muted">Töövõtuleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>EstBuild OÜ</td>
+          <td>27.05.2026 08:44<br><span class="muted">1 päev tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">1</span> / 3</td>
+          <td class="person"><span class="missing-person">Martin Kallas</span><br><span class="muted">martin.kallas@estbuild.ee</span><br><span class="missing-person">Tiina Põder</span><br><span class="muted">tiina.poder@estbuild.ee</span></td>
+          <td>-</td>
+          <td>JÜRI</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">A-20441</a><br><span class="muted">Müügiarve.asice</span></td>
+          <td>Arved</td>
+          <td>Meriton Grupp</td>
+          <td>22.05.2026 13:20<br><span class="muted">6 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>2 / 2</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td>PEETER</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">P-100912</a><br><span class="muted">Hooldusleping.asice</span></td>
+          <td>Pakkumised</td>
+          <td>DataHub AS</td>
+          <td>20.05.2026 17:03<br><span class="muted">8 päeva tagasi</span></td>
+          <td><span class="status missing">Allkirjastamata</span></td>
+          <td><span style="color:#b12727;font-weight:bold">0</span> / 1</td>
+          <td class="person"><span class="missing-person">Katrin Saar</span><br><span class="muted">katrin.saar@datahub.ee</span></td>
+          <td>24.05.2026 12:30<br><span class="muted">4 päeva tagasi</span></td>
+          <td>MARI</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10255</a><br><span class="muted">Partnerlusleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Green Energy OÜ</td>
+          <td>11.05.2026 11:45<br><span class="muted">17 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">3</span> / 5</td>
+          <td class="person"><span class="missing-person">Andres Kivi</span><br><span class="muted">andres.kivi@greenenergy.ee</span><br><span class="missing-person">Eva Tamm</span><br><span class="muted">eva.tamm@greenenergy.ee</span></td>
+          <td>-</td>
+          <td>PILLE</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">A-20409</a><br><span class="muted">Teenusarve.asice</span></td>
+          <td>Arved</td>
+          <td>Nord Element</td>
+          <td>09.05.2026 09:01<br><span class="muted">19 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>1 / 1</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td>PEETER</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10315</a><br><span class="muted">Alltöövõtuleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Ehituspartnerid AS</td>
+          <td>28.05.2026 16:12<br><span class="muted">täna</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">2</span> / 4</td>
+          <td class="person"><span class="missing-person">Rainer Kask</span><br><span class="muted">rainer.kask@ehituspartnerid.ee</span><br><span class="missing-person">Maris Oja</span><br><span class="muted">maris.oja@ehituspartnerid.ee</span></td>
+          <td>-</td>
+          <td>JÜRI</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<script>
+  const statusFilter = document.querySelectorAll('select')[1];
+  const showPendingCheckbox = document.querySelectorAll('input[type="checkbox"]')[0];
+  const showMissingCheckbox = document.querySelectorAll('input[type="checkbox"]')[1];
+  const showSignedCheckbox = document.querySelectorAll('input[type="checkbox"]')[2];
+  const clientFilter = document.querySelector('input[placeholder="nimi või kood"]');
+  const signerFilter = document.querySelector('input[placeholder="kes pole allkirjastanud"]');
+  const docTypeFilter = document.querySelectorAll('select')[0];
+  const senderFilter = document.querySelector('input[placeholder="kasutaja"]');
+
+  const rows = Array.from(document.querySelectorAll('tbody tr'));
+  const selectAllRows = document.getElementById('selectAllRows');
+  const rowSelects = Array.from(document.querySelectorAll('.row-select'));
+
+  function applyFilters() {
+    rows.forEach(row => {
+      const statusEl = row.querySelector('.status');
+      if (!statusEl) return;
+
+      const docType = row.children[2].innerText.toLowerCase();
+      const client = row.children[3].innerText.toLowerCase();
+      const sender = row.children[9].innerText.toLowerCase();
+      const missingPeople = row.children[7].innerText.toLowerCase();
+      const statusText = statusEl.innerText.toLowerCase();
+
+      let visible = true;
+
+      // staatuse filter
+      const selectedStatus = statusFilter.value.toLowerCase();
+      if (selectedStatus !== 'kõik') {
+        if (!statusText.includes(selectedStatus.replace('osaliselt ', ''))) {
+          visible = false;
+        }
+      }
+
+      // checkboxid
+      const anyCheckboxChecked =
+        showPendingCheckbox.checked ||
+        showMissingCheckbox.checked ||
+        showSignedCheckbox.checked;
+
+      if (anyCheckboxChecked) {
+        let matchesCheckbox = false;
+
+        if (showPendingCheckbox.checked && statusText.includes('osaliselt')) {
+          matchesCheckbox = true;
+        }
+
+        if (showMissingCheckbox.checked && statusText.includes('allkirjastamata')) {
+          matchesCheckbox = true;
+        }
+
+        if (showSignedCheckbox.checked && statusText.includes('allkirjastatud') && !statusText.includes('osaliselt')) {
+          matchesCheckbox = true;
+        }
+
+        if (!matchesCheckbox) {
+          visible = false;
+        }
+      }
+
+      // dokumendi tüüp
+      const selectedDocType = docTypeFilter.value.toLowerCase();
+      if (selectedDocType !== 'kõik') {
+        if (!docType.includes(selectedDocType)) {
+          visible = false;
+        }
+      }
+
+      // saatja
+      if (senderFilter.value.trim() !== '') {
+        if (!sender.includes(senderFilter.value.toLowerCase())) {
+          visible = false;
+        }
+      }
+
+      // klient
+      if (clientFilter.value.trim() !== '') {
+        if (!client.includes(clientFilter.value.toLowerCase())) {
+          visible = false;
+        }
+      }
+
+      // puuduv allkirjastaja
+      if (signerFilter.value.trim() !== '') {
+        if (!missingPeople.includes(signerFilter.value.toLowerCase())) {
+          visible = false;
+        }
+      }
+
+      row.style.display = visible ? '' : 'none';
+    });
+  }
+
+  docTypeFilter.addEventListener('change', applyFilters);
+  statusFilter.addEventListener('change', applyFilters);
+  showPendingCheckbox.addEventListener('change', applyFilters);
+  showMissingCheckbox.addEventListener('change', applyFilters);
+  showSignedCheckbox.addEventListener('change', applyFilters);
+  clientFilter.addEventListener('input', applyFilters);
+  senderFilter.addEventListener('input', applyFilters);
+  signerFilter.addEventListener('input', applyFilters);
+  selectAllRows.addEventListener('change', () => {
+    rowSelects.forEach(cb => {
+      if (cb.closest('tr').style.display !== 'none') {
+        cb.checked = selectAllRows.checked;
+      }
+    });
+  });
+
+  applyFilters();
+</script>
+</body>
+</html>

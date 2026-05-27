@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo – Hankija automaatika seadistamine (prototüüp)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #f4f4f2;
+    --surface:  #ffffff;
+    --surface2: #f7f7f5;
+    --border:   #d8d8d4;
+    --border2:  #c4c4be;
+    --text:     #1a1a18;
+    --text2:    #5a5a56;
+    --text3:    #8a8a84;
+    --blue:     #185fa5;
+    --blue-bg:  #e6f1fb;
+    --blue-t:   #0c447c;
+    --green:    #27500a;
+    --green-bg: #eaf3de;
+    --green-bd: #97c459;
+    --amber:    #7b3f00;
+    --amber-bg: #faeeda;
+    --amber-bd: #ef9f27;
+    --red:      #a32d2d;
+    --red-bg:   #fcebeb;
+    --red-bd:   #f09595;
+    --gray-bg:  #f1efe8;
+    --gray-bd:  #b4b2a9;
+    --saved-bg: #f1efe8;
+    --sel-bg:   #eaf3de;
+    --grp-bg:   #e6f1fb;
+    --radius:   4px;
+    --radius-lg:8px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    background: #2d4f7c;
+    color: white;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    gap: 6px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .nav-logo { font-weight: 700; font-size: 14px; letter-spacing: -0.3px; margin-right: 12px; }
+  .nav-sep  { width: 1px; height: 18px; background: rgba(255,255,255,0.2); margin: 0 4px; }
+
+  /* ── DOCUMENT SHELL ── */
+  .doc-wrap {
+    max-width: 1300px;
+    margin: 16px auto;
+    padding: 0 16px;
+  }
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    background: #3a5a8c;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .tbtn {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 3px;
+    padding: 3px 9px;
+    font-size: 11px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: background 0.12s;
+  }
+  .tbtn:hover { background: rgba(255,255,255,0.22); }
+  .tbtn.g { background: rgba(40,100,40,0.7); }
+  .tbtn.g:hover { background: rgba(40,100,40,0.9); }
+  .tbtn-auto {
+    background: #7b3f00;
+    color: white;
+    border: 2px solid #ef9f27;
+    border-radius: 3px;
+    padding: 3px 11px;
+    font-size: 11px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    font-weight: 500;
+    margin-left: auto;
+    transition: background 0.12s;
+  }
+  .tbtn-auto:hover { background: #5a2e00; }
+  .tbtn-auto.active { background: #27500a; border-color: #639922; }
+
+  /* ── DOC HEADER ── */
+  .doc-header {
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-title { font-size: 20px; font-weight: 600; }
+  .doc-code  { font-size: 14px; color: var(--text2); }
+  .badge-new {
+    background: var(--blue-bg); color: var(--blue-t);
+    font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 500;
+  }
+
+  /* ── SUBTABS ── */
+  .subtabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding: 0 12px;
+    background: var(--surface2);
+  }
+  .stab {
+    padding: 6px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .stab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+  .stab.hilite { background: var(--blue-bg); color: var(--blue-t); border-bottom-color: var(--blue); font-weight: 500; }
+
+  /* ── FORM SECTIONS ── */
+  .form-section {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-section.collapsed { padding: 5px 12px; }
+  .section-head {
+    font-size: 10px; font-weight: 600; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    display: flex; align-items: center; gap: 5px; cursor: pointer;
+    user-select: none;
+  }
+  .section-head svg { transition: transform 0.15s; }
+  .section-head.open svg { transform: rotate(90deg); }
+  .fields-grid {
+    display: grid;
+    gap: 6px 8px;
+    margin-top: 7px;
+  }
+  .field { display: flex; flex-direction: column; gap: 2px; }
+  .field label { font-size: 10px; color: var(--text2); }
+  .fbox {
+    height: 22px; border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface2);
+  }
+  .fbox.yellow { background: #fffff0; border-color: #c8c800; }
+
+  /* ── ROWS TOOLBAR ── */
+  .rows-toolbar {
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    flex-wrap: wrap;
+  }
+  .rt-btn {
+    font-size: 11px; padding: 3px 9px;
+    background: var(--blue-bg); color: var(--blue-t);
+    border: 1px solid #85b7eb; border-radius: 3px; cursor: pointer;
+  }
+  .rt-btn:hover { background: #d0e6f8; }
+
+  /* ── INVOICE TABLE ── */
+  .inv-table-wrap { overflow-x: auto; }
+  .inv-table {
+    width: 100%; border-collapse: collapse; font-size: 11px;
+    min-width: 900px;
+  }
+  .inv-table th {
+    font-size: 10px; font-weight: 500; color: var(--text2);
+    text-align: left; padding: 4px 6px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap; position: sticky; top: 0; z-index: 2;
+  }
+  .inv-table th.sortable { cursor: pointer; }
+  .inv-table th.sortable:hover { color: var(--text); }
+  .inv-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .inv-table tr:hover td { background: var(--surface2); }
+  .inv-table tr.sel td   { background: var(--sel-bg); }
+  .inv-table tr.grp td   { background: var(--grp-bg); }
+  .inv-table tr.saved td { background: var(--saved-bg); }
+
+  .row-num { color: var(--text3); font-size: 10px; }
+  .row-check { width: 14px; height: 14px; cursor: pointer; accent-color: var(--blue); }
+  .konto-in {
+    width: 72px; font-size: 11px; padding: 2px 5px; height: 20px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text);
+  }
+  .konto-in:focus { outline: none; border-color: var(--blue); }
+  .sisu-cell { max-width: 220px; }
+  .sisu-text { font-size: 11px; color: var(--text2); word-break: break-word; line-height: 1.4; }
+  .sisu-hi  { background: #fac775; color: #412402; border-radius: 2px; padding: 0 2px; font-weight: 500; }
+  .summa-val { font-weight: 500; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; padding: 1px 6px; border-radius: 10px; white-space: nowrap;
+  }
+  .badge-saved  { background: var(--gray-bg); color: #444441; border: 1px solid var(--gray-bd); }
+  .badge-set    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  .badge-none   { color: var(--text3); }
+
+  /* ── AUTOMAATIKA PANEL ── */
+  .auto-panel {
+    border-top: 2px solid var(--amber-bd);
+    background: #fffdf5;
+    display: none;
+  }
+  .auto-panel.open { display: flex; }
+
+  .ap-left {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 520px;
+    border-right: 1px solid var(--border);
+  }
+  .ap-right {
+    width: 290px;
+    overflow-y: auto;
+    max-height: 520px;
+    background: var(--surface);
+  }
+
+  .ap-header {
+    padding: 7px 12px;
+    background: var(--amber-bg);
+    border-bottom: 1px solid var(--amber-bd);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; font-weight: 500; color: var(--amber);
+    position: sticky; top: 0; z-index: 3;
+  }
+  .ap-header-right { display: flex; align-items: center; gap: 8px; }
+  .sel-pill {
+    background: var(--blue-bg); color: var(--blue-t);
+    font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500;
+  }
+
+  .filter-bar {
+    padding: 5px 10px;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky; top: 32px; z-index: 2;
+  }
+  .filter-bar input[type=text] {
+    flex: 1; font-size: 11px; padding: 3px 7px; height: 26px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text);
+  }
+  .filter-bar input[type=text]:focus { outline: none; border-color: var(--blue); }
+  .fb-btn {
+    font-size: 11px; padding: 3px 9px; height: 26px; cursor: pointer;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text2); white-space: nowrap;
+  }
+  .fb-btn:hover { background: var(--surface2); }
+  .fb-btn.on { background: var(--blue-bg); color: var(--blue-t); border-color: #85b7eb; }
+
+  /* ── RULE PANEL ── */
+  .rp-section {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rp-label {
+    font-size: 10px; font-weight: 600; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px;
+  }
+  .rp-input {
+    width: 100%; font-size: 12px; padding: 4px 7px; height: 28px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text);
+  }
+  .rp-input:focus { outline: none; border-color: var(--blue); }
+
+  .sisaldus-box {
+    background: var(--surface2); border: 1px dashed var(--border2);
+    border-radius: 3px; padding: 5px 7px; min-height: 28px;
+    font-size: 11px; color: var(--text); line-height: 1.6;
+  }
+  .s-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: var(--green-bg); color: var(--green);
+    border-radius: 3px; padding: 1px 6px; margin: 1px; cursor: pointer;
+    font-size: 11px; border: 1px solid var(--green-bd);
+  }
+  .s-chip:hover { background: #c0dd97; }
+  .s-sep { color: var(--text2); font-weight: 600; padding: 0 3px; }
+
+  .koond-grp { display: flex; gap: 4px; }
+  .koond-btn {
+    flex: 1; padding: 4px 6px; font-size: 11px; cursor: pointer;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text2); text-align: center;
+  }
+  .koond-btn:hover { background: var(--surface2); }
+  .koond-btn.on { background: var(--blue-bg); color: var(--blue-t); border-color: #85b7eb; font-weight: 500; }
+
+  .kinnita-row { display: flex; align-items: center; gap: 8px; }
+  .kinnita-row input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--blue); cursor: pointer; }
+  .summa-row { display: flex; gap: 5px; margin-top: 6px; }
+  .summa-in {
+    flex: 1; font-size: 11px; padding: 3px 5px; height: 24px;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--text);
+  }
+  .summa-in:focus { outline: none; border-color: var(--blue); }
+
+  .save-bar {
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px;
+    position: sticky; bottom: 0;
+  }
+  .btn-full {
+    width: 100%; padding: 7px 12px; font-size: 12px; font-weight: 500;
+    border: none; border-radius: var(--radius); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    transition: opacity 0.12s;
+  }
+  .btn-full:hover { opacity: 0.85; }
+  .btn-apply  { background: var(--blue);  color: white; }
+  .btn-save   { background: #27500a;      color: white; }
+  .btn-reset  { background: var(--surface); color: var(--red); border: 1px solid var(--red-bd); }
+
+  /* ── LEGEND ── */
+  .legend-bar {
+    padding: 5px 12px;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .lg-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text2); }
+  .lg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 999;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; }
+  #toast.ok  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  #toast.err { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+
+  /* ── SAVED RULES TABLE ── */
+  .rules-panel {
+    border-top: 1px solid var(--border);
+    padding: 10px 12px;
+    background: var(--surface);
+    display: none;
+  }
+  .rules-panel.open { display: block; }
+  .rules-title {
+    font-size: 11px; font-weight: 600; color: var(--text2);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .rules-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .rules-tbl th {
+    font-size: 10px; color: var(--text2); font-weight: 500;
+    text-align: left; padding: 3px 6px;
+    border-bottom: 1px solid var(--border); background: var(--surface2);
+  }
+  .rules-tbl td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
+  .rules-tbl tr:hover td { background: var(--surface2); }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    text-align: center; font-size: 11px; color: var(--text3);
+    padding: 12px; margin-top: 8px;
+  }
+
+  svg.icon { width: 12px; height: 12px; display: inline-block; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <span class="nav-logo">Directo</span>
+  <span class="nav-sep"></span>
+  <span style="opacity:.7">Ost</span>
+  <span style="opacity:.4">›</span>
+  <span style="opacity:.7">Dokumendid</span>
+  <span style="opacity:.4">›</span>
+  <span>Ostuarved</span>
+  <span class="nav-sep"></span>
+  <span style="opacity:.6; font-size:11px">Prototüüp – Hankija automaatika seadistamine ostuarvelt</span>
+</div>
+
+<!-- DOCUMENT -->
+<div class="doc-wrap">
+<div class="doc-card">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <button class="tbtn g">
+      <svg class="icon"><path d="M5 13l4 4L19 7"/></svg> Salvesta
+    </button>
+    <button class="tbtn g">
+      <svg class="icon"><path d="M5 13l4 4L19 7"/></svg> Kinnita
+    </button>
+    <button class="tbtn">
+      <svg class="icon"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Kopeeri
+    </button>
+    <button class="tbtn">
+      <svg class="icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Jäta
+    </button>
+    <button class="tbtn">
+      <svg class="icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg> Kustuta
+    </button>
+    <button class="tbtn">
+      <svg class="icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Meil
+    </button>
+    <button class="tbtn">
+      <svg class="icon"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Trüki
+    </button>
+    <button class="tbtn">Manused</button>
+    <button class="tbtn" id="btn-andmed-earve">Andmed e-arvelt</button>
+    <button class="tbtn-auto" id="btn-auto" onclick="toggleAutoPanel()">
+      <svg class="icon" style="width:13px;height:13px"><path d="M15 4V2m0 14v-2M8 10H2m14 0h-2M4.9 4.9l1.4 1.4m7.4 7.4 1.4 1.4m0-10.2-1.4 1.4M6.3 16.3 4.9 17.7"/></svg>
+      Seadista hankija automaatika
+    </button>
+  </div>
+
+  <!-- DOC HEADER -->
+  <div class="doc-header">
+    <span class="doc-title">Ostuarve</span>
+    <span class="doc-code">OA-2026-0412</span>
+    <span class="badge-new">Uus</span>
+    <span style="margin-left:auto; font-size:11px; color:var(--text3)">Telia Eesti AS · 12.05.2026 · 847,34 €</span>
+  </div>
+
+  <!-- SUBTABS -->
+  <div class="subtabs">
+    <div class="stab">Laosissetulek</div>
+    <div class="stab">Tasumine</div>
+    <div class="stab hilite">Kassa välja</div>
+    <div class="stab">Kreeditar</div>
+  </div>
+
+  <!-- HANKIJA FIELDS -->
+  <div class="form-section">
+    <div class="fields-grid" style="grid-template-columns: 120px 1fr 110px 1fr 130px;">
+      <div class="field"><label>Hankija</label><div class="fbox" style="background:#e8f0fb;border-color:#85b7eb;"></div></div>
+      <div class="field"><label>Hankija nimi</label><div class="fbox" style="background:#e8f0fb;border-color:#85b7eb; display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">Telia Eesti AS</div></div>
+      <div class="field"><label>KM reg nr</label><div class="fbox"></div></div>
+      <div class="field"><label>Hankija arve</label><div class="fbox yellow" style="display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">TEL-2026-05-8812</div></div>
+      <div class="field"><label>Makse saaja</label><div class="fbox"></div></div>
+    </div>
+  </div>
+
+  <!-- PÕHIANDMED collapsed -->
+  <div class="form-section collapsed" style="background:var(--surface2)">
+    <div class="section-head" onclick="this.classList.toggle('open')">
+      <svg class="icon" style="stroke:var(--text2)"><polyline points="9 18 15 12 9 6"/></svg>
+      Põhiandmed
+    </div>
+  </div>
+
+  <!-- LISAVÄLJAD collapsed -->
+  <div class="form-section collapsed" style="background:var(--surface2)">
+    <div class="section-head" onclick="this.classList.toggle('open')">
+      <svg class="icon" style="stroke:var(--text2)"><polyline points="9 18 15 12 9 6"/></svg>
+      Lisaväljad
+    </div>
+  </div>
+
+  <!-- ROWS TOOLBAR -->
+  <div class="rows-toolbar">
+    <button class="rt-btn">Massasetaja...</button>
+    <button class="rt-btn">Aseta retsept...</button>
+    <button class="rt-btn">Jaga ressurssidel</button>
+    <span style="margin-left:auto; font-size:10px; color:var(--text3)">Loor: PV &nbsp;VV &nbsp;|&nbsp; Lisa: PV &nbsp;VV</span>
+  </div>
+
+  <!-- INVOICE TABLE (static preview when panel closed) -->
+  <div id="inv-preview" class="inv-table-wrap" style="max-height:220px;overflow-y:auto;">
+    <table class="inv-table" id="preview-tbl">
+      <thead>
+        <tr>
+          <th style="width:28px"></th>
+          <th style="width:22px">Nr</th>
+          <th>Tüüp</th>
+          <th>Artikkel</th>
+          <th>Konto</th>
+          <th>Objekt</th>
+          <th>Projekt</th>
+          <th>Kasutaja</th>
+          <th style="min-width:160px">Sisu</th>
+          <th>Summa</th>
+          <th>KMK</th>
+          <th>Olek</th>
+        </tr>
+      </thead>
+      <tbody id="preview-body"></tbody>
+    </table>
+  </div>
+
+  <!-- AUTOMAATIKA PANEL -->
+  <div class="auto-panel" id="auto-panel">
+
+    <!-- LEFT: rows for mapping -->
+    <div class="ap-left">
+      <div class="ap-header">
+        <span>
+          <svg class="icon" style="width:13px;height:13px;stroke:var(--amber)"><path d="M15 4V2m0 14v-2M8 10H2m14 0h-2"/></svg>
+          Hankija automaatika seadistamine
+        </span>
+        <div class="ap-header-right">
+          <span class="sel-pill" id="sel-count" style="display:none">0 valitud</span>
+          <button class="fb-btn" onclick="togglePanel()" style="font-size:11px;padding:2px 8px;">
+            <svg class="icon" style="width:11px;height:11px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Sulge
+          </button>
+        </div>
+      </div>
+
+      <div class="legend-bar">
+        <div class="lg-item"><div class="lg-dot" style="background:var(--saved-bg);border:1px solid var(--gray-bd)"></div>Automaatikasse salvestatud</div>
+        <div class="lg-item"><div class="lg-dot" style="background:var(--sel-bg);border:1px solid var(--green-bd)"></div>Valitud / määratud</div>
+        <div class="lg-item"><div class="lg-dot" style="background:var(--grp-bg);border:1px solid #85b7eb"></div>Samas rühmas</div>
+        <div class="lg-item"><div class="lg-dot" style="background:var(--surface);border:1px solid var(--border)"></div>Määramata</div>
+      </div>
+
+      <div class="filter-bar">
+        <svg class="icon" style="stroke:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-in" placeholder="Filtreeri sisu järgi..." oninput="renderTable()">
+        <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2);white-space:nowrap;cursor:pointer;">
+          <input type="checkbox" id="unmapped-only" onchange="renderTable()" style="width:12px;height:12px;accent-color:var(--blue)">
+          Ainult määramata
+        </label>
+        <button class="fb-btn on" onclick="selectFiltered()">Vali filtreeritud</button>
+      </div>
+
+      <div class="inv-table-wrap">
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th style="width:24px"><input type="checkbox" id="chk-all" onchange="toggleAll(this)" style="width:13px;height:13px;accent-color:var(--blue)"></th>
+              <th style="width:22px">Nr</th>
+              <th style="min-width:200px">Sisu (e-arve)</th>
+              <th style="width:70px;text-align:right">Summa</th>
+              <th style="width:75px">Konto</th>
+              <th style="width:90px">Olek</th>
+            </tr>
+          </thead>
+          <tbody id="map-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: rule editor -->
+    <div class="ap-right">
+      <div class="ap-header" style="background:var(--surface2); border-bottom-color:var(--border); color:var(--text);">
+        Reegli seadistamine
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-label">Sisaldus (automaatika filter)</div>
+        <div class="sisaldus-box" id="sisaldus-box">
+          <span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">Klõpsa tükil eemaldamiseks &nbsp;·&nbsp; % = „kõik muud"</div>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-label">Konto</div>
+        <input type="text" class="rp-input" id="r-konto" placeholder="nt 5300">
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">KM kood</div>
+        <input type="text" class="rp-input" id="r-km" placeholder="nt KM20">
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Objekt</div>
+        <input type="text" class="rp-input" id="r-obj" placeholder="nt OBJ001">
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Projekt</div>
+        <input type="text" class="rp-input" id="r-proj" placeholder="nt PROJ-23">
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Kasutaja</div>
+        <input type="text" class="rp-input" id="r-kasutaja" placeholder="nt MARI">
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Sisu (kirje tekst arvel)</div>
+        <input type="text" class="rp-input" id="r-sisu" placeholder="nt Andmeside">
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-label">Finantsretsept</div>
+        <select class="rp-input" id="r-retsept" style="height:28px">
+          <option value="">– puudub –</option>
+          <option>RETSEPT-01 (Rida)</option>
+          <option>RETSEPT-02 (Dokument)</option>
+        </select>
+      </div>
+
+      <div class="rp-section">
+        <div class="rp-label">Koondamine</div>
+        <div class="koond-grp">
+          <button class="koond-btn on" id="kn-no"   onclick="setKoond('no')">Puudub</button>
+          <button class="koond-btn"    id="kn-rida"  onclick="setKoond('rida')">Rida</button>
+          <button class="koond-btn"    id="kn-dok"   onclick="setKoond('dok')">Dokument</button>
+        </div>
+      </div>
+
+      <div class="rp-section">
+        <div class="kinnita-row">
+          <input type="checkbox" id="r-kinnita" onchange="toggleKinnita()">
+          <label for="r-kinnita" style="font-size:12px;cursor:pointer">Kinnita automaatselt</label>
+        </div>
+        <div id="summa-section" style="display:none;margin-top:8px">
+          <div class="rp-label">K.summa vahemik (lubatud hälve)</div>
+          <div class="summa-row">
+            <input type="text" class="summa-in" id="r-s-alates" placeholder="alates">
+            <span style="align-self:center;color:var(--text2);font-size:11px">–</span>
+            <input type="text" class="summa-in" id="r-s-kuni" placeholder="kuni">
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Tühjaks jätmisel kinnitub alati</div>
+        </div>
+      </div>
+
+      <div class="rp-section" style="background:var(--surface2)">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;">
+          <input type="checkbox" id="r-ainus" style="width:13px;height:13px;accent-color:var(--blue)">
+          Ainus (teised reeglid ei kirjuta üle)
+        </label>
+      </div>
+
+      <div class="save-bar">
+        <button class="btn-full btn-apply" onclick="applyRule()">
+          <svg class="icon" style="stroke:white"><path d="M20 6L9 17l-5-5"/></svg>
+          Rakenda valitud ridadele
+        </button>
+        <button class="btn-full btn-save" onclick="saveAutomaatika()">
+          <svg class="icon" style="stroke:white"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21" style="stroke:white"/><polyline points="7 3 7 8 15 8" style="stroke:white"/></svg>
+          Salvesta hankija automaatika
+        </button>
+        <button class="btn-full btn-reset" onclick="resetAll()">
+          <svg class="icon" style="stroke:var(--red)"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+          Taasta originaal e-arve read
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVED RULES TABLE -->
+  <div class="rules-panel" id="rules-panel">
+    <div class="rules-title">
+      <svg class="icon" style="stroke:var(--text2)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Hankija automaatika reeglid (salvestatud)
+      <span id="rules-count" class="badge badge-saved" style="margin-left:4px">0 reeglit</span>
+    </div>
+    <table class="rules-tbl" id="rules-tbl">
+      <thead>
+        <tr>
+          <th>#</th><th>Sisaldus</th><th>Konto</th><th>KM kood</th>
+          <th>Objekt</th><th>Projekt</th><th>Kasutaja</th><th>Sisu</th>
+          <th>Koond</th><th>Kinnita</th>
+        </tr>
+      </thead>
+      <tbody id="rules-body"></tbody>
+    </table>
+  </div>
+
+</div><!-- /doc-card -->
+
+<div class="footer-note">
+  Prototüüp – Directo hankija automaatika seadistamine ostuarvelt &nbsp;·&nbsp;
+  Kontseptsioon: seadistamine toimub otse ostuarve kontekstis, mitte eraldi hankija kaardil
+</div>
+</div><!-- /doc-wrap -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+const ROWS = [
+  { id:1,  sisu:"Andmeside 5GB; Leping 12345; 55001122; DateTime: 01.05.2026", summa:12.50 },
+  { id:2,  sisu:"Andmeside 5GB; Leping 12345; 55001122; DateTime: 02.05.2026", summa:12.50 },
+  { id:3,  sisu:"Kõneteenus; 55001122; Kuutasu; DateTime: 01.05.2026",          summa:4.99  },
+  { id:4,  sisu:"Parkimistasu; 55001122; Laagri; DateTime: 03.05.2026",         summa:3.00  },
+  { id:5,  sisu:"Andmeside 5GB; Leping 67890; 55009988; DateTime: 01.05.2026",  summa:12.50 },
+  { id:6,  sisu:"Andmeside 5GB; Leping 67890; 55009988; DateTime: 02.05.2026",  summa:12.50 },
+  { id:7,  sisu:"Kõneteenus; 55009988; Kuutasu; DateTime: 01.05.2026",          summa:4.99  },
+  { id:8,  sisu:"Parkimistasu; 55009988; Ülemiste; DateTime: 05.05.2026",       summa:5.50  },
+  { id:9,  sisu:"Interneti kuutasu; Fiiberühendus; Kontor; Leping 99001",        summa:45.00 },
+  { id:10, sisu:"Interneti paigaldusteenus; Kontor; Leping 99001",               summa:25.00 },
+  { id:11, sisu:"Lisateenus SMS lühikood; Leping 44512",                         summa:18.00 },
+  { id:12, sisu:"Lisateenus roaming; 55001122; Läti; Mai 2026",                  summa:7.20  },
+];
+
+const state = {};
+ROWS.forEach(r => {
+  state[r.id] = { konto:'', km:'', obj:'', proj:'', kasutaja:'', sisu:'',
+                  mapped:false, saved:false, group:null };
+});
+
+let selected = new Set();
+let koond = 'no';
+let groupCounter = 0;
+const savedRules = [];
+
+/* ─ helpers ─ */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, ok){
+  const el = document.getElementById('toast');
+  el.className = 'show ' + (ok ? 'ok' : 'err');
+  el.textContent = msg;
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.className='', 2800);
+}
+
+/* ─ render map table ─ */
+function renderTable(){
+  const q    = document.getElementById('search-in').value.toLowerCase();
+  const unm  = document.getElementById('unmapped-only').checked;
+  const tbody = document.getElementById('map-body');
+  tbody.innerHTML = '';
+
+  ROWS.forEach(r => {
+    const s = state[r.id];
+    if (q && !r.sisu.toLowerCase().includes(q)) return;
+    if (unm && (s.mapped || s.saved)) return;
+
+    const cls = s.saved ? 'saved' : selected.has(r.id) ? 'sel' : (s.group !== null && s.mapped) ? 'grp' : '';
+    const tr = document.createElement('tr');
+    if (cls) tr.className = cls;
+
+    const parts = r.sisu.split(';');
+    const sisuHtml = parts.map((p,i) => {
+      p = p.trim();
+      return i === 0 || /\d{8,}/.test(p)
+        ? `<span class="sisu-hi">${esc(p)}</span>`
+        : `<span style="color:var(--text2)">${esc(p)}</span>`;
+    }).join('<span style="color:var(--border2)"> · </span>');
+
+    const statusHtml = s.saved
+      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      : s.mapped
+        ? `<span class="badge badge-set">&#10003; Määratud</span>`
+        : `<span class="badge-none">–</span>`;
+
+    const kontoVal = s.konto || '';
+    tr.innerHTML = `
+      <td><input type="checkbox" class="row-check" ${selected.has(r.id)?'checked':''} onchange="toggleRow(${r.id},this)"></td>
+      <td class="row-num">${r.id}</td>
+      <td class="sisu-cell"><div class="sisu-text">${sisuHtml}</div></td>
+      <td class="summa-val">${r.summa.toFixed(2)} €</td>
+      <td><input type="text" class="konto-in" value="${esc(kontoVal)}" placeholder="–" onchange="updateKonto(${r.id},this.value)" aria-label="Konto rida ${r.id}"></td>
+      <td>${statusHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  updateSelCount();
+  renderPreview();
+}
+
+/* ─ render preview table (above panel) ─ */
+function renderPreview(){
+  const tbody = document.getElementById('preview-body');
+  tbody.innerHTML = '';
+  ROWS.forEach(r => {
+    const s = state[r.id];
+    const tr = document.createElement('tr');
+    if (s.saved) tr.className = 'saved';
+    else if (s.mapped) tr.className = 'sel';
+    tr.innerHTML = `
+      <td></td>
+      <td class="row-num">${r.id}</td>
+      <td></td><td></td>
+      <td style="font-size:11px">${esc(s.konto)}</td>
+      <td style="font-size:11px">${esc(s.obj)}</td>
+      <td style="font-size:11px">${esc(s.proj)}</td>
+      <td style="font-size:11px">${esc(s.kasutaja)}</td>
+      <td class="sisu-cell"><div class="sisu-text">${
+        s.sisu
+          ? `<span style="color:var(--green);font-weight:500">${esc(s.sisu)}</span>`
+          : `<span style="color:var(--text2)">${esc(r.sisu.split(';')[0].trim())}</span>`
+      }</div></td>
+      <td class="summa-val">${r.summa.toFixed(2)} €</td>
+      <td></td>
+      <td>${s.saved ? '<span class="badge badge-saved" style="font-size:10px">&#128274;</span>' : s.mapped ? '<span class="badge badge-set" style="font-size:10px">&#10003;</span>' : ''}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ─ selection ─ */
+function toggleRow(id, cb){
+  cb.checked ? selected.add(id) : selected.delete(id);
+  updateSisaldus(); renderTable();
+}
+function toggleAll(cb){
+  ROWS.forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
+  updateSisaldus(); renderTable();
+}
+function selectFiltered(){
+  const q   = document.getElementById('search-in').value.toLowerCase();
+  const unm = document.getElementById('unmapped-only').checked;
+  ROWS.forEach(r => {
+    if (q && !r.sisu.toLowerCase().includes(q)) return;
+    if (unm && (state[r.id].mapped || state[r.id].saved)) return;
+    selected.add(r.id);
+  });
+  updateSisaldus(); renderTable();
+}
+function updateSelCount(){
+  const el = document.getElementById('sel-count');
+  if (selected.size > 0){ el.style.display='inline-flex'; el.textContent = selected.size + ' valitud'; }
+  else el.style.display = 'none';
+}
+
+/* ─ sisaldus chips ─ */
+function updateSisaldus(){
+  const box = document.getElementById('sisaldus-box');
+  if (selected.size === 0){
+    box.innerHTML = '<span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>';
+    return;
+  }
+  const freq = new Map();
+  selected.forEach(id => {
+    const r = ROWS.find(x=>x.id===id);
+    if (!r) return;
+    r.sisu.split(';').forEach(w => {
+      w = w.trim(); if (!w) return;
+      freq.set(w, (freq.get(w)||0)+1);
+    });
+  });
+  const common = [...freq.entries()].filter(([,c])=>c===selected.size).map(([w])=>w);
+  const chips = (common.length ? common.slice(0,3) : ROWS.find(x=>selected.has(x.id))?.sisu.split(';').map(s=>s.trim()).filter(Boolean).slice(0,2) || []);
+  box.innerHTML = chips.map((w,i) =>
+    `<span class="s-chip" onclick="this.nextSibling&&this.nextSibling.remove();this.remove()">${esc(w)} <span style="font-size:9px;opacity:.6">✕</span></span>${i<chips.length-1?'<span class="s-sep">%</span>':''}`
+  ).join('');
+}
+
+/* ─ koond ─ */
+function setKoond(v){
+  koond=v;
+  ['no','rida','dok'].forEach(k => document.getElementById('kn-'+k).classList.toggle('on', k===v));
+}
+
+/* ─ kinnita ─ */
+function toggleKinnita(){
+  document.getElementById('summa-section').style.display =
+    document.getElementById('r-kinnita').checked ? 'block' : 'none';
+}
+
+/* ─ inline konto update ─ */
+function updateKonto(id, val){
+  state[id].konto = val;
+  state[id].mapped = !!val;
+}
+
+/* ─ apply rule ─ */
+function applyRule(){
+  if (selected.size === 0){ toast('Vali esmalt read linnukestega', false); return; }
+  const konto = document.getElementById('r-konto').value.trim();
+  if (!konto){ toast('Sisesta konto number paremalt', false); return; }
+  groupCounter++;
+  const count = selected.size;
+  selected.forEach(id => {
+    const s = state[id];
+    s.konto    = konto;
+    s.km       = document.getElementById('r-km').value.trim();
+    s.obj      = document.getElementById('r-obj').value.trim();
+    s.proj     = document.getElementById('r-proj').value.trim();
+    s.kasutaja = document.getElementById('r-kasutaja').value.trim();
+    s.sisu     = document.getElementById('r-sisu').value.trim();
+    s.mapped   = true;
+    s.group    = groupCounter;
+  });
+  selected.clear();
+  document.getElementById('chk-all').checked = false;
+  toast(`${count} reale määratud konto ${konto} ✓`, true);
+  renderTable();
+}
+
+/* ─ save automaatika ─ */
+function saveAutomaatika(){
+  const mapped = ROWS.filter(r => state[r.id].mapped);
+  if (mapped.length === 0){ toast('Kõigepealt rakenda reeglid ridadele', false); return; }
+
+  const chips = [...document.getElementById('sisaldus-box').querySelectorAll('.s-chip')];
+  const sisaldus = chips.map(c=>c.textContent.replace('✕','').trim()).join('%') || '%';
+  const konto = document.getElementById('r-konto').value.trim();
+
+  savedRules.push({
+    sisaldus, konto,
+    km:       document.getElementById('r-km').value.trim(),
+    obj:      document.getElementById('r-obj').value.trim(),
+    proj:     document.getElementById('r-proj').value.trim(),
+    kasutaja: document.getElementById('r-kasutaja').value.trim(),
+    sisu:     document.getElementById('r-sisu').value.trim(),
+    koond:    koond === 'no' ? '' : koond === 'rida' ? 'Rida' : 'Dokument',
+    kinnita:  document.getElementById('r-kinnita').checked ? 'Jah' : '',
+  });
+
+  mapped.forEach(r => { state[r.id].saved = true; state[r.id].mapped = false; state[r.id].group = null; });
+  selected.clear();
+  renderRulesTable();
+  document.getElementById('rules-panel').classList.add('open');
+  toast('Hankija automaatika salvestatud! ' + mapped.length + ' rida uuendatud.', true);
+  renderTable();
+}
+
+/* ─ render saved rules ─ */
+function renderRulesTable(){
+  const tbody = document.getElementById('rules-body');
+  tbody.innerHTML = '';
+  savedRules.forEach((r,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td><code style="font-size:10px">${esc(r.sisaldus)}</code></td>
+      <td>${esc(r.konto)}</td><td>${esc(r.km)}</td><td>${esc(r.obj)}</td>
+      <td>${esc(r.proj)}</td><td>${esc(r.kasutaja)}</td><td>${esc(r.sisu)}</td>
+      <td>${esc(r.koond)}</td><td>${esc(r.kinnita)}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('rules-count').textContent = savedRules.length + ' reeglit';
+}
+
+/* ─ reset ─ */
+function resetAll(){
+  ROWS.forEach(r => { const s=state[r.id]; s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';s.mapped=false;s.saved=false;s.group=null; });
+  selected.clear();
+  document.getElementById('r-konto').value='';
+  document.getElementById('r-km').value='';
+  document.getElementById('r-obj').value='';
+  document.getElementById('r-proj').value='';
+  document.getElementById('r-kasutaja').value='';
+  document.getElementById('r-sisu').value='';
+  document.getElementById('sisaldus-box').innerHTML='<span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>';
+  toast('Originaal e-arve read taastatud', true);
+  renderTable();
+}
+
+/* ─ panel toggle ─ */
+let panelOpen = false;
+function toggleAutoPanel(){
+  panelOpen = !panelOpen;
+  document.getElementById('auto-panel').classList.toggle('open', panelOpen);
+  const btn = document.getElementById('btn-auto');
+  btn.classList.toggle('active', panelOpen);
+  btn.textContent = panelOpen ? '✕ Sulge automaatika' : '⚡ Seadista hankija automaatika';
+  if (panelOpen) renderTable();
+}
+function togglePanel(){ toggleAutoPanel(); }
+
+/* ─ init ─ */
+renderPreview();
+</script>
+</body>
+</html>
