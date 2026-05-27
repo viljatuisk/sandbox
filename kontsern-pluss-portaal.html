@@ -1488,6 +1488,9 @@
         <button id="ctab-bs" onclick="showConTab('bs')"
           style="padding:10px 18px;border:none;border-bottom:2px solid var(--brand);margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--brand);">
           📊 Koondbilanss</button>
+        <button id="ctab-pl" onclick="showConTab('pl')"
+          style="padding:10px 18px;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-500);">
+          📈 Kasumiaruanne</button>
         <button id="ctab-elim" onclick="showConTab('elim')"
           style="padding:10px 18px;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
           🔄 Sisetehingud <span style="background:#fef3c7;color:#92400e;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">3⚠</span></button>
@@ -1573,6 +1576,74 @@
           </div>
         </div>
       </div><!-- /con-tab-bs -->
+
+      <!-- ── TAB: KASUMIARUANNE ── -->
+      <div id="con-tab-pl" style="display:none;">
+        <!-- Filters -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:var(--gray-500);">Periood:</span>
+            <select class="form-select" style="font-size:12px;padding:4px 8px;width:auto;">
+              <option selected>Jan–Mai 2026 (YTD)</option><option>Mai 2026 (kuu)</option>
+              <option>Q1 2026</option><option>2025 (aasta)</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:var(--gray-500);">Võrdle:</span>
+            <select class="form-select" style="font-size:12px;padding:4px 8px;width:auto;">
+              <option>Eelmine aasta</option><option>Eelarve</option><option>Eelmine kvartal</option>
+            </select>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;">
+            <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;">⬇ Excel</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;">📄 PDF</button>
+          </div>
+        </div>
+
+        <!-- P&L matrix table -->
+        <div class="card" style="overflow:hidden;margin-bottom:12px;">
+          <div style="overflow-x:auto;">
+            <table id="plTable" style="width:100%;border-collapse:collapse;font-size:12px;min-width:960px;">
+              <thead>
+                <tr style="background:#1e293b;color:white;">
+                  <th style="text-align:left;padding:10px 14px;font-weight:600;width:210px;position:sticky;left:0;background:#1e293b;z-index:2;">Kirje</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Balti Grupp AS">🏛️ BG</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Balti Eesti OÜ">🇪🇪 BE</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Eesti Jaeüksus OÜ">🇪🇪 EJ</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Eesti Hulgimüük OÜ">🇪🇪 EH</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Baltic Latvia SIA 75%">🇱🇻 LV<br><span style="font-weight:400;font-size:10px;opacity:.65;">75%</span></th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Baltic Lithuania UAB 51%">🇱🇹 LT<br><span style="font-weight:400;font-size:10px;opacity:.65;">51%</span></th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Logistika OÜ">🆕 LO</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:74px;color:#fbbf24;">Elim.</th>
+                  <th style="text-align:right;padding:10px 14px;font-weight:700;min-width:90px;background:#1e3a5f;">Konsol. ✓</th>
+                </tr>
+                <tr style="background:#334155;color:#94a3b8;border-bottom:1px solid #475569;">
+                  <td style="padding:4px 14px;font-size:10px;font-style:italic;position:sticky;left:0;background:#334155;">€ tuhandetes · testandmed</td>
+                  <td colspan="8" style="padding:4px 8px;font-size:10px;text-align:right;">Jan–Mai 2026 YTD · kumulatiivne</td>
+                  <td style="padding:4px 14px;font-size:10px;text-align:right;background:#1e3a5f;color:#93c5fd;">5 kuud</td>
+                </tr>
+              </thead>
+              <tbody id="plTbody"><!-- renderPL() täidab --></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- P&L Drill-down panel -->
+        <div id="plDrillPanel" style="display:none;margin-top:4px;">
+          <div class="card" style="border:2px solid #16a34a;">
+            <div class="card-header" style="background:#f0fdf4;">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                <div class="card-title" id="plDdLabel" style="color:#15803d;">📈 Drill-down</div>
+                <span id="plDdKonsol" style="font-size:12px;font-weight:700;color:#15803d;background:white;border:1px solid #86efac;border-radius:20px;padding:2px 10px;"></span>
+              </div>
+              <button onclick="document.getElementById('plDrillPanel').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);">×</button>
+            </div>
+            <div class="card-body" style="padding:16px 20px;">
+              <div id="plDdBars" style="display:flex;flex-direction:column;gap:9px;"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /con-tab-pl -->
 
       <!-- ── TAB: SISETEHINGUD ── -->
       <div id="con-tab-elim" style="display:none;">
@@ -2666,7 +2737,7 @@
   }
 
   function showConTab(name) {
-    ['bs','elim','settings'].forEach(t => {
+    ['bs','pl','elim','settings'].forEach(t => {
       const tab = document.getElementById('con-tab-' + t);
       const btn = document.getElementById('ctab-' + t);
       if (tab) tab.style.display = t === name ? '' : 'none';
@@ -2677,6 +2748,201 @@
       }
     });
     if (name === 'bs') renderBS();
+    if (name === 'pl') renderPL();
+  }
+
+  // ═══════════════════════════════════════════════════
+  // KASUMIARUANNE — testandmed + loogika
+  // ═══════════════════════════════════════════════════
+
+  const plRows = [
+    { type:'S', label:'MÜÜGITULU' },
+    { type:'I', grp:'ml', id:'ml1', label:'Kaupade müük',            bg:0,    be:2800, ej:2100, eh:1800, lv:1400, lt:1100, lo:0,   elim:-78  },
+    { type:'I', grp:'ml', id:'ml2', label:'Teenuste müük',           bg:320,  be:600,  ej:0,    eh:0,    lv:250,  lt:220,  lo:0,   elim:-320 },
+    { type:'I', grp:'ml', id:'ml3', label:'Muud äritulud',           bg:0,    be:0,    ej:0,    eh:0,    lv:0,    lt:0,    lo:0,   elim:0    },
+    { type:'G', grp:'ml', label:'Müügitulu kokku' },
+
+    { type:'S', label:'MÜÜGIKULUD' },
+    { type:'I', grp:'mk', id:'mk1', label:'Kaubad ja materjalid',    bg:0,    be:-1800,ej:-1380,eh:-1220,lv:-1000,lt:-820, lo:0,   elim:78   },
+    { type:'I', grp:'mk', id:'mk2', label:'Tootmise tööjõukulud',    bg:0,    be:-300, ej:-120, eh:-130, lv:-100, lt:-80,  lo:0,   elim:0    },
+    { type:'G', grp:'mk', label:'Müügikulud kokku' },
+
+    { type:'CALC', id:'bruto', label:'BRUTOKASUM', grps:['ml','mk'], style:'green' },
+
+    { type:'S', label:'TEGEVUSKULUD' },
+    { type:'I', grp:'tk', id:'tk1', label:'Turundus- ja müügikulud', bg:0,    be:-180, ej:-130, eh:-100, lv:-120, lt:-100, lo:0,   elim:0    },
+    { type:'I', grp:'tk', id:'tk2', label:'Üld- ja halduskulud',     bg:-420, be:-260, ej:-130, eh:-130, lv:-90,  lt:-80,  lo:-60, elim:320  },
+    { type:'I', grp:'tk', id:'tk3', label:'Kulum ja amortisatsioon', bg:-20,  be:-140, ej:-50,  eh:-50,  lv:-40,  lt:-30,  lo:0,   elim:0    },
+    { type:'G', grp:'tk', label:'Tegevuskulud kokku' },
+
+    { type:'CALC', id:'ebit', label:'ÄRIKASUM (EBIT)', grps:['ml','mk','tk'], style:'brand' },
+
+    { type:'S', label:'FINANTSTULUD JA -KULUD' },
+    { type:'I', grp:'fk', id:'fk1', label:'Intressikulud',           bg:-120, be:-85,  ej:-30,  eh:-55,  lv:-42,  lt:-32,  lo:0,   elim:0    },
+    { type:'I', grp:'fk', id:'fk2', label:'Muud finantstulud/-kulud',bg:0,    be:0,    ej:0,    eh:0,    lv:0,    lt:0,    lo:0,   elim:0    },
+    { type:'G', grp:'fk', label:'Finantskulud kokku' },
+
+    { type:'CALC', id:'pbt', label:'MAKSUSTAMISEELNE KASUM', grps:['ml','mk','tk','fk'], style:'brand' },
+
+    { type:'S', label:'TULUMAKS' },
+    { type:'I', grp:'tm', id:'tm1', label:'Tulumaks',                bg:0,    be:-127, ej:-52,  eh:-23,  lv:-52,  lt:-36,  lo:0,   elim:0    },
+
+    { type:'CALC', id:'net', label:'PUHASKASUM', grps:['ml','mk','tk','fk','tm'], style:'grand' },
+
+    { type:'S', label:'PUHASKASUM — JAOTUS' },
+    { type:'I', grp:'ja', id:'ja1', label:'sh Vähemusosaluse kasum', bg:0,    be:0,    ej:0,    eh:0,    lv:51,   lt:70,   lo:0,   elim:1    },
+    { type:'I', grp:'ja', id:'ja2', label:'sh Emaettevõtte omanike kasum', bg:-240, be:508, ej:208, eh:92, lv:155, lt:72,  lo:-60, elim:-1   },
+  ];
+
+  // Pre-compute P&L group sums
+  const _plGrpSum = {};
+  plRows.forEach(r => {
+    if (r.type === 'I') {
+      if (!_plGrpSum[r.grp]) { _plGrpSum[r.grp] = {elim:0,konsol:0}; conCols.forEach(k => _plGrpSum[r.grp][k] = 0); }
+      const kv = conCols.reduce((s,k) => s + r[k], 0) + r.elim;
+      conCols.forEach(k => _plGrpSum[r.grp][k] += r[k]);
+      _plGrpSum[r.grp].elim   += r.elim;
+      _plGrpSum[r.grp].konsol += kv;
+    }
+  });
+
+  function plCalc(grps) {
+    const res = {elim:0, konsol:0};
+    conCols.forEach(k => res[k] = 0);
+    grps.forEach(g => {
+      const gs = _plGrpSum[g] || {};
+      conCols.forEach(k => res[k] += gs[k] || 0);
+      res.elim   += gs.elim   || 0;
+      res.konsol += gs.konsol || 0;
+    });
+    return res;
+  }
+
+  let plRendered = false;
+
+  function renderPL() {
+    if (plRendered) return;
+    plRendered = true;
+    const tbody = document.getElementById('plTbody');
+    if (!tbody) return;
+
+    // CALC style configs
+    const calcStyles = {
+      green: { bg:'#f0fdf4', border:'#86efac', color:'#15803d', konsolBg:'#166534', konsolColor:'white' },
+      brand: { bg:'#eff6ff', border:'#93c5fd', color:'#1e40af', konsolBg:'#1e3a5f', konsolColor:'white' },
+      grand: { bg:'#0f172a', border:'#1e3a5f', color:'white',   konsolBg:'#16a34a', konsolColor:'white' },
+    };
+
+    let html = '';
+    plRows.forEach(r => {
+
+      if (r.type === 'S') {
+        html += `<tr style="background:#1e293b;color:white;">
+          <td colspan="10" style="padding:7px 14px;font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;position:sticky;left:0;background:#1e293b;">${r.label}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'I') {
+        const kv = conCols.reduce((s,k) => s + r[k], 0) + r.elim;
+        const cells = conCols.map(k => {
+          const v = r[k];
+          return `<td style="text-align:right;padding:7px 8px;color:${v < 0 ? '#dc2626' : v === 0 ? '#cbd5e1' : '#111827'};">${fmtK(v)}</td>`;
+        }).join('');
+        const elimColor = r.elim < 0 ? '#dc2626' : r.elim > 0 ? '#16a34a' : '#cbd5e1';
+        const kvColor   = kv > 0 ? '#15803d' : kv < 0 ? '#dc2626' : '#1e40af';
+        html += `<tr class="pl-item" data-id="${r.id}"
+          style="cursor:pointer;transition:background .12s;"
+          onclick="openPLDrill('${r.id}')"
+          onmouseover="this.style.background='#f0fdf4'"
+          onmouseout="this.style.background=(document.querySelector('.pl-item.pl-active')||{}).dataset&&document.querySelector('.pl-item.pl-active').dataset.id==='${r.id}'?'#dcfce7':''">
+          <td style="padding:7px 14px 7px 28px;color:#111827;position:sticky;left:0;background:inherit;">${r.label} <span style="font-size:10px;color:#94a3b8;">↗</span></td>
+          ${cells}
+          <td style="text-align:right;padding:7px 8px;font-size:11px;color:${elimColor};">${fmtK(r.elim)}</td>
+          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#eff6ff;color:${kvColor};">${fmtK(kv)}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'G') {
+        const g = _plGrpSum[r.grp] || {};
+        const cells = conCols.map(k => {
+          const v = g[k]||0;
+          return `<td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;color:${v<0?'#dc2626':v===0?'#cbd5e1':'#111827'};">${fmtK(v)}</td>`;
+        }).join('');
+        const elimColor = (g.elim||0)<0?'#dc2626':(g.elim||0)>0?'#16a34a':'#cbd5e1';
+        const kv = g.konsol||0;
+        html += `<tr style="background:#f8fafc;">
+          <td style="padding:7px 14px;font-weight:600;font-size:11px;color:#64748b;position:sticky;left:0;background:#f8fafc;">${r.label}</td>
+          ${cells}
+          <td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;font-size:11px;color:${elimColor};">${fmtK(g.elim||0)}</td>
+          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#dbeafe;color:${kv<0?'#dc2626':'#1e40af'};border-top:1px solid #93c5fd;">${fmtK(kv)}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'CALC') {
+        const c = plCalc(r.grps);
+        const st = calcStyles[r.style] || calcStyles.brand;
+        const isGrand = r.style === 'grand';
+        const cells = conCols.map(k => {
+          const v = c[k];
+          return `<td style="text-align:right;padding:${isGrand?'11':'9'}px 8px;font-weight:700;border-top:2px solid ${st.border};${isGrand?'color:white;':'color:'+(v<0?'#dc2626':v>0?'#15803d':'#94a3b8')+';'}">${fmtK(v)}</td>`;
+        }).join('');
+        const elimColor = (c.elim||0)<0?'#dc2626':(c.elim||0)>0?'#16a34a':'#94a3b8';
+        const kText = `${fmtK(c.konsol)}${c.konsol>0?' ▲':c.konsol<0?' ▼':''}`;
+        html += `<tr style="background:${st.bg};">
+          <td style="padding:${isGrand?'11':'9'}px 14px;font-weight:${isGrand?900:800};font-size:${isGrand?'13':'12'}px;border-top:2px solid ${st.border};color:${st.color};position:sticky;left:0;background:${st.bg};">${r.label}</td>
+          ${cells}
+          <td style="text-align:right;padding:${isGrand?'11':'9'}px 8px;border-top:2px solid ${st.border};color:${isGrand?'#94a3b8':elimColor};">${c.elim!==0?fmtK(c.elim):'—'}</td>
+          <td style="text-align:right;padding:${isGrand?'11':'9'}px 14px;font-weight:${isGrand?900:800};font-size:${isGrand?'15':'13'}px;background:${st.konsolBg};color:${st.konsolColor};border-top:2px solid ${st.border};">${kText}</td>
+        </tr>${isGrand?'':'<tr><td colspan="10" style="height:6px;"></td></tr>'}`;
+      }
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  function openPLDrill(rowId) {
+    const row = plRows.find(r => r.id === rowId);
+    if (!row) return;
+
+    document.querySelectorAll('.pl-item').forEach(tr => tr.style.background = '');
+    const activeRow = document.querySelector(`.pl-item[data-id="${rowId}"]`);
+    if (activeRow) activeRow.style.background = '#dcfce7';
+
+    const total = conCols.reduce((s,k) => s + row[k], 0) + row.elim;
+    const maxAbs = Math.max(...conCols.map(k => Math.abs(row[k])), Math.abs(row.elim), 1);
+
+    document.getElementById('plDdLabel').textContent = '📈 ' + row.label;
+    const isPositive = total >= 0;
+    document.getElementById('plDdKonsol').textContent =
+      (isPositive ? '▲ ' : '▼ ') + Math.abs(Math.round(total)).toLocaleString('et-EE') + ' €k';
+    document.getElementById('plDdKonsol').style.color = isPositive ? '#15803d' : '#dc2626';
+
+    const entries = [
+      ...conCols.map(k => ({ k, val:row[k], name:conColNames[k], flag:conColFlags[k], color:conColColors[k] })),
+      { k:'elim', val:row.elim, name:'Elimineerimised', flag:'⚡', color: row.elim < 0 ? '#dc2626' : '#16a34a' }
+    ];
+
+    let html = '';
+    entries.forEach(({ k, val, name, flag, color }) => {
+      if (val === 0) return;
+      const pctBar = (Math.abs(val) / maxAbs * 100).toFixed(1);
+      const pctOfTotal = total !== 0 ? (val / total * 100).toFixed(0) : '—';
+      const pctLabel = conColPct[k] != null ? `<span style="font-size:10px;color:#94a3b8;">(${conColPct[k]}%)</span>` : '';
+      const barColor = val < 0 ? '#fca5a5' : color;
+      html += `<div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:170px;font-size:12px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${flag} ${name} ${pctLabel}</div>
+        <div style="flex:1;background:#f1f5f9;border-radius:4px;height:20px;overflow:hidden;min-width:80px;">
+          <div style="height:100%;width:${pctBar}%;background:${barColor};border-radius:4px;transition:width .35s ease;"></div>
+        </div>
+        <div style="width:75px;text-align:right;font-weight:700;font-size:12px;color:${val<0?'#dc2626':'#15803d'};">${val<0?'−':''}${Math.abs(Math.round(val)).toLocaleString('et-EE')} €k</div>
+        <div style="width:36px;text-align:right;font-size:11px;color:#94a3b8;">${pctOfTotal}%</div>
+      </div>`;
+    });
+
+    document.getElementById('plDdBars').innerHTML = html;
+    const panel = document.getElementById('plDrillPanel');
+    panel.style.display = '';
+    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
   }
 </script>
 </body>
