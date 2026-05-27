@@ -395,6 +395,19 @@
     text-decoration: none;
   }
 
+  .saaja-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .saaja-k { background: #d8e8f8; color: #1a3869; }
+  .saaja-t { background: #fde8c5; color: #7a3e00; }
+
   a:hover {
     text-decoration: underline;
   }
@@ -431,6 +444,7 @@
           <option>Lepingud</option>
           <option>Pakkumised</option>
           <option>Arved</option>
+          <option>Töödokumendid</option>
         </select>
       </div>
 
@@ -475,6 +489,19 @@
         <input id="internalSignerFilter" placeholder="kes pole allkirjastanud" />
       </div>
 
+      <div class="sidebar-field">
+        <label>Saaja tüüp</label>
+        <select id="saajaTuupFilter">
+          <option value="all">Kõik</option>
+          <option value="klient">Klient</option>
+          <option value="tootaja">Töötaja</option>
+        </select>
+      </div>
+
+      <div class="sidebar-field">
+        <label>Tellija</label>
+        <input id="tellijaFilter" placeholder="nimi või kood" />
+      </div>
 
       <button class="btn-naita">Näita</button>
     </div>
@@ -544,7 +571,7 @@
           <th style="width:34px;"><input type="checkbox" id="selectAllRows" title="Vali kõik" /></th>
           <th>Dokument</th>
           <th>Tüüp</th>
-          <th>Klient</th>
+          <th>Klient / Töötaja</th>
           <th>Saadetud</th>
           <th>Kliendi staatus</th>
           <th>Allkirjastatud</th>
@@ -601,7 +628,7 @@
           </td>
         </tr>
 
-        <tr>
+        <tr data-tellija="Nordtek Projekt OÜ">
           <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
           <td><a href="#">P-100884</a><br><span class="muted">Pakkumine.asice</span></td>
           <td>Pakkumised</td>
@@ -626,6 +653,10 @@
                 <div class="detail-section-title">Kliendi poolel</div>
                 <div class="signer-line"><span class="missing-person">✗</span> Mari Tamm <span class="signer-date">ootel</span></div>
                 <div class="signer-line"><span class="missing-person">✗</span> Peeter Kask <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Tellija</div>
+                <div class="signer-line">Nordtek Projekt OÜ</div>
               </div>
             </div>
           </td>
@@ -691,7 +722,7 @@
           </td>
         </tr>
 
-        <tr>
+        <tr data-tellija="EstBuild Projekt OÜ">
           <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
           <td><a href="#">L-10301</a><br><span class="muted">Töövõtuleping.asice</span></td>
           <td>Lepingud</td>
@@ -717,6 +748,10 @@
                 <div class="detail-section-title">Kliendi poolel</div>
                 <div class="signer-line"><span class="missing-person">✗</span> Martin Kallas <span class="signer-date">ootel</span></div>
                 <div class="signer-line"><span class="missing-person">✗</span> Tiina Põder <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Tellija</div>
+                <div class="signer-line">EstBuild Projekt OÜ</div>
               </div>
             </div>
           </td>
@@ -872,6 +907,66 @@
             </div>
           </td>
         </tr>
+
+        <tr data-saaja-tuup="tootaja">
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">HR-2041</a><br><span class="muted">Tööleping_2026.asice</span></td>
+          <td>Töödokumendid</td>
+          <td>Mari Kask</td>
+          <td>26.05.2026 09:30<br><span class="muted">2 päeva tagasi</span></td>
+          <td><span class="status missing">Allkirjastamata</span></td>
+          <td><span style="color:#b12727;font-weight:bold">0</span> / 1</td>
+          <td class="person"><span class="missing-person">Mari Kask</span><br><span class="muted">mari.kask@firma.ee</span></td>
+          <td>TIINA</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel (HR)</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Tiina Tamm <span class="signer-date">26.05 10:00</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Töötaja</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Mari Kask <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr data-saaja-tuup="tootaja">
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">HR-2038</a><br><span class="muted">Puhkusegraafik_2026.asice</span></td>
+          <td>Töödokumendid</td>
+          <td>Jüri Mägi</td>
+          <td>24.05.2026 11:15<br><span class="muted">4 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">1</span> / 2</td>
+          <td class="person"><span class="missing-person">Jüri Mägi</span><br><span class="muted">jyri.magi@firma.ee</span></td>
+          <td>TIINA</td>
+          <td class="person">-</td>
+          <td>27.05 09:00 <span class="reminder-count">(1×)</span><br><span class="muted">1 päev tagasi</span></td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel (HR)</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Tiina Tamm <span class="signer-date">24.05 12:00</span></div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Peeter Vaht (juht) <span class="signer-date">24.05 14:30</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Töötaja</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Jüri Mägi <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
       </tbody>
     </table>
     </div><!-- /table-wrap -->
@@ -902,11 +997,24 @@
   const signerFilter = document.querySelector('input[placeholder="kes pole allkirjastanud"]');
   const internalSignerFilter = document.getElementById('internalSignerFilter');
   const senderFilter = document.querySelector('input[placeholder="kasutaja"]');
+  const saajaTuupFilter = document.getElementById('saajaTuupFilter');
+  const tellijaFilter = document.getElementById('tellijaFilter');
   const naita = document.querySelector('.btn-naita');
 
   const rows = Array.from(document.querySelectorAll('tbody tr:not(.detail-row)'));
   const selectAllRows = document.getElementById('selectAllRows');
   const rowSelects = Array.from(document.querySelectorAll('.row-select'));
+
+  // Genereeri saaja-badge igale reale ja sea vaikimisi saaja tüüp
+  rows.forEach(row => {
+    if (!row.dataset.saajaTuup) row.dataset.saajaTuup = 'klient';
+    const klientCell = row.children[3];
+    const type = row.dataset.saajaTuup;
+    const badge = document.createElement('span');
+    badge.className = 'saaja-badge ' + (type === 'tootaja' ? 'saaja-t' : 'saaja-k');
+    badge.textContent = type === 'tootaja' ? 'T' : 'K';
+    klientCell.insertBefore(badge, klientCell.firstChild);
+  });
 
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
@@ -1026,6 +1134,14 @@
       const internalMissingText = row.children[9].innerText.toLowerCase();
       if (internalSignerFilter.value.trim() && !internalMissingText.includes(internalSignerFilter.value.toLowerCase())) visible = false;
 
+      // saaja tüüp
+      const saajaTuup = saajaTuupFilter.value;
+      if (saajaTuup !== 'all' && row.dataset.saajaTuup !== saajaTuup) visible = false;
+
+      // tellija
+      const tellijaText = (row.dataset.tellija || '').toLowerCase();
+      if (tellijaFilter.value.trim() && !tellijaText.includes(tellijaFilter.value.toLowerCase())) visible = false;
+
       // --- veeru-filtrid ---
       const docText = row.children[1].innerText.toLowerCase();
       if (cfDoc.value.trim() && !docText.includes(cfDoc.value.toLowerCase())) visible = false;
@@ -1068,6 +1184,8 @@
   senderFilter.addEventListener('input', applyFilters);
   signerFilter.addEventListener('input', applyFilters);
   internalSignerFilter.addEventListener('input', applyFilters);
+  saajaTuupFilter.addEventListener('change', applyFilters);
+  tellijaFilter.addEventListener('input', applyFilters);
   // Kuupäevad rakenduvad "Näita" nupuga või väljalt lahkudes
   dateFromFilter.addEventListener('change', applyFilters);
   dateToFilter.addEventListener('change', applyFilters);
