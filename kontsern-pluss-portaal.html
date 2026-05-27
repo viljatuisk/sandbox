@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kontsern+ Portaal — Directo</title>
+<style>
+  :root {
+    --brand: #1a56a4;
+    --brand-dark: #12407e;
+    --brand-light: #e8f0fb;
+    --accent: #2e8b57;
+    --accent-light: #e6f4ed;
+    --warn: #c0392b;
+    --warn-light: #fdecea;
+    --amber: #d97706;
+    --amber-light: #fef3cd;
+    --gray-50: #f8f9fa;
+    --gray-100: #f1f3f5;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-500: #6c757d;
+    --gray-700: #495057;
+    --gray-900: #212529;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray-100); color: var(--gray-900); font-size: 14px; }
+
+  /* TOP NAV */
+  .topnav {
+    background: var(--brand);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 52px;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topnav-logo { font-weight: 700; font-size: 18px; letter-spacing: -0.3px; margin-right: 16px; }
+  .topnav-logo span { opacity: 0.6; font-weight: 400; }
+  .topnav-tabs { display: flex; gap: 2px; flex: 1; }
+  .topnav-tab {
+    padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.75);
+    transition: background 0.15s;
+  }
+  .topnav-tab:hover { background: rgba(255,255,255,0.12); color: white; }
+  .topnav-tab.active { background: rgba(255,255,255,0.18); color: white; font-weight: 600; }
+  .topnav-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.8); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+
+  /* LAYOUT */
+  .page { display: flex; height: calc(100vh - 52px); overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px; background: white; border-right: 1px solid var(--gray-200);
+    display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+  }
+  .sidebar-header {
+    padding: 16px 16px 12px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); }
+  .btn-icon {
+    width: 28px; height: 28px; border: 1px solid var(--gray-300); border-radius: 6px;
+    background: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--gray-700); transition: all 0.15s;
+  }
+  .btn-icon:hover { background: var(--gray-100); border-color: var(--brand); color: var(--brand); }
+
+  /* COMPANY TREE */
+  .tree { flex: 1; overflow-y: auto; padding: 8px; }
+  .tree-node { user-select: none; }
+  .tree-item {
+    display: flex; align-items: center; gap: 6px; padding: 7px 10px;
+    border-radius: 6px; cursor: pointer; transition: background 0.1s;
+    position: relative;
+  }
+  .tree-item:hover { background: var(--gray-100); }
+  .tree-item.active { background: var(--brand-light); color: var(--brand); }
+  .tree-item.active .tree-name { font-weight: 600; }
+  .tree-expand { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gray-500); flex-shrink: 0; }
+  .tree-icon { font-size: 15px; flex-shrink: 0; }
+  .tree-name { font-size: 13px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tree-badge {
+    font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 600; flex-shrink: 0;
+  }
+  .badge-ok { background: var(--accent-light); color: var(--accent); }
+  .badge-warn { background: var(--amber-light); color: var(--amber); }
+  .badge-off { background: var(--gray-100); color: var(--gray-500); }
+
+  .tree-children { margin-left: 20px; border-left: 1px dashed var(--gray-300); padding-left: 4px; }
+
+  /* STATUS LINE */
+  .sidebar-footer {
+    padding: 12px 16px; border-top: 1px solid var(--gray-200); background: var(--gray-50);
+  }
+  .status-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-500); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  /* MAIN CONTENT */
+  .main { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* BREADCRUMB */
+  .breadcrumb { font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+  .breadcrumb a { color: var(--brand); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--gray-300); }
+
+  /* PAGE HEADER */
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .page-header-left h1 { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+  .page-header-left .subtitle { font-size: 13px; color: var(--gray-500); margin-top: 3px; }
+  .page-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .btn {
+    padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: all 0.15s; border: none;
+  }
+  .btn-primary { background: var(--brand); color: white; }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-secondary { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+  .btn-secondary:hover { background: var(--gray-100); border-color: var(--gray-400); }
+  .btn-danger { background: var(--warn); color: white; }
+  .btn-danger:hover { background: #a93226; }
+
+  /* ALERT BANNER */
+  .alert {
+    border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: flex-start; gap: 10px; font-size: 13px;
+  }
+  .alert-warn { background: var(--amber-light); border: 1px solid #fbbf24; color: #92400e; }
+  .alert-info { background: var(--brand-light); border: 1px solid #93c5fd; color: #1e3a5f; }
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert strong { font-weight: 600; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* CARD */
+  .card {
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    padding: 14px 18px 12px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  .card-body { padding: 16px 18px; }
+
+  /* STAT CARDS */
+  .stat-card {
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-200);
+    padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--gray-500); margin-top: 5px; }
+  .stat-ok .stat-value { color: var(--accent); }
+  .stat-warn .stat-value { color: var(--amber); }
+  .stat-neutral .stat-value { color: var(--brand); }
+
+  /* PROPAGATION TABLE */
+  .prop-table { width: 100%; border-collapse: collapse; }
+  .prop-table th {
+    text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: 0.4px; padding: 8px 12px; border-bottom: 2px solid var(--gray-200);
+  }
+  .prop-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); font-size: 13px; vertical-align: middle; }
+  .prop-table tr:last-child td { border-bottom: none; }
+  .prop-table tr:hover td { background: var(--gray-50); }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+    border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .pill-ok { background: var(--accent-light); color: var(--accent); }
+  .pill-dev { background: var(--amber-light); color: var(--amber); }
+  .pill-off { background: var(--gray-100); color: var(--gray-500); }
+  .pill-partial { background: #ede9fe; color: #5b21b6; }
+
+  /* TOGGLE */
+  .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+  .toggle {
+    width: 36px; height: 20px; border-radius: 10px; background: var(--gray-300);
+    position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%; background: white;
+    transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { left: 18px; }
+
+  /* COMPANY SELECTOR in propagation */
+  .company-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .company-chip {
+    padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 500;
+    border: 1.5px solid var(--gray-300); background: white; cursor: pointer;
+    display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .company-chip.selected { border-color: var(--brand); background: var(--brand-light); color: var(--brand); }
+  .company-chip:hover { border-color: var(--brand); }
+
+  /* STRUCTURE CHANGE SECTION */
+  .change-type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .change-type-card {
+    border: 2px solid var(--gray-200); border-radius: var(--radius);
+    padding: 14px; cursor: pointer; transition: all 0.15s; text-align: center;
+    background: white;
+  }
+  .change-type-card:hover { border-color: var(--brand); background: var(--brand-light); }
+  .change-type-card.selected { border-color: var(--brand); background: var(--brand-light); }
+  .change-type-icon { font-size: 24px; margin-bottom: 6px; }
+  .change-type-label { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+  .change-type-desc { font-size: 11px; color: var(--gray-500); margin-top: 3px; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--gray-200); }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot {
+    position: absolute; left: -20px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--gray-300);
+  }
+  .tl-dot.done { background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .tl-dot.current { background: var(--brand); box-shadow: 0 0 0 2px var(--brand); }
+  .tl-dot.pending { background: var(--gray-300); }
+  .tl-title { font-size: 13px; font-weight: 600; }
+  .tl-desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+  /* MEMBER LIST */
+  .member-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .member-row:last-child { border-bottom: none; }
+  .member-logo { width: 32px; height: 32px; border-radius: 6px; background: var(--brand-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--brand); flex-shrink: 0; }
+  .member-info { flex: 1; }
+  .member-name { font-size: 13px; font-weight: 600; }
+  .member-code { font-size: 11px; color: var(--gray-500); }
+  .member-status { display: flex; gap: 6px; align-items: center; }
+
+  /* DIFF VIEW */
+  .diff-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .diff-table th { text-align: left; padding: 6px 10px; background: var(--gray-100); font-weight: 600; font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.4px; }
+  .diff-table td { padding: 7px 10px; border-bottom: 1px solid var(--gray-100); }
+  .diff-add { background: #f0fdf4; color: #166534; }
+  .diff-remove { background: #fef2f2; color: #991b1b; text-decoration: line-through; }
+  .diff-change { background: #fffbeb; color: #92400e; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); }
+  .tab {
+    padding: 10px 18px; font-size: 13px; font-weight: 500; cursor: pointer;
+    color: var(--gray-500); border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--brand); }
+  .tab.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: none; align-items: center; justify-content: center; z-index: 200;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    width: 620px; max-width: 95vw; max-height: 90vh; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .modal-header {
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; }
+  .modal-close { font-size: 20px; color: var(--gray-500); cursor: pointer; line-height: 1; }
+  .modal-body { padding: 20px 22px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .modal-footer { padding: 14px 22px; border-top: 1px solid var(--gray-200); display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* FORM ELEMENTS */
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+  .form-input {
+    padding: 8px 11px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 13px;
+    outline: none; transition: border-color 0.15s; font-family: inherit;
+  }
+  .form-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26,86,164,0.1); }
+  .form-select {
+    padding: 8px 11px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 13px;
+    background: white; outline: none; cursor: pointer;
+  }
+  .form-hint { font-size: 11px; color: var(--gray-500); }
+
+  /* MISC */
+  .section-title { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .sep { height: 1px; background: var(--gray-200); }
+  .text-muted { color: var(--gray-500); }
+  .text-sm { font-size: 12px; }
+  .flex { display: flex; align-items: center; }
+  .gap-2 { gap: 8px; }
+  .mt-2 { margin-top: 8px; }
+  .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag-new { background: var(--accent-light); color: var(--accent); }
+  .tag-dev { background: var(--amber-light); color: var(--amber); }
+  .tag-beta { background: #ede9fe; color: #6d28d9; }
+
+  /* TEMPLATE TREE */
+  .tpl-item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+    border-radius: 6px; cursor: pointer; transition: background 0.12s;
+  }
+  .tpl-item:hover { background: var(--gray-100); }
+  .tpl-item.active { background: var(--brand-light); }
+  .tpl-item.active .tpl-item-name { color: var(--brand); font-weight: 600; }
+  .tpl-global.active { background: #e0e7ff; }
+  .tpl-add { opacity: 0.6; }
+  .tpl-add:hover { opacity: 1; background: var(--gray-100); }
+  .tpl-expand { font-size: 10px; color: var(--gray-400); cursor: pointer; padding: 2px 4px; border-radius: 3px; }
+  .tpl-expand:hover { background: var(--gray-200); color: var(--gray-700); }
+
+  /* TEMPLATE RULE ROWS */
+  .tpl-rule-row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+    border: 1px solid var(--gray-200); border-radius: 6px; background: var(--gray-50);
+  }
+  .tpl-rule-icon { font-size: 12px; flex-shrink: 0; }
+  .tpl-rule-body { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+  .tpl-rule-label { font-size: 13px; font-weight: 600; }
+  .tpl-rule-desc { font-size: 11px; color: var(--gray-500); }
+  .tpl-rule-del { border: none; background: none; color: var(--gray-400); cursor: pointer; font-size: 13px; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; }
+  .tpl-rule-del:hover { background: var(--warn-light); color: var(--warn); }
+
+  /* PROPAGATION SUB-TABS */
+  #ptab-content-templates, #ptab-content-assign, #ptab-content-preview, #ptab-content-rules {
+    border-radius: 0 0 8px 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-logo">Directo <span>Kontsern+</span></div>
+  <div class="topnav-tabs">
+    <div class="topnav-tab active" onclick="showView('overview')">Ülevaade</div>
+    <div class="topnav-tab" onclick="showView('propagation')">Jagamine</div>
+    <div class="topnav-tab" onclick="showView('structure')">Struktuur</div>
+    <div class="topnav-tab" onclick="showView('consolidation')">Konsolideerimine</div>
+    <div class="topnav-tab" onclick="showView('audit')">Muudatuste logi</div>
+  </div>
+  <div class="topnav-right">
+    <span>Balti Grupp AS</span>
+    <div class="avatar">BG</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- SIDEBAR: company tree -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Kontserni struktuur</div>
+      <button class="btn-icon" onclick="openModal('addCompanyModal')" title="Lisa ettevõte">+</button>
+    </div>
+    <div class="tree" id="companyTree">
+      <!-- Root -->
+      <div class="tree-node">
+        <div class="tree-item active" onclick="selectCompany(this, 'root')">
+          <div class="tree-expand">▼</div>
+          <div class="tree-icon">🏛️</div>
+          <div class="tree-name">Balti Grupp AS</div>
+          <div class="tree-badge badge-ok">emo</div>
+        </div>
+        <div class="tree-children">
+          <div class="tree-node">
+            <div class="tree-item" onclick="selectCompany(this, 'ee1')">
+              <div class="tree-expand">▼</div>
+              <div class="tree-icon">🇪🇪</div>
+              <div class="tree-name">Balti Eesti OÜ</div>
+              <div class="tree-badge badge-ok">aktiivne</div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-item" onclick="selectCompany(this, 'ee1a')">
+                <div class="tree-expand" style="opacity:0">▶</div>
+                <div class="tree-icon">🏢</div>
+                <div class="tree-name">Eesti Jaeüksus OÜ</div>
+                <div class="tree-badge badge-ok">aktiivne</div>
+              </div>
+              <div class="tree-item" onclick="selectCompany(this, 'ee1b')">
+                <div class="tree-expand" style="opacity:0">▶</div>
+                <div class="tree-icon">🏢</div>
+                <div class="tree-name">Eesti Hulgimüük OÜ</div>
+                <div class="tree-badge badge-warn">osaliselt</div>
+              </div>
+            </div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" onclick="selectCompany(this, 'lv1')">
+              <div class="tree-expand">▶</div>
+              <div class="tree-icon">🇱🇻</div>
+              <div class="tree-name">Baltic Latvia SIA</div>
+              <div class="tree-badge badge-ok">aktiivne</div>
+            </div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" onclick="selectCompany(this, 'lt1')">
+              <div class="tree-expand">▶</div>
+              <div class="tree-icon">🇱🇹</div>
+              <div class="tree-name">Baltic Lithuania UAB</div>
+              <div class="tree-badge badge-ok">aktiivne</div>
+            </div>
+          </div>
+          <div class="tree-node">
+            <div class="tree-item" onclick="selectCompany(this, 'new1')">
+              <div class="tree-expand" style="opacity:0">▶</div>
+              <div class="tree-icon">🆕</div>
+              <div class="tree-name">Logistika OÜ</div>
+              <div class="tree-badge badge-warn">seadistamisel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="status-row">
+        <div class="status-dot"></div>
+        <span>6 ettevõtet · viimati sünkroniseeritud 14 min tagasi</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT: multiple views -->
+  <main class="main">
+
+    <!-- ===== VIEW: OVERVIEW ===== -->
+    <div id="view-overview">
+      <div class="breadcrumb"><a href="#">Kontsern+</a> <span class="breadcrumb-sep">›</span> Ülevaade</div>
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Balti Grupp AS</h1>
+          <div class="subtitle">Kontsernibaas · reg. 10001234 · 6 liiget</div>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary" onclick="openModal('structureChangeModal')">⚡ Struktuurimuutus</button>
+          <button class="btn btn-primary" onclick="openModal('addCompanyModal')">+ Lisa ettevõte</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid-3">
+        <div class="stat-card stat-neutral">
+          <div class="stat-label">Liikmeid</div>
+          <div class="stat-value">6</div>
+          <div class="stat-sub">+1 seadistamisel</div>
+        </div>
+        <div class="stat-card stat-ok">
+          <div class="stat-label">Jagatud andmed</div>
+          <div class="stat-value">1 847</div>
+          <div class="stat-sub">kontod, objektid, objektitasemed</div>
+        </div>
+        <div class="stat-card stat-warn">
+          <div class="stat-label">Käsitsi toimingud</div>
+          <div class="stat-value">23</div>
+          <div class="stat-sub">ootab automatiseerimist</div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert alert-warn">
+        <div class="alert-icon">⚠️</div>
+        <div><strong>Logistika OÜ</strong> on lisatud, kuid klientide ja hankijate jagamine pole veel lõpetatud. Seadistuse lõpetamiseks mine <a href="#" onclick="showView('propagation'); return false;" style="color: var(--amber); font-weight: 600;">Jagamine</a> lehele.</div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Propagation status summary -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📤 Jagamise staatus</div>
+            <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="showView('propagation')">Halda →</button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <table class="prop-table">
+              <thead>
+                <tr>
+                  <th>Andmeobjekt</th>
+                  <th>Automaatne</th>
+                  <th>Staatus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>🗂️ Kontod</td>
+                  <td><div class="toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-ok">✓ Töötab</span></td>
+                </tr>
+                <tr>
+                  <td>🏷️ Objektid</td>
+                  <td><div class="toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-ok">✓ Töötab</span></td>
+                </tr>
+                <tr>
+                  <td>📊 Objektitasemed</td>
+                  <td><div class="toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-ok">✓ Töötab</span></td>
+                </tr>
+                <tr>
+                  <td>👥 Kliendid <span class="tag tag-dev">arendus</span></td>
+                  <td><div class="toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-dev">⏳ Tulemas</span></td>
+                </tr>
+                <tr>
+                  <td>🚚 Hankijad <span class="tag tag-dev">arendus</span></td>
+                  <td><div class="toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-dev">⏳ Tulemas</span></td>
+                </tr>
+                <tr>
+                  <td>🌍 Kontode keeleline nimetus</td>
+                  <td><div class="toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><span class="status-pill pill-dev">⚠️ Viga</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Members list -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏢 Liikmed</div>
+            <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="showView('structure')">Struktuur →</button>
+          </div>
+          <div class="card-body">
+            <div class="member-row">
+              <div class="member-logo">BE</div>
+              <div class="member-info">
+                <div class="member-name">Balti Eesti OÜ</div>
+                <div class="member-code">EE001 · Eesti</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-ok">✓ Sünkroon</span>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="member-logo">EJ</div>
+              <div class="member-info">
+                <div class="member-name">Eesti Jaeüksus OÜ</div>
+                <div class="member-code">EE002 · Eesti</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-ok">✓ Sünkroon</span>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="member-logo">EH</div>
+              <div class="member-info">
+                <div class="member-name">Eesti Hulgimüük OÜ</div>
+                <div class="member-code">EE003 · Eesti</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-partial">⚡ Osaliselt</span>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="member-logo">BL</div>
+              <div class="member-info">
+                <div class="member-name">Baltic Latvia SIA</div>
+                <div class="member-code">LV001 · Läti</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-ok">✓ Sünkroon</span>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="member-logo">BL</div>
+              <div class="member-info">
+                <div class="member-name">Baltic Lithuania UAB</div>
+                <div class="member-code">LT001 · Leedu</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-ok">✓ Sünkroon</span>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="member-logo" style="background:var(--amber-light); color:var(--amber);">LO</div>
+              <div class="member-info">
+                <div class="member-name">Logistika OÜ <span class="tag tag-new">uus</span></div>
+                <div class="member-code">EE004 · Eesti · lisatud 3 päeva tagasi</div>
+              </div>
+              <div class="member-status">
+                <span class="status-pill pill-dev">⚠️ Pooleli</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: PROPAGATION ===== -->
+    <div id="view-propagation" style="display:none;">
+      <div class="breadcrumb"><a href="#" onclick="showView('overview')">Kontsern+</a> <span class="breadcrumb-sep">›</span> Jagamine</div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Andmete jagamine</h1>
+          <div class="subtitle">Malli-põhine jagamine — globaalne, riigi- ja valdkonnapõhine pärimine</div>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary" onclick="openModal('syncNowModal')">🔄 Sünkroniseeri kohe</button>
+          <button class="btn btn-primary" onclick="openModal('newTemplateModal')">+ Uus mall</button>
+        </div>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="tabs" style="background:white; border-radius:8px 8px 0 0; padding: 0 18px; border:1px solid var(--gray-200); border-bottom:none;">
+        <div class="tab active" id="ptab-templates" onclick="showPropTab('templates')">🗂️ Mallid</div>
+        <div class="tab" id="ptab-assign" onclick="showPropTab('assign')">🏢 Ettevõtete määramine</div>
+        <div class="tab" id="ptab-preview" onclick="showPropTab('preview')">🔍 Ettevõtte eelvaade</div>
+        <div class="tab" id="ptab-rules" onclick="showPropTab('rules')">⚙️ Reeglid</div>
+      </div>
+
+      <!-- ── TAB: MALLID ── -->
+      <div id="ptab-content-templates">
+        <div class="alert alert-info" style="border-radius:0; border-top:none; border-left:1px solid #93c5fd; border-right:1px solid #93c5fd;">
+          <div class="alert-icon">💡</div>
+          <div><strong>Pärimise loogika:</strong> Ettevõte saab <em>kumulatiivselt</em> kõik kolm tasandit — Globaalne + Riik + Valdkond. Alamtasand ei kirjuta ülemist üle, vaid <strong>lisab</strong> sellele.</div>
+        </div>
+
+        <!-- 3-column template editor -->
+        <div style="display:grid; grid-template-columns:260px 1fr; gap:0; background:white; border:1px solid var(--gray-200); border-top:none; border-radius:0 0 8px 8px; min-height:520px; overflow:hidden;">
+
+          <!-- LEFT: template tree -->
+          <div style="border-right:1px solid var(--gray-200); display:flex; flex-direction:column;">
+            <div style="padding:12px 14px; background:var(--gray-50); border-bottom:1px solid var(--gray-200); font-size:11px; font-weight:700; color:var(--gray-500); text-transform:uppercase; letter-spacing:0.5px;">
+              Mallide hierarhia
+            </div>
+            <div style="flex:1; overflow-y:auto; padding:8px;">
+
+              <!-- GLOBAL -->
+              <div class="tpl-node">
+                <div class="tpl-item tpl-global active" id="tpl-global" onclick="selectTemplate(this,'global')">
+                  <span style="font-size:15px;">🌐</span>
+                  <div style="flex:1">
+                    <div style="font-size:13px; font-weight:600;">Globaalne mall</div>
+                    <div style="font-size:11px; color:var(--gray-500);">Kõik liikmed · 6 ettevõtet</div>
+                  </div>
+                  <span class="status-pill pill-ok" style="font-size:10px;">aktiivne</span>
+                </div>
+
+                <div style="margin-left:16px; border-left:2px solid var(--gray-200); padding-left:4px;">
+
+                  <!-- ESTONIA -->
+                  <div class="tpl-node">
+                    <div class="tpl-item" id="tpl-ee" onclick="selectTemplate(this,'ee')">
+                      <span style="font-size:14px;">🇪🇪</span>
+                      <div style="flex:1">
+                        <div style="font-size:12px; font-weight:600;">Eesti</div>
+                        <div style="font-size:11px; color:var(--gray-500);">4 ettevõtet</div>
+                      </div>
+                      <span class="tpl-expand" onclick="toggleTplChildren(event,'ee-children')">▼</span>
+                    </div>
+                    <div id="ee-children" style="margin-left:14px; border-left:2px dashed var(--gray-200); padding-left:4px;">
+                      <div class="tpl-item" id="tpl-ee-retail" onclick="selectTemplate(this,'ee-retail')">
+                        <span style="font-size:13px;">🛍️</span>
+                        <div style="flex:1"><div style="font-size:12px; font-weight:500;">Jaemüük</div><div style="font-size:10px; color:var(--gray-500);">2 ettevõtet</div></div>
+                      </div>
+                      <div class="tpl-item" id="tpl-ee-manuf" onclick="selectTemplate(this,'ee-manuf')">
+                        <span style="font-size:13px;">🏭</span>
+                        <div style="flex:1"><div style="font-size:12px; font-weight:500;">Tootmine</div><div style="font-size:10px; color:var(--gray-500);">1 ettevõte</div></div>
+                      </div>
+                      <div class="tpl-item" id="tpl-ee-service" onclick="selectTemplate(this,'ee-service')">
+                        <span style="font-size:13px;">🔧</span>
+                        <div style="flex:1"><div style="font-size:12px; font-weight:500;">Teenused / Logistika</div><div style="font-size:10px; color:var(--gray-500);">1 ettevõte</div></div>
+                      </div>
+                      <div class="tpl-item tpl-add" onclick="openModal('newTemplateModal')">
+                        <span style="font-size:13px; color:var(--gray-400);">＋</span>
+                        <div style="font-size:11px; color:var(--gray-400);">Lisa valdkond...</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- LATVIA -->
+                  <div class="tpl-node">
+                    <div class="tpl-item" id="tpl-lv" onclick="selectTemplate(this,'lv')">
+                      <span style="font-size:14px;">🇱🇻</span>
+                      <div style="flex:1">
+                        <div style="font-size:12px; font-weight:600;">Läti</div>
+                        <div style="font-size:11px; color:var(--gray-500);">1 ettevõte</div>
+                      </div>
+                      <span class="tpl-expand" onclick="toggleTplChildren(event,'lv-children')">▼</span>
+                    </div>
+                    <div id="lv-children" style="margin-left:14px; border-left:2px dashed var(--gray-200); padding-left:4px;">
+                      <div class="tpl-item" id="tpl-lv-retail" onclick="selectTemplate(this,'lv-retail')">
+                        <span style="font-size:13px;">🛍️</span>
+                        <div style="flex:1"><div style="font-size:12px; font-weight:500;">Jaemüük</div><div style="font-size:10px; color:var(--gray-500);">1 ettevõte</div></div>
+                      </div>
+                      <div class="tpl-item tpl-add" onclick="openModal('newTemplateModal')">
+                        <span style="font-size:13px; color:var(--gray-400);">＋</span>
+                        <div style="font-size:11px; color:var(--gray-400);">Lisa valdkond...</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- LITHUANIA -->
+                  <div class="tpl-node">
+                    <div class="tpl-item" id="tpl-lt" onclick="selectTemplate(this,'lt')">
+                      <span style="font-size:14px;">🇱🇹</span>
+                      <div style="flex:1">
+                        <div style="font-size:12px; font-weight:600;">Leedu</div>
+                        <div style="font-size:11px; color:var(--gray-500);">1 ettevõte</div>
+                      </div>
+                      <span class="tpl-expand" onclick="toggleTplChildren(event,'lt-children')">▶</span>
+                    </div>
+                    <div id="lt-children" style="display:none; margin-left:14px; border-left:2px dashed var(--gray-200); padding-left:4px;">
+                      <div class="tpl-item" id="tpl-lt-service" onclick="selectTemplate(this,'lt-service')">
+                        <span style="font-size:13px;">🔧</span>
+                        <div style="flex:1"><div style="font-size:12px; font-weight:500;">Teenused</div><div style="font-size:10px; color:var(--gray-500);">1 ettevõte</div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tpl-item tpl-add" onclick="openModal('newTemplateModal')">
+                    <span style="font-size:13px; color:var(--gray-400);">＋</span>
+                    <div style="font-size:11px; color:var(--gray-400);">Lisa riik...</div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: template editor panel -->
+          <div style="display:flex; flex-direction:column; overflow:hidden;">
+            <!-- Template editor header -->
+            <div style="padding:14px 20px 12px; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; gap:10px; background:var(--gray-50);">
+              <span id="tpl-editor-icon" style="font-size:20px;">🌐</span>
+              <div style="flex:1;">
+                <div id="tpl-editor-title" style="font-size:15px; font-weight:700;">Globaalne mall</div>
+                <div id="tpl-editor-sub" style="font-size:12px; color:var(--gray-500);">Baasreeglid — kehtivad KÕIKIDELE liikmettevõtetele</div>
+              </div>
+              <div id="tpl-editor-badge" style="display:flex; gap:6px; align-items:center;">
+                <span class="status-pill pill-ok">✓ aktiivne</span>
+              </div>
+              <button class="btn btn-secondary" style="font-size:12px; padding:5px 12px;">✏️ Muuda nimetust</button>
+            </div>
+
+            <!-- Inheritance chain indicator -->
+            <div id="tpl-inherit-chain" style="padding:10px 20px; background:#f0f9ff; border-bottom:1px solid #bae6fd; font-size:12px; color:#0369a1; display:flex; align-items:center; gap:6px;">
+              <span>📥 Pärib:</span>
+              <span style="background:white; border:1px solid #7dd3fc; border-radius:4px; padding:2px 8px; font-weight:600;">— (globaalne, ei päranda)</span>
+            </div>
+
+            <!-- Data objects in this template -->
+            <div style="flex:1; overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:14px;">
+
+              <!-- Accounts section -->
+              <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <div style="font-size:12px; font-weight:700; color:var(--gray-700); display:flex; align-items:center; gap:6px;">
+                    🗂️ Kontod
+                    <span id="tpl-accounts-source" style="font-size:10px; background:var(--accent-light); color:var(--accent); padding:1px 7px; border-radius:10px; font-weight:600;">SEE MALL</span>
+                  </div>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px;" onclick="openModal('editAccountRangeModal')">+ Lisa vahemik</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;" id="tpl-accounts-list">
+                  <div class="tpl-rule-row">
+                    <div class="tpl-rule-icon">🟢</div>
+                    <div class="tpl-rule-body">
+                      <span class="tpl-rule-label">1000–9999</span>
+                      <span class="tpl-rule-desc">Kõik põhikontod (kontserni ühtne kontoplaan)</span>
+                    </div>
+                    <button class="tpl-rule-del" title="Eemalda">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <!-- Objects section -->
+              <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <div style="font-size:12px; font-weight:700; color:var(--gray-700);">🏷️ Objektid <span id="tpl-obj-source" style="font-size:10px; background:var(--accent-light); color:var(--accent); padding:1px 7px; border-radius:10px; font-weight:600;">SEE MALL</span></div>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px;">+ Lisa objekt</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;" id="tpl-obj-list">
+                  <div class="tpl-rule-row">
+                    <div class="tpl-rule-icon">🟢</div>
+                    <div class="tpl-rule-body">
+                      <span class="tpl-rule-label">Kõik objektid</span>
+                      <span class="tpl-rule-desc">Kontsernis defineeritud objektid jagatakse kõigile</span>
+                    </div>
+                    <button class="tpl-rule-del">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <!-- Object levels -->
+              <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <div style="font-size:12px; font-weight:700; color:var(--gray-700);">📊 Objektitasemed <span style="font-size:10px; background:var(--accent-light); color:var(--accent); padding:1px 7px; border-radius:10px; font-weight:600;">SEE MALL</span></div>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px;">+ Lisa tase</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <div class="tpl-rule-row">
+                    <div class="tpl-rule-icon">🟢</div>
+                    <div class="tpl-rule-body"><span class="tpl-rule-label">Osakond, Projekt, Kulukoht</span><span class="tpl-rule-desc">Kontserni baasstruktuuri tasemed</span></div>
+                    <button class="tpl-rule-del">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <!-- Clients / Suppliers — future -->
+              <div style="opacity:0.55;">
+                <div style="font-size:12px; font-weight:700; color:var(--gray-700); margin-bottom:8px;">
+                  👥 Kliendid &amp; 🚚 Hankijad
+                  <span class="tag tag-dev" style="margin-left:4px;">arenduses Q3 2026</span>
+                </div>
+                <div class="tpl-rule-row" style="background:var(--amber-light); border-color:#fbbf24;">
+                  <div class="tpl-rule-icon">⏳</div>
+                  <div class="tpl-rule-body"><span class="tpl-rule-label">Mallipõhine jagamine tulemas</span><span class="tpl-rule-desc">Saad määrata milliseid kliente/hankijaid millisele riigi- või valdkonnamallile jagada</span></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: ETTEVÕTETE MÄÄRAMINE ── -->
+      <div id="ptab-content-assign" style="display:none;">
+        <div style="background:white; border:1px solid var(--gray-200); border-top:none; border-radius:0 0 8px 8px; overflow:hidden;">
+          <div style="padding:14px 18px; background:var(--gray-50); border-bottom:1px solid var(--gray-200); font-size:13px; color:var(--gray-600);">
+            Igale ettevõttele määratakse <strong>riigi mall</strong> + <strong>valdkonna mall</strong>. Globaalne mall kehtib automaatselt kõigile.
+          </div>
+          <table class="prop-table">
+            <thead>
+              <tr>
+                <th style="width:200px">Ettevõte</th>
+                <th>Riigi mall</th>
+                <th>Valdkonna mall</th>
+                <th>Efektiivne mall (kumulatiivne)</th>
+                <th>Sünkroon</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Balti Eesti OÜ</strong><br><span class="text-sm text-muted">EE001</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option selected>🇪🇪 Eesti</option><option>🇱🇻 Läti</option><option>🇱🇹 Leedu</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>— pole määratud —</option>
+                    <option selected>🛍️ Jaemüük</option><option>🏭 Tootmine</option><option>🔧 Teenused</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇪🇪 Eesti</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🛍️ Jaemüük</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-ok" style="font-size:11px;">✓ Sünkroon</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Eelvaade</button></td>
+              </tr>
+              <tr>
+                <td><strong>Eesti Jaeüksus OÜ</strong><br><span class="text-sm text-muted">EE002</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option selected>🇪🇪 Eesti</option><option>🇱🇻 Läti</option><option>🇱🇹 Leedu</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>— pole määratud —</option>
+                    <option selected>🛍️ Jaemüük</option><option>🏭 Tootmine</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇪🇪 Eesti</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🛍️ Jaemüük</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-ok" style="font-size:11px;">✓ Sünkroon</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Eelvaade</button></td>
+              </tr>
+              <tr>
+                <td><strong>Eesti Hulgimüük OÜ</strong><br><span class="text-sm text-muted">EE003</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option selected>🇪🇪 Eesti</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px; border-color:var(--amber);">
+                    <option selected>— pole määratud —</option>
+                    <option>🛍️ Jaemüük</option><option>🏭 Tootmine</option><option>🔧 Teenused</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇪🇪 Eesti</span>
+                    <span style="background:var(--amber-light);color:var(--amber);font-size:10px;padding:2px 7px;border-radius:10px;">⚠️ valdkond puudub</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-partial" style="font-size:11px;">⚡ Osaliselt</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Eelvaade</button></td>
+              </tr>
+              <tr>
+                <td><strong>Baltic Latvia SIA</strong><br><span class="text-sm text-muted">LV001</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>🇪🇪 Eesti</option><option selected>🇱🇻 Läti</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>— pole määratud —</option>
+                    <option selected>🛍️ Jaemüük</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇱🇻 Läti</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🛍️ Jaemüük</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-ok" style="font-size:11px;">✓ Sünkroon</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Eelvaade</button></td>
+              </tr>
+              <tr>
+                <td><strong>Baltic Lithuania UAB</strong><br><span class="text-sm text-muted">LT001</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>🇪🇪 Eesti</option><option>🇱🇻 Läti</option><option selected>🇱🇹 Leedu</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px;">
+                    <option>— pole määratud —</option>
+                    <option selected>🔧 Teenused</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇱🇹 Leedu</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🔧 Teenused</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-ok" style="font-size:11px;">✓ Sünkroon</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Eelvaade</button></td>
+              </tr>
+              <tr style="background:var(--amber-light);">
+                <td><strong>Logistika OÜ</strong> <span class="tag tag-new">uus</span><br><span class="text-sm text-muted">EE004</span></td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px; border-color:var(--amber);">
+                    <option selected>🇪🇪 Eesti</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" style="font-size:12px; padding:4px 8px; border-color:var(--warn);">
+                    <option selected>— pole määratud —</option>
+                    <option>🛍️ Jaemüük</option><option>🔧 Teenused / Logistika</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
+                    <span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🌐 Globaalne</span>
+                    <span style="color:var(--gray-400);font-size:11px;">+</span>
+                    <span style="background:#dcfce7;color:#166534;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🇪🇪 Eesti</span>
+                    <span style="background:var(--warn-light);color:var(--warn);font-size:10px;padding:2px 7px;border-radius:10px;">❌ valdkond puudub</span>
+                  </div>
+                </td>
+                <td><span class="status-pill pill-dev" style="font-size:11px;">⚠️ Pooleli</span></td>
+                <td><button class="btn btn-primary" style="font-size:11px;padding:3px 8px;">Määra →</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TAB: ETTEVÕTTE EELVAADE ── -->
+      <div id="ptab-content-preview" style="display:none;">
+        <div style="background:white; border:1px solid var(--gray-200); border-top:none; border-radius:0 0 8px 8px; padding:20px;">
+          <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:20px;">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">Vali ettevõte, kelle efektiivset malli näidata</label>
+              <select class="form-select" onchange="updatePreview(this.value)">
+                <option value="ee1">Balti Eesti OÜ (EE001) — 🌐 + 🇪🇪 + 🛍️</option>
+                <option value="ee2">Eesti Jaeüksus OÜ (EE002) — 🌐 + 🇪🇪 + 🛍️</option>
+                <option value="ee3">Eesti Hulgimüük OÜ (EE003) — 🌐 + 🇪🇪 (valdkond puudub)</option>
+                <option value="lv1">Baltic Latvia SIA (LV001) — 🌐 + 🇱🇻 + 🛍️</option>
+                <option value="lt1">Baltic Lithuania UAB (LT001) — 🌐 + 🇱🇹 + 🔧</option>
+                <option value="ee4">Logistika OÜ (EE004) — 🌐 + 🇪🇪 (seadistamisel)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" style="white-space:nowrap;">🔍 Uuenda eelvaade</button>
+          </div>
+
+          <!-- Effective template breakdown -->
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px;">
+            <div style="border:2px solid #c7d2fe; border-radius:8px; overflow:hidden;">
+              <div style="background:#e0e7ff; padding:10px 14px; display:flex; align-items:center; gap:6px;">
+                <span style="font-size:16px;">🌐</span>
+                <div>
+                  <div style="font-size:12px; font-weight:700; color:#3730a3;">Globaalne mall</div>
+                  <div style="font-size:10px; color:#6366f1;">Kehtib kõigile</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px; font-size:12px;">
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Kontod 1000–9999</div>
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Kõik objektid</div>
+                <div style="color:var(--accent);">✓ 3 objektitaset</div>
+              </div>
+            </div>
+            <div style="border:2px solid #bbf7d0; border-radius:8px; overflow:hidden;">
+              <div style="background:#dcfce7; padding:10px 14px; display:flex; align-items:center; gap:6px;">
+                <span style="font-size:16px;">🇪🇪</span>
+                <div>
+                  <div style="font-size:12px; font-weight:700; color:#166534;">Eesti mall</div>
+                  <div style="font-size:10px; color:#16a34a;">Riigispetsiifilised lisad</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px; font-size:12px;">
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Kontod 9800–9899 (KM)</div>
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Objekt: Maakond</div>
+                <div style="color:var(--accent);">✓ KM-koodid (EE)</div>
+              </div>
+            </div>
+            <div style="border:2px solid #fbcfe8; border-radius:8px; overflow:hidden;">
+              <div style="background:#fce7f3; padding:10px 14px; display:flex; align-items:center; gap:6px;">
+                <span style="font-size:16px;">🛍️</span>
+                <div>
+                  <div style="font-size:12px; font-weight:700; color:#9d174d;">Jaemüügi mall</div>
+                  <div style="font-size:10px; color:#be185d;">Valdkonnaspetsiifilised lisad</div>
+                </div>
+              </div>
+              <div style="padding:10px 14px; font-size:12px;">
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Kontod 4500–4599 (jaemüük)</div>
+                <div style="color:var(--accent); margin-bottom:3px;">✓ Objekt: Kaubagrupp</div>
+                <div style="color:var(--accent);">✓ Objekt: Müügikanal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Combined result -->
+          <div style="border:1px solid var(--gray-200); border-radius:8px; overflow:hidden;">
+            <div style="background:var(--gray-900); color:white; padding:10px 16px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:8px;">
+              <span>⚡ Efektiivne mall (kumulatiivne tulemus) — Balti Eesti OÜ saab:</span>
+              <span style="background:rgba(255,255,255,0.15); padding:2px 8px; border-radius:4px;">47 kontot · 12 objekti · 4 objektitaset</span>
+            </div>
+            <table class="diff-table">
+              <thead>
+                <tr><th>Andmeobjekt</th><th>Kirje / Vahemik</th><th>Allikas</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>🗂️ Konto</td><td>1000–9999 (Põhikontod)</td><td><span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:1px 6px;border-radius:8px;">🌐 Globaalne</span></td></tr>
+                <tr><td>🗂️ Konto</td><td>9800–9899 (KM kontod)</td><td><span style="background:#dcfce7;color:#166534;font-size:10px;padding:1px 6px;border-radius:8px;">🇪🇪 Eesti</span></td></tr>
+                <tr><td>🗂️ Konto</td><td>4500–4599 (Jaemüük)</td><td><span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:1px 6px;border-radius:8px;">🛍️ Jaemüük</span></td></tr>
+                <tr><td>🏷️ Objekt</td><td>Osakond, Projekt, Kulukoht</td><td><span style="background:#e0e7ff;color:#3730a3;font-size:10px;padding:1px 6px;border-radius:8px;">🌐 Globaalne</span></td></tr>
+                <tr><td>🏷️ Objekt</td><td>Maakond</td><td><span style="background:#dcfce7;color:#166534;font-size:10px;padding:1px 6px;border-radius:8px;">🇪🇪 Eesti</span></td></tr>
+                <tr><td>🏷️ Objekt</td><td>Kaubagrupp, Müügikanal</td><td><span style="background:#fce7f3;color:#9d174d;font-size:10px;padding:1px 6px;border-radius:8px;">🛍️ Jaemüük</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: REEGLID ── -->
+      <div id="ptab-content-rules" style="display:none;">
+        <div style="background:white; border:1px solid var(--gray-200); border-top:none; border-radius:0 0 8px 8px; padding:0;">
+          <div style="padding:12px 18px; background:var(--gray-50); border-bottom:1px solid var(--gray-200); font-size:13px; color:var(--gray-600);">
+            Globaalse jagamise üldseaded — kehtivad kõigile mallidele
+          </div>
+          <div style="padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+            <div class="toggle-wrap">
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+              <div>
+                <div style="font-size:13px; font-weight:500;">Uue ettevõtte lisamisel rakenda mallid automaatselt</div>
+                <div style="font-size:11px;color:var(--gray-500);">Riigi mall määratakse ettevõtte registreerimisriigi järgi automaatselt</div>
+              </div>
+            </div>
+            <div class="toggle-wrap">
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+              <div>
+                <div style="font-size:13px; font-weight:500;">Malli muutmisel sünkroniseeri kõik liikmed koheselt</div>
+                <div style="font-size:11px;color:var(--gray-500);">Kui lisad/eemalda konto globaalsest mallist, jõuab see koheselt kõigi vastavate ettevõtete baasidesse</div>
+              </div>
+            </div>
+            <div class="toggle-wrap">
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+              <div>
+                <div style="font-size:13px; font-weight:500;">Liikmettevõte saab lokaalse konto lisada (ei jagata tagasi emosse)</div>
+                <div style="font-size:11px;color:var(--gray-500);">Ettevõte võib luua oma lokaalseid kontosid mis ei ole kontserni ühised</div>
+              </div>
+            </div>
+            <div class="toggle-wrap">
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+              <div>
+                <div style="font-size:13px; font-weight:500;">Sünkroonimisel kanna kaasa kontokaardi võõrkeelne nimetus</div>
+                <div style="font-size:11px;color:var(--gray-500);">Parandus versioonikohane — praegu käsitsi valik kuni süsteemi viga lahendatakse</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:12px 18px; border-top:1px solid var(--gray-200); font-size:12px; color:var(--gray-500);">
+            * Teadaolev viga: kontokaardi jagamisel ei kanta praegu kaasa võõrkeelne nimetus. Parandatakse versioonis 26.3.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== VIEW: STRUCTURE ===== -->
+    <div id="view-structure" style="display:none;">
+      <div class="breadcrumb"><a href="#" onclick="showView('overview')">Kontsern+</a> <span class="breadcrumb-sep">›</span> Struktuur</div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Kontserni struktuur</h1>
+          <div class="subtitle">Juriidilised üksused, osalused ja hierarhia haldus</div>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary" onclick="openModal('structureChangeModal')">⚡ Struktuurimuutus</button>
+          <button class="btn btn-primary" onclick="openModal('addCompanyModal')">+ Lisa ettevõte</button>
+        </div>
+      </div>
+
+      <!-- Visual structure -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🗂️ Struktuuripuu</div>
+          <div style="font-size:12px;color:var(--gray-500);">Kliki ettevõttel detailide nägemiseks</div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex; gap:20px; align-items:flex-start; overflow-x:auto; padding-bottom:8px;">
+            <!-- Root node -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0;">
+              <div style="background:var(--brand); color:white; border-radius:8px; padding:12px 18px; min-width:150px; text-align:center; box-shadow: var(--shadow-md);">
+                <div style="font-size:11px;opacity:0.7;margin-bottom:2px;">EMO</div>
+                <div style="font-weight:700; font-size:13px;">Balti Grupp AS</div>
+                <div style="font-size:10px;opacity:0.7;margin-top:2px;">EE · 100%</div>
+              </div>
+              <!-- connector -->
+              <div style="width:2px; height:24px; background:var(--gray-300);"></div>
+              <!-- horizontal bar -->
+              <div style="width:560px; height:2px; background:var(--gray-300); position:relative;">
+              </div>
+              <!-- children row -->
+              <div style="display:flex; gap:12px; margin-top:0;">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;" onclick="selectCompany(null,'ee1')">
+                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
+                    <div style="font-weight:600;font-size:12px;">Balti Eesti OÜ</div>
+                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">EE001</div>
+                  </div>
+                  <div style="width:2px;height:12px;background:var(--gray-300);"></div>
+                  <div style="width:240px;height:2px;background:var(--gray-300);"></div>
+                  <div style="display:flex;gap:8px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;">
+                      <div style="width:2px;height:12px;background:var(--gray-300);"></div>
+                      <div style="background:white; border:1.5px solid var(--gray-300); border-radius:6px; padding:8px 12px; min-width:110px; text-align:center; font-size:12px; cursor:pointer;">
+                        <div style="font-size:10px;color:var(--gray-500);">100%</div>
+                        <div style="font-weight:600;">Jaeüksus OÜ</div>
+                        <div style="font-size:10px;color:var(--gray-500);">EE002</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;">
+                      <div style="width:2px;height:12px;background:var(--gray-300);"></div>
+                      <div style="background:white; border:1.5px solid var(--amber); border-radius:6px; padding:8px 12px; min-width:110px; text-align:center; font-size:12px; cursor:pointer;">
+                        <div style="font-size:10px;color:var(--amber);">100%</div>
+                        <div style="font-weight:600;">Hulgimüük OÜ</div>
+                        <div style="font-size:10px;color:var(--amber);">EE003 ⚠️</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
+                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
+                    <div style="font-weight:600;font-size:12px;">Baltic Latvia SIA</div>
+                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">LV001</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
+                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
+                    <div style="font-weight:600;font-size:12px;">Baltic Lithuania UAB</div>
+                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">LT001</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                  <div style="background:white; border:2px dashed var(--amber); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
+                    <div style="font-size:10px;color:var(--amber);margin-bottom:2px;">100% · 🆕</div>
+                    <div style="font-weight:600;font-size:12px;">Logistika OÜ</div>
+                    <div style="font-size:10px;color:var(--amber);margin-top:2px;">EE004 · seadistamisel</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Structure change types -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚡ Struktuurimuutuste tööriistad</div>
+          <div style="font-size:12px;color:var(--gray-500);">SAP, NetSuite ja Dynamics 365 inspireeritud juhiste põhjal</div>
+        </div>
+        <div class="card-body">
+          <div class="change-type-grid">
+            <div class="change-type-card" onclick="openModal('structureChangeModal')">
+              <div class="change-type-icon">🔀</div>
+              <div class="change-type-label">Jagunemine</div>
+              <div class="change-type-desc">Üks ettevõte jaguneb kaheks või enamaks</div>
+            </div>
+            <div class="change-type-card" onclick="openModal('structureChangeModal')">
+              <div class="change-type-icon">🔗</div>
+              <div class="change-type-label">Ühinemine</div>
+              <div class="change-type-desc">Kaks ettevõtet ühendatakse üheks</div>
+            </div>
+            <div class="change-type-card" onclick="openModal('addCompanyModal')">
+              <div class="change-type-icon">➕</div>
+              <div class="change-type-label">Lisa ettevõte</div>
+              <div class="change-type-desc">Uus tütarettevõte lisatakse kontserni</div>
+            </div>
+            <div class="change-type-card" onclick="openModal('structureChangeModal')">
+              <div class="change-type-icon">✂️</div>
+              <div class="change-type-label">Eemalda / Müü</div>
+              <div class="change-type-desc">Ettevõte eemaldatakse kontsernist</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: CONSOLIDATION ===== -->
+    <div id="view-consolidation" style="display:none;">
+      <div class="breadcrumb"><a href="#" onclick="showView('overview')">Kontsern+</a> <span class="breadcrumb-sep">›</span> Konsolideerimine</div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Konsolideerimisseaded</h1>
+          <div class="subtitle">Kontserni finantsaruandluse reeglid ja konsolideerimisprotsess</div>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-primary">▶ Käivita konsolideerimine</button>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <div class="alert-icon">💡</div>
+        <div>Kontsern+ lahenduse peamine eelis: struktuurimuutuste (jagunemised, ühinemised) järel <strong>ei pea enam käsitsi kontosid ja seoseid ümber seadistama</strong> — osalused ja aruandlusstruktuur pärinevad struktuuripuust automaatselt.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⚙️ Konsolideerimisreeglid</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Konsolideerimismeetod</label>
+              <select class="form-select">
+                <option>Täiskonsolideerimise meetod (100%)</option>
+                <option>Proportsionaalne meetod</option>
+                <option>Kapitaliosaluse meetod</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Elimineerimise kontod (sisetehing)</label>
+              <input class="form-input" value="9100, 9101, 9200" placeholder="Kontonumbrid...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Konsolideerimisvaluuta</label>
+              <select class="form-select">
+                <option>EUR — Euro</option>
+                <option>USD — Ameerika dollar</option>
+              </select>
+            </div>
+            <div class="toggle-wrap">
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+              <span style="font-size:13px;">Automaatne valuutakursi ümberarvutus</span>
+            </div>
+            <div class="toggle-wrap">
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+              <span style="font-size:13px;">Sisetehing-kanded elimineeritakse automaatselt</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📅 Protsessi juhis</div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot done"></div>
+                <div class="tl-title">1. Liikmete andmed kogutud</div>
+                <div class="tl-desc">Kõik 6 liiget on aruandeperioodi andmed esitanud</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot done"></div>
+                <div class="tl-title">2. Valuutakurssid rakendatud</div>
+                <div class="tl-desc">EUR kurss rakendatud LV, LT andmetele</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot current"></div>
+                <div class="tl-title">3. Sisetehing-elimineerimised</div>
+                <div class="tl-desc">4/7 elimineerimiskirjet kinnitatud — 3 ootab ülevaatust</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot pending"></div>
+                <div class="tl-title">4. Osaluste korrigeerimine</div>
+                <div class="tl-desc">Ootab sammu 3 lõpetamist</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot pending"></div>
+                <div class="tl-title">5. Konsolideeritud aruanne</div>
+                <div class="tl-desc">Koondaruanded genereeritakse automaatselt</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Intercompany elimination table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔄 Sisetehingute elimineerimine (mais 2026)</div>
+          <button class="btn btn-secondary" style="font-size:12px;padding:4px 10px;">Ekspordi Excel</button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="prop-table">
+            <thead>
+              <tr><th>Tehingu pool A</th><th>Tehingu pool B</th><th>Konto</th><th>Summa (EUR)</th><th>Staatus</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Balti Eesti OÜ</td><td>Baltic Latvia SIA</td><td>3001 Teenustulu</td><td style="text-align:right;font-weight:600;">12 400,00</td>
+                <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
+              </tr>
+              <tr>
+                <td>Balti Grupp AS</td><td>Balti Eesti OÜ</td><td>7010 Juhtimisteenus</td><td style="text-align:right;font-weight:600;">8 000,00</td>
+                <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
+              </tr>
+              <tr style="background:var(--amber-light);">
+                <td>Eesti Jaeüksus OÜ</td><td>Eesti Hulgimüük OÜ</td><td>3001 Kauba müük</td><td style="text-align:right;font-weight:600;">3 200,00</td>
+                <td><span class="status-pill pill-dev">⚠️ Lahknevus</span></td>
+                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Lahenda</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: AUDIT ===== -->
+    <div id="view-audit" style="display:none;">
+      <div class="breadcrumb"><a href="#" onclick="showView('overview')">Kontsern+</a> <span class="breadcrumb-sep">›</span> Muudatuste logi</div>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Muudatuste logi</h1>
+          <div class="subtitle">Kõik kontserni seadistuste ja struktuurimuutuste ajalugu</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="prop-table">
+            <thead>
+              <tr><th>Kuupäev</th><th>Kasutaja</th><th>Toiming</th><th>Mõjutatud ettevõtted</th><th>Üksikasjad</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-muted text-sm">27.05.2026 11:42</td>
+                <td>Mari Tamm</td>
+                <td><span class="tag tag-new">Lisamine</span> Logistika OÜ</td>
+                <td>EE004</td>
+                <td class="text-muted text-sm">Uus liige lisatud, seadistamine pooleli</td>
+              </tr>
+              <tr>
+                <td class="text-muted text-sm">24.05.2026 09:15</td>
+                <td>Jaan Kask</td>
+                <td>Kontokaart 3001 muudetud</td>
+                <td>Kõik liikmed</td>
+                <td class="text-muted text-sm">Automaatselt jagatud 5 liikmele</td>
+              </tr>
+              <tr>
+                <td class="text-muted text-sm">20.05.2026 14:30</td>
+                <td>Mari Tamm</td>
+                <td>Objektitase "Osakond" lisatud</td>
+                <td>Kõik liikmed</td>
+                <td class="text-muted text-sm">Automaatselt jagatud 5 liikmele</td>
+              </tr>
+              <tr>
+                <td class="text-muted text-sm">15.05.2026 10:00</td>
+                <td>Admin</td>
+                <td>Sisearveldus konto 9100 konfigureeritud</td>
+                <td>Grupp tase</td>
+                <td class="text-muted text-sm">Elimineerimiskonto seadistus uuendatud</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Company Modal -->
+<div class="modal-overlay" id="addCompanyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Lisa uus ettevõte kontserni</div>
+      <div class="modal-close" onclick="closeModal('addCompanyModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        <div class="alert-icon">✨</div>
+        <div>Uue ettevõte lisamisel <strong>kanduvad kõik aktiivsed jagamisreeglid automaatselt</strong> ka uuele liikmele. Kontod, objektid ja objektitasemed tekivad koheselt.</div>
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Ettevõtte nimi *</label>
+          <input class="form-input" placeholder="nt Uus Filiaal OÜ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Directo baasikood *</label>
+          <input class="form-input" placeholder="nt EE005">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Registreerimisnumber</label>
+          <input class="form-input" placeholder="12345678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Riik</label>
+          <select class="form-select">
+            <option>Eesti (EE)</option>
+            <option>Läti (LV)</option>
+            <option>Leedu (LT)</option>
+            <option>Soome (FI)</option>
+            <option>Muu</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emafirma kontsernipuus</label>
+          <select class="form-select">
+            <option>Balti Grupp AS (emo)</option>
+            <option>Balti Eesti OÜ</option>
+            <option>Baltic Latvia SIA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Osalus (%)</label>
+          <input class="form-input" value="100" type="number" min="1" max="100">
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="section-title">📤 Automaatne jagamine uuele liikmele</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="toggle-wrap">
+          <div class="toggle on"></div>
+          <span style="font-size:13px;">Kontod (aktiivsed jagamisreeglid)</span>
+          <span class="status-pill pill-ok" style="margin-left:auto;">Automaatne</span>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on"></div>
+          <span style="font-size:13px;">Objektid</span>
+          <span class="status-pill pill-ok" style="margin-left:auto;">Automaatne</span>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on"></div>
+          <span style="font-size:13px;">Objektitasemed</span>
+          <span class="status-pill pill-ok" style="margin-left:auto;">Automaatne</span>
+        </div>
+        <div class="toggle-wrap" style="opacity:0.5">
+          <div class="toggle"></div>
+          <span style="font-size:13px;">Kliendid</span>
+          <span class="status-pill pill-dev" style="margin-left:auto;">Käsitsi (tulemas)</span>
+        </div>
+        <div class="toggle-wrap" style="opacity:0.5">
+          <div class="toggle"></div>
+          <span style="font-size:13px;">Hankijad</span>
+          <span class="status-pill pill-dev" style="margin-left:auto;">Käsitsi (tulemas)</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addCompanyModal')">Tühista</button>
+      <button class="btn btn-primary">Lisa ettevõte →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Structure Change Modal -->
+<div class="modal-overlay" id="structureChangeModal">
+  <div class="modal" style="width:680px;">
+    <div class="modal-header">
+      <div class="modal-title">⚡ Struktuurimuutuse viisard</div>
+      <div class="modal-close" onclick="closeModal('structureChangeModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-warn">
+        <div class="alert-icon">⚠️</div>
+        <div><strong>Struktuurimuutused mõjutavad konsolideerimist ja jagamisreegleid.</strong> Süsteem aitab sul kõik seosed automaatselt ümber konfigureerida — see on Kontsern+ peamine eelis võrreldes käsitsi „kinni-lahti haakimisega".</div>
+      </div>
+
+      <div class="section-title">1. Vali muutuse tüüp</div>
+      <div class="change-type-grid">
+        <div class="change-type-card selected" id="ct-split" onclick="selectChangeType('split')">
+          <div class="change-type-icon">🔀</div>
+          <div class="change-type-label">Jagunemine</div>
+          <div class="change-type-desc">1 ettevõte → 2+ ettevõtet</div>
+        </div>
+        <div class="change-type-card" id="ct-merge" onclick="selectChangeType('merge')">
+          <div class="change-type-icon">🔗</div>
+          <div class="change-type-label">Ühinemine</div>
+          <div class="change-type-desc">2+ ettevõtet → 1 ettevõte</div>
+        </div>
+        <div class="change-type-card" id="ct-acquire" onclick="selectChangeType('acquire')">
+          <div class="change-type-icon">🤝</div>
+          <div class="change-type-label">Omandamine</div>
+          <div class="change-type-desc">Uue ettevõtte ülevõtmine</div>
+        </div>
+        <div class="change-type-card" id="ct-remove" onclick="selectChangeType('remove')">
+          <div class="change-type-icon">✂️</div>
+          <div class="change-type-label">Eemalda / Müü</div>
+          <div class="change-type-desc">Ettevõte kontsernist välja</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="section-title">2. Jagunemise seadistus</div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Jagunev ettevõte</label>
+          <select class="form-select">
+            <option>Balti Eesti OÜ (EE001)</option>
+            <option>Baltic Latvia SIA (LV001)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jagunemise kuupäev</label>
+          <input class="form-input" type="date" value="2026-07-01">
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">Tekkivad uued ettevõtted</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" style="flex:2" placeholder="Uue ettevõtte nimi (nt Eesti Tootmine OÜ)" value="Eesti Tootmine OÜ">
+            <input class="form-input" style="flex:1" placeholder="Baasikood" value="EE005">
+            <input class="form-input" style="width:70px" placeholder="%" value="60">
+            <span style="font-size:12px;color:var(--gray-500);">% varast</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" style="flex:2" placeholder="Uue ettevõtte nimi" value="Eesti Teenused OÜ">
+            <input class="form-input" style="flex:1" placeholder="Baasikood" value="EE006">
+            <input class="form-input" style="width:70px" placeholder="%" value="40">
+            <span style="font-size:12px;color:var(--gray-500);">% varast</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--green);margin-top:4px;color:var(--gray-500);">Kokku: 100% ✓</div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="section-title">3. Automaatsed toimingud (süsteem teeb)</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="color:var(--accent);">✓</span> Uued ettevõtted lisatakse struktuuripuusse automaatselt
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="color:var(--accent);">✓</span> Kõik jagamisreeglid (kontod, objektid) kanduvad uutele ettevõtetele üle
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="color:var(--accent);">✓</span> Konsolideerimisstruktuur uuendatakse vastavalt osaluste jaotusele
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="color:var(--accent);">✓</span> Ajaloo andmed säilivad vanale ettevõttele kuni sulgemiskuupäevani
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="color:var(--amber);">⚠️</span> Klientide/hankijate jaotus vajab käsitsi kinnitust (automatiseerimine tulemas)
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('structureChangeModal')">Tühista</button>
+      <button class="btn btn-primary">Kinnita struktuurimuutus →</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Template Modal -->
+<div class="modal-overlay" id="newTemplateModal">
+  <div class="modal" style="width:520px;">
+    <div class="modal-header">
+      <div class="modal-title">+ Uus jagamismall</div>
+      <div class="modal-close" onclick="closeModal('newTemplateModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Malli tüüp *</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
+          <div class="change-type-card selected" id="nt-country" onclick="selectNewTplType('country')" style="padding:10px; text-align:left;">
+            <div style="font-size:18px; margin-bottom:4px;">🌍</div>
+            <div style="font-size:12px; font-weight:700;">Riigi mall</div>
+            <div style="font-size:11px; color:var(--gray-500);">Pärib globaalsest mallist</div>
+          </div>
+          <div class="change-type-card" id="nt-type" onclick="selectNewTplType('type')" style="padding:10px; text-align:left;">
+            <div style="font-size:18px; margin-bottom:4px;">🏢</div>
+            <div style="font-size:12px; font-weight:700;">Valdkonna mall</div>
+            <div style="font-size:11px; color:var(--gray-500);">Pärib riigi + globaalsest mallist</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" id="nt-parent-group">
+        <label class="form-label">Millise riigi malli alla kuulub *</label>
+        <select class="form-select">
+          <option>🇪🇪 Eesti</option>
+          <option>🇱🇻 Läti</option>
+          <option>🇱🇹 Leedu</option>
+          <option>+ Lisa uus riik...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Malli nimi *</label>
+        <input class="form-input" placeholder="nt Ehitus, Tervishoiu, Finants...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ikoon (emoji)</label>
+        <input class="form-input" placeholder="🏗️" style="width:80px;">
+        <div class="form-hint">Valikuline — kuvatakse hierarhiapuus</div>
+      </div>
+      <div class="alert alert-info" style="margin-top:4px;">
+        <div class="alert-icon">ℹ️</div>
+        <div>Pärast loomist saad mallile lisada kontovahemikke, objekte ja objektitasemeid malli redaktoris.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('newTemplateModal')">Tühista</button>
+      <button class="btn btn-primary">Loo mall →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Now Modal -->
+<div class="modal-overlay" id="syncNowModal">
+  <div class="modal" style="width:440px;">
+    <div class="modal-header">
+      <div class="modal-title">🔄 Sünkroniseeri kohe</div>
+      <div class="modal-close" onclick="closeModal('syncNowModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Mida sünkroniseerida</label>
+        <select class="form-select">
+          <option>Kõik aktiivsed jagamisreeglid</option>
+          <option>Ainult kontod</option>
+          <option>Ainult objektid ja objektitasemed</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kellele</label>
+        <select class="form-select">
+          <option>Kõik liikmed</option>
+          <option>Ainult Logistika OÜ (EE004)</option>
+          <option>Eesti liikmed (EE001–EE004)</option>
+        </select>
+      </div>
+      <div class="form-hint" style="margin-top:-4px;">Sünkroniseerimine käivitub koheselt ja kestab ligikaudu 1–2 minutit.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('syncNowModal')">Tühista</button>
+      <button class="btn btn-primary">🚀 Käivita sünkroon</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showView(name) {
+    ['overview','propagation','structure','consolidation','audit'].forEach(v => {
+      const el = document.getElementById('view-' + v);
+      if (el) el.style.display = v === name ? '' : 'none';
+    });
+    document.querySelectorAll('.topnav-tab').forEach((t, i) => {
+      const names = ['overview','propagation','structure','consolidation','audit'];
+      t.classList.toggle('active', names[i] === name);
+    });
+  }
+
+  function selectCompany(el, id) {
+    document.querySelectorAll('.tree-item').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function selectChangeType(type) {
+    ['split','merge','acquire','remove'].forEach(t => {
+      document.getElementById('ct-' + t).classList.toggle('selected', t === type);
+    });
+  }
+
+  // Propagation sub-tabs
+  function showPropTab(name) {
+    ['templates','assign','preview','rules'].forEach(t => {
+      const content = document.getElementById('ptab-content-' + t);
+      const tab = document.getElementById('ptab-' + t);
+      if (content) content.style.display = t === name ? '' : 'none';
+      if (tab) tab.classList.toggle('active', t === name);
+    });
+  }
+
+  // Template tree selection
+  const templateData = {
+    'global': {
+      icon: '🌐', title: 'Globaalne mall',
+      sub: 'Baasreeglid — kehtivad KÕIKIDELE liikmettevõtetele',
+      inherit: null,
+      accounts: ['1000–9999 — Kõik põhikontod (kontserni ühtne kontoplaan)'],
+      objects: ['Kõik objektid — Kontsernis defineeritud objektid'],
+      levels: ['Osakond, Projekt, Kulukoht']
+    },
+    'ee': {
+      icon: '🇪🇪', title: 'Eesti riigi mall',
+      sub: 'Eestis registreeritud ettevõtetele lisatavad andmed',
+      inherit: '🌐 Globaalne',
+      accounts: ['9800–9899 — Eesti käibemaksukontod', '9900–9910 — Eesti eriregulatsiooni kontod'],
+      objects: ['Maakond (EE haldusüksus)'],
+      levels: ['KM-periood (EE)']
+    },
+    'ee-retail': {
+      icon: '🛍️', title: 'Eesti · Jaemüük',
+      sub: 'Eesti jaemüügi ettevõtetele täiendavad andmed',
+      inherit: '🌐 Globaalne + 🇪🇪 Eesti',
+      accounts: ['4500–4599 — Jaemüügi tulukontod', '7200–7250 — Jaemüügi kulukontod'],
+      objects: ['Kaubagrupp', 'Müügikanal', 'Kaupluse asukoht'],
+      levels: ['Müügiregioon']
+    },
+    'ee-manuf': {
+      icon: '🏭', title: 'Eesti · Tootmine',
+      sub: 'Eesti tootmisettevõtetele täiendavad andmed',
+      inherit: '🌐 Globaalne + 🇪🇪 Eesti',
+      accounts: ['5000–5999 — Tootmiskulud', '6000–6099 — Laokontod'],
+      objects: ['Tootmisliin', 'Materjaligrupp'],
+      levels: ['Tootmisjärk']
+    },
+    'ee-service': {
+      icon: '🔧', title: 'Eesti · Teenused / Logistika',
+      sub: 'Teenuste ja logistikaettevõtetele täiendavad andmed',
+      inherit: '🌐 Globaalne + 🇪🇪 Eesti',
+      accounts: ['4600–4699 — Teenustulu kontod', '7300–7350 — Teenuste kulukontod'],
+      objects: ['Teenuse liik', 'Marsruut'],
+      levels: ['Teenuste piirkond']
+    },
+    'lv': {
+      icon: '🇱🇻', title: 'Läti riigi mall',
+      sub: 'Lätis registreeritud ettevõtetele lisatavad andmed',
+      inherit: '🌐 Globaalne',
+      accounts: ['9810–9820 — Läti PVN kontod'],
+      objects: ['Novads (LV haldusüksus)'],
+      levels: ['PVN periood (LV)']
+    },
+    'lv-retail': {
+      icon: '🛍️', title: 'Läti · Jaemüük',
+      sub: 'Läti jaemüügi ettevõtetele täiendavad andmed',
+      inherit: '🌐 Globaalne + 🇱🇻 Läti',
+      accounts: ['4510–4580 — LV jaemüügi tulukontod'],
+      objects: ['Kaubagrupp (LV)', 'Filiaal'],
+      levels: ['LV müügiregioon']
+    },
+    'lt': {
+      icon: '🇱🇹', title: 'Leedu riigi mall',
+      sub: 'Leedus registreeritud ettevõtetele lisatavad andmed',
+      inherit: '🌐 Globaalne',
+      accounts: ['9830–9840 — Leedu PVM kontod'],
+      objects: ['Savivaldybė (LT üksus)'],
+      levels: ['PVM periood (LT)']
+    },
+    'lt-service': {
+      icon: '🔧', title: 'Leedu · Teenused',
+      sub: 'Leedu teenuste ettevõtetele täiendavad andmed',
+      inherit: '🌐 Globaalne + 🇱🇹 Leedu',
+      accounts: ['4620–4660 — LT teenustulu'],
+      objects: ['Teenuse liik (LT)'],
+      levels: []
+    }
+  };
+
+  function selectTemplate(el, id) {
+    document.querySelectorAll('.tpl-item').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const d = templateData[id];
+    if (!d) return;
+    document.getElementById('tpl-editor-icon').textContent = d.icon;
+    document.getElementById('tpl-editor-title').textContent = d.title;
+    document.getElementById('tpl-editor-sub').textContent = d.sub;
+    const chain = document.getElementById('tpl-inherit-chain');
+    if (d.inherit) {
+      chain.style.display = 'flex';
+      chain.querySelector('span:last-child').textContent = d.inherit;
+    } else {
+      chain.style.display = 'none';
+    }
+    // Update accounts list
+    const al = document.getElementById('tpl-accounts-list');
+    al.innerHTML = d.accounts.map(a => {
+      const [range, ...rest] = a.split(' — ');
+      return `<div class="tpl-rule-row"><div class="tpl-rule-icon">🟢</div><div class="tpl-rule-body"><span class="tpl-rule-label">${range}</span><span class="tpl-rule-desc">${rest.join(' — ')}</span></div><button class="tpl-rule-del">✕</button></div>`;
+    }).join('') || `<div style="font-size:12px;color:var(--gray-400);padding:8px;">Kontovahemikke pole lisatud</div>`;
+    const ol = document.getElementById('tpl-obj-list');
+    ol.innerHTML = d.objects.map(o => `<div class="tpl-rule-row"><div class="tpl-rule-icon">🟢</div><div class="tpl-rule-body"><span class="tpl-rule-label">${o}</span></div><button class="tpl-rule-del">✕</button></div>`).join('') || `<div style="font-size:12px;color:var(--gray-400);padding:8px;">Objekte pole lisatud</div>`;
+    // Source badges
+    const isGlobal = id === 'global';
+    document.getElementById('tpl-accounts-source').textContent = isGlobal ? 'SEE MALL' : 'LISAB';
+    document.getElementById('tpl-obj-source').textContent = isGlobal ? 'SEE MALL' : 'LISAB';
+  }
+
+  function toggleTplChildren(e, id) {
+    e.stopPropagation();
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? '' : 'none';
+    e.target.textContent = isHidden ? '▼' : '▶';
+  }
+
+  function selectNewTplType(type) {
+    ['country','type'].forEach(t => {
+      const el = document.getElementById('nt-' + t);
+      if (el) el.classList.toggle('selected', t === type);
+    });
+    const pg = document.getElementById('nt-parent-group');
+    if (pg) pg.style.display = type === 'type' ? '' : 'none';
+  }
+  // Init: hide parent group for country type
+  document.addEventListener('DOMContentLoaded', () => {
+    const pg = document.getElementById('nt-parent-group');
+    if (pg) pg.style.display = 'none';
+  });
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+</script>
+</body>
+</html>
