@@ -1014,6 +1014,12 @@
     badge.className = 'saaja-badge ' + (type === 'tootaja' ? 'saaja-t' : 'saaja-k');
     badge.textContent = type === 'tootaja' ? 'T' : 'K';
     klientCell.insertBefore(badge, klientCell.firstChild);
+    if (row.dataset.tellija) {
+      const tellijaEl = document.createElement('div');
+      tellijaEl.className = 'muted';
+      tellijaEl.textContent = 'Tellija: ' + row.dataset.tellija;
+      klientCell.appendChild(tellijaEl);
+    }
   });
 
   document.querySelectorAll('.expand-btn').forEach(btn => {
