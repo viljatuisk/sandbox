@@ -1474,123 +1474,203 @@
       <div class="breadcrumb"><a href="#" onclick="showView('overview')">Kontsern+</a> <span class="breadcrumb-sep">›</span> Konsolideerimine</div>
       <div class="page-header">
         <div class="page-header-left">
-          <h1>Konsolideerimisseaded</h1>
-          <div class="subtitle">Kontserni finantsaruandluse reeglid ja konsolideerimisprotsess</div>
+          <h1>Konsolideerimine</h1>
+          <div class="subtitle">Kontserni koondfinantsaruanded · Mai 2026 · EUR</div>
         </div>
         <div class="page-header-actions">
-          <button class="btn btn-primary">▶ Käivita konsolideerimine</button>
+          <button class="btn btn-secondary" onclick="showConTab('settings')" style="font-size:12px;">⚙️ Seaded</button>
+          <button class="btn btn-primary" onclick="openModal('syncNowModal')">▶ Käivita konsolideerimine</button>
         </div>
       </div>
 
-      <div class="alert alert-info">
-        <div class="alert-icon">💡</div>
-        <div>Kontsern+ lahenduse peamine eelis: struktuurimuutuste (jagunemised, ühinemised) järel <strong>ei pea enam käsitsi kontosid ja seoseid ümber seadistama</strong> — osalused ja aruandlusstruktuur pärinevad struktuuripuust automaatselt.</div>
+      <!-- Sub-tab bar -->
+      <div style="display:flex;gap:0;border-bottom:2px solid var(--gray-200);margin-bottom:20px;">
+        <button id="ctab-bs" onclick="showConTab('bs')"
+          style="padding:10px 18px;border:none;border-bottom:2px solid var(--brand);margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--brand);">
+          📊 Koondbilanss</button>
+        <button id="ctab-elim" onclick="showConTab('elim')"
+          style="padding:10px 18px;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
+          🔄 Sisetehingud <span style="background:#fef3c7;color:#92400e;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">3⚠</span></button>
+        <button id="ctab-settings" onclick="showConTab('settings')"
+          style="padding:10px 18px;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-500);">
+          ⚙️ Seaded</button>
       </div>
 
-      <div class="grid-2">
+      <!-- ── TAB: KOONDBILANSS ── -->
+      <div id="con-tab-bs">
+        <!-- Filters -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:var(--gray-500);">Periood:</span>
+            <select class="form-select" style="font-size:12px;padding:4px 8px;width:auto;">
+              <option selected>Mai 2026</option><option>Aprill 2026</option>
+              <option>Q1 2026 (kumulatiivne)</option><option>2025 (aasta)</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:var(--gray-500);">Vaade:</span>
+            <select class="form-select" style="font-size:12px;padding:4px 8px;width:auto;">
+              <option>Maatriksvaade (kõik ettevõtted)</option>
+              <option>Kokkuvõte (ainult konsol.)</option>
+            </select>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;">
+            <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;">⬇ Excel</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;">📄 PDF</button>
+          </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="alert alert-warn" style="margin-bottom:16px;">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>3 elimineerimiskirjet</strong> ootab kinnitust — konsolideeritud summad on <em>esialgsed</em>.
+            <a href="#" onclick="showConTab('elim');return false;" style="color:var(--amber);font-weight:600;margin-left:8px;">Lahenda sisetehingud →</a>
+          </div>
+        </div>
+
+        <!-- Balance sheet matrix table -->
+        <div class="card" style="overflow:hidden;margin-bottom:12px;">
+          <div style="overflow-x:auto;">
+            <table id="bsTable" style="width:100%;border-collapse:collapse;font-size:12px;min-width:960px;">
+              <thead>
+                <tr style="background:#1e293b;color:white;">
+                  <th style="text-align:left;padding:10px 14px;font-weight:600;width:200px;position:sticky;left:0;background:#1e293b;z-index:2;">Bilansikirje</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Balti Grupp AS — emoettevõte">🏛️ BG</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Balti Eesti OÜ — 100%">🇪🇪 BE</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Eesti Jaeüksus OÜ — 100%">🇪🇪 EJ</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Eesti Hulgimüük OÜ — 100%">🇪🇪 EH</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Baltic Latvia SIA — 75%">🇱🇻 LV<br><span style="font-weight:400;font-size:10px;opacity:.65;">75%</span></th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Baltic Lithuania UAB — 51%">🇱🇹 LT<br><span style="font-weight:400;font-size:10px;opacity:.65;">51%</span></th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:72px;" title="Logistika OÜ — 100%, uus">🆕 LO</th>
+                  <th style="text-align:right;padding:10px 8px;font-weight:500;min-width:74px;color:#fbbf24;" title="Konsolideerimise elimineerimised">Elim.</th>
+                  <th style="text-align:right;padding:10px 14px;font-weight:700;min-width:90px;background:#1e3a5f;" title="Konsolideeritud kokku">Konsol. ✓</th>
+                </tr>
+                <tr style="background:#334155;color:#94a3b8;border-bottom:1px solid #475569;">
+                  <td style="padding:4px 14px;font-size:10px;font-style:italic;position:sticky;left:0;background:#334155;">€ tuhandetes · testandmed</td>
+                  <td colspan="8" style="padding:4px 8px;font-size:10px;text-align:right;">Kõik summad EUR tuhandetes (€k) · esialgne (3 elim. ootel)</td>
+                  <td style="padding:4px 14px;font-size:10px;text-align:right;background:#1e3a5f;color:#93c5fd;">Mai 2026</td>
+                </tr>
+              </thead>
+              <tbody id="bsTbody"><!-- renderBS() täidab --></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drill-down panel -->
+        <div id="bsDrillPanel" style="display:none;margin-top:4px;">
+          <div class="card" style="border:2px solid var(--brand);">
+            <div class="card-header" style="background:var(--brand-light);">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                <div class="card-title" id="ddRowLabel" style="color:var(--brand);">🔍 Drill-down</div>
+                <span id="ddKonsol" style="font-size:12px;font-weight:700;color:var(--brand);background:white;border:1px solid #93c5fd;border-radius:20px;padding:2px 10px;"></span>
+                <span id="ddNote" style="font-size:11px;color:var(--gray-500);"></span>
+              </div>
+              <button onclick="document.getElementById('bsDrillPanel').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);">×</button>
+            </div>
+            <div class="card-body" style="padding:16px 20px;">
+              <div id="ddBars" style="display:flex;flex-direction:column;gap:9px;"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /con-tab-bs -->
+
+      <!-- ── TAB: SISETEHINGUD ── -->
+      <div id="con-tab-elim" style="display:none;">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">⚙️ Konsolideerimisreeglid</div>
+            <div class="card-title">🔄 Sisetehingute elimineerimine · Mai 2026</div>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 10px;">Ekspordi Excel</button>
           </div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
-            <div class="form-group">
-              <label class="form-label">Konsolideerimismeetod</label>
-              <select class="form-select">
-                <option>Täiskonsolideerimise meetod (100%)</option>
-                <option>Proportsionaalne meetod</option>
-                <option>Kapitaliosaluse meetod</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Elimineerimise kontod (sisetehing)</label>
-              <input class="form-input" value="9100, 9101, 9200" placeholder="Kontonumbrid...">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Konsolideerimisvaluuta</label>
-              <select class="form-select">
-                <option>EUR — Euro</option>
-                <option>USD — Ameerika dollar</option>
-              </select>
-            </div>
-            <div class="toggle-wrap">
-              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-              <span style="font-size:13px;">Automaatne valuutakursi ümberarvutus</span>
-            </div>
-            <div class="toggle-wrap">
-              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-              <span style="font-size:13px;">Sisetehing-kanded elimineeritakse automaatselt</span>
-            </div>
+          <div class="card-body" style="padding:0;">
+            <table class="prop-table">
+              <thead>
+                <tr><th>Pool A</th><th>Pool B</th><th>Konto</th><th style="text-align:right;">Summa (€k)</th><th>Staatus</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Balti Eesti OÜ</td><td>Baltic Latvia SIA</td><td>3001 Teenustulu</td>
+                  <td style="text-align:right;font-weight:600;">12,4</td>
+                  <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
+                  <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
+                </tr>
+                <tr>
+                  <td>Balti Grupp AS</td><td>Balti Eesti OÜ</td><td>7010 Juhtimisteenus</td>
+                  <td style="text-align:right;font-weight:600;">8,0</td>
+                  <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
+                  <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
+                </tr>
+                <tr style="background:var(--amber-light);">
+                  <td>Eesti Jaeüksus OÜ</td><td>Eesti Hulgimüük OÜ</td><td>3001 Kauba müük</td>
+                  <td style="text-align:right;font-weight:600;">3,2</td>
+                  <td><span class="status-pill pill-dev">⚠️ Lahknevus</span></td>
+                  <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Lahenda</button></td>
+                </tr>
+                <tr style="background:var(--amber-light);">
+                  <td>Balti Grupp AS</td><td>Eesti Hulgimüük OÜ</td><td>7010 IT-teenus</td>
+                  <td style="text-align:right;font-weight:600;">4,8</td>
+                  <td><span class="status-pill pill-dev">⚠️ Lahknevus</span></td>
+                  <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Lahenda</button></td>
+                </tr>
+                <tr style="background:var(--amber-light);">
+                  <td>Baltic Latvia SIA</td><td>Baltic Lithuania UAB</td><td>3001 Laoteenused</td>
+                  <td style="text-align:right;font-weight:600;">6,1</td>
+                  <td><span class="status-pill pill-dev">⚠️ Ootel</span></td>
+                  <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Lahenda</button></td>
+                </tr>
+                <tr style="border-top:2px solid var(--gray-300);background:var(--gray-50);">
+                  <td colspan="3" style="font-weight:700;padding:9px 12px;">KOKKU elimineeritav</td>
+                  <td style="text-align:right;font-weight:800;font-size:13px;">34,5</td>
+                  <td><span class="status-pill pill-partial">⚡ 2/5 kinnitatud</span></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+      </div><!-- /con-tab-elim -->
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">📅 Protsessi juhis</div>
+      <!-- ── TAB: SEADED ── -->
+      <div id="con-tab-settings" style="display:none;">
+        <div class="alert alert-info" style="margin-bottom:20px;">
+          <div class="alert-icon">💡</div>
+          <div>Kontsern+ peamine eelis: struktuurimuutuste järel <strong>ei pea enam käsitsi kontosid ümber seadistama</strong> — osalused ja struktuur pärinevad struktuuripuust automaatselt.</div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">⚙️ Konsolideerimisreeglid</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Konsolideerimismeetod</label>
+                <select class="form-select"><option>Täiskonsolideerimise meetod (100%)</option><option>Proportsionaalne meetod</option><option>Kapitaliosaluse meetod</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Elimineerimise kontod</label>
+                <input class="form-input" value="9100, 9101, 9200">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Konsolideerimisvaluuta</label>
+                <select class="form-select"><option>EUR — Euro</option><option>USD — Dollar</option></select>
+              </div>
+              <div class="toggle-wrap"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span style="font-size:13px;">Automaatne valuutakursi ümberarvutus</span></div>
+              <div class="toggle-wrap"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span style="font-size:13px;">Sisetehing-kanded elimineeritakse automaatselt</span></div>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="timeline">
-              <div class="tl-item">
-                <div class="tl-dot done"></div>
-                <div class="tl-title">1. Liikmete andmed kogutud</div>
-                <div class="tl-desc">Kõik 6 liiget on aruandeperioodi andmed esitanud</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot done"></div>
-                <div class="tl-title">2. Valuutakurssid rakendatud</div>
-                <div class="tl-desc">EUR kurss rakendatud LV, LT andmetele</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot current"></div>
-                <div class="tl-title">3. Sisetehing-elimineerimised</div>
-                <div class="tl-desc">4/7 elimineerimiskirjet kinnitatud — 3 ootab ülevaatust</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot pending"></div>
-                <div class="tl-title">4. Osaluste korrigeerimine</div>
-                <div class="tl-desc">Ootab sammu 3 lõpetamist</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot pending"></div>
-                <div class="tl-title">5. Konsolideeritud aruanne</div>
-                <div class="tl-desc">Koondaruanded genereeritakse automaatselt</div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📅 Protsessi juhis</div></div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="tl-item"><div class="tl-dot done"></div><div class="tl-title">1. Liikmete andmed kogutud</div><div class="tl-desc">Kõik 6 liiget on perioodi andmed esitanud</div></div>
+                <div class="tl-item"><div class="tl-dot done"></div><div class="tl-title">2. Valuutakurssid rakendatud</div><div class="tl-desc">EUR kurss rakendatud LV, LT andmetele</div></div>
+                <div class="tl-item"><div class="tl-dot current"></div><div class="tl-title">3. Sisetehing-elimineerimised</div><div class="tl-desc">2/5 kinnitatud — 3 ootab ülevaatust</div></div>
+                <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-title">4. Osaluste korrigeerimine</div><div class="tl-desc">Ootab sammu 3 lõpetamist</div></div>
+                <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-title">5. Konsolideeritud aruanne</div><div class="tl-desc">Genereeritakse automaatselt</div></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div><!-- /con-tab-settings -->
 
-      <!-- Intercompany elimination table -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">🔄 Sisetehingute elimineerimine (mais 2026)</div>
-          <button class="btn btn-secondary" style="font-size:12px;padding:4px 10px;">Ekspordi Excel</button>
-        </div>
-        <div class="card-body" style="padding:0;">
-          <table class="prop-table">
-            <thead>
-              <tr><th>Tehingu pool A</th><th>Tehingu pool B</th><th>Konto</th><th>Summa (EUR)</th><th>Staatus</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Balti Eesti OÜ</td><td>Baltic Latvia SIA</td><td>3001 Teenustulu</td><td style="text-align:right;font-weight:600;">12 400,00</td>
-                <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
-              </tr>
-              <tr>
-                <td>Balti Grupp AS</td><td>Balti Eesti OÜ</td><td>7010 Juhtimisteenus</td><td style="text-align:right;font-weight:600;">8 000,00</td>
-                <td><span class="status-pill pill-ok">✓ Kinnitatud</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Vaata</button></td>
-              </tr>
-              <tr style="background:var(--amber-light);">
-                <td>Eesti Jaeüksus OÜ</td><td>Eesti Hulgimüük OÜ</td><td>3001 Kauba müük</td><td style="text-align:right;font-weight:600;">3 200,00</td>
-                <td><span class="status-pill pill-dev">⚠️ Lahknevus</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px;">Lahenda</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    </div><!-- /view-consolidation -->
 
     <!-- ===== VIEW: AUDIT ===== -->
     <div id="view-audit" style="display:none;">
@@ -2120,6 +2200,7 @@
       const names = ['overview','propagation','structure','consolidation','audit'];
       t.classList.toggle('active', names[i] === name);
     });
+    if (name === 'consolidation') showConTab('bs');
   }
 
   function selectCompany(el, id) {
@@ -2391,6 +2472,212 @@
       if (e.target === overlay) overlay.classList.remove('open');
     });
   });
+
+  // ═══════════════════════════════════════════════════
+  // KONSOLIDEERIMINE — testandmed + loogika
+  // ═══════════════════════════════════════════════════
+
+  const conCols = ['bg','be','ej','eh','lv','lt','lo'];
+  const conColNames = { bg:'Balti Grupp AS', be:'Balti Eesti OÜ', ej:'Eesti Jaeüksus OÜ',
+    eh:'Eesti Hulgimüük OÜ', lv:'Baltic Latvia SIA', lt:'Baltic Lithuania UAB', lo:'Logistika OÜ' };
+  const conColFlags = { bg:'🏛️', be:'🇪🇪', ej:'🇪🇪', eh:'🇪🇪', lv:'🇱🇻', lt:'🇱🇹', lo:'🆕' };
+  const conColPct   = { bg:null, be:100, ej:100, eh:100, lv:75, lt:51, lo:100 };
+  const conColColors= { bg:'#6366f1', be:'#2563eb', ej:'#0284c7', eh:'#0891b2',
+                        lv:'#059669', lt:'#16a34a', lo:'#d97706' };
+
+  // Bilansiread: type S=sektsiooniheader, I=kirje (klikitav), G=grupisumma, T=sektsiooni kokkuvõte, X=suur kokkuvõte
+  const bsRows = [
+    { type:'S', label:'VARAD' },
+    { type:'I', grp:'pv', id:'mpv',   label:'Materiaalsed põhivarad',      bg:500,  be:2100, ej:480,  eh:750,  lv:1200, lt:890,  lo:320,  elim:0     },
+    { type:'I', grp:'pv', id:'ipv',   label:'Immateriaalsed varad',         bg:100,  be:350,  ej:0,    eh:0,    lv:80,   lt:40,   lo:0,    elim:0     },
+    { type:'I', grp:'pv', id:'osal',  label:'Osalused tütarettevõtetes',   bg:8200, be:0,    ej:0,    eh:0,    lv:0,    lt:0,    lo:0,    elim:-8200 },
+    { type:'G', grp:'pv', label:'Põhivarad kokku' },
+    { type:'I', grp:'kv', id:'noe',   label:'Nõuded ostjatelt',             bg:120,  be:1240, ej:560,  eh:820,  lv:680,  lt:420,  lo:0,    elim:-350  },
+    { type:'I', grp:'kv', id:'varud', label:'Varud',                        bg:0,    be:890,  ej:1450, eh:2100, lv:870,  lt:640,  lo:80,   elim:0     },
+    { type:'I', grp:'kv', id:'raha',  label:'Raha ja pangakontod',          bg:850,  be:620,  ej:310,  eh:190,  lv:290,  lt:180,  lo:150,  elim:0     },
+    { type:'G', grp:'kv', label:'Käibevarad kokku' },
+    { type:'T', sec:'VARAD',       label:'VARAD KOKKU' },
+
+    { type:'S', label:'KOHUSTUSED' },
+    { type:'I', grp:'pk', id:'plaen', label:'Pikaajalised laenud',          bg:3500, be:1200, ej:0,    eh:800,  lv:600,  lt:450,  lo:0,    elim:0     },
+    { type:'G', grp:'pk', label:'Pikaajalised kohustused kokku' },
+    { type:'I', grp:'lk', id:'vot',   label:'Võlad tarnijatele',            bg:180,  be:680,  ej:890,  eh:1240, lv:540,  lt:320,  lo:80,   elim:-350  },
+    { type:'I', grp:'lk', id:'mko',   label:'Muud lühiajalised kohustused', bg:120,  be:240,  ej:180,  eh:160,  lv:130,  lt:90,   lo:20,   elim:0     },
+    { type:'G', grp:'lk', label:'Lühiajalised kohustused kokku' },
+    { type:'T', sec:'KOHUSTUSED',   label:'KOHUSTUSED KOKKU' },
+
+    { type:'S', label:'OMAKAPITAL' },
+    { type:'I', grp:'ok', id:'ak',    label:'Aktsiakapital',               bg:5000, be:1000, ej:500,  eh:500,  lv:400,  lt:300,  lo:200,  elim:-2900 },
+    { type:'I', grp:'ok', id:'jk',    label:'Jaotamata kasum',             bg:970,  be:2080, ej:1230, eh:1160, lv:1450, lt:1010, lo:250,  elim:-6404 },
+    { type:'I', grp:'ok', id:'mi',    label:'Vähemusosalus (MI)',          bg:0,    be:0,    ej:0,    eh:0,    lv:0,    lt:0,    lo:0,    elim:1104  },
+    { type:'G', grp:'ok', label:'Omakapital kokku' },
+    { type:'X', label:'KOHUSTUSED JA OMAKAPITAL KOKKU' },
+  ];
+
+  // Pre-compute group sums and section sums once
+  const _grpSum = {};
+  const _secSum = {};
+  let _curSec = '';
+  bsRows.forEach(r => {
+    if (r.type === 'S') {
+      _curSec = r.label;
+      _secSum[_curSec] = { elim:0, konsol:0 };
+      conCols.forEach(k => _secSum[_curSec][k] = 0);
+    }
+    if (r.type === 'I') {
+      if (!_grpSum[r.grp]) { _grpSum[r.grp] = { elim:0, konsol:0 }; conCols.forEach(k => _grpSum[r.grp][k] = 0); }
+      const kv = conCols.reduce((s,k) => s + r[k], 0) + r.elim;
+      conCols.forEach(k => { _grpSum[r.grp][k] += r[k]; _secSum[_curSec][k] += r[k]; });
+      _grpSum[r.grp].elim  += r.elim; _secSum[_curSec].elim  += r.elim;
+      _grpSum[r.grp].konsol += kv;    _secSum[_curSec].konsol += kv;
+    }
+  });
+  // Grand total = KOHUSTUSED + OMAKAPITAL
+  const _gt = { elim:0, konsol:0 };
+  conCols.forEach(k => _gt[k] = 0);
+  ['KOHUSTUSED','OMAKAPITAL'].forEach(s => {
+    if (_secSum[s]) { conCols.forEach(k => _gt[k] += _secSum[s][k]); _gt.elim += _secSum[s].elim; _gt.konsol += _secSum[s].konsol; }
+  });
+
+  let bsRendered = false;
+
+  function fmtK(n) {
+    if (n === 0) return '<span style="color:#cbd5e1">—</span>';
+    const abs = Math.abs(Math.round(n)).toLocaleString('et-EE');
+    return n < 0 ? `<span style="color:#dc2626">−${abs}</span>` : abs;
+  }
+
+  function renderBS() {
+    if (bsRendered) return;
+    bsRendered = true;
+    const tbody = document.getElementById('bsTbody');
+    if (!tbody) return;
+
+    let html = '';
+    bsRows.forEach(r => {
+
+      if (r.type === 'S') {
+        html += `<tr style="background:#1e293b;color:white;">
+          <td colspan="10" style="padding:7px 14px;font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;position:sticky;left:0;background:#1e293b;">${r.label}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'I') {
+        const kv = conCols.reduce((s,k) => s + r[k], 0) + r.elim;
+        const cells = conCols.map(k =>
+          `<td style="text-align:right;padding:7px 8px;color:#374151;">${fmtK(r[k])}</td>`
+        ).join('');
+        const elimColor = r.elim < 0 ? '#dc2626' : r.elim > 0 ? '#16a34a' : '#cbd5e1';
+        html += `<tr class="bs-item" data-id="${r.id}"
+          style="cursor:pointer;transition:background .12s;"
+          onclick="openBSDrill('${r.id}')"
+          onmouseover="this.style.background='#eff6ff'"
+          onmouseout="this.style.background=(document.querySelector('.bs-item.dd-active')||{}).dataset&&document.querySelector('.bs-item.dd-active').dataset.id==='${r.id}'?'#dbeafe':''">
+          <td style="padding:7px 14px 7px 28px;color:#111827;position:sticky;left:0;background:inherit;">${r.label} <span style="font-size:10px;color:#94a3b8;">↗</span></td>
+          ${cells}
+          <td style="text-align:right;padding:7px 8px;font-size:11px;color:${elimColor};">${fmtK(r.elim)}</td>
+          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#eff6ff;color:#1e40af;">${fmtK(kv)}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'G') {
+        const g = _grpSum[r.grp] || {};
+        const cells = conCols.map(k =>
+          `<td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;">${fmtK(g[k]||0)}</td>`
+        ).join('');
+        const elimColor = (g.elim||0) < 0 ? '#dc2626' : (g.elim||0) > 0 ? '#16a34a' : '#cbd5e1';
+        html += `<tr style="background:#f8fafc;">
+          <td style="padding:7px 14px;font-weight:600;font-size:11px;color:#64748b;position:sticky;left:0;background:#f8fafc;">${r.label}</td>
+          ${cells}
+          <td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;font-size:11px;color:${elimColor};">${fmtK(g.elim||0)}</td>
+          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#dbeafe;color:#1e40af;border-top:1px solid #93c5fd;">${fmtK(g.konsol||0)}</td>
+        </tr>`;
+      }
+
+      else if (r.type === 'T') {
+        const st = _secSum[r.sec] || {};
+        const cells = conCols.map(k =>
+          `<td style="text-align:right;padding:10px 8px;font-weight:700;border-top:2px solid #475569;border-bottom:2px solid #475569;">${fmtK(st[k]||0)}</td>`
+        ).join('');
+        const elimColor = (st.elim||0) < 0 ? '#dc2626' : (st.elim||0) > 0 ? '#16a34a' : '#cbd5e1';
+        html += `<tr style="background:#f1f5f9;">
+          <td style="padding:10px 14px;font-weight:800;font-size:13px;border-top:2px solid #475569;border-bottom:2px solid #475569;position:sticky;left:0;background:#f1f5f9;">${r.label}</td>
+          ${cells}
+          <td style="text-align:right;padding:10px 8px;font-weight:700;border-top:2px solid #475569;border-bottom:2px solid #475569;color:${elimColor};">${fmtK(st.elim||0)}</td>
+          <td style="text-align:right;padding:10px 14px;font-weight:800;font-size:14px;background:#1e3a5f;color:white;border-top:2px solid #1e40af;">${fmtK(st.konsol||0)}</td>
+        </tr><tr><td colspan="10" style="height:8px;"></td></tr>`;
+      }
+
+      else if (r.type === 'X') {
+        const cells = conCols.map(k =>
+          `<td style="text-align:right;padding:11px 8px;font-weight:700;">${fmtK(_gt[k])}</td>`
+        ).join('');
+        html += `<tr style="background:#0f172a;color:white;">
+          <td style="padding:11px 14px;font-weight:800;font-size:12px;text-transform:uppercase;position:sticky;left:0;background:#0f172a;">${r.label}</td>
+          ${cells}
+          <td style="text-align:right;padding:11px 8px;color:#94a3b8;">—</td>
+          <td style="text-align:right;padding:11px 14px;font-weight:900;font-size:15px;background:#1e3a5f;">${fmtK(_gt.konsol)} <span style="font-size:11px;opacity:.6;">✓</span></td>
+        </tr>`;
+      }
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  function openBSDrill(rowId) {
+    const row = bsRows.find(r => r.id === rowId);
+    if (!row) return;
+
+    // Highlight active row
+    document.querySelectorAll('.bs-item').forEach(tr => tr.style.background = '');
+    const activeRow = document.querySelector(`.bs-item[data-id="${rowId}"]`);
+    if (activeRow) activeRow.style.background = '#dbeafe';
+
+    const total = conCols.reduce((s,k) => s + row[k], 0) + row.elim;
+    const maxVal = Math.max(...conCols.map(k => row[k]), Math.abs(row.elim), 1);
+
+    document.getElementById('ddRowLabel').textContent = '🔍 ' + row.label;
+    document.getElementById('ddKonsol').textContent = 'Konsol. kokku: ' + Math.round(total).toLocaleString('et-EE') + ' €k';
+    document.getElementById('ddNote').textContent = 'Kliki teisel real uue drill-down jaoks';
+
+    let html = '';
+    const entries = [...conCols.map(k => ({ k, val: row[k], name: conColNames[k], flag: conColFlags[k], color: conColColors[k] })),
+                     { k:'elim', val: row.elim, name:'Elimineerimised', flag:'⚡', color: row.elim < 0 ? '#dc2626' : '#16a34a' }];
+
+    entries.forEach(({ k, val, name, flag, color }) => {
+      if (val === 0) return;
+      const pctBar = (Math.abs(val) / maxVal * 100).toFixed(1);
+      const pctOfTotal = total !== 0 ? (Math.abs(val) / Math.abs(total) * 100).toFixed(0) : '—';
+      const pctLabel = conColPct[k] != null ? `<span style="font-size:10px;color:#94a3b8;margin-left:2px;">(${conColPct[k]}%)</span>` : '';
+      html += `<div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:160px;font-size:12px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${flag} ${name}${pctLabel}</div>
+        <div style="flex:1;background:#f1f5f9;border-radius:4px;height:20px;overflow:hidden;min-width:80px;">
+          <div style="height:100%;width:${pctBar}%;background:${color};border-radius:4px;transition:width .35s ease;"></div>
+        </div>
+        <div style="width:70px;text-align:right;font-weight:700;font-size:12px;color:${val<0?'#dc2626':'#111827'};">${val<0?'−':''}${Math.abs(Math.round(val)).toLocaleString('et-EE')} €k</div>
+        <div style="width:36px;text-align:right;font-size:11px;color:#94a3b8;">${pctOfTotal}%</div>
+      </div>`;
+    });
+
+    document.getElementById('ddBars').innerHTML = html;
+    const panel = document.getElementById('bsDrillPanel');
+    panel.style.display = '';
+    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
+
+  function showConTab(name) {
+    ['bs','elim','settings'].forEach(t => {
+      const tab = document.getElementById('con-tab-' + t);
+      const btn = document.getElementById('ctab-' + t);
+      if (tab) tab.style.display = t === name ? '' : 'none';
+      if (btn) {
+        btn.style.color        = t === name ? 'var(--brand)'        : 'var(--gray-500)';
+        btn.style.fontWeight   = t === name ? '600'                 : '500';
+        btn.style.borderBottom = t === name ? '2px solid var(--brand)' : '2px solid transparent';
+      }
+    });
+    if (name === 'bs') renderBS();
+  }
 </script>
 </body>
 </html>
