@@ -357,6 +357,35 @@
   .mini-trend span:last-child { opacity:1; }
   .period-btn { transition:background 0.15s; }
 
+  /* STRUCTURE TREE NODES */
+  .snode {
+    border-radius: 8px; padding: 10px 12px; min-width: 120px; text-align: center;
+    cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
+    border: 2px solid transparent;
+  }
+  .snode:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .snode-root { background: var(--brand); color: white; min-width: 160px; padding: 12px 18px; box-shadow: var(--shadow-md); }
+  .snode-100 { background: white; border-color: var(--brand); }
+  .snode-majority { background: white; border-color: #16a34a; }
+  .snode-equity { background: #fffbeb; border: 2px dashed #ca8a04; }
+  .snode-warn { background: white; border-color: var(--amber); }
+  .snode-setup { background: var(--amber-light); border: 2px dashed var(--amber); }
+  .snode-sm { min-width: 90px; padding: 7px 10px; }
+  .snode-name { font-size: 12px; font-weight: 700; margin: 2px 0; }
+  .snode-root .snode-name { font-size: 13px; color: white; }
+  .snode-code { font-size: 10px; color: var(--gray-500); }
+  .snode-pct { font-size: 11px; font-weight: 700; color: var(--brand); margin-bottom: 2px; }
+  .snode-method { font-size: 9px; font-weight: 600; color: var(--gray-500); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .snode-pct-bar { height: 4px; background: var(--gray-100); border-radius: 2px; margin-top: 6px; overflow: hidden; display: flex; }
+  .snode-minority { font-size: 9px; color: var(--gray-500); margin-top: 3px; font-style: italic; }
+  .snode-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+
+  /* OWNERSHIP LEGEND */
+  .ownership-legend-item {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid;
+  }
+
   /* WIZARD */
   .wiz-type-card { border:2px solid var(--gray-200); border-radius:10px; padding:18px; cursor:pointer; transition:all 0.15s; background:white; }
   .wiz-type-card:hover { border-color:var(--brand); background:var(--brand-light); }
@@ -1250,81 +1279,158 @@
         </div>
       </div>
 
+      <!-- Legend -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="ownership-legend-item" style="background:#e0e7ff; border-color:#c7d2fe; color:#3730a3;">
+          <span style="font-weight:800;">█</span> 100% — Täiskonsolideerimine
+        </div>
+        <div class="ownership-legend-item" style="background:#dcfce7; border-color:#bbf7d0; color:#166534;">
+          <span style="font-weight:800;">▓</span> 51–99% — Täiskonsolideerimine (vähemusosalus eraldi)
+        </div>
+        <div class="ownership-legend-item" style="background:#fef9c3; border-color:#fde68a; color:#854d0e;">
+          <span style="font-weight:800;">▒</span> 20–50% — Kapitaliosaluse meetod
+        </div>
+        <div class="ownership-legend-item" style="background:var(--amber-light); border-color:#fbbf24; color:#92400e;">
+          <span style="font-weight:800;">░</span> Seadistamisel / puudub
+        </div>
+      </div>
+
       <!-- Visual structure -->
       <div class="card">
         <div class="card-header">
           <div class="card-title">🗂️ Struktuuripuu</div>
-          <div style="font-size:12px;color:var(--gray-500);">Kliki ettevõttel detailide nägemiseks</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;color:var(--gray-500);">Kliki ettevõttel detailide nägemiseks</span>
+            <button class="btn btn-secondary" style="font-size:11px;padding:3px 10px;" onclick="openWizard()">⚡ Struktuurimuutus</button>
+          </div>
         </div>
-        <div class="card-body">
-          <div style="display:flex; gap:20px; align-items:flex-start; overflow-x:auto; padding-bottom:8px;">
-            <!-- Root node -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:0;">
-              <div style="background:var(--brand); color:white; border-radius:8px; padding:12px 18px; min-width:150px; text-align:center; box-shadow: var(--shadow-md);">
-                <div style="font-size:11px;opacity:0.7;margin-bottom:2px;">EMO</div>
-                <div style="font-weight:700; font-size:13px;">Balti Grupp AS</div>
-                <div style="font-size:10px;opacity:0.7;margin-top:2px;">EE · 100%</div>
+        <div class="card-body" style="overflow-x:auto;">
+          <div style="display:flex; flex-direction:column; align-items:center; min-width:800px; padding-bottom:8px;">
+
+            <!-- ROOT -->
+            <div class="snode snode-root" onclick="showCompanyDetail('root')">
+              <div class="snode-badge" style="background:rgba(255,255,255,0.2);">EMO</div>
+              <div class="snode-name">Balti Grupp AS</div>
+              <div class="snode-code">EE · börsil noteerimata</div>
+              <div class="snode-pct-bar" style="margin-top:6px;">
+                <div style="width:100%;height:100%;background:rgba(255,255,255,0.4);border-radius:2px;"></div>
               </div>
-              <!-- connector -->
-              <div style="width:2px; height:24px; background:var(--gray-300);"></div>
-              <!-- horizontal bar -->
-              <div style="width:560px; height:2px; background:var(--gray-300); position:relative;">
-              </div>
-              <!-- children row -->
-              <div style="display:flex; gap:12px; margin-top:0;">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
-                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;" onclick="selectCompany(null,'ee1')">
-                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
-                    <div style="font-weight:600;font-size:12px;">Balti Eesti OÜ</div>
-                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">EE001</div>
-                  </div>
-                  <div style="width:2px;height:12px;background:var(--gray-300);"></div>
-                  <div style="width:240px;height:2px;background:var(--gray-300);"></div>
-                  <div style="display:flex;gap:8px;">
-                    <div style="display:flex;flex-direction:column;align-items:center;">
-                      <div style="width:2px;height:12px;background:var(--gray-300);"></div>
-                      <div style="background:white; border:1.5px solid var(--gray-300); border-radius:6px; padding:8px 12px; min-width:110px; text-align:center; font-size:12px; cursor:pointer;">
-                        <div style="font-size:10px;color:var(--gray-500);">100%</div>
-                        <div style="font-weight:600;">Jaeüksus OÜ</div>
-                        <div style="font-size:10px;color:var(--gray-500);">EE002</div>
-                      </div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;align-items:center;">
-                      <div style="width:2px;height:12px;background:var(--gray-300);"></div>
-                      <div style="background:white; border:1.5px solid var(--amber); border-radius:6px; padding:8px 12px; min-width:110px; text-align:center; font-size:12px; cursor:pointer;">
-                        <div style="font-size:10px;color:var(--amber);">100%</div>
-                        <div style="font-weight:600;">Hulgimüük OÜ</div>
-                        <div style="font-size:10px;color:var(--amber);">EE003 ⚠️</div>
-                      </div>
+            </div>
+
+            <div style="width:2px;height:20px;background:var(--gray-300);"></div>
+            <div style="width:680px;height:2px;background:var(--gray-300);"></div>
+
+            <!-- LEVEL 1 row -->
+            <div style="display:flex;gap:0;align-items:flex-start;width:680px;justify-content:space-between;">
+
+              <!-- EE001 branch -->
+              <div style="display:flex;flex-direction:column;align-items:center;width:160px;">
+                <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                <div class="snode snode-100" onclick="showCompanyDetail('ee1')">
+                  <div class="snode-pct">100%</div>
+                  <div class="snode-name">Balti Eesti OÜ</div>
+                  <div class="snode-code">EE001</div>
+                  <div class="snode-method">Täiskonsolideerimine</div>
+                  <div class="snode-pct-bar"><div style="width:100%;height:100%;background:var(--brand);border-radius:2px;"></div></div>
+                </div>
+                <div style="width:2px;height:14px;background:var(--gray-300);"></div>
+                <div style="width:210px;height:2px;background:var(--gray-300);"></div>
+                <div style="display:flex;gap:0;width:210px;justify-content:space-between;">
+                  <div style="display:flex;flex-direction:column;align-items:center;width:100px;">
+                    <div style="width:2px;height:12px;background:var(--gray-300);"></div>
+                    <div class="snode snode-100 snode-sm" onclick="showCompanyDetail('ee2')">
+                      <div class="snode-pct">100%</div>
+                      <div class="snode-name">Jaeüksus OÜ</div>
+                      <div class="snode-code">EE002</div>
+                      <div class="snode-pct-bar"><div style="width:100%;height:100%;background:var(--brand);border-radius:2px;"></div></div>
                     </div>
                   </div>
-                </div>
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
-                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
-                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
-                    <div style="font-weight:600;font-size:12px;">Baltic Latvia SIA</div>
-                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">LV001</div>
-                  </div>
-                </div>
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
-                  <div style="background:white; border:2px solid var(--brand); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
-                    <div style="font-size:10px;color:var(--gray-500);margin-bottom:2px;">100%</div>
-                    <div style="font-weight:600;font-size:12px;">Baltic Lithuania UAB</div>
-                    <div style="font-size:10px;color:var(--gray-500);margin-top:2px;">LT001</div>
-                  </div>
-                </div>
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                  <div style="width:2px;height:16px;background:var(--gray-300);"></div>
-                  <div style="background:white; border:2px dashed var(--amber); border-radius:8px; padding:10px 14px; min-width:130px; text-align:center; cursor:pointer;">
-                    <div style="font-size:10px;color:var(--amber);margin-bottom:2px;">100% · 🆕</div>
-                    <div style="font-weight:600;font-size:12px;">Logistika OÜ</div>
-                    <div style="font-size:10px;color:var(--amber);margin-top:2px;">EE004 · seadistamisel</div>
+                  <div style="display:flex;flex-direction:column;align-items:center;width:100px;">
+                    <div style="width:2px;height:12px;background:var(--gray-300);"></div>
+                    <div class="snode snode-warn snode-sm" onclick="showCompanyDetail('ee3')">
+                      <div class="snode-pct" style="color:var(--amber);">100%</div>
+                      <div class="snode-name">Hulgimüük OÜ</div>
+                      <div class="snode-code" style="color:var(--amber);">EE003 ⚠️</div>
+                      <div class="snode-pct-bar"><div style="width:100%;height:100%;background:var(--amber);border-radius:2px;"></div></div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- LV001 — 75% -->
+              <div style="display:flex;flex-direction:column;align-items:center;width:160px;">
+                <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                <div class="snode snode-majority" onclick="showCompanyDetail('lv1')">
+                  <div class="snode-pct" style="color:#166534;">75%</div>
+                  <div class="snode-name">Baltic Latvia SIA</div>
+                  <div class="snode-code">LV001</div>
+                  <div class="snode-method" style="color:#166534;">Täiskonsolideerimine</div>
+                  <div class="snode-pct-bar">
+                    <div style="width:75%;height:100%;background:#16a34a;border-radius:2px 0 0 2px;display:inline-block;"></div>
+                    <div style="width:25%;height:100%;background:#bbf7d0;border-radius:0 2px 2px 0;display:inline-block;"></div>
+                  </div>
+                  <div class="snode-minority">25% — Latvijas Fonds</div>
+                </div>
+              </div>
+
+              <!-- LT001 — 51% -->
+              <div style="display:flex;flex-direction:column;align-items:center;width:160px;">
+                <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                <div class="snode snode-majority" onclick="showCompanyDetail('lt1')">
+                  <div class="snode-pct" style="color:#166534;">51%</div>
+                  <div class="snode-name">Baltic Lithuania UAB</div>
+                  <div class="snode-code">LT001</div>
+                  <div class="snode-method" style="color:#166534;">Täiskonsolideerimine</div>
+                  <div class="snode-pct-bar">
+                    <div style="width:51%;height:100%;background:#16a34a;border-radius:2px 0 0 2px;display:inline-block;"></div>
+                    <div style="width:49%;height:100%;background:#bbf7d0;border-radius:0 2px 2px 0;display:inline-block;"></div>
+                  </div>
+                  <div class="snode-minority">49% — Baltic Partners UAB</div>
+                </div>
+              </div>
+
+              <!-- EE004 — seadistamisel -->
+              <div style="display:flex;flex-direction:column;align-items:center;width:130px;">
+                <div style="width:2px;height:16px;background:var(--gray-300);"></div>
+                <div class="snode snode-setup" onclick="showCompanyDetail('ee4')">
+                  <div class="snode-pct" style="color:var(--amber);">100% 🆕</div>
+                  <div class="snode-name">Logistika OÜ</div>
+                  <div class="snode-code" style="color:var(--amber);">EE004</div>
+                  <div class="snode-method" style="color:var(--amber);">Seadistamisel</div>
+                  <div class="snode-pct-bar"><div style="width:100%;height:100%;background:var(--amber);opacity:0.4;border-radius:2px;"></div></div>
+                </div>
+              </div>
+
+              <!-- FI001 — 30% kapitaliosalus -->
+              <div style="display:flex;flex-direction:column;align-items:center;width:130px;">
+                <div style="width:2px;height:16px;background:var(--gray-300);border-style:dashed;"></div>
+                <div class="snode snode-equity" onclick="showCompanyDetail('fi1')">
+                  <div class="snode-pct" style="color:#854d0e;">30%</div>
+                  <div class="snode-name">Suomi Kauppa OY</div>
+                  <div class="snode-code">FI001</div>
+                  <div class="snode-method" style="color:#854d0e;">Kapitaliosalus</div>
+                  <div class="snode-pct-bar">
+                    <div style="width:30%;height:100%;background:#ca8a04;border-radius:2px 0 0 2px;display:inline-block;"></div>
+                    <div style="width:70%;height:100%;background:#fde68a;border-radius:0 2px 2px 0;display:inline-block;"></div>
+                  </div>
+                  <div class="snode-minority">70% — muud omanikud</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ownership detail panel (click → shows) -->
+      <div id="company-detail-panel" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" id="cdp-title">Baltic Latvia SIA</div>
+            <button onclick="document.getElementById('company-detail-panel').style.display='none'" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--gray-500);">×</button>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;" id="cdp-body">
             </div>
           </div>
         </div>
@@ -2157,6 +2263,42 @@
     const isHidden = el.style.display === 'none';
     el.style.display = isHidden ? '' : 'none';
     e.target.textContent = isHidden ? '▼' : '▶';
+  }
+
+  // ── STRUCTURE DETAIL ──
+  const companyDetails = {
+    root: { name: 'Balti Grupp AS', code: 'EE · 10001234', pct: '—', method: 'Kontserniemo', minority: '—', consolidation: 'Kontsernibaas', flag: '🏛️' },
+    ee1:  { name: 'Balti Eesti OÜ', code: 'EE001', pct: '100%', method: 'Täiskonsolideerimine', minority: '—', consolidation: 'Kõik varad ja kohustused 100%', flag: '🇪🇪' },
+    ee2:  { name: 'Eesti Jaeüksus OÜ', code: 'EE002', pct: '100%', method: 'Täiskonsolideerimine', minority: '—', consolidation: 'Kõik varad ja kohustused 100%', flag: '🇪🇪' },
+    ee3:  { name: 'Eesti Hulgimüük OÜ', code: 'EE003', pct: '100%', method: 'Täiskonsolideerimine', minority: '—', consolidation: 'Seadistus pooleli ⚠️', flag: '🇪🇪' },
+    lv1:  { name: 'Baltic Latvia SIA', code: 'LV001', pct: '75%', method: 'Täiskonsolideerimine', minority: '25% — Latvijas Fonds SIA', consolidation: '100% varad/kohustused + vähemusosalus eraldi real', flag: '🇱🇻' },
+    lt1:  { name: 'Baltic Lithuania UAB', code: 'LT001', pct: '51%', method: 'Täiskonsolideerimine', minority: '49% — Baltic Partners UAB', consolidation: '100% varad/kohustused + vähemusosalus eraldi real', flag: '🇱🇹' },
+    ee4:  { name: 'Logistika OÜ', code: 'EE004', pct: '100%', method: 'Seadistamisel', minority: '—', consolidation: 'Mall puudub — seadistamine pooleli', flag: '🆕' },
+    fi1:  { name: 'Suomi Kauppa OY', code: 'FI001', pct: '30%', method: 'Kapitaliosaluse meetod', minority: '70% — muud omanikud', consolidation: 'Ainult osaluse väärtus bilansis (IAS 28)', flag: '🇫🇮' },
+  };
+  function showCompanyDetail(id) {
+    const d = companyDetails[id];
+    if (!d) return;
+    const panel = document.getElementById('company-detail-panel');
+    document.getElementById('cdp-title').textContent = d.flag + ' ' + d.name + ' · ' + d.code;
+    document.getElementById('cdp-body').innerHTML = `
+      <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Osalus</div>
+        <div style="font-size:22px;font-weight:800;color:var(--brand);">${d.pct}</div>
+        <div style="height:6px;background:var(--gray-100);border-radius:3px;margin-top:6px;overflow:hidden;">
+          <div style="height:100%;width:${d.pct === '—' ? '100' : parseInt(d.pct)}%;background:var(--brand);border-radius:3px;"></div>
+        </div>
+      </div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Konsolideerimine</div>
+        <div style="font-size:13px;font-weight:700;">${d.method}</div>
+        <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">${d.consolidation}</div>
+      </div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Vähemusosalus</div>
+        <div style="font-size:13px;font-weight:600;color:${d.minority === '—' ? 'var(--gray-400)' : 'var(--gray-900)'};">${d.minority}</div>
+        ${d.minority !== '—' ? '<div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Kuvatakse konsolideeritud bilansis eraldi real</div>' : ''}
+      </div>
+    `;
+    panel.style.display = '';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   // ── WIZARD ──
