@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="et">
 <head>
 <meta charset="UTF-8"/>
@@ -53,6 +53,13 @@ html,body{height:100%;font-family:'Segoe UI',Inter,Arial,sans-serif;font-size:13
 .btn-kinnita:hover{background:#92400e}
 .btn-kinnita:disabled{background:#d4b483;border-color:#d4b483;cursor:not-allowed}
 .workflow-bar{display:flex;align-items:center;gap:6px;padding:4px 10px;background:#f8f9fb;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.settings-wrap{position:relative}
+.settings-panel{position:absolute;top:calc(100% + 4px);right:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.18);padding:10px 12px;min-width:230px;z-index:600;display:none}
+.settings-panel.open{display:block}
+.settings-panel .sp-title{font-size:9px;font-weight:bold;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border2)}
+.settings-panel .fg{margin-bottom:5px}
+.settings-panel label{font-size:10px;color:var(--text2);display:block;margin-bottom:2px}
+.settings-panel input{width:100%;box-sizing:border-box;font-size:11px;padding:3px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);color:var(--text)}
 .wf-step{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text3)}
 .wf-step.active{color:var(--text);font-weight:bold}
 .wf-step.done{color:var(--green)}
@@ -223,31 +230,83 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div class="fg"><label>Periood algus</label><input class="fp-i" id="flt-from" value="01.03.2026" placeholder="pp.kk.aaaa"/></div>
     <div class="fg"><label>Periood lõpp</label><input class="fp-i" id="flt-to" value="30.03.2026" placeholder="pp.kk.aaaa"/></div>
     <div class="fg"><label>Registrikood</label><input class="fp-i" id="flt-reg" value="10000001"/></div>
-    <div class="fg"><label>KMD sektsioon</label>
-      <select id="flt-sec">
-        <option value="">Kõik</option>
-        <option value="M_1">M_1 Standard/sood</option>
-        <option value="M_2">M_2 Nullmäär</option>
-        <option value="M_3">M_3 Maksuvaba</option>
-        <option value="S_">S Pöördmaks</option>
-        <option value="O_">O Sisend-KM</option>
-        <option value="A_">A Arvestuslik</option>
-      </select>
-    </div>
-    <div class="fg"><label>KMK kood</label><select id="flt-kmk"><option value="">Kõik</option></select></div>
-    <div class="fg"><label>Otsing</label><input class="fp-i" id="search" placeholder="Partneri, arve, koodi..." oninput="renderTable()"/></div>
-    <div class="fg"><label>Sektsioon</label>
+    <div class="fg"><label>KM tüüp</label>
       <select id="filterSec" onchange="renderTable()">
-        <option value="">Kõik sektsioonid</option>
-        <option value="M_1">M_1 Standard/sood</option>
-        <option value="M_2">M_2 Nullmäär</option>
-        <option value="M_3">M_3 Maksuvaba</option>
-        <option value="S_">S Pöördmaks</option>
-        <option value="O_">O Sisend-KM</option>
-        <option value="A_">A Arvestuslik</option>
+        <option value="">Kõik tüübid</option>
+        <optgroup label="M_1 — Standard/sood">
+          <option value="M_101">M_101 — Standard/soodusmääraga käive</option>
+          <option value="M_102">M_102 — Kassapõhine käive</option>
+          <option value="M_103">M_103 — Kasuminorm (kasutatud kaup)</option>
+          <option value="M_104">M_104 — Kasuminorm (reisibüroo)</option>
+          <option value="M_105">M_105 — Kinnisasi/metall erikord (müüja)</option>
+          <option value="M_106">M_106 — Kinnisasi/metall erikord (segaarve std)</option>
+          <option value="M_107">M_107 — Kinnisasi/metall erikord (segaarve erikord)</option>
+        </optgroup>
+        <optgroup label="M_2 — Nullmäär (0%)">
+          <option value="M_201">M_201 — Kauba ühendusesisene käive</option>
+          <option value="M_202">M_202 — Teenus teise LR MK-le</option>
+          <option value="M_203">M_203 — Kolmnurk (võõrandaja)</option>
+          <option value="M_204">M_204 — Kolmnurk (edasimüüja)</option>
+          <option value="M_205">M_205 — Uus transpordivahend</option>
+          <option value="M_206">M_206 — Aktsiisikaup</option>
+          <option value="M_207">M_207 — Tolliagentuur</option>
+          <option value="M_208">M_208 — Eksport</option>
+          <option value="M_209">M_209 — Eksport tax-free</option>
+          <option value="M_210">M_210 — 0% muud kaubad</option>
+          <option value="M_211">M_211 — 0% muud teenused</option>
+          <option value="M_212">M_212 — Kasuminorm (reisibüroo 0%)</option>
+          <option value="M_213">M_213 — Kasuminorm reisibüroo 0% (marginaal)</option>
+        </optgroup>
+        <optgroup label="M_3 — Maksuvaba">
+          <option value="M_301">M_301 — Maksuvaba käive</option>
+          <option value="M_302">M_302 — Ei ole käive</option>
+          <option value="M_303">M_303 — Maagaas/elekter eksport</option>
+          <option value="M_304">M_304 — Paigaldatav kaup teises LR</option>
+        </optgroup>
+        <optgroup label="S — Pöördmaks">
+          <option value="S_101">S_101 — Kauba ühendusesisene soetamine</option>
+          <option value="S_102">S_102 — Teenused teise LR MK-lt</option>
+          <option value="S_103">S_103 — Kolmnurk (soetamine)</option>
+          <option value="S_104">S_104 — Muu kaup/teenus</option>
+          <option value="S_105">S_105 — Kinnisasi/metall (ostja)</option>
+          <option value="S_106">S_106 — Maksuvaba ühendusesisene soetamine</option>
+        </optgroup>
+        <optgroup label="O — Sisendkäibemaks">
+          <option value="O_101">O_101 — Lubatud sisend-KM</option>
+          <option value="O_102">O_102 — Mahaarvamine osakaupa</option>
+          <option value="O_103">O_103 — Osaline mahaarvamine</option>
+          <option value="O_104">O_104 — Kassapõhine sisend-KM</option>
+          <option value="O_106">O_106 — Impordi sisend-KM</option>
+          <option value="O_201">O_201 — Põhivara (EE)</option>
+          <option value="O_202">O_202 — Põhivara osaline</option>
+          <option value="O_203">O_203 — Põhivara (import)</option>
+          <option value="O_204">O_204 — Põhivara (EU)</option>
+          <option value="O_301">O_301 — Sõiduauto 100% (EE)</option>
+          <option value="O_302">O_302 — Sõiduauto 100% (import)</option>
+          <option value="O_303">O_303 — Sõiduauto 100% (EU)</option>
+          <option value="O_304">O_304 — Sõiduauto 50% (EE)</option>
+          <option value="O_305">O_305 — Sõiduauto 50% (import)</option>
+          <option value="O_306">O_306 — Sõiduauto 50% (EU)</option>
+          <option value="O_307">O_307 — Sõiduauto 100% varuosad (EE)</option>
+          <option value="O_308">O_308 — Sõiduauto 100% varuosad (import/EU)</option>
+          <option value="O_309">O_309 — Sõiduauto 50% varuosad (EE)</option>
+          <option value="O_310">O_310 — Sõiduauto 50% varuosad (import/EU)</option>
+          <option value="O_401">O_401 — Ühendusesisene kaup (pöördmaks)</option>
+          <option value="O_402">O_402 — Teise LR MK teenused (pöördmaks)</option>
+          <option value="O_403">O_403 — Kolmnurk (pöördmaks)</option>
+          <option value="O_404">O_404 — Muu kaup/teenus (pöördmaks)</option>
+          <option value="O_405">O_405 — Kinnisasi/metall (pöördmaks)</option>
+          <option value="O_501">O_501 — Impordi maksustatava väärtuse muutus</option>
+          <option value="O_502">O_502 — Maksuladustamine</option>
+          <option value="O_601">O_601 — Sisend-KM korrigeerimine</option>
+        </optgroup>
+        <optgroup label="A — Arvestuslikud">
+          <option value="A_101">A_101 — Arvestuslik kanne</option>
+        </optgroup>
       </select>
     </div>
-    <div class="fg"><label>KMK kood (tabel)</label><select id="filterKmk" onchange="renderTable()"><option value="">Kõik KMK-d</option></select></div>
+    <div class="fg"><label>D KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
+    <div class="fg"><label>Otsing</label><input class="fp-i" id="search" placeholder="Partneri, arve, koodi..." oninput="renderTable()"/></div>
     <button class="fp-show" onclick="applyFilters()">Näita</button>
     <button class="fp-clr" onclick="clearFilters()">Tühjenda filtrid</button>
   </div>
@@ -263,6 +322,17 @@ td.ec:hover{background:var(--blue-lt)!important}
       <button class="btn btn-kontrolli" id="btnKontrolli" onclick="openKontrolliModal()" disabled title="Lae EMTA tagasisideraport ja kontrolli vigu">&#128269; Kontrolli</button>
       <button class="btn btn-kinnita" id="btnKinnita" onclick="openPin2Modal()" disabled title="Kinnita KMD EMTA-s ID-kaardi PIN2-ga">&#128274; Kinnita</button>
       <button class="btn" onclick="openXml()" title="Valideerib XML struktuuri ja genereerib XBRL GL faili">XML</button>
+      <div class="settings-wrap">
+        <button class="btn" onclick="toggleSettings()" title="XML seaded ja püsikonfiguratsioon">&#9881; Seadistused</button>
+        <div class="settings-panel" id="settingsPanel">
+          <div class="sp-title">XML seaded</div>
+          <div class="fg"><label>Tarkvara</label><input id="xml-src-app" value="Directo" oninput="saveSettings()"/></div>
+          <div class="fg"><label>Andmesaatja nimi</label><input id="xml-creator" placeholder="Ettevõtte nimi" oninput="saveSettings()"/></div>
+          <div class="fg"><label>Allika ID</label><input id="xml-src-id" placeholder="nt ERP-01 (valikuline)" oninput="saveSettings()"/></div>
+          <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" placeholder="(valikuline)" oninput="saveSettings()"/></div>
+          <div class="fg"><label title="Täida ainult siis, kui KMD esitatakse pankrotihalduri poolt (KMS § 38).&#10;&#10;Pankroti väljakuulutamisel lõpeb jooksev maksustamisperiood ennetähtaegselt. Pankrotihaldur esitab eraldi KMD:&#10;1) lühendatud periood — perioodi algusest kuni pankroti väljakuulutamise päevani&#10;2) edaspidi — iga tavaline periood pankrotimenetluse jooksul.&#10;&#10;Tavadeklaratsioonis (ettevõte töötab normaalselt) jäta tühjaks." style="cursor:help;text-decoration:underline dotted">Pankrotiperiood &#9432;</label><input id="xml-pankrot" placeholder="(valikuline)" oninput="saveSettings()"/></div>
+        </div>
+      </div>
     <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:2px">Viimane saatmine:<br><span style="font-weight:bold;color:var(--text2)" id="lastSentTxt">&#8212;</span></div>
     </div>
   </div>
@@ -283,7 +353,7 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div style="overflow-x:auto"><table id="sum-tbl" style="border-collapse:collapse;font-size:11px">
       <thead>
         <tr style="background:#4a6fa5;border-bottom:2px solid #3a5a8f">
-          <th style="padding:4px 10px 4px 6px;text-align:left;color:#fff;font-weight:600;font-size:11px;min-width:60px">KM m&#228;&#228;r</th>
+          <th style="padding:4px 10px 4px 6px;text-align:left;color:#fff;font-weight:600;font-size:11px;min-width:60px">KM%</th>
           <th style="padding:4px 10px;text-align:right;color:rgba(255,255,255,.75);font-weight:400;font-size:11px;min-width:90px">M &mdash; M&#252;&#252;k summa</th>
           <th style="padding:4px 10px;text-align:right;color:#fff;font-weight:700;font-size:11px;min-width:90px">M &mdash; M&#252;&#252;k KM</th>
           <th style="padding:4px 10px;text-align:right;color:rgba(255,255,255,.75);font-weight:400;font-size:11px;min-width:90px">A &mdash; Arv. kanded summa</th>
@@ -343,7 +413,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <tr>
         <th title="Rea sektsioonisisene järjekorranumber" style="cursor:help">#</th><th style="min-width:72px">KMD tüüp</th>
         <th class="col-desc col-desc-hidden" style="min-width:200px">KMD tüübi kommentaar</th>
-        <th style="min-width:280px;white-space:normal">KMD tüübi sisu</th><th>KM m&#228;&#228;r</th><th title="Directo KMK" style="cursor:help">KMK</th>
+        <th style="min-width:280px;white-space:normal">KMD tüübi sisu</th><th>KM%</th><th title="Directo käibemaksukood" style="cursor:help">D KMK%</th>
         <th style="min-width:110px;text-align:right;cursor:help" title="Deklareeritav summa (maksustatav v&#228;&#228;rtus/sisendkäibemaks)">Deklareeritav summa</th>
         <th style="min-width:70px;text-align:right">KM (&#8364;)</th>
         <th title="Tehingupartneri ja arve erisuse tunnus" style="min-width:60px;cursor:help">TP/Arve tunnus</th>
@@ -396,20 +466,24 @@ td.ec:hover{background:var(--blue-lt)!important}
         <optgroup label="M - Müük std/sood">
           <option value="M_101">M_101</option><option value="M_102">M_102</option>
           <option value="M_103">M_103</option><option value="M_104">M_104</option><option value="M_105">M_105</option>
+          <option value="M_106">M_106</option><option value="M_107">M_107</option>
         </optgroup>
         <optgroup label="M - Müük 0%">
           <option value="M_201">M_201</option><option value="M_202">M_202</option>
           <option value="M_203">M_203</option><option value="M_204">M_204</option>
           <option value="M_205">M_205</option><option value="M_206">M_206</option>
-          <option value="M_208">M_208</option><option value="M_209">M_209</option>
+          <option value="M_207">M_207</option><option value="M_208">M_208</option><option value="M_209">M_209</option>
           <option value="M_210">M_210</option><option value="M_211">M_211</option>
+          <option value="M_212">M_212</option><option value="M_213">M_213</option>
         </optgroup>
         <optgroup label="M - Maksuvaba">
           <option value="M_301">M_301</option><option value="M_302">M_302</option>
+          <option value="M_303">M_303</option><option value="M_304">M_304</option>
         </optgroup>
         <optgroup label="S - Pöördmaks">
           <option value="S_101">S_101</option><option value="S_102">S_102</option>
           <option value="S_103">S_103</option><option value="S_104">S_104</option><option value="S_105">S_105</option>
+          <option value="S_106">S_106</option>
         </optgroup>
         <optgroup label="O - Sisendkäibemaks">
           <option value="O_101">O_101</option><option value="O_102">O_102</option>
@@ -419,7 +493,8 @@ td.ec:hover{background:var(--blue-lt)!important}
           <option value="O_301">O_301</option><option value="O_302">O_302</option><option value="O_303">O_303</option><option value="O_304">O_304</option><option value="O_305">O_305</option><option value="O_306">O_306</option>
           <option value="O_307">O_307</option><option value="O_308">O_308</option><option value="O_309">O_309</option><option value="O_310">O_310</option>
           <option value="O_401">O_401</option><option value="O_402">O_402</option>
-          <option value="O_404">O_404</option><option value="O_405">O_405</option>
+          <option value="O_403">O_403</option><option value="O_404">O_404</option><option value="O_405">O_405</option>
+          <option value="O_501">O_501</option><option value="O_502">O_502</option>
           <option value="O_601">O_601</option>
         </optgroup>
         <optgroup label="A - Arvestuslikud"><option value="A_101">A_101</option></optgroup>
@@ -428,7 +503,7 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div class="fld"><label>KMK kood</label><select id="f-kmk"></select></div>
     <div class="fld" id="fg-km"><label>Maksumäär</label>
       <select id="f-km" onchange="calcVat()">
-        <option value="0.22">22%</option><option value="0.09">9%</option><option value="0">0%</option>
+        <option value="0.24">24%</option><option value="0.22">22%</option><option value="0.13">13%</option><option value="0.09">9%</option><option value="0">0%</option>
       </select>
     </div>
   </div>
@@ -591,11 +666,11 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div class="fgrid g3" style="margin-bottom:7px">
       <div class="fld"><label>KMD tüüp</label>
         <select id="e-type" onchange="onEditTypeChange()">
-          <optgroup label="M std/sood"><option value="M_101">M_101</option><option value="M_102">M_102</option><option value="M_103">M_103</option><option value="M_104">M_104</option><option value="M_105">M_105</option></optgroup>
-          <optgroup label="M 0%"><option value="M_201">M_201</option><option value="M_202">M_202</option><option value="M_203">M_203</option><option value="M_204">M_204</option><option value="M_205">M_205</option><option value="M_206">M_206</option><option value="M_208">M_208</option><option value="M_209">M_209</option><option value="M_210">M_210</option><option value="M_211">M_211</option></optgroup>
-          <optgroup label="M maksuvaba"><option value="M_301">M_301</option><option value="M_302">M_302</option></optgroup>
-          <optgroup label="S pöördmaks"><option value="S_101">S_101</option><option value="S_102">S_102</option><option value="S_103">S_103</option><option value="S_104">S_104</option><option value="S_105">S_105</option></optgroup>
-          <optgroup label="O sisend"><option value="O_101">O_101</option><option value="O_102">O_102</option><option value="O_103">O_103</option><option value="O_104">O_104</option><option value="O_106">O_106</option><option value="O_201">O_201</option><option value="O_202">O_202</option><option value="O_203">O_203</option><option value="O_204">O_204</option><option value="O_301">O_301</option><option value="O_302">O_302</option><option value="O_303">O_303</option><option value="O_304">O_304</option><option value="O_305">O_305</option><option value="O_306">O_306</option><option value="O_307">O_307</option><option value="O_308">O_308</option><option value="O_309">O_309</option><option value="O_310">O_310</option><option value="O_401">O_401</option><option value="O_402">O_402</option><option value="O_404">O_404</option><option value="O_405">O_405</option><option value="O_501">O_501</option><option value="O_502">O_502</option><option value="O_601">O_601</option></optgroup>
+          <optgroup label="M std/sood"><option value="M_101">M_101</option><option value="M_102">M_102</option><option value="M_103">M_103</option><option value="M_104">M_104</option><option value="M_105">M_105</option><option value="M_106">M_106</option><option value="M_107">M_107</option></optgroup>
+          <optgroup label="M 0%"><option value="M_201">M_201</option><option value="M_202">M_202</option><option value="M_203">M_203</option><option value="M_204">M_204</option><option value="M_205">M_205</option><option value="M_206">M_206</option><option value="M_207">M_207</option><option value="M_208">M_208</option><option value="M_209">M_209</option><option value="M_210">M_210</option><option value="M_211">M_211</option><option value="M_212">M_212</option><option value="M_213">M_213</option></optgroup>
+          <optgroup label="M maksuvaba"><option value="M_301">M_301</option><option value="M_302">M_302</option><option value="M_303">M_303</option><option value="M_304">M_304</option></optgroup>
+          <optgroup label="S pöördmaks"><option value="S_101">S_101</option><option value="S_102">S_102</option><option value="S_103">S_103</option><option value="S_104">S_104</option><option value="S_105">S_105</option><option value="S_106">S_106</option></optgroup>
+          <optgroup label="O sisend"><option value="O_101">O_101</option><option value="O_102">O_102</option><option value="O_103">O_103</option><option value="O_104">O_104</option><option value="O_106">O_106</option><option value="O_201">O_201</option><option value="O_202">O_202</option><option value="O_203">O_203</option><option value="O_204">O_204</option><option value="O_301">O_301</option><option value="O_302">O_302</option><option value="O_303">O_303</option><option value="O_304">O_304</option><option value="O_305">O_305</option><option value="O_306">O_306</option><option value="O_307">O_307</option><option value="O_308">O_308</option><option value="O_309">O_309</option><option value="O_310">O_310</option><option value="O_401">O_401</option><option value="O_402">O_402</option><option value="O_403">O_403</option><option value="O_404">O_404</option><option value="O_405">O_405</option><option value="O_501">O_501</option><option value="O_502">O_502</option><option value="O_601">O_601</option></optgroup>
           <optgroup label="A arvestuslik"><option value="A_101">A_101</option></optgroup>
         </select>
       </div>
@@ -737,7 +812,7 @@ const PKAT_LABELS={
   '200':'200 — Füüsiline isik (v.a FIE), teise LR mittekäibemaksukohustuslane või ilma Eesti registrikoodita välisriigi isik',
   '300':'300 — Käibemaksugrupi liige (sh grupi esindusisik)',
 };
-const TYPES={M_101:'M_1',M_102:'M_1',M_103:'M_1',M_104:'M_1',M_105:'M_1',M_201:'M_2',M_202:'M_2',M_203:'M_2',M_204:'M_2',M_205:'M_2',M_206:'M_2',M_207:'M_2',M_208:'M_2',M_209:'M_2',M_210:'M_2',M_211:'M_2',M_212:'M_2',M_301:'M_3',M_302:'M_3',M_303:'M_3',M_304:'M_3',S_101:'S_',S_102:'S_',S_103:'S_',S_104:'S_',S_105:'S_',S_106:'S_',O_101:'O_',O_102:'O_',O_103:'O_',O_104:'O_',O_106:'O_',O_201:'O_',O_202:'O_',O_203:'O_',O_204:'O_',O_301:'O_',O_302:'O_',O_303:'O_',O_304:'O_',O_305:'O_',O_306:'O_',O_307:'O_',O_308:'O_',O_309:'O_',O_310:'O_',O_401:'O_',O_402:'O_',O_403:'O_',O_404:'O_',O_405:'O_',O_501:'O_',O_502:'O_',O_601:'O_',A_101:'A_'};
+const TYPES={M_101:'M_1',M_102:'M_1',M_103:'M_1',M_104:'M_1',M_105:'M_1',M_106:'M_1',M_107:'M_1',M_201:'M_2',M_202:'M_2',M_203:'M_2',M_204:'M_2',M_205:'M_2',M_206:'M_2',M_207:'M_2',M_208:'M_2',M_209:'M_2',M_210:'M_2',M_211:'M_2',M_212:'M_2',M_301:'M_3',M_302:'M_3',M_303:'M_3',M_304:'M_3',S_101:'S_',S_102:'S_',S_103:'S_',S_104:'S_',S_105:'S_',S_106:'S_',O_101:'O_',O_102:'O_',O_103:'O_',O_104:'O_',O_106:'O_',O_201:'O_',O_202:'O_',O_203:'O_',O_204:'O_',O_301:'O_',O_302:'O_',O_303:'O_',O_304:'O_',O_305:'O_',O_306:'O_',O_307:'O_',O_308:'O_',O_309:'O_',O_310:'O_',O_401:'O_',O_402:'O_',O_403:'O_',O_404:'O_',O_405:'O_',O_501:'O_',O_502:'O_',O_601:'O_',A_101:'A_'};
 const KMK=[
   {kood:'0',sel:'0 — Ei ole käive'},
   {kood:'1',sel:'1 — 24% määraga maksustatavad toimingud'},
@@ -776,16 +851,16 @@ const KMK=[
   {kood:'34',sel:'34 — 20% määraga toimingud (ajaloolised)'},
   {kood:'35',sel:'35 — 22% määraga toimingud (ajaloolised)'},
   {kood:'36',sel:'36 — Üh.sis. põhivara soetamine pöördmaks (S_101+O_401)'},
-  {kood:'37',sel:'37 — Reisibüroo kasuminorm absoluutmarginaal (M_104) *uus'},
-  {kood:'38',sel:'38 — Kassapõhine sisend-KM (O_104) *uus'},
-  {kood:'39',sel:'39 — Sisend-KM osakaupa mahaarvamine (O_102) *uus'},
-  {kood:'40',sel:'40 — Sõiduauto 100% soetamine import (O_302) *uus'},
-  {kood:'41',sel:'41 — Sõiduauto 50% soetamine import (O_305) *uus'},
-  {kood:'42',sel:'42 — Sõiduauto 100% soetamine EL (O_303) *uus'},
-  {kood:'43',sel:'43 — Sõiduauto 50% soetamine EL (O_306) *uus'},
-  {kood:'44',sel:'44 — Põhivara soetamine 9% (O_201) *uus'},
-  {kood:'45',sel:'45 — Põhivara soetamine 13% (O_201) *uus'},
-  {kood:'46',sel:'46 — Sisend-KM korrigeerimine (O_601) *uus'},
+  {kood:'37',sel:'37 — Reisibüroo kasuminorm absoluutmarginaal (M_104)'},
+  {kood:'38',sel:'38 — Kassapõhine sisend-KM (O_104)'},
+  {kood:'39',sel:'39 — Sisend-KM osakaupa mahaarvamine (O_102)'},
+  {kood:'40',sel:'40 — Sõiduauto 100% soetamine import (O_302)'},
+  {kood:'41',sel:'41 — Sõiduauto 50% soetamine import (O_305)'},
+  {kood:'42',sel:'42 — Sõiduauto 100% soetamine EL (O_303)'},
+  {kood:'43',sel:'43 — Sõiduauto 50% soetamine EL (O_306)'},
+  {kood:'44',sel:'44 — Põhivara soetamine 9% (O_201)'},
+  {kood:'45',sel:'45 — Põhivara soetamine 13% (O_201)'},
+  {kood:'46',sel:'46 — Sisend-KM korrigeerimine (O_601)'},
 ];
 const HEADINGS={
   // Peagrupid (tase 1)
@@ -808,13 +883,16 @@ const HEADINGS={
 const TYPE_LABELS={
   M_101:'M_101 — Standard/soodusmääraga maksustatav käive',M_102:'M_102 — Kassapõhine käive',
   M_103:'M_103 — Kasuminorm (kasutatud kaup)',M_104:'M_104 — Kasuminorm (reisibüroo)',
-  M_105:'M_105 — Kinnisasi/metall (müüja)',
+  M_105:'M_105 — Kinnisasi/metall erikord (müüja)',
+  M_106:'M_106 — Kinnisasi/metall erikord (müüja, segaarve sh std)',
+  M_107:'M_107 — Kinnisasi/metall erikord (müüja, segaarve sh erikord)',
   M_201:'M_201 — Kauba ühendusesisene käive',M_202:'M_202 — Teenus teise LR MK-le',
   M_203:'M_203 — Kolmnurk (võõrandaja)',M_204:'M_204 — Kolmnurk (edasimüüja)',
   M_205:'M_205 — Uus transpordivahend',M_206:'M_206 — Aktsiisikaup',
   M_207:'M_207 — Tolliagentuur',M_208:'M_208 — Eksport',M_209:'M_209 — Eksport tax-free',
   M_210:'M_210 — 0% muud kaubad',M_211:'M_211 — 0% muud teenused',
   M_212:'M_212 — Kasuminorm (reisibüroo 0%)',
+  M_213:'M_213 — Kasuminorm reisibürood 0% (marginaal)',
   M_301:'M_301 — Maksuvaba käive',M_302:'M_302 — Ei ole käive',
   M_303:'M_303 — Maagaas/elekter eksport',M_304:'M_304 — Paigaldatav kaup teises LR',
   S_101:'S_101 — Kauba ühendusesisene soetamine',S_102:'S_102 — Teenused teise LR MK-lt',
@@ -838,6 +916,7 @@ const TYPE_LABELS={
   A_101:'A_101 — Arvestuslik kanne',
 };
 function getKmk(k){return KMK.find(m=>m.kood===String(k));}
+function kmkDisp(m){if(!m)return'';const p=m.sel.match(/(\d+)%/);return(p?p[1]:'0')+'% ('+m.kood+')';}
 function pCls(t){const s=TYPES[t]||'';if(s==='M_1')return 'p-m1';if(s==='M_2')return 'p-m2';if(s==='M_3')return 'p-m3';if(s==='S_')return 'p-s';if(s==='O_')return 'p-o';return 'p-a';}
 function fmt(n){const v=parseFloat(n)||0;return v.toLocaleString('et-EE',{minimumFractionDigits:2,maximumFractionDigits:2});}
 let lastSent=new Date(Date.now()-3*24*60*60*1000);
@@ -852,11 +931,11 @@ let rows=[
   {id:102,nr:'',g:'std',kmk:'4',type:'M_101',km:'0.13',sum:1300.0,vat:169.0,pkat:'100',preg:'60000001',pkoodtaps:'MRR_KOOD',pnimi:'SIA MRR',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10003',ettemaks:'',kp:'2027-01-02',arvesum:1300.0,kreeditkp:'',kom:'13% käibe deklareerimine, kus arve saajaks on MTA maksukohustuslaste registris registreeritud mitteresidendist juriidiline isik',diff:'sent'},
   {id:103,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:1090.0,vat:98.1,pkat:'100',preg:'11111112',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Teine arve esitaja OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10004',ettemaks:'',kp:'2027-01-02',arvesum:1090.0,kreeditkp:'',kom:'9% käibe deklareerimine, kus arve saajaks Eesti juriidiline isik (erinevus maksumääras)',diff:'sent'},
   {id:104,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.24',sum:2500.0,vat:600.0,pkat:'100',preg:'11111114',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ettemaks OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'EA10001',kp:'2027-01-02',arvesum:3000.0,kreeditkp:'',kom:'Käive on tekkinud osaliselt tasutud ettemaksuarve alusel, st käive on tekkinud 2500 euro ulatuses',diff:'sent'},
-  {id:105,nr:'',g:'std',kmk:'uus 37',type:'M_102',km:'0.24',sum:500.0,vat:120.0,pkat:'100',preg:'12111114',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kassa OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA13001',ettemaks:'',kp:'2027-01-03',arvesum:2000.0,kreeditkp:'',kom:'Kassapõhise käibemaksuarvestuse rakendajale on arve eest osaliselt tasutud 500 eurot, st käive on tekkinud 500 euro ulatuses',diff:'sent'},
-  {id:106,nr:'',g:'std',kmk:'uus 39',type:'M_103',km:'0.09',sum:458.72,vat:41.28,pkat:'100',preg:'11111115',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kasutatud kaup OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10006',ettemaks:'',kp:'2027-01-04',arvesum:2000.0,kreeditkp:'',kom:'Kasutatud kauba edasimüük, ostuhind 1500 eurot (müügi-ja ostuhinna vahe 500 eurot)',diff:'sent'},
-  {id:107,nr:'',g:'std',kmk:'uus 38',type:'M_103',km:'0.24',sum:4032.26,vat:967.74,pkat:'100',preg:'11111116',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kunstiteos OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10007',ettemaks:'',kp:'2027-01-05',arvesum:20000.0,kreeditkp:'',kom:'Originaalkunstiteose edasimüük, ostuhind 15000 eurot (müügi- ja ostuhinna vahe 5000 eurot)',diff:'sent'},
-  {id:108,nr:'',g:'std',kmk:'uus 41',type:'M_104',km:'0.24',sum:362.9,vat:87.1,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Euroopa Liidu sisese reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 450 eurot',diff:'sent'},
-  {id:109,nr:'',g:'std',kmk:'uus 41',type:'M_104',km:'0.24',sum:403.23,vat:96.78,pkat:'100',preg:'11111118',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Reisibüroo OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10009',ettemaks:'',kp:'2027-01-08',arvesum:5000.0,kreeditkp:'',kom:'Euroopa Liidu sisese reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 500 eurot',diff:'sent'},
+  {id:105,nr:'',g:'std',kmk:'',type:'M_102',km:'0.24',sum:500.0,vat:120.0,pkat:'100',preg:'12111114',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kassa OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA13001',ettemaks:'',kp:'2027-01-03',arvesum:2000.0,kreeditkp:'',kom:'Kassapõhise käibemaksuarvestuse rakendajale on arve eest osaliselt tasutud 500 eurot, st käive on tekkinud 500 euro ulatuses',diff:'sent'},
+  {id:106,nr:'',g:'std',kmk:'',type:'M_103',km:'0.09',sum:458.72,vat:41.28,pkat:'100',preg:'11111115',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kasutatud kaup OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10006',ettemaks:'',kp:'2027-01-04',arvesum:2000.0,kreeditkp:'',kom:'Kasutatud kauba edasimüük, ostuhind 1500 eurot (müügi-ja ostuhinna vahe 500 eurot)',diff:'sent'},
+  {id:107,nr:'',g:'std',kmk:'',type:'M_103',km:'0.24',sum:4032.26,vat:967.74,pkat:'100',preg:'11111116',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kunstiteos OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10007',ettemaks:'',kp:'2027-01-05',arvesum:20000.0,kreeditkp:'',kom:'Originaalkunstiteose edasimüük, ostuhind 15000 eurot (müügi- ja ostuhinna vahe 5000 eurot)',diff:'sent'},
+  {id:108,nr:'',g:'std',kmk:'',type:'M_104',km:'0.24',sum:362.9,vat:87.1,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Euroopa Liidu sisese reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 450 eurot',diff:'sent'},
+  {id:109,nr:'',g:'std',kmk:'',type:'M_104',km:'0.24',sum:403.23,vat:96.78,pkat:'100',preg:'11111118',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Reisibüroo OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10009',ettemaks:'',kp:'2027-01-08',arvesum:5000.0,kreeditkp:'',kom:'Euroopa Liidu sisese reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 500 eurot',diff:'sent'},
   {id:110,nr:'',g:'std',kmk:'18',type:'M_105',km:'0.24',sum:1700.0,vat:408.0,pkat:'100',preg:'11111119',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'EE Pöördmaks OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10010',ettemaks:'',kp:'2027-01-08',arvesum:1700.0,kreeditkp:'',kom:'Nn siseriikliku pöördmaksustamise deklareerimine (müüja)',diff:'sent'},
   {_h:'null'},
   {id:127,nr:'',g:'null',kmk:'10',type:'M_201',km:'0.00',sum:1200.0,vat:0.0,pkat:'100',preg:'FI08611111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kaup OY',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'FI',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba ühendusesisese käibe deklareerimine',diff:'sent'},
@@ -866,22 +945,22 @@ let rows=[
   {id:131,nr:'',g:'null',kmk:'11',type:'M_202',km:'0.00',sum:400.0,vat:0.0,pkat:'100',preg:'LV41111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Teenus  SIA',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'',ettemaks:'EA10002',kp:'2027-01-12',arvesum:400.0,kreeditkp:'',kom:'Ühendusesisese teenuse ettemaksust tekkinud käibe deklareerimine',diff:'sent'},
   {id:132,nr:'',g:'null',kmk:'11',type:'M_202',km:'0.00',sum:170.0,vat:0.0,pkat:'100',preg:'LV41111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Teenus SIA',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'',ettemaks:'EA10004',kp:'2027-01-13',arvesum:300.0,kreeditkp:'',kom:'Ühendusesisese teenuse käive on tekkinud osaliselt tasutud ettemaksuarve alusel, st käive on tekkinud 170 euro ulatuses',diff:'sent'},
   {id:133,nr:'',g:'null',kmk:'14',type:'M_203',km:'0.00',sum:150.0,vat:0.0,pkat:'100',preg:'LT100011111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kolmnurga müüja',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LT',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingus võõrandaja poolt kauba ühendusesisese käibe deklareerimine',diff:'sent'},
-  {id:134,nr:'',g:'null',kmk:'uus 43',type:'M_204',km:'',sum:100.0,vat:0,pkat:'100',preg:'SE551111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kolmnurga edasimüüja AB',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'SE',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingus edasimüüja poolt käibe deklareerimine kolmnurktehinguna',diff:'sent'},
-  {id:135,nr:'',g:'null',kmk:'uus 45',type:'M_206',km:'0.00',sum:2000.0,vat:0.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Aktsiisikauba võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule',diff:'sent'},
-  {id:136,nr:'',g:'null',kmk:'uus 44',type:'M_205',km:'0.00',sum:75000.0,vat:0.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10015',ettemaks:'',kp:'2027-01-17',arvesum:75000.0,kreeditkp:'',kom:'Uue transpordivahendi võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule',diff:'sent'},
-  {id:137,nr:'',g:'null',kmk:'uus 46',type:'M_207',km:'',sum:1800.0,vat:0,pkat:'100',preg:'LV51111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Tolliagentuur',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Tolliagentuuri poolt deklareeritav kauba ühendusesisene käive kauba importja eest (tolliprotseduuri kood 42)',diff:'sent'},
+  {id:134,nr:'',g:'null',kmk:'',type:'M_204',km:'',sum:100.0,vat:0,pkat:'100',preg:'SE551111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kolmnurga edasimüüja AB',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'SE',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingus edasimüüja poolt käibe deklareerimine kolmnurktehinguna',diff:'sent'},
+  {id:135,nr:'',g:'null',kmk:'',type:'M_206',km:'0.00',sum:2000.0,vat:0.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Aktsiisikauba võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule',diff:'sent'},
+  {id:136,nr:'',g:'null',kmk:'',type:'M_205',km:'0.00',sum:75000.0,vat:0.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10015',ettemaks:'',kp:'2027-01-17',arvesum:75000.0,kreeditkp:'',kom:'Uue transpordivahendi võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule',diff:'sent'},
+  {id:137,nr:'',g:'null',kmk:'',type:'M_207',km:'',sum:1800.0,vat:0,pkat:'100',preg:'LV51111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Tolliagentuur',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Tolliagentuuri poolt deklareeritav kauba ühendusesisene käive kauba importja eest (tolliprotseduuri kood 42)',diff:'sent'},
   {id:138,nr:'',g:'null',kmk:'12',type:'M_208',km:'0.00',sum:950.0,vat:0.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba eksport',diff:'sent'},
   {id:139,nr:'',g:'null',kmk:'13',type:'M_209',km:'0.00',sum:50.0,vat:0.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Tax free müük reisijale (käibemaksutagastusega müük). Käibemaksutagastuse müügi kviitungile on käibe deklareerimiseks kinnitus saadud.',diff:'sent'},
-  {id:140,nr:'',g:'null',kmk:'uus 47',type:'M_210',km:'0.00',sum:160.0,vat:0.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Eestisisene 0% määraga maksustatav kauba käive, kus arve saajaks on Eesti juriidiline isik',diff:'sent'},
-  {id:141,nr:'',g:'null',kmk:'uus 48',type:'M_211',km:'0.00',sum:130.0,vat:0.0,pkat:'100',preg:'11111121',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Nulli teenus OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10021',ettemaks:'',kp:'2027-01-23',arvesum:130.0,kreeditkp:'',kom:'Eestisisene 0% määraga maksustatav teenuse käive, kus arve saajaks on Eesti juriidiline isik',diff:'sent'},
-  {id:142,nr:'',g:'null',kmk:'uus 42',type:'M_212',km:'0.00',sum:45.0,vat:0.0,pkat:'100',preg:'11111122',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Reisiteenus OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10022',ettemaks:'',kp:'2027-01-27',arvesum:495.0,kreeditkp:'',kom:'Reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 45 eurot',diff:'sent'},
+  {id:140,nr:'',g:'null',kmk:'',type:'M_210',km:'0.00',sum:160.0,vat:0.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Eestisisene 0% määraga maksustatav kauba käive, kus arve saajaks on Eesti juriidiline isik',diff:'sent'},
+  {id:141,nr:'',g:'null',kmk:'',type:'M_211',km:'0.00',sum:130.0,vat:0.0,pkat:'100',preg:'11111121',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Nulli teenus OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10021',ettemaks:'',kp:'2027-01-23',arvesum:130.0,kreeditkp:'',kom:'Eestisisene 0% määraga maksustatav teenuse käive, kus arve saajaks on Eesti juriidiline isik',diff:'sent'},
+  {id:142,nr:'',g:'null',kmk:'',type:'M_212',km:'0.00',sum:45.0,vat:0.0,pkat:'100',preg:'11111122',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Reisiteenus OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10022',ettemaks:'',kp:'2027-01-27',arvesum:495.0,kreeditkp:'',kom:'Reisiteenuse müük juriidilisele isikule absoluutsummas marginaaliga 45 eurot',diff:'sent'},
 {id:196,nr:'',g:'null',kmk:'10',type:'M_201',km:'0.00',sum:1850.0,vat:0.0,pkat:'100',preg:'FI08611133',pkoodtaps:'KMKR_NUMBER',pnimi:'Grupi Liikme EU Tehingupartner OY',grpkat:'300',grpreg:'10000009',grpdesc:'',grpnimi:'Grupi Liikme OÜ',riik:'FI',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Käibemaksugrupi liikme kauba ühendusesisese käibe deklareerimine',diff:'sent'},
   {_h:'maks'},
   {id:143,nr:'',g:'maks',kmk:'5',type:'M_301',km:'',sum:875.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Maksuvaba käive Eesti juriidilisele isikule',diff:'sent'},
   {id:144,nr:'',g:'maks',kmk:'5',type:'M_301',km:'',sum:850.0,vat:0,pkat:'100',preg:'11111123',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Maksuvaba käive OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10023',ettemaks:'',kp:'2027-01-27',arvesum:850.0,kreeditkp:'',kom:'Maksuvaba käive Eesti juriidilisele isikule',diff:'sent'},
-  {id:145,nr:'',g:'maks',kmk:'uus 49',type:'M_303',km:'',sum:1550.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Võrgu kaudu edastatava elektrienergia võõrandamine teise liikmesriigi edasimüüjale',diff:'sent'},
-  {id:146,nr:'',g:'maks',kmk:'uus 49',type:'M_303',km:'',sum:1550.0,vat:0,pkat:'100',preg:'LV61111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Elekter SIA',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'MA10029',ettemaks:'',kp:'2027-01-27',arvesum:1550.0,kreeditkp:'',kom:'Võrgu kaudu edastatava elektrienergia võõrandamine teise liikmesriigi edasimüüjale',diff:'sent'},
-  {id:147,nr:'',g:'maks',kmk:'uus 50',type:'M_304',km:'',sum:1150.0,vat:0,pkat:'100',preg:'FI31011111',pkoodtaps:'KMKR_NUMBER',pnimi:'Paigaldatav Kaup OY',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'FI',riiktaps:'',arvenr:'MA10030',ettemaks:'',kp:'2027-01-27',arvesum:1150.0,kreeditkp:'',kom:'Teises liikmesriigis võõrandaja poolt või eest paigaldatava või kokkupandava kauba võõrandamisel ja paigaldamisel või kokku panemisel tekkinud kauba käive, mis kuulub maksustamisele kauba sihtriigis',diff:'sent'},
+  {id:145,nr:'',g:'maks',kmk:'',type:'M_303',km:'',sum:1550.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Võrgu kaudu edastatava elektrienergia võõrandamine teise liikmesriigi edasimüüjale',diff:'sent'},
+  {id:146,nr:'',g:'maks',kmk:'',type:'M_303',km:'',sum:1550.0,vat:0,pkat:'100',preg:'LV61111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Elekter SIA',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'LV',riiktaps:'',arvenr:'MA10029',ettemaks:'',kp:'2027-01-27',arvesum:1550.0,kreeditkp:'',kom:'Võrgu kaudu edastatava elektrienergia võõrandamine teise liikmesriigi edasimüüjale',diff:'sent'},
+  {id:147,nr:'',g:'maks',kmk:'',type:'M_304',km:'',sum:1150.0,vat:0,pkat:'100',preg:'FI31011111',pkoodtaps:'KMKR_NUMBER',pnimi:'Paigaldatav Kaup OY',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'FI',riiktaps:'',arvenr:'MA10030',ettemaks:'',kp:'2027-01-27',arvesum:1150.0,kreeditkp:'',kom:'Teises liikmesriigis võõrandaja poolt või eest paigaldatava või kokkupandava kauba võõrandamisel ja paigaldamisel või kokku panemisel tekkinud kauba käive, mis kuulub maksustamisele kauba sihtriigis',diff:'sent'},
 {id:195,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.24',sum:1300.0,vat:312.0,pkat:'100',preg:'11111129',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Esindusisiku Tehingupartner OÜ',grpkat:'300',grpreg:'10004321',grpdesc:'',grpnimi:'Grupi Esindusisik OÜ',riik:'',riiktaps:'',arvenr:'MA11001',ettemaks:'',kp:'2027-01-01',arvesum:1300.0,kreeditkp:'',kom:'Käibemaksugrupi esindusisiku 24% määraga maksustatav käive',diff:'sent'},
   {_h:'tehpart'},
   {id:111,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.24',sum:1000.0,vat:240.0,pkat:'200',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'24% käibe deklareerimine, kus arve saajaks füüsiline isik',diff:'sent'},
@@ -895,7 +974,7 @@ let rows=[
   {id:119,nr:'',g:'tehpart',kmk:'2',type:'M_101',km:'0.09',sum:-500.0,vat:-45.0,pkat:'104',preg:'11111125',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Negatiivne segaarve OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10025',ettemaks:'',kp:'2027-01-29',arvesum:1500.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas kahe või enama erineva maksumääraga maksustatavat käivet, sh negatiivset käivet',diff:'sent'},
   {id:120,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.24',sum:300.0,vat:72.0,pkat:'104',preg:'11111126',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve nulliga OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10026',ettemaks:'',kp:'2027-01-30',arvesum:5000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas 0% määraga maksustatavat käivet',diff:'sent'},
   {id:121,nr:'',g:'tehpart',kmk:'2',type:'M_101',km:'0.09',sum:200.0,vat:18.0,pkat:'104',preg:'11111126',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve nulliga OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10026',ettemaks:'',kp:'2027-01-30',arvesum:5000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas 0% määraga maksustatavat käivet',diff:'sent'},
-  {id:122,nr:'',g:'tehpart',kmk:'uus 48',type:'M_211',km:'0.00',sum:4500.0,vat:0.0,pkat:'104',preg:'11111126',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve nulliga OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10026',ettemaks:'',kp:'2027-01-30',arvesum:5000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas 0% määraga maksustatavat käivet',diff:'sent'},
+  {id:122,nr:'',g:'tehpart',kmk:'',type:'M_211',km:'0.00',sum:4500.0,vat:0.0,pkat:'104',preg:'11111126',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve nulliga OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10026',ettemaks:'',kp:'2027-01-30',arvesum:5000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas 0% määraga maksustatavat käivet',diff:'sent'},
   {id:123,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.24',sum:3000.0,vat:720.0,pkat:'104',preg:'11111127',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve mittekäibega OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10027',ettemaks:'',kp:'2027-01-30',arvesum:8000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas käibena mittekäsitatavaid tehinguid',diff:'sent'},
   {id:124,nr:'',g:'tehpart',kmk:'0',type:'M_302',km:'',sum:5000.0,vat:0,pkat:'104',preg:'11111127',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve mittekäibega OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10027',ettemaks:'',kp:'2027-01-30',arvesum:8000.0,kreeditkp:'',kom:'Arve sisaldab muu hulgas käibena mittekäsitatavaid tehinguid',diff:'sent'},
   {id:125,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.24',sum:6000.0,vat:1440.0,pkat:'104',preg:'11111128',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve Pöördmaks OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10028',ettemaks:'',kp:'2027-01-30',arvesum:10000.0,kreeditkp:'',kom:'Arve sisaldab nii siseriikliku pöördmaksustamise erikorra käivet kui ka 24% määraga maksustavat käivet',diff:'sent'},
@@ -909,18 +988,18 @@ let rows=[
   {_h:'main_S'},
   {_h:'poord'},
   {id:152,nr:'',g:'poord',kmk:'26',type:'S_101',km:'0.24',sum:2500.0,vat:600.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba ühendusesisene soetamine',diff:'sent'},
-  {id:153,nr:'',g:'poord',kmk:'uus 51',type:'S_102',km:'0.09',sum:900.0,vat:81.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Teise liikmesriigi maksukohustuslaselt saadud teenused',diff:'sent'},
-  {id:154,nr:'',g:'poord',kmk:'uus 52',type:'S_103',km:'0.09',sum:500.0,vat:45.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingu tingimustel kauba soetamine',diff:'sent'},
+  {id:153,nr:'',g:'poord',kmk:'',type:'S_102',km:'0.09',sum:900.0,vat:81.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Teise liikmesriigi maksukohustuslaselt saadud teenused',diff:'sent'},
+  {id:154,nr:'',g:'poord',kmk:'',type:'S_103',km:'0.09',sum:500.0,vat:45.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingu tingimustel kauba soetamine',diff:'sent'},
   {id:155,nr:'',g:'poord',kmk:'28',type:'S_104',km:'0.24',sum:250.0,vat:60.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Muu kauba soetamine ja teenuse saamine',diff:'sent'},
   {id:156,nr:'',g:'poord',kmk:'21',type:'S_105',km:'0.24',sum:6000.0,vat:1440.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine (KMS § 411)',diff:'sent'},
-  {id:157,nr:'',g:'poord',kmk:'uus 53',type:'S_106',km:'',sum:300.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba ühendusesisene maksuvaba soetamine',diff:'sent'},
+  {id:157,nr:'',g:'poord',kmk:'',type:'S_106',km:'',sum:300.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba ühendusesisene maksuvaba soetamine',diff:'sent'},
   {_h:'main_O'},
   {_h:'sisend'},
   {id:159,nr:'',g:'sisend',kmk:'1',type:'O_101',km:'0.24',sum:240.0,vat:0,pkat:'100',preg:'13000001',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA27001',ettemaks:'',kp:'2027-01-05',arvesum:1000.0,kreeditkp:'',kom:'Sisendkäibemaks, mis on seadusega lubatud maha arvata',diff:'sent'},
   {id:160,nr:'',g:'sisend',kmk:'1',type:'O_101',km:'0.24',sum:336.0,vat:0,pkat:'100',preg:'13000002',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Põhivara Varuosa OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA28001',ettemaks:'',kp:'2027-01-06',arvesum:1400.0,kreeditkp:'',kom:'Eestist soetatud varuosad põhivara (v.a sõiduautode) tarbeks',diff:'sent'},
-  {id:161,nr:'',g:'sisend',kmk:'uus 54',type:'O_102',km:'0.24',sum:120.0,vat:0,pkat:'100',preg:'13000004',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ositi Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA29001',ettemaks:'',kp:'2027-01-07',arvesum:1000.0,kreeditkp:'',kom:'Sisendkäibemaksu mahaarvamine tasumise ulatuses (50%)',diff:'sent'},
+  {id:161,nr:'',g:'sisend',kmk:'',type:'O_102',km:'0.24',sum:120.0,vat:0,pkat:'100',preg:'13000004',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ositi Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA29001',ettemaks:'',kp:'2027-01-07',arvesum:1000.0,kreeditkp:'',kom:'Sisendkäibemaksu mahaarvamine tasumise ulatuses (50%)',diff:'sent'},
   {id:162,nr:'',g:'sisend',kmk:'23',type:'O_103',km:'0.24',sum:360.0,vat:0,pkat:'100',preg:'13000005',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Osaline Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA30001',ettemaks:'',kp:'2027-01-08',arvesum:3000.0,kreeditkp:'',kom:'Sisendkäibemaksu osaline mahaarvamine proportsiooniga 50%',diff:'sent'},
-  {id:163,nr:'',g:'sisend',kmk:'uus 55',type:'O_104',km:'0.24',sum:300.0,vat:0,pkat:'100',preg:'13000006',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kassa Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA31001',ettemaks:'',kp:'2027-01-09',arvesum:1250.0,kreeditkp:'',kom:'Kassapõhise käibemaksuarvestusega sisendkäibemaksu mahaarvamine (arve eest tasutud 100%)',diff:'sent'},
+  {id:163,nr:'',g:'sisend',kmk:'',type:'O_104',km:'0.24',sum:300.0,vat:0,pkat:'100',preg:'13000006',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kassa Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA31001',ettemaks:'',kp:'2027-01-09',arvesum:1250.0,kreeditkp:'',kom:'Kassapõhise käibemaksuarvestusega sisendkäibemaksu mahaarvamine (arve eest tasutud 100%)',diff:'sent'},
   {id:164,nr:'',g:'sisend',kmk:'19',type:'O_106',km:'0.09',sum:450.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Tollideklaratsiooni alusel tasutud impordi käibemaks',diff:'sent'},
   {id:165,nr:'',g:'sisend',kmk:'19',type:'O_106',km:'0.24',sum:720.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'KMD alusel (KMD rida 4.1) tasutud impordi käibemaks',diff:'sent'},
 {id:197,nr:'',g:'sisend',kmk:'1',type:'O_101',km:'0.24',sum:240.0,vat:0,pkat:'100',preg:'13000001',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Esindusisiku Sisendi Tehingupartner OÜ',grpkat:'300',grpreg:'10004321',grpdesc:'',grpnimi:'Grupi Esindusisik OÜ',riik:'',riiktaps:'',arvenr:'OA26001',ettemaks:'',kp:'2027-01-07',arvesum:1000.0,kreeditkp:'',kom:'Käibemaksugrupi esindusisiku sisendkäibemaks, mis on seadusega lubatud maha arvata',diff:'sent'},
@@ -934,33 +1013,33 @@ let rows=[
   {id:192,nr:'',g:'sislootu',kmk:'1',type:'O_101',km:'0.24',sum:-720.0,vat:-172.8,pkat:'100',preg:'13000003',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Lootusetu Nõude Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA17001',ettemaks:'',kp:'2025-07-25',arvesum:-720.0,kreeditkp:'',kom:'Lootusetu nõude sisendkäibemaks',diff:'sent'},
   {_h:'phiv'},
   {id:169,nr:'',g:'phiv',kmk:'22',type:'O_201',km:'0.24',sum:48000.0,vat:0,pkat:'100',preg:'13000007',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA32001',ettemaks:'',kp:'2027-01-10',arvesum:200000.0,kreeditkp:'',kom:'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks',diff:'sent'},
-  {id:170,nr:'',g:'phiv',kmk:'uus 56',type:'O_202',km:'0.24',sum:15000.0,vat:0,pkat:'100',preg:'13000008',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Osaline Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA33001',ettemaks:'',kp:'2027-01-11',arvesum:125000.0,kreeditkp:'',kom:'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks (osaline mahaarvamine 50%)',diff:'sent'},
-  {id:171,nr:'',g:'phiv',kmk:'uus 57',type:'O_203',km:'0.24',sum:3500.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)',diff:'sent'},
-  {id:172,nr:'',g:'phiv',kmk:'uus 58',type:'O_204',km:'0.24',sum:2300.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)',diff:'sent'},
+  {id:170,nr:'',g:'phiv',kmk:'',type:'O_202',km:'0.24',sum:15000.0,vat:0,pkat:'100',preg:'13000008',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Osaline Sisend OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA33001',ettemaks:'',kp:'2027-01-11',arvesum:125000.0,kreeditkp:'',kom:'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks (osaline mahaarvamine 50%)',diff:'sent'},
+  {id:171,nr:'',g:'phiv',kmk:'',type:'O_203',km:'0.24',sum:3500.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)',diff:'sent'},
+  {id:172,nr:'',g:'phiv',kmk:'',type:'O_204',km:'0.24',sum:2300.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)',diff:'sent'},
   {_h:'auto'},
   {id:173,nr:'',g:'auto',kmk:'32',type:'O_301',km:'0.24',sum:24000.0,vat:0,pkat:'100',preg:'13000009',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 100 OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA35001',ettemaks:'',kp:'2027-01-12',arvesum:100000.0,kreeditkp:'',kom:'Eestist soetatud nn 100% sõiduauto sisendkäibemaks',diff:'sent'},
-  {id:174,nr:'',g:'auto',kmk:'uus 59',type:'O_302',km:'0.24',sum:18000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 100% sõiduauto sisendkäibemaks',diff:'sent'},
-  {id:175,nr:'',g:'auto',kmk:'uus 60',type:'O_303',km:'0.24',sum:14400.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh komnurktehingu tingimustel nn 100% sõiduauto sisendkäibemaks',diff:'sent'},
+  {id:174,nr:'',g:'auto',kmk:'',type:'O_302',km:'0.24',sum:18000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 100% sõiduauto sisendkäibemaks',diff:'sent'},
+  {id:175,nr:'',g:'auto',kmk:'',type:'O_303',km:'0.24',sum:14400.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh komnurktehingu tingimustel nn 100% sõiduauto sisendkäibemaks',diff:'sent'},
   {id:176,nr:'',g:'auto',kmk:'33',type:'O_304',km:'0.24',sum:12000.0,vat:0,pkat:'100',preg:'13000010',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 50 OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA37001',ettemaks:'',kp:'2027-01-13',arvesum:100000.0,kreeditkp:'',kom:'Eestist soetatud nn 50% sõiduauto sisendkäibemaks',diff:'sent'},
-  {id:177,nr:'',g:'auto',kmk:'uus 61',type:'O_305',km:'0.24',sum:6000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 50% sõiduauto sisendkäibemaks',diff:'sent'},
-  {id:178,nr:'',g:'auto',kmk:'uus 62',type:'O_306',km:'0.24',sum:3000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto sisendkäibemaks',diff:'sent'},
+  {id:177,nr:'',g:'auto',kmk:'',type:'O_305',km:'0.24',sum:6000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 50% sõiduauto sisendkäibemaks',diff:'sent'},
+  {id:178,nr:'',g:'auto',kmk:'',type:'O_306',km:'0.24',sum:3000.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto sisendkäibemaks',diff:'sent'},
   {id:179,nr:'',g:'auto',kmk:'30',type:'O_307',km:'0.24',sum:240.0,vat:0,pkat:'100',preg:'13000011',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 100 Varuosad OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA39001',ettemaks:'',kp:'2027-01-15',arvesum:1000.0,kreeditkp:'',kom:'Eestist soetatud nn 100% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
-  {id:180,nr:'',g:'auto',kmk:'uus 63',type:'O_308',km:'0.24',sum:240.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 100% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
-  {id:181,nr:'',g:'auto',kmk:'uus 63',type:'O_308',km:'0.24',sum:240.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 100% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
+  {id:180,nr:'',g:'auto',kmk:'',type:'O_308',km:'0.24',sum:240.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 100% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
+  {id:181,nr:'',g:'auto',kmk:'',type:'O_308',km:'0.24',sum:240.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 100% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
   {id:182,nr:'',g:'auto',kmk:'31',type:'O_309',km:'0.24',sum:120.0,vat:0,pkat:'100',preg:'13000012',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 50 Varuosad OÜ',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA41001',ettemaks:'',kp:'2027-01-17',arvesum:1000.0,kreeditkp:'',kom:'Eestist soetatud nn 50% sõiduaoto varuosad sisendkäibemaks',diff:'sent'},
-  {id:183,nr:'',g:'auto',kmk:'uus 64',type:'O_310',km:'0.24',sum:110.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 50% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
-  {id:184,nr:'',g:'auto',kmk:'uus 64',type:'O_310',km:'0.24',sum:110.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
+  {id:183,nr:'',g:'auto',kmk:'',type:'O_310',km:'0.24',sum:110.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Imporditud nn 50% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
+  {id:184,nr:'',g:'auto',kmk:'',type:'O_310',km:'0.24',sum:110.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto varuosad sisendkäibemaks',diff:'sent'},
   {_h:'poordos'},
   {id:185,nr:'',g:'poordos',kmk:'26',type:'O_401',km:'0.24',sum:72.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba (v.a põhivara ja sõiduautod) ühendusesisese soetamise sisendkäibemaks',diff:'sent'},
-  {id:186,nr:'',g:'poordos',kmk:'uus 65',type:'O_402',km:'0.09',sum:81.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Teise liikmesriigi maksukohustuslaselt saadud teenuste sisendkäibemaks',diff:'sent'},
-  {id:187,nr:'',g:'poordos',kmk:'uus 66',type:'O_403',km:'0.09',sum:45.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingu tingimustel kauba soetamise sisendkäibemaks',diff:'sent'},
+  {id:186,nr:'',g:'poordos',kmk:'',type:'O_402',km:'0.09',sum:81.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Teise liikmesriigi maksukohustuslaselt saadud teenuste sisendkäibemaks',diff:'sent'},
+  {id:187,nr:'',g:'poordos',kmk:'',type:'O_403',km:'0.09',sum:45.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kolmnurktehingu tingimustel kauba soetamise sisendkäibemaks',diff:'sent'},
   {id:188,nr:'',g:'poordos',kmk:'28',type:'O_404',km:'0.24',sum:60.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Muu teenuse saamise sisendkäibemaks',diff:'sent'},
   {id:189,nr:'',g:'poordos',kmk:'21',type:'O_405',km:'0.24',sum:1440.0,vat:0,pkat:'100',preg:'13000013',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'OÜ EE Pöördmaks',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA45001',ettemaks:'',kp:'2027-01-21',arvesum:6000.0,kreeditkp:'',kom:'Siseriikliku pöörmaksu sisendkäibemaks',diff:'sent'},
   {_h:'arves'},
-  {id:190,nr:'',g:'arves',kmk:'uus 67',type:'O_501',km:'0.24',sum:204.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil',diff:'sent'},
+  {id:190,nr:'',g:'arves',kmk:'',type:'O_501',km:'0.24',sum:204.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil',diff:'sent'},
   {_h:'korr'},
-  {id:193,nr:'',g:'korr',kmk:'uus 68',type:'O_601',km:'0.24',sum:-240.0,vat:-57.6,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Korrigeerimise tulemusel sisendkäibemaks väheneb',diff:'sent'},
-  {id:194,nr:'',g:'korr',kmk:'uus 68',type:'O_601',km:'0.24',sum:120.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Korrigeerimise tulemusel sisendkäibemaks suureneb',diff:'sent'},
+  {id:193,nr:'',g:'korr',kmk:'',type:'O_601',km:'0.24',sum:-240.0,vat:-57.6,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Korrigeerimise tulemusel sisendkäibemaks väheneb',diff:'sent'},
+  {id:194,nr:'',g:'korr',kmk:'',type:'O_601',km:'0.24',sum:120.0,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Korrigeerimise tulemusel sisendkäibemaks suureneb',diff:'sent'},
         {_h:'main_A'},
   {_h:'arvkand'},
   {id:158,nr:'',g:'arvkand',kmk:'6',type:'A_101',km:'0.24',sum:850.0,vat:204.0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpdesc:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'24% määraga maksustatav arvestuslik kanne seoses näiteks imporditud kauba maksustatava väärtuse muutmisega käibedeklaratsioonil',diff:'sent'},
@@ -972,18 +1051,18 @@ function toggleFp(){
   document.getElementById('togBtn').textContent=(fpOpen?'◄':'►')+' Filtrid';
 }
 function applyFilters(){
-  activeFilters={from:document.getElementById('flt-from').value.trim(),to:document.getElementById('flt-to').value.trim(),reg:document.getElementById('flt-reg').value.trim(),sec:document.getElementById('flt-sec').value,kmk:document.getElementById('flt-kmk').value};
+  activeFilters={from:document.getElementById('flt-from').value.trim(),to:document.getElementById('flt-to').value.trim(),reg:document.getElementById('flt-reg').value.trim(),sec:'',kmk:document.getElementById('flt-kmk').value};
   renderTable();calcSummary();
 }
 function clearFilters(){
   ['flt-from','flt-to','flt-reg'].forEach(id=>document.getElementById(id).value='');
-  ['flt-sec','flt-kmk'].forEach(id=>document.getElementById(id).value='');
+  ['flt-kmk','filterSec'].forEach(id=>document.getElementById(id).value='');
   activeFilters={from:'',to:'',reg:'',sec:'',kmk:''};
   renderTable();calcSummary();
 }
 function removeFilter(key){
   activeFilters[key]='';
-  const m={from:'flt-from',to:'flt-to',reg:'flt-reg',sec:'flt-sec',kmk:'flt-kmk'};
+  const m={from:'flt-from',to:'flt-to',reg:'flt-reg',kmk:'flt-kmk'};
   const el=document.getElementById(m[key]);if(el)el.value='';
   renderTable();calcSummary();
 }
@@ -1106,7 +1185,7 @@ function toggleKomCol(){
   document.querySelectorAll('.col-desc').forEach(el=>el.classList.toggle('col-desc-hidden',!descColVisible));
   document.getElementById('descToggleBtn').style.opacity=descColVisible?'1':'0.5';
 }
-const KMDDESCS={'M_101':'standard- või soodusmääraga maksustatav käive, v.a ettemaks','M_102':'standard- või soodusmääraga maksustatav käive, käive tekib raha saamisest (ettemaks)','M_103':'standard- või soodusmääraga maksustatav käive, kassapõhine käibemaksuarvestus','M_104':'kasuminormi maksustamise kord - kasutatud kauba, originaalkunstiteose ning kollektsiooni- ja antiikeseme edasimüük','M_105':'kasuminormi maksustamise kord - reisibürood','M_106':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','M_201':'Kauba ühendusesisene käive','M_202':'0% määraga maksustatav teise liikmesriigi maksukohustuslasele osutatud teenuste käive, sh ettemaks','M_203':'kauba ühendusesisene käive, võõrandaja kolmnurktehingus','M_204':'Kauba ühendusesisene käive, edasimüüja kolmnurktehingus','M_205':'Kauba ühendusesisene käive, uus transpordivahend','M_206':'Kauba ühendusesisene käive, aktsiisikaup','M_207':'Kauba ühendusesisene käive, tolliagentuur','M_208':'Teises liikmesriigis paigaldatava või kokkupandava kauba maksustatav väärtus','M_209':'kauba eksport, sh ettemaks','M_210':'kauba eksport, käibemaksutagastusega müük reisijale (tax-free)','M_211':'0% määraga maksustatavad muud kaubad, sh ettemaks','M_212':'0% määraga maksustatavad muud teenused, sh ettemaks','M_213':'0% määraga maksustatav kasuminormi maksustamise kord - reisibürood','M_301':'maksuvaba käive','M_302':'ei ole käive','M_107':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','S_101':'kauba ühendusesisene soetamine','S_102':'teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'kolmnurktehingu tingimustel kauba soetamine','S_104':'muu kauba soetamine ja teenuse saamine','S_105':'erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','S_106':'kauba ühendusesisene maksuvaba soetamine','O_101':'sisendkäibemaksu summa, mis on seadusega lubatud maha arvata','O_102':'sisendkäibemaksu mahaarvamine osakaupa','O_103':'sisendkäibemaksu osaline mahaarvamine (KMS § 29, § 32, § 33)','O_104':'sisendkäibemaks, arve infot kajastamata','O_106':'impordilt tasutud või tasumisele kuuluv sisendkäibemaks','O_201':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks','O_202':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks, osaline mahaarvamine','O_203':'Imporditud põhivara sisendkäibemaks','O_204':'ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara','O_301':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (Eestist soetatud)','O_302':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (import)','O_303':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_304':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_305':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, import)','O_306':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_307':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (Eestist soetatud)','O_308':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_309':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_310':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_401':'sisendkäibemaks, kauba ühendusesisene soetamine, v.a põhivara ja sõiduautode soetamine','O_402':'sisendkäibemaks, teise liikmesriigi maksukohustuslaselt saadud teenused','O_404':'sisendkäibemaks, muu kauba soetamine ja teenuse saamine','O_405':'sisendkäibemaks, erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','O_501':'sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta, ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'sisendkäibemaksu korrigeerimise tulemusel sisendkäibemaksu vähenemine/suurenemine','A_101':'standard- või soodusmääraga arvestuslikud kanded'};
+const KMDDESCS={'M_101':'standard- või soodusmääraga maksustatav käive, sh ettemaks','M_102':'standard- või soodusmääraga maksustatav käive, kassapõhine käibemaksuarvestus','M_103':'kasuminormi maksustamise kord — kasutatud kauba, originaalkunstiteose ning kollektsiooni- ja antiikeseme edasimüük','M_104':'kasuminormi maksustamise kord — reisibürood','M_105':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','M_106':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja), segaarve sh standard/soodusmääraga käive','M_107':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja), segaarve sh erikorra käive','M_106':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','M_201':'Kauba ühendusesisene käive','M_202':'0% määraga maksustatav teise liikmesriigi maksukohustuslasele osutatud teenuste käive, sh ettemaks','M_203':'kauba ühendusesisene käive, võõrandaja kolmnurktehingus','M_204':'Kauba ühendusesisene käive, edasimüüja kolmnurktehingus','M_205':'Kauba ühendusesisene käive, uus transpordivahend','M_206':'Kauba ühendusesisene käive, aktsiisikaup','M_207':'Kauba ühendusesisene käive, tolliagentuur','M_208':'Teises liikmesriigis paigaldatava või kokkupandava kauba maksustatav väärtus','M_209':'kauba eksport, sh ettemaks','M_210':'kauba eksport, käibemaksutagastusega müük reisijale (tax-free)','M_211':'0% määraga maksustatavad muud kaubad, sh ettemaks','M_212':'0% määraga maksustatavad muud teenused, sh ettemaks','M_213':'0% määraga maksustatav kasuminormi maksustamise kord - reisibürood','M_301':'maksuvaba käive','M_302':'ei ole käive','M_107':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','S_101':'kauba ühendusesisene soetamine','S_102':'teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'kolmnurktehingu tingimustel kauba soetamine','S_104':'muu kauba soetamine ja teenuse saamine','S_105':'erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','S_106':'kauba ühendusesisene maksuvaba soetamine','O_101':'sisendkäibemaksu summa, mis on seadusega lubatud maha arvata','O_102':'sisendkäibemaksu mahaarvamine osakaupa','O_103':'sisendkäibemaksu osaline mahaarvamine (KMS § 29, § 32, § 33)','O_104':'sisendkäibemaks, arve infot kajastamata','O_106':'impordilt tasutud või tasumisele kuuluv sisendkäibemaks','O_201':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks','O_202':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks, osaline mahaarvamine','O_203':'Imporditud põhivara sisendkäibemaks','O_204':'ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara','O_301':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (Eestist soetatud)','O_302':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (import)','O_303':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_304':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_305':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, import)','O_306':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_307':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (Eestist soetatud)','O_308':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_309':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_310':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_401':'sisendkäibemaks, kauba ühendusesisene soetamine, v.a põhivara ja sõiduautode soetamine','O_402':'sisendkäibemaks, teise liikmesriigi maksukohustuslaselt saadud teenused','O_404':'sisendkäibemaks, muu kauba soetamine ja teenuse saamine','O_405':'sisendkäibemaks, erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','O_501':'sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta, ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'sisendkäibemaksu korrigeerimise tulemusel sisendkäibemaksu vähenemine/suurenemine','A_101':'standard- või soodusmääraga arvestuslikud kanded'};
 const KMDKOMS={'M_101':'Tavapärane 22% käibe deklareerimine, kus arve saajaks Eesti juriidiline isik','M_102':'Käive on tekkinud osaliselt tasutud ettemaksuarve alusel, st käive on tekkinud 2500 euro ulatuses','M_103':'Kassapõhise käibemaksuarvestuse rakendajale on arve eest osaliselt tasutud 500 eurot, st käive on tekkinud 500 euro ulatuses','M_104':'Kasutatud kauba edasimüük soetusmaksumusega 1500 eurot (marginaal 500 eurot)','M_105':'Reisiteenuse müük füüsilisele isikule marginaliga 45 eurot','M_106':'Nn siseriikliku pöördmaksustamise deklareerimine (müüja)','M_201':'Kauba ühendusesisese käibe deklareerimine','M_202':'Ühendusesisese teenuse käibe deklareerimine','M_203':'Kolmnurktehingus võõrandaja poolt kauba ühendusesisese käibe deklareerimine','M_204':'Kolmnurktehingus edasimüüja poolt käibe deklareerimine kolmnurktehinguna','M_205':'Uue transpordivahendi võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_206':'Aktsiisikauba võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_207':'Tolliagentuuri poolt deklareeritav kauba ühendusesisene käive kauba importja eest (tolliprotseduuri kood 42)','M_208':'Teises liikmesriigis võõrandaja poolt või eest paigaldatava või kokkupandava kauba võõrandamisel ja paigaldamisel või kokku panemisel tekkinud kauba käive, mis kuulub maksustamisele kauba sihtriigis','M_209':'Kauba eksport','M_210':'Tax free müük reisijale (käibemaksutagastusega müük). Käibemaksutagastuse müügi kviitungile on käibe deklareerimiseks kinnitus saadud.','M_211':'Eestisisene 0% määraga maksustatav kauba käive, kus arve saajaks on Eesti juriidiline isik','M_212':'Eestisisene 0% määraga maksustatav teenuse käive, kus arve saajaks on Eesti juriidiline isik','M_213':'Reisiteenuse müük juriidilisele isikule marginaliga 45 eurot (soetusmaksumus 450 eurot)','M_301':'Maksuvaba käive Eesti juriidilisele isikule','M_302':'Arve sisaldab muu hulgas käibena mittekäsitatavaid tehinguid','M_107':'Arve sisaldab nii siseriikliku pöördmaksustamise erikorra käivet kui ka 22% määraga maksustavat käivet','S_101':'Kauba ühendusesisene soetamine','S_102':'Teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'Kolmnurktehingu tingimustel kauba soetamine','S_104':'Muu kauba soetamine ja teenuse saamine','S_105':'Erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine (KMS § 411)','S_106':'Kauba ühendusesisene maksuvaba soetamine','O_101':'Sisendkäibemaks, mis on seadusega lubatud maha arvata','O_102':'Sisendkäibemaksu mahaarvamine tasumise ulatuses (50%)','O_103':'Sisendkäibemaksu osaline mahaarvamine proportsiooniga 50%','O_104':'Sisendkäibemaks mahaarvamine arve alusel, millele laieneb kutse- ja ametisaladuse hoidmise kohustus','O_106':'Tollideklaratsiooni alusel tasutud impordi käibemaks','O_201':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks','O_202':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks (osaline mahaarvamine 50%)','O_203':'Imporditud põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_204':'Ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_301':'Eestist soetatud nn 100% sõiduauto sisendkäibemaks','O_302':'Imporditud nn 100% sõiduauto sisendkäibemaks','O_303':'Ühendusesiseselt soetatud, sh komnurktehingu tingimustel nn 100% sõiduauto sisendkäibemaks','O_304':'Eestist soetatud nn 50% sõiduauto sisendkäibemaks','O_305':'Imporditud nn 50% sõiduauto sisendkäibemaks','O_306':'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto sisendkäibemaks','O_307':'Eestist soetatud nn 100% sõiduaoto varuosad sisendkäibemaks','O_308':'Imporditud nn 100% sõiduauto varuosad sisendkäibemaks','O_309':'Eestist soetatud nn 50% sõiduaoto varuosad sisendkäibemaks','O_310':'Imporditud nn 50% sõiduauto varuosad sisendkäibemaks','O_401':'Kauba (v.a põhivara ja sõiduautod) ühendusesisese soetamise sisendkäibemaks','O_402':'Teise liikmesriigi maksukohustuslaselt saadud teenuste sisendkäibemaks','O_404':'Muu teenuse saamise sisendkäibemaks','O_405':'Siseriikliku pöörmaksu sisendkäibemaks','O_501':'Sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'Sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta; ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'Korrigeerimise tulemusel sisendkäibemaks suureneb','A_101':'22% määraga maksustatav arvestuslik kanne seoses imporditud kauba maksustatava väärtuse muutmisega käibedeklaratsioonil'};
 const bilanKontod={myk:[],sik:[]};
 
@@ -1244,18 +1323,17 @@ function toggleFold(id){
 
 function buildKmkAll(){
   const used=[...new Set(rows.filter(r=>!r._h&&r.diff!=='del').map(r=>r.kmk).filter(Boolean))].sort((a,b)=>+a-+b);
-  const opts='<option value="">Kõik KMK-d</option>'+used.map(k=>{const m=getKmk(k);return'<option value="'+k+'">'+k+(m?' — '+m.sel.slice(0,22):'')+'</option>';}).join('');
-  ['filterKmk','flt-kmk'].forEach(id=>{const el=document.getElementById(id);if(el){const c=el.value;el.innerHTML=opts;el.value=c;}});
+  const opts='<option value="">Kõik</option>'+used.map(k=>{const m=getKmk(k);return'<option value="'+k+'">'+(m?kmkDisp(m):k)+'</option>';}).join('');
+  const el=document.getElementById('flt-kmk');if(el){const c=el.value;el.innerHTML=opts;el.value=c;}
 }
 function buildKmkForm(){
   document.getElementById('f-kmk').innerHTML='<option value="">— vali KMK —</option>'+KMK.map(m=>'<option value="'+m.kood+'">'+m.kood+' — '+m.sel+'</option>').join('');
 }
 function matchRow(r){
   const q=(document.getElementById('search').value||'').toLowerCase();
-  const sec=document.getElementById('filterSec').value,kmkF=document.getElementById('filterKmk').value;
+  const sec=document.getElementById('filterSec').value,kmkF=document.getElementById('flt-kmk').value;
   const s=TYPES[r.type]||'';
-  if(sec==='M_1'&&s!=='M_1')return false;if(sec==='M_2'&&s!=='M_2')return false;if(sec==='M_3'&&s!=='M_3')return false;
-  if(sec==='S_'&&s!=='S_')return false;if(sec==='O_'&&s!=='O_')return false;if(sec==='A_'&&s!=='A_')return false;
+  if(sec&&r.type!==sec)return false;
   if(kmkF&&String(r.kmk)!==kmkF)return false;
   if(q){const h=(r.type+r.preg+r.pnimi+r.arvenr+r.kom+(r.kmk||'')+r.riik).toLowerCase();if(!h.includes(q))return false;}
   return true;
@@ -1265,7 +1343,7 @@ function rowHtml(r,mId,mdId,tId){
   const neg=parseFloat(r.sum)<0,sec=TYPES[r.type]||'';
   const kmLbl=r.km===''?'':(parseFloat(r.km)*100).toFixed(0)+'%';
   const m=getKmk(r.kmk);
-  const kmkC=m?'<span title="'+m.sel+'" style="font-size:11px">'+m.kood+'</span>':(r.kmk?'<span style="font-size:11px">'+r.kmk+'</span>':'');
+  const kmkC=m?'<span title="'+m.sel+'" style="font-size:11px">'+kmkDisp(m)+'</span>':(r.kmk?'<span style="font-size:11px">'+r.kmk+'</span>':'');
   const d=t=>t?'<span class="cat-b">'+t+'</span>':'';
   let acts='';
   if(r.diff==='del'){
@@ -1321,7 +1399,7 @@ function fixStickyHeaders(){
   theadRows[1].querySelectorAll('th').forEach(th => { th.style.top = h1 + 'px'; });
 }
 function renderTable(){
-  const flt=document.getElementById('search').value||document.getElementById('filterSec').value||document.getElementById('filterKmk').value;
+  const flt=document.getElementById('search').value||document.getElementById('filterSec').value||document.getElementById('flt-kmk').value;
   let html='',cnt=0,lineNr=0;
   if(flt){rows.filter(r=>!r._h&&matchRow(r)).forEach(r=>{r._nr=++lineNr;html+=rowHtml(r);cnt++;});}
   else{
@@ -1558,34 +1636,42 @@ const KMDNAMES={
 
     const pc=pCls(types[0]);
     html+='<div class="stbl" style="margin-bottom:10px">';
-    html+='<table>';
+    html+='<table style="table-layout:fixed;width:100%">'
+      +'<colgroup>'
+      +'<col style="width:90px"/>'
+      +'<col/>'
+      +'<col style="width:190px"/>'
+      +'<col style="width:60px"/>'
+      +'<col style="width:130px"/>'
+      +'<col style="width:110px"/>'
+      +'</colgroup>';
     // Põhigrupi päis
     html+='<thead>';
     html+='<tr style="background:var(--blue)">'
-      +'<th colspan="5" style="font-size:12px;padding:6px 8px;letter-spacing:.02em">'+mg.label+'</th>'
+      +'<th colspan="4" style="font-size:12px;padding:6px 8px;letter-spacing:.02em">'+mg.label+'</th>'
       +'<th style="text-align:right;font-size:11px;padding:6px 8px">'+fmt(gtSum)+'</th>'
       +'<th style="text-align:right;font-size:11px;padding:6px 8px">'+fmt(gtVat)+'</th>'
       +'</tr>';
-    html+='<tr style="background:var(--blue-lt)">'
-      +'<th style="color:var(--blue-dk)">KMD tüüp</th>'
-      +'<th style="color:var(--blue-dk);min-width:260px;white-space:normal">KMD tüübi kommentaar</th>'
-      +'<th style="color:var(--blue-dk)">KMK-d</th>'
-      +'<th style="color:var(--blue-dk)">Kirjeid</th>'
-      +'<th style="color:var(--blue-dk);text-align:right" colspan="2">Dekl. summa</th>'
-      +'<th style="color:var(--blue-dk);text-align:right">KM (&euro;)</th>'
+    html+='<tr style="background:var(--blue)">'
+      +'<th style="color:#fff">KMD tüüp</th>'
+      +'<th style="color:#fff;white-space:normal">KMD tüübi kommentaar</th>'
+      +'<th style="color:#fff">D KMK%</th>'
+      +'<th style="color:#fff;text-align:center">Kirjeid</th>'
+      +'<th style="color:#fff;text-align:right">Dekl. summa</th>'
+      +'<th style="color:#fff;text-align:right">KM (&euro;)</th>'
       +'</tr>';
     html+='</thead><tbody>';
 
     types.forEach(t=>{
       const d=byType[t];
-      const kmks=[...d.kmks].sort((a,b)=>+a-+b).map(k=>'<span class="kmk-b">'+k+'</span>').join(' ')||'—';
+      const kmks=[...d.kmks].sort((a,b)=>+a-+b).map(k=>{const m=getKmk(k);return'<span class="kmk-b" title="'+(m?m.sel:k)+'">'+(m?kmkDisp(m):k)+'</span>';}).join(' ')||'—';
       const neg=d.sum<0?';color:var(--red)':'';
       html+='<tr>'
         +'<td><span class="pill '+pCls(t)+'">'+t+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text2);white-space:normal;max-width:260px">'+(KMDNAMES[t]||'')+'</td>'
-        +'<td>'+kmks+'</td>'
-        +'<td class="muted">'+d.n+'</td>'
-        +'<td style="text-align:right;font-family:monospace;font-size:11px'+neg+'" colspan="2">'+fmt(d.sum)+'</td>'
+        +'<td style="font-size:11px;color:var(--text2);white-space:normal">'+(KMDNAMES[t]||'')+'</td>'
+        +'<td style="white-space:normal">'+kmks+'</td>'
+        +'<td class="muted" style="text-align:center">'+d.n+'</td>'
+        +'<td style="text-align:right;font-family:monospace;font-size:11px'+neg+'">'+fmt(d.sum)+'</td>'
         +'<td style="text-align:right;font-family:monospace;font-size:11px">'+fmt(d.vat)+'</td>'
         +'</tr>';
     });
@@ -1594,7 +1680,7 @@ const KMDNAMES={
     const gtNeg=gtSum<0?';color:var(--red)':'';
     html+='<tr style="background:var(--blue-lt);font-weight:bold;border-top:1px solid var(--blue-mid)">'
       +'<td colspan="4" style="color:var(--blue-dk)">Kokku</td>'
-      +'<td style="text-align:right;font-family:monospace'+gtNeg+'" colspan="2">'+fmt(gtSum)+'</td>'
+      +'<td style="text-align:right;font-family:monospace'+gtNeg+'">'+fmt(gtSum)+'</td>'
       +'<td style="text-align:right;font-family:monospace">'+fmt(gtVat)+'</td>'
       +'</tr>';
 
@@ -1620,7 +1706,146 @@ function openValidate(){
   });
   if(!errs.length){setWorkflowState('validated');alert('&#10003; Valideeritud — vigu ei leitud.\nAndmed on valmis saatmiseks.');}else{alert('Valideerimise vead ('+errs.length+'):\n\n'+errs.map((e,i)=>(i+1)+'. '+e).join('\n'));}
 }
-function openXml(){alert('XML genereerimisel:\n1. Valideeritakse XML faili struktuur (XBRL GL nõuded)\n2. Kontrollitakse kohustuslike väljade olemasolu\n3. Fail allalaaditakse\n\nDirecto KMK väljad jäetakse XMList välja.');}
+function openXml(){
+  const reg=(document.getElementById('flt-reg').value||'').trim();
+  const fromStr=(document.getElementById('flt-from').value||'').trim();
+  const toStr=(document.getElementById('flt-to').value||'').trim();
+  const srcApp=(document.getElementById('xml-src-app').value||'Directo').trim();
+  const creator=(document.getElementById('xml-creator').value||'').trim()||reg;
+  const srcId=(document.getElementById('xml-src-id').value||'').trim();
+  const srcCnt=(document.getElementById('xml-src-cnt').value||'').trim();
+  const pankrot=(document.getElementById('xml-pankrot').value||'').trim();
+  if(!reg){alert('Registrikood on kohustuslik (filtripaneel → Registrikood).');return;}
+  function eeToIso(s){if(!s)return'';const p=s.split('.');if(p.length!==3)return s;return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function fmtAmt(v){return(parseFloat(v)||0).toFixed(2);}
+  function fmtRate(v){return(parseFloat(v)||0).toFixed(3);}
+  const now=new Date();
+  const cd=now.toISOString().slice(0,10);
+  const ms=String(now.getMilliseconds()).padStart(3,'0');
+  const ts=now.toTimeString().slice(0,8);
+  const uniqueID=reg+'-'+cd+'T'+ts+'.'+ms;
+  const pStart=eeToIso(fromStr);
+  const pEnd=eeToIso(toStr);
+  const activeRows=rows.filter(r=>!r._h&&r.diff!=='del');
+  if(!activeRows.length){alert('Pole kirjeid eksportimiseks.');return;}
+  let x='<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n';
+  x+='<!-- Käibemaksuga seotud tehingute ja toimingute andmete andmepõhise aruandluse fail XBRL Global Ledger standardi baasil -->\n';
+  x+='<xbrli:xbrl\n';
+  x+='\txmlns:xbrli="http://www.xbrl.org/2003/instance"\n';
+  x+='\txmlns:xlink="http://www.w3.org/1999/xlink"\n';
+  x+='\txmlns:xbrll="http://www.xbrl.org/2003/linkbase"\n';
+  x+='\txsi:schemaLocation="https://xbrl.eesti.ee/gl/plt/2026-03-31 https://xbrl.eesti.ee/gl/ext/2026-03-31/gl/plt/case-c-b-e/gl-plt-2026-03-31.xsd"\n';
+  x+='\txmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n';
+  x+='\txmlns:gl-cor="http://www.xbrl.org/int/gl/cor/2015-03-25"\n';
+  x+='\txmlns:gl-ext="https://xbrl.eesti.ee/gl/ext/2026-03-31"\n';
+  x+='\txmlns:iso639="http://www.xbrl.org/2005/iso639"\n';
+  x+='\txmlns:iso4217="http://www.xbrl.org/2003/iso4217"\n';
+  x+='\txmlns:gl-bus="http://www.xbrl.org/int/gl/bus/2015-03-25">\n';
+  x+='\t<xbrll:schemaRef xlink:href="https://xbrl.eesti.ee/gl/ext/2026-03-31/gl/plt/case-c-b-e/gl-plt-2026-03-31.xsd" xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase" xlink:type="simple"/>\n';
+  x+='\t<xbrli:context id="now">\n';
+  x+='\t\t<xbrli:entity><xbrli:identifier scheme="ARIREGISTRIKOOD">'+esc(reg)+'</xbrli:identifier></xbrli:entity>\n';
+  x+='\t\t<xbrli:period><xbrli:instant>'+cd+'</xbrli:instant></xbrli:period>\n';
+  x+='\t</xbrli:context>\n';
+  x+='\t<xbrli:unit id="EUR"><xbrli:measure>iso4217:EUR</xbrli:measure></xbrli:unit>\n';
+  x+='\t<xbrli:unit id="pureRef"><xbrli:measure>pure</xbrli:measure></xbrli:unit>\n';
+  x+='\t<xbrli:unit id="NotUsed"><xbrli:measure>pure</xbrli:measure></xbrli:unit>\n';
+  x+='\t<gl-cor:accountingEntries>\n';
+  x+='\t\t<gl-cor:documentInfo>\n';
+  x+='\t\t\t<gl-cor:entriesType contextRef="now">other</gl-cor:entriesType>\n';
+  x+='\t\t\t<gl-cor:uniqueID contextRef="now">'+esc(uniqueID)+'</gl-cor:uniqueID>\n';
+  x+='\t\t\t<gl-cor:language contextRef="now">iso639:et</gl-cor:language>\n';
+  x+='\t\t\t<gl-cor:creationDate contextRef="now">'+cd+'</gl-cor:creationDate>\n';
+  x+='\t\t\t<gl-bus:creator contextRef="now">'+esc(creator)+'</gl-bus:creator>\n';
+  x+='\t\t\t<gl-cor:entriesComment contextRef="now">Käibemaksuga seotud tehingute ja toimingute andmed Maksu- ja Tolliametile</gl-cor:entriesComment>\n';
+  if(pStart)x+='\t\t\t<gl-cor:periodCoveredStart contextRef="now">'+pStart+'</gl-cor:periodCoveredStart>\n';
+  if(pEnd)x+='\t\t\t<gl-cor:periodCoveredEnd contextRef="now">'+pEnd+'</gl-cor:periodCoveredEnd>\n';
+  if(pankrot)x+='\t\t\t<gl-ext:periodExtraIdentifier contextRef="now">'+esc(pankrot)+'</gl-ext:periodExtraIdentifier>\n';
+  x+='\t\t\t<gl-bus:sourceApplication contextRef="now">'+esc(srcApp)+'</gl-bus:sourceApplication>\n';
+  x+='\t\t</gl-cor:documentInfo>\n';
+  x+='\t\t<gl-cor:entityInformation>\n';
+  x+='\t\t\t<gl-bus:organizationIdentifiers>\n';
+  x+='\t\t\t\t<gl-bus:organizationIdentifier contextRef="now">'+esc(reg)+'</gl-bus:organizationIdentifier>\n';
+  x+='\t\t\t\t<gl-bus:organizationDescription contextRef="now">ARIREGISTRIKOOD</gl-bus:organizationDescription>\n';
+  x+='\t\t\t</gl-bus:organizationIdentifiers>\n';
+  x+='\t\t</gl-cor:entityInformation>\n';
+  x+='\t\t<gl-cor:entryHeader>\n';
+  x+='\t\t\t<gl-cor:entryNumber contextRef="now">EE0203001</gl-cor:entryNumber>\n';
+  x+='\t\t\t<gl-ext:entryVersion contextRef="now">1.0</gl-ext:entryVersion>\n';
+  if(srcId)x+='\t\t\t<gl-ext:entrySourceId contextRef="now">'+esc(srcId)+'</gl-ext:entrySourceId>\n';
+  if(srcCnt&&parseInt(srcCnt)>0)x+='\t\t\t<gl-ext:entrySourceCount contextRef="now">'+parseInt(srcCnt)+'</gl-ext:entrySourceCount>\n';
+  activeRows.forEach(function(r,idx){
+    var ln=idx+1;
+    x+='\n\t\t\t<!-- '+(r.kom?esc(r.kom.slice(0,80)):esc(r.type))+' -->\n';
+    x+='\t\t\t<gl-cor:entryDetail>\n';
+    x+='\t\t\t\t<gl-cor:lineNumberCounter contextRef="now" unitRef="NotUsed">'+ln+'</gl-cor:lineNumberCounter>\n';
+    x+='\t\t\t\t<gl-cor:account>\n';
+    x+='\t\t\t\t\t<gl-cor:accountSub>\n';
+    x+='\t\t\t\t\t\t<gl-cor:accountSubID contextRef="now">'+esc(r.type)+'</gl-cor:accountSubID>\n';
+    x+='\t\t\t\t\t\t<gl-cor:accountSubType contextRef="now">KMDTYYP2026ap</gl-cor:accountSubType>\n';
+    x+='\t\t\t\t\t</gl-cor:accountSub>\n';
+    if(r.riik){
+      x+='\t\t\t\t\t<gl-cor:accountSub>\n';
+      x+='\t\t\t\t\t\t<gl-cor:accountSubID contextRef="now">'+esc(r.riik.toUpperCase())+'</gl-cor:accountSubID>\n';
+      x+='\t\t\t\t\t\t<gl-cor:accountSubType contextRef="now">RTK2T2013ap</gl-cor:accountSubType>\n';
+      x+='\t\t\t\t\t\t<gl-cor:segmentParentTuple>\n';
+      x+='\t\t\t\t\t\t\t<gl-cor:parentSubaccountCode contextRef="now">RR_ostja</gl-cor:parentSubaccountCode>\n';
+      x+='\t\t\t\t\t\t\t<gl-cor:parentSubaccountType contextRef="now">RIIGIROLL2022ap</gl-cor:parentSubaccountType>\n';
+      x+='\t\t\t\t\t\t</gl-cor:segmentParentTuple>\n';
+      x+='\t\t\t\t\t</gl-cor:accountSub>\n';
+    }
+    x+='\t\t\t\t</gl-cor:account>\n';
+    x+='\t\t\t\t<gl-cor:amount contextRef="now" decimals="2" unitRef="EUR">'+fmtAmt(r.sum)+'</gl-cor:amount>\n';
+    if(r.pkat){
+      x+='\t\t\t\t<gl-cor:identifierReference>\n';
+      if(r.preg)x+='\t\t\t\t\t<gl-cor:identifierCode contextRef="now">'+esc(r.preg)+'</gl-cor:identifierCode>\n';
+      if(r.pkoodtaps)x+='\t\t\t\t\t<gl-cor:identifierDescription contextRef="now">'+esc(r.pkoodtaps)+'</gl-cor:identifierDescription>\n';
+      x+='\t\t\t\t\t<gl-cor:identifierCategory contextRef="now">'+esc(r.pkat)+'</gl-cor:identifierCategory>\n';
+      x+='\t\t\t\t</gl-cor:identifierReference>\n';
+    }
+    if(r.grpkat&&r.grpreg){
+      x+='\t\t\t\t<gl-cor:identifierReference>\n';
+      x+='\t\t\t\t\t<gl-cor:identifierCode contextRef="now">'+esc(r.grpreg)+'</gl-cor:identifierCode>\n';
+      if(r.grpdesc)x+='\t\t\t\t\t<gl-cor:identifierDescription contextRef="now">'+esc(r.grpdesc)+'</gl-cor:identifierDescription>\n';
+      x+='\t\t\t\t\t<gl-cor:identifierCategory contextRef="now">'+esc(r.grpkat)+'</gl-cor:identifierCategory>\n';
+      x+='\t\t\t\t</gl-cor:identifierReference>\n';
+    }
+    if(r.arvenr)x+='\t\t\t\t<gl-cor:documentNumber contextRef="now">'+esc(r.arvenr)+'</gl-cor:documentNumber>\n';
+    if(r.ettemaks)x+='\t\t\t\t<gl-cor:documentApplyToNumber>'+esc(r.ettemaks)+'</gl-cor:documentApplyToNumber>\n';
+    if(r.kp)x+='\t\t\t\t<gl-cor:documentDate contextRef="now">'+esc(r.kp)+'</gl-cor:documentDate>\n';
+    if(r.arvesum&&parseFloat(r.arvesum)!==0){
+      x+='\t\t\t\t<gl-bus:measurable>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableID contextRef="now">ARVE_KOGUSUMMA</gl-bus:measurableID>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableIDSchema contextRef="now">MEASURABLEQUANTITY_enum</gl-bus:measurableIDSchema>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableQuantity contextRef="now" decimals="2" unitRef="EUR">'+fmtAmt(r.arvesum)+'</gl-bus:measurableQuantity>\n';
+      x+='\t\t\t\t</gl-bus:measurable>\n';
+    }
+    if(r.kreeditkp){
+      x+='\t\t\t\t<gl-bus:measurable>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableID contextRef="now">ALGSE_ARVE_KP</gl-bus:measurableID>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableIDSchema contextRef="now">SYNDMUS2017ap</gl-bus:measurableIDSchema>\n';
+      x+='\t\t\t\t\t<gl-bus:measurableStartDateTime contextRef="now">'+esc(r.kreeditkp)+'</gl-bus:measurableStartDateTime>\n';
+      x+='\t\t\t\t</gl-bus:measurable>\n';
+    }
+    if(r.km!==''&&r.km!==undefined&&r.km!=='max'){
+      x+='\t\t\t\t<gl-cor:taxes>\n';
+      x+='\t\t\t\t\t<gl-cor:taxPercentageRate contextRef="now" decimals="3" unitRef="pureRef">'+fmtRate(r.km)+'</gl-cor:taxPercentageRate>\n';
+      x+='\t\t\t\t</gl-cor:taxes>\n';
+    }
+    x+='\t\t\t</gl-cor:entryDetail>\n';
+  });
+  x+='\t\t</gl-cor:entryHeader>\n';
+  x+='\t</gl-cor:accountingEntries>\n';
+  x+='</xbrli:xbrl>\n';
+  var blob=new Blob([x],{type:'application/xml;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  var fn='KMD_APA_'+reg+'_'+(pStart||cd).replace(/-/g,'')+'_'+(pEnd||cd).replace(/-/g,'')+'.xml';
+  a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('✓ XML genereeritud: '+fn+'\n'+activeRows.length+' kirjet eksportitud.');
+}
 
 // ── Töövoo olek ───────────────────────────────────────────────────────────────
 // olek: 'idle' | 'validated' | 'sent' | 'kontrolli_ok' | 'kontrolli_err' | 'kinnitatud'
@@ -1758,6 +1983,25 @@ function confirmPin2(){
 // ── Uuenda confirmSend et muuta töövoo olekut ─────────────────────────────────
 const _origConfirmSend = confirmSend;
 
+function toggleSettings(){document.getElementById('settingsPanel').classList.toggle('open');}
+function saveSettings(){
+  const s={app:document.getElementById('xml-src-app').value,creator:document.getElementById('xml-creator').value,srcId:document.getElementById('xml-src-id').value,srcCnt:document.getElementById('xml-src-cnt').value,pankrot:document.getElementById('xml-pankrot').value};
+  localStorage.setItem('kmd_xml_settings',JSON.stringify(s));
+}
+function loadSettings(){
+  try{const s=JSON.parse(localStorage.getItem('kmd_xml_settings')||'{}');
+    if(s.app!==undefined)document.getElementById('xml-src-app').value=s.app;
+    if(s.creator)document.getElementById('xml-creator').value=s.creator;
+    if(s.srcId)document.getElementById('xml-src-id').value=s.srcId;
+    if(s.srcCnt)document.getElementById('xml-src-cnt').value=s.srcCnt;
+    if(s.pankrot)document.getElementById('xml-pankrot').value=s.pankrot;
+  }catch(e){}
+}
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('settingsPanel');
+  if(panel&&panel.classList.contains('open')&&!panel.closest('.settings-wrap').contains(e.target)){panel.classList.remove('open');}
+});
+loadSettings();
 buildKmkAll();buildKmkForm();renderTable();setWorkflowState('idle');
 </script>
 </body>
