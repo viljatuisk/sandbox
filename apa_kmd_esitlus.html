@@ -439,54 +439,44 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 
 <!-- SLAID 10: AGREGEERIMINE -->
 <div class="slide" data-title="6.3 Andmete agregeerimine">
-  <div class="s-header"><div class="pre">5.3 Arendus</div><h2>Andmete agregeerimine — 1000 € loogika</h2></div>
-  <div class="s-body">
-    <div class="box box-orange" style="margin-bottom:6px">
-      <h3>⚠ Oluline reegel</h3>
-      <p>Piirmäär 1000 € arvutatakse <strong>tehingupartneri perioodi kogusumma järgi</strong>, mitte üksiku arve järgi. Directo peab perioodi lõpus tagasi vaatama — kui sama partneri kõigi arvete kogusumma ületas 1000 €, tuleb <em>kõik</em> detailselt.</p>
+  <div class="s-header"><div class="pre">5.3 Arendus</div><h2>Andmete agregeerimine — 1000 € loogika &amp; segaarve</h2></div>
+  <div class="s-body" style="gap:8px">
+    <div class="box box-orange" style="padding:8px 12px">
+      <h3>⚠ Piirmäär 1000 € — tehingupartneri perioodi kogusumma järgi</h3>
+      <p>Kui sama partneri kõigi arvete kogusumma perioodis ületas 1000 €, tuleb <em>kõik</em> arvelt detailselt. Sama KMD tüübiga read samalt arvelt summeeritakse ühte XML kirjesse.</p>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Olukord</th><th>Käsitlus</th><th>identifierCategory</th></tr></thead>
+        <thead><tr><th>Olukord</th><th>Käsitlus</th><th style="white-space:nowrap">id.Category</th></tr></thead>
         <tbody>
-          <tr><td><strong>Füüsiline isik</strong></td><td>Alati agregeeritult, summast sõltumata</td><td class="code">200</td></tr>
-          <tr><td><strong>Juriidiline isik, periood &lt; 1000 €</strong></td><td>Agregeeritult, partneri andmeid ei esitata</td><td class="code">103</td></tr>
-          <tr><td><strong>Juriidiline isik, periood ≥ 1000 €</strong></td><td>Detailselt arve kaupa, registrikood kohustuslik</td><td class="code">100</td></tr>
+          <tr><td><strong>Füüsiline isik</strong></td><td>Alati agregeeritult</td><td class="code">200</td></tr>
+          <tr><td><strong>Juriidiline &lt; 1000 €</strong></td><td>Agregeeritult, partneri andmeid ei esitata</td><td class="code">103</td></tr>
+          <tr><td><strong>Juriidiline ≥ 1000 €</strong></td><td>Detailselt arve kaupa, reg-kood kohustuslik</td><td class="code">100</td></tr>
           <tr><td><strong>Segaarve</strong><br/><span class="muted">mitmed KM käsitlused ühel arvel</span></td><td>Lisatunnus, piirmäär kehtib endiselt</td><td class="code">104</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="box box-blue">
-      <h3>Arveridade koondamine</h3>
-      <p>Sama KMD tüübiga kanded samalt arvelt summeeritakse ühte XML kirjesse.<br/>
-      <strong>Näide:</strong> 10-realine arve (5 rida 24% + 5 rida 9%) → XML-is <strong>2 kirjet</strong></p>
-    </div>
-  </div>
-</div>
-
-<!-- SLAID 11: SEGAARVE NÄIDE -->
-<div class="slide" data-title="6.3 Segaarve näide">
-  <div class="s-header"><div class="pre">5.3 Arendus — Näide</div><h2>Segaarve (identifierCategory: 104)</h2></div>
-  <div class="s-body">
-    <div class="box box-blue" style="margin-bottom:6px">
-      <h3>Olukord</h3>
-      <p>Klient on juriidiline isik. Arvel on kaks rida:<br/>
-      <strong>22%-ga maksustatav käive: 1 000 €</strong> + <strong>Maksuvaba käive: 3 000 €</strong> → Arve kogusumma: <strong>4 000 €</strong></p>
-    </div>
-    <div class="example">
-      <h3>Reegel: kasvõi üks maksustatav rida → kõik read detailselt</h3>
-      <table>
-        <thead><tr><th>Kirje</th><th>KMD tüüp</th><th>Summa</th><th>identifierCategory</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td style="color:#4ade80;font-weight:700">M_101</td><td style="color:#fff">1 000 €</td><td style="color:#fb923c">104</td></tr>
-          <tr><td>2</td><td style="color:#4ade80;font-weight:700">M_301</td><td style="color:#fff">3 000 €</td><td style="color:#fb923c">104</td></tr>
-        </tbody>
-      </table>
-      <div class="note">Maksuvaba käive (M_301, 3 000 €) tuleb esitada detailselt, kuigi maksuvaba käive iseenesest ei nõua seda — segaarve tõttu tuleb <em>kogu arve</em> detailselt esitada.</div>
-    </div>
-    <div class="box box-green">
-      <h3>✓ MTA on selle reegli kinnitanud</h3>
-      <p>Sama reegel kehtib ka siis, kui sama kliendi mõne teise arve tõttu on perioodi kogusumma ≥ 1 000 € — sel juhul tuleb ka maksuvaba arve esitada detailselt.</p>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="box box-blue" style="padding:8px 12px;flex:1">
+        <h3>Arveridade koondamine</h3>
+        <p>Sama KMD tüübiga kanded samalt arvelt summeeritakse ühte XML kirjesse.<br/>
+        <strong>Näide:</strong> 10-realine arve (5 rida 24% + 5 rida 9%) → XML-is <strong>2 kirjet</strong></p>
+      </div>
+      <div class="box" style="flex:1.4;padding:8px 12px;border-left:4px solid #6366f1">
+        <h3 style="color:#1e293b;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Segaarve näide — kasvõi üks maksustatav rida → kõik read detailselt</h3>
+        <p style="font-size:12px;color:#475569;margin-bottom:6px">Juriidiline isik. Arvel: <strong>22% käive 1 000 €</strong> + <strong>Maksuvaba 3 000 €</strong></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Kirje</th><th>KMD tüüp</th><th>Summa</th><th>id.Cat</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td style="font-weight:700;color:#1e293b">M_101</td><td style="color:#1e293b">1 000 €</td><td style="color:#ea580c;font-weight:700">104</td></tr>
+              <tr><td>2</td><td style="font-weight:700;color:#1e293b">M_301</td><td style="color:#1e293b">3 000 €</td><td style="color:#ea580c;font-weight:700">104</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11.5px;color:#475569;margin-top:6px">Maksuvaba käive (M_301) tuleb esitada detailselt, kuigi maksuvaba käive iseenesest ei nõua seda — segaarve tõttu tuleb <em>kogu arve</em> detailselt esitada.</p>
+        <p style="font-size:11.5px;color:#475569;margin-top:4px">Sama reegel kehtib ka siis, kui sama kliendi mõne teise arve tõttu on perioodi kogusumma ≥ 1 000 € — sel juhul tuleb ka maksuvaba arve esitada detailselt.</p>
+      </div>
     </div>
   </div>
 </div>
