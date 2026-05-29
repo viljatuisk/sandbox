@@ -1505,7 +1505,7 @@
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:12px;color:var(--gray-500);">Periood:</span>
-            <select class="form-select" style="font-size:12px;padding:4px 8px;width:auto;">
+            <select id="conPeriodSelect" class="form-select" style="font-size:12px;padding:4px 8px;width:auto;" onchange="onConPeriodChange(this.value)">
               <option selected>Mai 2026</option><option>Aprill 2026</option>
               <option>Q1 2026 (kumulatiivne)</option><option>2025 (aasta)</option>
             </select>
@@ -1530,6 +1530,7 @@
             <a href="#" onclick="showConTab('elim');return false;" style="color:var(--amber);font-weight:600;margin-left:8px;">Lahenda sisetehingud →</a>
           </div>
         </div>
+        <div id="ownership-period-warning" style="display:none;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#1e40af;gap:10px;align-items:flex-start;"></div>
 
         <!-- Balance sheet matrix table -->
         <div class="card" style="overflow:hidden;margin-bottom:12px;">
@@ -1799,6 +1800,60 @@
 <!-- ===== MODALS ===== -->
 
 <!-- Add Company Modal -->
+<!-- ===== MODAL: OSALUSE MUUTMINE ===== -->
+<div class="modal-overlay" id="ownershipChangeModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Muuda osalust</div>
+      <div class="modal-close" onclick="closeModal('ownershipChangeModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+        <div id="ocd-flag" style="font-size:22px;">🇪🇪</div>
+        <div>
+          <div id="ocd-name" style="font-weight:700;font-size:14px;">Baltic Latvia SIA</div>
+          <div id="ocd-code" style="font-size:11px;color:var(--gray-500);">LV001</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-size:11px;color:var(--gray-500);">Praegune osalus</div>
+          <div id="ocd-current-pct" style="font-size:20px;font-weight:800;color:var(--brand);">75%</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Uus osalus (%)</label>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input id="ocd-new-pct" type="number" class="form-input" min="1" max="100" step="0.01" placeholder="nt 80" style="width:120px;" oninput="ownershipPctChanged()">
+          <div id="ocd-method-preview" style="font-size:12px;color:var(--gray-500);padding:6px 10px;background:var(--gray-100);border-radius:6px;flex:1;"></div>
+        </div>
+      </div>
+
+      <div id="ocd-minority-group" style="display:none;" class="form-group">
+        <label class="form-label">Vähemusomaniku nimi</label>
+        <input id="ocd-minority-name" type="text" class="form-input" placeholder="nt Latvijas Fonds SIA">
+        <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Kuvatakse konsolideeritud bilansis vähemusosaluse real.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Kehtib alates</label>
+        <input id="ocd-effective-date" type="date" class="form-input" style="width:200px;">
+        <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Konsolideerimine arvestab uue osalusega alates sellest kuupäevast.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Põhjus / märkus</label>
+        <textarea id="ocd-reason" class="form-input" rows="2" placeholder="nt Osade ost Latvijas Fondsilt, notariaalne leping 15.05.2026" style="resize:vertical;"></textarea>
+      </div>
+
+      <div id="ocd-warning" style="display:none;background:#fef3c7;border:1px solid #fbbf24;border-radius:6px;padding:10px 14px;font-size:12px;color:#92400e;margin-top:8px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('ownershipChangeModal')">Tühista</button>
+      <button class="btn btn-primary" onclick="saveOwnershipChange()">💾 Salvesta muutus</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="addCompanyModal">
   <div class="modal">
     <div class="modal-header">
@@ -2428,11 +2483,137 @@
     ee4:  { name: 'Logistika OÜ', code: 'EE004', pct: '100%', method: 'Seadistamisel', minority: '—', consolidation: 'Mall puudub — seadistamine pooleli', flag: '🆕' },
     fi1:  { name: 'Suomi Kauppa OY', code: 'FI001', pct: '30%', method: 'Kapitaliosaluse meetod', minority: '70% — muud omanikud', consolidation: 'Ainult osaluse väärtus bilansis (IAS 28)', flag: '🇫🇮' },
   };
+
+  const ownershipHistory = {};
+  let currentDetailId = null;
+
+  function ownershipMethodFor(pct) {
+    if (pct >= 100) return { method: 'Täiskonsolideerimine', color: 'var(--brand)', label: '100% — täiskonsolideerimine' };
+    if (pct >= 51)  return { method: 'Täiskonsolideerimine', color: '#16a34a', label: pct + '% — täiskonsolideerimine (vähemusosalus eraldi)' };
+    if (pct >= 20)  return { method: 'Kapitaliosaluse meetod', color: '#ca8a04', label: pct + '% — kapitaliosaluse meetod (IAS 28)' };
+    return { method: 'Finantsvarana kirjendamine', color: '#dc2626', label: pct + '% — alla 20%, finantsvarana' };
+  }
+
+  function ownershipPctChanged() {
+    const pct = parseFloat(document.getElementById('ocd-new-pct').value);
+    const preview = document.getElementById('ocd-method-preview');
+    const minGrp = document.getElementById('ocd-minority-group');
+    const warn = document.getElementById('ocd-warning');
+    if (!pct || pct < 1 || pct > 100) { preview.textContent = ''; return; }
+    const m = ownershipMethodFor(pct);
+    preview.textContent = '→ ' + m.label;
+    preview.style.color = m.color;
+    minGrp.style.display = (pct < 100) ? '' : 'none';
+    warn.style.display = 'none';
+    if (pct < 20) {
+      warn.style.display = '';
+      warn.textContent = '⚠️ Osalus alla 20% — ettevõte ei ole enam konsolideeritud. Kontrolli raamatupidajaga, kas see on kavandatud.';
+    }
+  }
+
+  function openOwnershipChangeModal(id) {
+    const d = companyDetails[id];
+    if (!d || d.pct === '—') return;
+    currentDetailId = id;
+    document.getElementById('ocd-flag').textContent = d.flag;
+    document.getElementById('ocd-name').textContent = d.name;
+    document.getElementById('ocd-code').textContent = d.code;
+    document.getElementById('ocd-current-pct').textContent = d.pct;
+    document.getElementById('ocd-new-pct').value = '';
+    document.getElementById('ocd-method-preview').textContent = '';
+    document.getElementById('ocd-minority-group').style.display = 'none';
+    document.getElementById('ocd-minority-name').value = d.minority !== '—' ? d.minority.replace(/^\d+%\s*—\s*/, '') : '';
+    document.getElementById('ocd-effective-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('ocd-reason').value = '';
+    document.getElementById('ocd-warning').style.display = 'none';
+    openModal('ownershipChangeModal');
+  }
+
+  function saveOwnershipChange() {
+    const id = currentDetailId;
+    const d = companyDetails[id];
+    const newPct = parseFloat(document.getElementById('ocd-new-pct').value);
+    const date = document.getElementById('ocd-effective-date').value;
+    const reason = document.getElementById('ocd-reason').value.trim();
+    const minorityName = document.getElementById('ocd-minority-name').value.trim();
+
+    if (!newPct || newPct < 1 || newPct > 100) {
+      alert('Sisesta kehtiv osalus 1–100 vahel.');
+      return;
+    }
+    if (!date) { alert('Vali kehtivuse alguskuupäev.'); return; }
+
+    const oldPct = d.pct;
+    const m = ownershipMethodFor(newPct);
+    const minority = (newPct < 100 && minorityName)
+      ? (100 - newPct).toFixed(2).replace(/\.00$/, '') + '% — ' + minorityName
+      : (newPct < 100 ? (100 - newPct).toFixed(2).replace(/\.00$/, '') + '% — muud omanikud' : '—');
+
+    if (!ownershipHistory[id]) ownershipHistory[id] = [];
+    ownershipHistory[id].unshift({ date, oldPct, newPct: newPct + '%', method: m.method, minority, reason: reason || '—' });
+
+    d.pct = newPct + '%';
+    d.method = m.method;
+    d.minority = minority;
+    d.consolidation = m.label;
+
+    updateSnodeInDOM(id, newPct, minority);
+    closeModal('ownershipChangeModal');
+    showCompanyDetail(id);
+  }
+
+  function updateSnodeInDOM(id, pct, minority) {
+    const nodeMap = { ee1:'ee1', ee2:'ee2', ee3:'ee3', lv1:'lv1', lt1:'lt1', ee4:'ee4', fi1:'fi1' };
+    const snode = document.querySelector(`.snode[onclick="showCompanyDetail('${id}')"]`);
+    if (!snode) return;
+    const pctEl = snode.querySelector('.snode-pct');
+    const barInner = snode.querySelector('.snode-pct-bar div');
+    const methodEl = snode.querySelector('.snode-method');
+    const minorityEl = snode.querySelector('.snode-minority');
+    const m = ownershipMethodFor(pct);
+
+    if (pctEl) { pctEl.textContent = pct + '%'; pctEl.style.color = m.color; }
+    if (barInner) { barInner.style.width = Math.min(pct, 100) + '%'; barInner.style.background = m.color; }
+    if (methodEl) { methodEl.textContent = m.method; methodEl.style.color = m.color; }
+
+    snode.className = snode.className.replace(/snode-(100|majority|equity|setup)/g, '').trim();
+    if (pct >= 100) snode.classList.add('snode-100');
+    else if (pct >= 51) snode.classList.add('snode-majority');
+    else snode.classList.add('snode-equity');
+
+    if (minorityEl) {
+      if (pct < 100) { minorityEl.textContent = minority; }
+      else { minorityEl.textContent = ''; }
+    }
+  }
+
   function showCompanyDetail(id) {
     const d = companyDetails[id];
     if (!d) return;
+    currentDetailId = id;
     const panel = document.getElementById('company-detail-panel');
     document.getElementById('cdp-title').textContent = d.flag + ' ' + d.name + ' · ' + d.code;
+
+    const hist = ownershipHistory[id] || [];
+    const histHtml = hist.length === 0 ? '' : `
+      <div style="grid-column:1/-1;margin-top:16px;border-top:1px solid var(--gray-200);padding-top:14px;">
+        <div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:8px;">Osaluse muutmise ajalugu</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="color:var(--gray-500);">
+            <th style="text-align:left;padding:4px 8px;font-weight:600;">Kuupäev</th>
+            <th style="text-align:left;padding:4px 8px;font-weight:600;">Muutus</th>
+            <th style="text-align:left;padding:4px 8px;font-weight:600;">Meetod</th>
+            <th style="text-align:left;padding:4px 8px;font-weight:600;">Põhjus</th>
+          </tr></thead>
+          <tbody>${hist.map(h => `<tr style="border-top:1px solid var(--gray-100);">
+            <td style="padding:5px 8px;color:var(--gray-700);">${h.date}</td>
+            <td style="padding:5px 8px;"><span style="color:var(--gray-400);">${h.oldPct}</span> → <strong>${h.newPct}</strong></td>
+            <td style="padding:5px 8px;color:var(--gray-600);">${h.method}</td>
+            <td style="padding:5px 8px;color:var(--gray-500);">${h.reason}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+
     document.getElementById('cdp-body').innerHTML = `
       <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Osalus</div>
         <div style="font-size:22px;font-weight:800;color:var(--brand);">${d.pct}</div>
@@ -2444,10 +2625,14 @@
         <div style="font-size:13px;font-weight:700;">${d.method}</div>
         <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">${d.consolidation}</div>
       </div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Vähemusosalus</div>
-        <div style="font-size:13px;font-weight:600;color:${d.minority === '—' ? 'var(--gray-400)' : 'var(--gray-900)'};">${d.minority}</div>
-        ${d.minority !== '—' ? '<div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Kuvatakse konsolideeritud bilansis eraldi real</div>' : ''}
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px;">Vähemusosalus</div>
+          <div style="font-size:13px;font-weight:600;color:${d.minority === '—' ? 'var(--gray-400)' : 'var(--gray-900)'};">${d.minority}</div>
+          ${d.minority !== '—' ? '<div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Kuvatakse konsolideeritud bilansis eraldi real</div>' : ''}
+        </div>
+        ${d.pct !== '—' ? `<button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;margin-top:4px;" onclick="openOwnershipChangeModal('${id}')">✏️ Muuda osalust</button>` : ''}
       </div>
+      ${histHtml}
     `;
     panel.style.display = '';
     panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2610,6 +2795,101 @@
     if (_secSum[s]) { conCols.forEach(k => _gt[k] += _secSum[s][k]); _gt.elim += _secSum[s].elim; _gt.konsol += _secSum[s].konsol; }
   });
 
+  // ── PERIOODI-TEADLIK OSALUSE LOOGIKA ──
+
+  // Osaluse ajalugu salvestatakse ownershipHistory[detailId] = [{date, oldPct, newPct, ...}]
+  // Baasosalused (enne muutusi)
+  const baseOwnershipPct = { lv1: 75, lt1: 51, ee1: 100, ee2: 100, ee3: 100, ee4: 100, fi1: 30 };
+
+  // Ettevõtete omakapital MI arvutuseks (ak + jk)
+  const companyEquityForMI = { lv: 1850, lt: 1310 };
+
+  // Konsolideerimise võti → struktuurivaate detailId
+  const conKeyToDetailId = { lv: 'lv1', lt: 'lt1', be: 'ee1', ej: 'ee2', eh: 'ee3', lo: 'ee4' };
+
+  // Perioodi lõppkuupäevad
+  const periodEndDates = {
+    'Mai 2026':               '2026-05-31',
+    'Aprill 2026':            '2026-04-30',
+    'Q1 2026 (kumulatiivne)': '2026-03-31',
+    '2025 (aasta)':           '2025-12-31',
+  };
+  const periodStartDates = {
+    'Mai 2026':               '2026-05-01',
+    'Aprill 2026':            '2026-04-01',
+    'Q1 2026 (kumulatiivne)': '2026-01-01',
+    '2025 (aasta)':           '2025-01-01',
+  };
+
+  let currentConPeriod = 'Mai 2026';
+
+  // Tagastab, mis osalus kehtis antud detailId-l periodEndDate seisuga
+  function getOwnershipForPeriod(detailId, periodEndDate) {
+    const hist = ownershipHistory[detailId];
+    if (!hist || hist.length === 0) return baseOwnershipPct[detailId] ?? 100;
+    // Ajalugu on uuemad ees (unshift), leia viimane mille date <= periodEndDate
+    const applicable = hist.filter(h => h.date <= periodEndDate);
+    if (applicable.length === 0) return baseOwnershipPct[detailId] ?? 100;
+    return parseFloat(applicable[0].newPct);
+  }
+
+  // Arvutab vähemusosaluse (MI) perioodi lõpu osaluse alusel
+  function getDynamicMI(periodEndDate) {
+    let mi = 0;
+    Object.entries(conKeyToDetailId).forEach(([conKey, detailId]) => {
+      const equity = companyEquityForMI[conKey];
+      if (!equity) return;
+      const pct = getOwnershipForPeriod(detailId, periodEndDate);
+      if (pct < 100) mi += ((100 - pct) / 100) * equity;
+    });
+    return Math.round(mi);
+  }
+
+  // Leiab osaluse muutused, mis toimusid perioodi SEES (mõjutavad kasumiaruannet)
+  function getMidPeriodChanges(periodStart, periodEnd) {
+    const changes = [];
+    Object.entries(ownershipHistory).forEach(([id, hist]) => {
+      hist.forEach(h => {
+        if (h.date > periodStart && h.date <= periodEnd) {
+          changes.push({ id, ...h });
+        }
+      });
+    });
+    return changes;
+  }
+
+  function onConPeriodChange(val) {
+    currentConPeriod = val;
+    bsRendered = false;
+    renderBS();
+    updateOwnershipWarning();
+  }
+
+  function updateOwnershipWarning() {
+    const banner = document.getElementById('ownership-period-warning');
+    if (!banner) return;
+    const periodEnd = periodEndDates[currentConPeriod] || '2026-05-31';
+    const periodStart = periodStartDates[currentConPeriod] || '2026-05-01';
+    const changes = getMidPeriodChanges(periodStart, periodEnd);
+
+    if (changes.length === 0) { banner.style.display = 'none'; return; }
+
+    const lines = changes.map(c => {
+      const cd = companyDetails[c.id];
+      const name = cd ? cd.name : c.id;
+      return `<strong>${name}</strong>: ${c.oldPct} → ${c.newPct} (alates ${c.date})`;
+    }).join(' · ');
+
+    const periodEnd_d = periodEndDates[currentConPeriod];
+    const dynamicMI = getDynamicMI(periodEnd_d);
+
+    banner.style.display = 'flex';
+    banner.innerHTML = `<div style="font-size:16px;margin-top:-1px;">📅</div>
+      <div><strong>Osaluse muutus perioodi sees:</strong> ${lines}.<br>
+      <span style="opacity:.8;">Bilanss kasutab perioodi lõpu osalust → vähemusosalus (MI) = <strong>${dynamicMI.toLocaleString('et-EE')} tuh €</strong>.
+      Kasumiaruandes jaotatakse vähemusosa ajaliselt proportsionaalselt muutuse kuupäeva järgi.</span></div>`;
+  }
+
   let bsRendered = false;
 
   function fmtK(n) {
@@ -2624,6 +2904,12 @@
     const tbody = document.getElementById('bsTbody');
     if (!tbody) return;
 
+    // Perioodi-teadlik MI: arvuta delta võrreldes bsRows-i staatilise 1104-ga
+    const periodEnd = periodEndDates[currentConPeriod] || '2026-05-31';
+    const dynamicMI = getDynamicMI(periodEnd);
+    const miBase = 1104; // bsRows-i staatiline väärtus mis on _grpSum/_secSum/_gt-sse sisse arvestatud
+    const miDelta = dynamicMI - miBase;
+
     let html = '';
     bsRows.forEach(r => {
 
@@ -2634,48 +2920,59 @@
       }
 
       else if (r.type === 'I') {
-        const kv = conCols.reduce((s,k) => s + r[k], 0) + r.elim;
+        // MI rea puhul kasuta dünaamilist väärtust
+        const rowElim = r.id === 'mi' ? dynamicMI : r.elim;
+        const kv = conCols.reduce((s,k) => s + r[k], 0) + rowElim;
         const cells = conCols.map(k =>
           `<td style="text-align:right;padding:7px 8px;color:#374151;">${fmtK(r[k])}</td>`
         ).join('');
-        const elimColor = r.elim < 0 ? '#dc2626' : r.elim > 0 ? '#16a34a' : '#cbd5e1';
+        const elimColor = rowElim < 0 ? '#dc2626' : rowElim > 0 ? '#16a34a' : '#cbd5e1';
+        const miLabel = r.id === 'mi' && miDelta !== 0
+          ? `${r.label} <span style="font-size:10px;color:#2563eb;font-weight:700;">(${miDelta > 0 ? '+' : ''}${miDelta})</span>`
+          : r.label;
         html += `<tr class="bs-item" data-id="${r.id}"
           style="cursor:pointer;transition:background .12s;"
           onclick="openBSDrill('${r.id}')"
           onmouseover="this.style.background='#eff6ff'"
           onmouseout="this.style.background=(document.querySelector('.bs-item.dd-active')||{}).dataset&&document.querySelector('.bs-item.dd-active').dataset.id==='${r.id}'?'#dbeafe':''">
-          <td style="padding:7px 14px 7px 28px;color:#111827;position:sticky;left:0;background:inherit;">${r.label} <span style="font-size:10px;color:#94a3b8;">↗</span></td>
+          <td style="padding:7px 14px 7px 28px;color:#111827;position:sticky;left:0;background:inherit;">${miLabel} <span style="font-size:10px;color:#94a3b8;">↗</span></td>
           ${cells}
-          <td style="text-align:right;padding:7px 8px;font-size:11px;color:${elimColor};">${fmtK(r.elim)}</td>
+          <td style="text-align:right;padding:7px 8px;font-size:11px;color:${elimColor};">${fmtK(rowElim)}</td>
           <td style="text-align:right;padding:7px 14px;font-weight:700;background:#eff6ff;color:#1e40af;">${fmtK(kv)}</td>
         </tr>`;
       }
 
       else if (r.type === 'G') {
         const g = _grpSum[r.grp] || {};
+        // Omakapitali grupis korrigeeri MI deltaga
+        const adjElim = r.grp === 'ok' ? (g.elim||0) + miDelta : (g.elim||0);
+        const adjKonsol = r.grp === 'ok' ? (g.konsol||0) + miDelta : (g.konsol||0);
         const cells = conCols.map(k =>
           `<td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;">${fmtK(g[k]||0)}</td>`
         ).join('');
-        const elimColor = (g.elim||0) < 0 ? '#dc2626' : (g.elim||0) > 0 ? '#16a34a' : '#cbd5e1';
+        const elimColor = adjElim < 0 ? '#dc2626' : adjElim > 0 ? '#16a34a' : '#cbd5e1';
         html += `<tr style="background:#f8fafc;">
           <td style="padding:7px 14px;font-weight:600;font-size:11px;color:#64748b;position:sticky;left:0;background:#f8fafc;">${r.label}</td>
           ${cells}
-          <td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;font-size:11px;color:${elimColor};">${fmtK(g.elim||0)}</td>
-          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#dbeafe;color:#1e40af;border-top:1px solid #93c5fd;">${fmtK(g.konsol||0)}</td>
+          <td style="text-align:right;padding:7px 8px;font-weight:600;border-top:1px solid #e2e8f0;font-size:11px;color:${elimColor};">${fmtK(adjElim)}</td>
+          <td style="text-align:right;padding:7px 14px;font-weight:700;background:#dbeafe;color:#1e40af;border-top:1px solid #93c5fd;">${fmtK(adjKonsol)}</td>
         </tr>`;
       }
 
       else if (r.type === 'T') {
         const st = _secSum[r.sec] || {};
+        // OMAKAPITAL sektsioonis korrigeeri MI deltaga
+        const adjElim = r.sec === 'OMAKAPITAL' ? (st.elim||0) + miDelta : (st.elim||0);
+        const adjKonsol = r.sec === 'OMAKAPITAL' ? (st.konsol||0) + miDelta : (st.konsol||0);
         const cells = conCols.map(k =>
           `<td style="text-align:right;padding:10px 8px;font-weight:700;border-top:2px solid #475569;border-bottom:2px solid #475569;">${fmtK(st[k]||0)}</td>`
         ).join('');
-        const elimColor = (st.elim||0) < 0 ? '#dc2626' : (st.elim||0) > 0 ? '#16a34a' : '#cbd5e1';
+        const elimColor = adjElim < 0 ? '#dc2626' : adjElim > 0 ? '#16a34a' : '#cbd5e1';
         html += `<tr style="background:#f1f5f9;">
           <td style="padding:10px 14px;font-weight:800;font-size:13px;border-top:2px solid #475569;border-bottom:2px solid #475569;position:sticky;left:0;background:#f1f5f9;">${r.label}</td>
           ${cells}
-          <td style="text-align:right;padding:10px 8px;font-weight:700;border-top:2px solid #475569;border-bottom:2px solid #475569;color:${elimColor};">${fmtK(st.elim||0)}</td>
-          <td style="text-align:right;padding:10px 14px;font-weight:800;font-size:14px;background:#1e3a5f;color:white;border-top:2px solid #1e40af;">${fmtK(st.konsol||0)}</td>
+          <td style="text-align:right;padding:10px 8px;font-weight:700;border-top:2px solid #475569;border-bottom:2px solid #475569;color:${elimColor};">${fmtK(adjElim)}</td>
+          <td style="text-align:right;padding:10px 14px;font-weight:800;font-size:14px;background:#1e3a5f;color:white;border-top:2px solid #1e40af;">${fmtK(adjKonsol)}</td>
         </tr><tr><td colspan="10" style="height:8px;"></td></tr>`;
       }
 
@@ -2687,7 +2984,7 @@
           <td style="padding:11px 14px;font-weight:800;font-size:12px;text-transform:uppercase;position:sticky;left:0;background:#0f172a;">${r.label}</td>
           ${cells}
           <td style="text-align:right;padding:11px 8px;color:#94a3b8;">—</td>
-          <td style="text-align:right;padding:11px 14px;font-weight:900;font-size:15px;background:#1e3a5f;">${fmtK(_gt.konsol)} <span style="font-size:11px;opacity:.6;">✓</span></td>
+          <td style="text-align:right;padding:11px 14px;font-weight:900;font-size:15px;background:#1e3a5f;">${fmtK(_gt.konsol + miDelta)} <span style="font-size:11px;opacity:.6;">✓</span></td>
         </tr>`;
       }
     });
