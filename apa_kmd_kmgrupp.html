@@ -17,13 +17,13 @@
   --del-bg:#fff0f0;--del-bd:#e88;--del-t:#8c2020;
 }
 html{zoom:1.1}html,body{height:calc(100% / 1.1);font-family:'Segoe UI',Inter,Arial,sans-serif;font-size:13px;background:var(--bg2);color:var(--text)}
-.app{display:flex;flex-direction:column;min-height:100vh}
+.app{display:flex;flex-direction:column;height:100%}
 .app-hdr{background:var(--blue);height:30px;display:flex;align-items:center;padding:0 10px;flex-shrink:0}
 .app-hdr .logo{color:#fff;font-size:13px;font-weight:bold;letter-spacing:.5px}
-.app-body{display:flex;flex:1}
+.app-body{display:flex;flex:1;min-height:0}
 .fp{width:185px;min-width:185px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .18s,min-width .18s;flex-shrink:0}
 .fp.hidden{width:0;min-width:0}
-.fp-hdr{background:var(--blue);color:#fff;font-size:11px;font-weight:bold;padding:4px 8px;flex-shrink:0;white-space:nowrap}
+.fp-hdr{display:none}
 .fp-body{padding:7px;overflow-y:auto;flex:1}
 .fg{margin-bottom:8px}
 .fg label{display:block;font-size:10px;font-weight:bold;color:var(--text2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
@@ -32,9 +32,12 @@ html{zoom:1.1}html,body{height:calc(100% / 1.1);font-family:'Segoe UI',Inter,Ari
 .fp-show{width:100%;padding:4px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-family:Arial,sans-serif;cursor:pointer;font-weight:bold;margin-top:5px}
 .fp-show:hover{background:var(--blue-dk)}
 .fp-clr{width:100%;padding:3px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-family:Arial,sans-serif;cursor:pointer;margin-top:3px}
-.main{flex:1;display:flex;flex-direction:column;min-width:0}
-.rpt-hdr{background:var(--bg);border-bottom:1px solid var(--border);padding:0 10px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.rpt-hdr{background:var(--bg);padding:0 10px;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
 .title-row{display:flex;align-items:center;gap:7px;padding:4px 0}
+.top-action-bar{display:flex;align-items:stretch;background:var(--blue-dk);flex-shrink:0;height:34px}
+.top-bar-fp-label{width:185px;min-width:185px;display:flex;align-items:center;padding:0 8px;color:#fff;font-size:11px;font-weight:bold;flex-shrink:0;transition:width .18s,min-width .18s;overflow:hidden}
+.top-bar-actions{display:flex;align-items:center;gap:4px;padding:0 10px;flex:1}
 .tog-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:2px 8px;font-size:11px;font-family:Arial,sans-serif;cursor:pointer;color:var(--text2);white-space:nowrap}
 .tog-btn:hover{background:var(--bg3)}
 .rpt-title{font-size:20px;font-weight:bold;color:var(--blue-dk)}
@@ -97,19 +100,19 @@ tr.row-emta-err:hover td{background:#fee2e2!important}
 .det-row span:first-child{flex:0 0 28px;color:var(--text2)}
 .det-row span:nth-child(2),.det-row span:last-child{flex:1;text-align:right}
 .sc-pay{border-color:var(--blue-mid)}
-.content{flex:1;display:block;padding:0 10px 8px;background:#b8cfe0}
+.content{flex:1;display:flex;flex-direction:column;padding:0 10px 8px;background:#b8cfe0;min-height:0;overflow:hidden}
 .tabs{display:flex;margin:5px 0 0}
 .tab{padding:3px 14px;font-size:11px;cursor:pointer;color:var(--text2);background:var(--bg2);border:1px solid transparent;border-bottom:none;border-radius:var(--r) var(--r) 0 0;margin-right:2px;position:relative;bottom:-2px}
 .tab:hover:not(.active){background:var(--bg3)}
 .tab.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:bold}
-.view{display:none;flex-direction:column}
-.view.active{display:flex}
+.view{display:none;flex-direction:column;min-height:0}
+.view.active{display:flex;flex:1;min-height:0}
 .tbl-ctrl{display:flex;gap:5px;align-items:center;padding:5px 0;margin-bottom:3px;flex-shrink:0;flex-wrap:wrap}
 .tbl-ctrl input,.tbl-ctrl select{font-size:11px;font-family:Arial,sans-serif;padding:2px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);height:22px}
 .tbl-ctrl input{width:160px}
 .tbl-ctrl input:focus,.tbl-ctrl select:focus{outline:none;border-color:var(--blue)}
 .row-cnt{margin-left:auto;font-size:11px;color:var(--text3)}
-.tbl-wrap{overflow:auto;border:1px solid var(--border);height:calc(100vh - 320px);min-height:300px}
+.tbl-wrap{overflow:auto;border:1px solid var(--border);flex:1;min-height:0}
 .tbl-wrap::-webkit-scrollbar{height:10px;width:10px}
 .tbl-wrap::-webkit-scrollbar-track{background:#e0e0e0}
 .tbl-wrap::-webkit-scrollbar-thumb{background:var(--blue);border-radius:4px;border:2px solid #e0e0e0}
@@ -216,12 +219,32 @@ td.ec:hover{background:var(--blue-lt)!important}
 .mstat-n{font-size:20px;font-weight:bold}.mstat-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.03em}
 .modal-btns{display:flex;gap:6px;justify-content:flex-end}
 
-.tbl-wrap{overflow:auto}
 /* Sticky corner (sektsiooni read) */
 </style>
 </head>
 <body>
 <div class="app">
+<!-- Täislaiusega tegevusriba -->
+<div class="top-action-bar" id="topActionBar">
+  <div class="top-bar-fp-label" id="topBarFpLabel">Filtrid</div>
+  <div class="top-bar-actions">
+    <button class="btn btn-send" id="btnSend" onclick="openSendModal()" title="Valideerib XML-i struktuuri ja saadab andmed e-MTA-le (T+R loogika)">Saada e-MTA-le &uarr;</button>
+    <button class="btn btn-kontrolli" id="btnKontrolli" onclick="openKontrolliModal()" disabled title="Lae EMTA tagasisideraport ja kontrolli vigu">&#128269; Kontrolli</button>
+    <button class="btn btn-kinnita" id="btnKinnita" onclick="openPin2Modal()" disabled title="Kinnita KMD EMTA-s ID-kaardi PIN2-ga">&#128274; Kinnita</button>
+    <button class="btn" onclick="openXml()" title="Valideerib XML struktuuri ja genereerib XBRL GL faili">XML</button>
+    <div class="settings-wrap" style="margin-left:auto">
+      <button class="btn" onclick="toggleSettings()" title="XML seaded ja püsikonfiguratsioon">&#9881; Seadistused</button>
+      <div class="settings-panel" id="settingsPanel">
+        <div class="sp-title">XML seaded</div>
+        <div class="fg"><label>Tarkvara</label><input id="xml-src-app" value="Directo" oninput="saveSettings()"/></div>
+        <input type="hidden" id="xml-creator"/>
+        <div class="fg"><label>Allika ID</label><input id="xml-src-id" value="ERP-01" oninput="saveSettings()"/></div>
+        <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" value="3" oninput="saveSettings()"/></div>
+        <input type="hidden" id="xml-pankrot"/>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="app-body">
 
 <div class="fp" id="filterPanel">
@@ -316,27 +339,17 @@ td.ec:hover{background:var(--blue-lt)!important}
 
 <div class="main">
 <div class="rpt-hdr">
+  <!-- Pealkiri + töövoo sammud + viimane saatmine -->
   <div class="title-row">
     <button class="tog-btn" id="togBtn" onclick="toggleFp()">&#9664; Filtrid</button>
     <span class="rpt-title">ANDMEPÕHINE KMD · KM-grupi liige</span>
-    <div class="rpt-actions">
-      <button class="btn btn-send" id="btnSend" onclick="openSendModal()" title="Valideerib XML-i struktuuri ja saadab andmed e-MTA-le (T+R loogika)">Saada e-MTA-le &uarr;</button>
-      <button class="btn btn-kontrolli" id="btnKontrolli" onclick="openKontrolliModal()" disabled title="Lae EMTA tagasisideraport ja kontrolli vigu">&#128269; Kontrolli</button>
-      <button class="btn btn-kinnita" id="btnKinnita" onclick="openPin2Modal()" disabled title="Kinnita KMD EMTA-s ID-kaardi PIN2-ga">&#128274; Kinnita</button>
-      <button class="btn" onclick="openXml()" title="Valideerib XML struktuuri ja genereerib XBRL GL faili">XML</button>
-      <div class="settings-wrap">
-        <button class="btn" onclick="toggleSettings()" title="XML seaded ja püsikonfiguratsioon">&#9881; Seadistused</button>
-        <div class="settings-panel" id="settingsPanel">
-          <div class="sp-title">XML seaded</div>
-          <div class="fg"><label>Tarkvara</label><input id="xml-src-app" value="Directo" oninput="saveSettings()"/></div>
-          <input type="hidden" id="xml-creator"/>
-          <div class="fg"><label>Allika ID</label><input id="xml-src-id" value="ERP-01" oninput="saveSettings()"/></div>
-          <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" value="3" oninput="saveSettings()"/></div>
-          <input type="hidden" id="xml-pankrot"/>
-        </div>
-      </div>
-    <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:2px">Viimane saatmine:<br><span style="font-weight:bold;color:var(--text2)" id="lastSentTxt">&#8212;</span></div>
-    </div>
+    <span class="wf-step" id="wf1" style="margin-left:12px"><span class="wf-dot"></span>Saada e-MTA-le</span>
+    <span class="wf-arrow">&#8250;</span>
+    <span class="wf-step" id="wf2"><span class="wf-dot"></span>Tagasisideraport</span>
+    <span class="wf-arrow">&#8250;</span>
+    <span class="wf-step" id="wf3"><span class="wf-dot"></span>Kinnita</span>
+    <span id="wf-status-txt" style="margin-left:8px;font-size:10px;color:var(--text3)"></span>
+    <div style="margin-left:auto;font-size:10px;color:var(--text3);text-align:right">Viimane saatmine:<br><span style="font-weight:bold;color:var(--text2)" id="lastSentTxt">&#8212;</span></div>
   </div>
   <!-- KM-grupi liikme bänner -->
   <div style="display:flex;align-items:center;gap:10px;padding:5px 10px;background:#fef9ec;border-bottom:1px solid #d4a017;flex-shrink:0;flex-wrap:wrap">
@@ -346,15 +359,6 @@ td.ec:hover{background:var(--blue-lt)!important}
     <span style="font-size:11px;color:#7c4f00">Grupi esindusisik: <strong>Grupi Esindusisik OÜ</strong> (reg: 10004321)</span>
     <span style="font-size:10px;color:#a06020">&#124;</span>
     <span style="font-size:10px;color:#a06020" title="KMS § 36¹: käibemaksugrupisisesed tehingud (grupi liikmete vahel) ei ole käive ja neid KMD-s ei deklareerita">&#9432; Grupisisesed tehingud (liikmete vahel) KMD-s ei kajastu</span>
-  </div>
-  <!-- Töövoo olek -->
-  <div class="workflow-bar" id="workflowBar">
-    <span class="wf-step" id="wf1"><span class="wf-dot"></span>Saada e-MTA-le</span>
-    <span class="wf-arrow">&#8250;</span>
-    <span class="wf-step" id="wf2"><span class="wf-dot"></span>Tagasisideraport</span>
-    <span class="wf-arrow">&#8250;</span>
-    <span class="wf-step" id="wf3"><span class="wf-dot"></span>Kinnita</span>
-    <span id="wf-status-txt" style="margin-left:8px;font-size:10px;color:var(--text3)"></span>
   </div>
   <div id="settings-info-bar" style="display:none;font-size:10px;color:var(--text3);padding:2px 0 4px;display:flex;gap:12px;flex-wrap:wrap"></div>
   <div class="sum-row" style="padding:6px 0 4px">
@@ -1061,6 +1065,8 @@ function toggleFp(){
   fpOpen=!fpOpen;
   document.getElementById('filterPanel').classList.toggle('hidden',!fpOpen);
   document.getElementById('togBtn').textContent=(fpOpen?'◄':'►')+' Filtrid';
+  const lbl=document.getElementById('topBarFpLabel');
+  if(lbl){lbl.style.width=fpOpen?'185px':'0';lbl.style.minWidth=fpOpen?'185px':'0';lbl.style.padding=fpOpen?'0 8px':'0';}
 }
 function applyFilters(){
   activeFilters={from:document.getElementById('flt-from').value.trim(),to:document.getElementById('flt-to').value.trim(),reg:document.getElementById('flt-reg').value.trim(),sec:'',kmk:document.getElementById('flt-kmk').value};
