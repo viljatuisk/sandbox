@@ -358,6 +358,8 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <span style="font-size:11px;font-weight:bold;color:var(--text2)">KOKKU KM M&#196;&#196;RADE L&#245;IKES</span>
       <span id="sum-tbl-toggle" onclick="toggleSumTbl()" style="font-size:10px;color:var(--blue-dk);cursor:pointer;user-select:none">&#9658; Ava read</span>
+      <span style="flex:1"></span>
+      <button class="col-toggle-btn" onclick="openExcel()" title="Laadi tehingute andmed alla Exceli failina" style="background:#217346;color:#fff;border-color:#217346;opacity:1">&#8659; Excel</button>
     </div>
     <div style="overflow-x:auto"><table id="sum-tbl" style="border-collapse:collapse;font-size:11px">
       <thead>
@@ -435,30 +437,6 @@ td.ec:hover{background:var(--blue-lt)!important}
         <th style="min-width:65px">Ettemaks nr</th><th style="min-width:72px">Kuupäev</th>
         <th style="min-width:90px;text-align:right">Arve kogusumma km/ta</th>
         <th style="min-width:80px">Kreeditkp</th><th style="min-width:120px">e-MTA staatus</th><th style="min-width:80px"></th>
-      </tr>
-      <tr style="background:#1e3f6a">
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">accountSubID</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">taxPercentageRate</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px;text-align:right">amount</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCategory</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCode</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierDescription</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCategory (grupp)</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCode (grupp)</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierDescription (grupp)</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px">— (nimi)</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">accountSubID (RTK2T2013ap)</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">parentSubaccountCode</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentNumber</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentApplyToNumber</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentDate</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px;text-align:right">measurableQuantity</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">measurableStartDateTime</th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
-        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
       </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -1853,6 +1831,53 @@ function openXml(){
   a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);
   URL.revokeObjectURL(url);
   alert('✓ XML genereeritud: '+fn+'\n'+activeRows.length+' kirjet eksportitud.');
+}
+
+function openExcel(){
+  const reg=(document.getElementById('flt-reg').value||'').trim();
+  const from=(document.getElementById('flt-from').value||'').trim();
+  const to=(document.getElementById('flt-to').value||'').trim();
+  const activeRows=rows.filter(r=>!r._h&&r.diff!=='del');
+  if(!activeRows.length){alert('Pole kirjeid eksportimiseks.');return;}
+  const cols=['KMD tüüp','Kirjeldus','KMK','KM%','Maksustatav summa','KM summa','Arve nr','Arve kuupäev','Arve kogusumma','Kreedit algkp','Partner identifierCategory','Partner reg/kood','Partner nimi','Grupi liige kat','Grupi liige reg','Kommentaar'];
+  const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const cell=(v,num)=>num?'<Cell ss:StyleID="n"><Data ss:Type="Number">'+esc(v)+'</Data></Cell>':'<Cell><Data ss:Type="String">'+esc(v)+'</Data></Cell>';
+  let x='<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n';
+  x+='<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+  x+='<Styles><Style ss:ID="h"><Font ss:Bold="1"/><Interior ss:Color="#1e3a5f" ss:Pattern="Solid"/><Font ss:Bold="1" ss:Color="#FFFFFF"/></Style>';
+  x+='<Style ss:ID="n"><NumberFormat ss:Format="0.00"/></Style></Styles>\n';
+  x+='<Worksheet ss:Name="KMD andmed"><Table>\n';
+  x+='<Row>'+cols.map(c=>'<Cell ss:StyleID="h"><Data ss:Type="String">'+esc(c)+'</Data></Cell>').join('')+'</Row>\n';
+  activeRows.forEach(r=>{
+    const kmPct=r.km===''?'':((parseFloat(r.km)||0)*100).toFixed(0)+'%';
+    x+='<Row>'
+      +cell(r.type||'')
+      +cell(KMDDESCS[r.type]||'')
+      +cell(r.kmk||'')
+      +cell(kmPct)
+      +cell(r.sum??'',true)
+      +cell(r.vat!==undefined&&r.vat!==''?r.vat:'',r.vat!==undefined&&r.vat!=='')
+      +cell(r.arvenr||'')
+      +cell(r.kp||'')
+      +cell(r.arvesum||'',!!r.arvesum)
+      +cell(r.kreeditkp||'')
+      +cell(r.pkat||'')
+      +cell(r.preg||'')
+      +cell(r.pnimi||'')
+      +cell(r.grpkat||'')
+      +cell(r.grpreg||'')
+      +cell(r.kom||'')
+      +'</Row>\n';
+  });
+  x+='</Table></Worksheet></Workbook>';
+  const blob=new Blob([x],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='KMD_APA_'+(reg||'export')+'_'+(from||'')+'_'+(to||'')+'.xls';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('✓ Excel genereeritud: '+activeRows.length+' kirjet eksportitud.');
 }
 
 // ── Töövoo olek ───────────────────────────────────────────────────────────────
