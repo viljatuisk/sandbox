@@ -16,7 +16,7 @@
   --mod-bg:#fffbee;--mod-bd:#d4a017;--mod-t:#7c4f00;
   --del-bg:#fff0f0;--del-bd:#e88;--del-t:#8c2020;
 }
-html,body{height:100%;font-family:'Segoe UI',Inter,Arial,sans-serif;font-size:13px;background:var(--bg2);color:var(--text)}
+html{zoom:1.1}html,body{height:100%;font-family:'Segoe UI',Inter,Arial,sans-serif;font-size:13px;background:var(--bg2);color:var(--text)}
 .app{display:flex;flex-direction:column;min-height:100vh}
 .app-hdr{background:var(--blue);height:30px;display:flex;align-items:center;padding:0 10px;flex-shrink:0}
 .app-hdr .logo{color:#fff;font-size:13px;font-weight:bold;letter-spacing:.5px}
@@ -229,6 +229,8 @@ td.ec:hover{background:var(--blue-lt)!important}
   <div class="fp-body">
     <div class="fg"><label>Periood algus</label><input class="fp-i" id="flt-from" value="01.03.2026" placeholder="pp.kk.aaaa"/></div>
     <div class="fg"><label>Periood lõpp</label><input class="fp-i" id="flt-to" value="30.03.2026" placeholder="pp.kk.aaaa"/></div>
+    <div class="fg" style="display:flex;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="flt-pankrot" onchange="onPankrotChange()" style="margin:0;width:auto;cursor:pointer"/><label for="flt-pankrot" title="Märgi, kui see periood on pankrotiperiood (KMS § 38).&#10;Lisab XML-i gl-ext:periodExtraIdentifier elemendi." style="cursor:pointer;margin:0;font-weight:normal;font-size:11px;text-transform:none;text-decoration:underline dotted"> pankrotiperiood</label></div>
+    <div class="fg"><label>Saatja nimi</label><input class="fp-i" id="flt-creator" value="Testfirma OÜ" oninput="document.getElementById('xml-creator').value=this.value;saveSettings()"/></div>
     <div class="fg"><label>Registrikood</label><input class="fp-i" id="flt-reg" value="10000009"/></div>
     <div class="fg"><label>KM tüüp</label>
       <select id="filterSec" onchange="renderTable()">
@@ -327,10 +329,10 @@ td.ec:hover{background:var(--blue-lt)!important}
         <div class="settings-panel" id="settingsPanel">
           <div class="sp-title">XML seaded</div>
           <div class="fg"><label>Tarkvara</label><input id="xml-src-app" value="Directo" oninput="saveSettings()"/></div>
-          <div class="fg"><label>Andmesaatja nimi</label><input id="xml-creator" placeholder="Ettevõtte nimi" oninput="saveSettings()"/></div>
-          <div class="fg"><label>Allika ID</label><input id="xml-src-id" placeholder="nt ERP-01 (valikuline)" oninput="saveSettings()"/></div>
-          <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" placeholder="(valikuline)" oninput="saveSettings()"/></div>
-          <div class="fg"><label title="Täida ainult siis, kui KMD esitatakse pankrotihalduri poolt (KMS § 38).&#10;&#10;Pankroti väljakuulutamisel lõpeb jooksev maksustamisperiood ennetähtaegselt. Pankrotihaldur esitab eraldi KMD:&#10;1) lühendatud periood — perioodi algusest kuni pankroti väljakuulutamise päevani&#10;2) edaspidi — iga tavaline periood pankrotimenetluse jooksul.&#10;&#10;Tavadeklaratsioonis (ettevõte töötab normaalselt) jäta tühjaks." style="cursor:help;text-decoration:underline dotted">Pankrotiperiood &#9432;</label><input id="xml-pankrot" placeholder="(valikuline)" oninput="saveSettings()"/></div>
+          <input type="hidden" id="xml-creator"/>
+          <div class="fg"><label>Allika ID</label><input id="xml-src-id" value="ERP-01" oninput="saveSettings()"/></div>
+          <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" value="3" oninput="saveSettings()"/></div>
+          <input type="hidden" id="xml-pankrot"/>
         </div>
       </div>
     <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:2px">Viimane saatmine:<br><span style="font-weight:bold;color:var(--text2)" id="lastSentTxt">&#8212;</span></div>
@@ -354,6 +356,7 @@ td.ec:hover{background:var(--blue-lt)!important}
     <span class="wf-step" id="wf3"><span class="wf-dot"></span>Kinnita</span>
     <span id="wf-status-txt" style="margin-left:8px;font-size:10px;color:var(--text3)"></span>
   </div>
+  <div id="settings-info-bar" style="display:none;font-size:10px;color:var(--text3);padding:2px 0 4px;display:flex;gap:12px;flex-wrap:wrap"></div>
   <div class="sum-row" style="padding:6px 0 4px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <span style="font-size:11px;font-weight:bold;color:var(--text2)">KOKKU KM M&#196;&#196;RADE L&#245;IKES</span>
@@ -1992,19 +1995,44 @@ function confirmPin2(){
 // ── Uuenda confirmSend et muuta töövoo olekut ─────────────────────────────────
 const _origConfirmSend = confirmSend;
 
+function updateSettingsBar(){
+  const bar=document.getElementById('settings-info-bar');
+  if(!bar)return;
+  const app=(document.getElementById('xml-src-app').value||'').trim();
+  const creator=(document.getElementById('xml-creator').value||'').trim();
+  const srcId=(document.getElementById('xml-src-id').value||'').trim();
+  const srcCnt=(document.getElementById('xml-src-cnt').value||'').trim();
+  const parts=[];
+  if(creator)parts.push('<span><b>Saatja:</b> '+creator+'</span>');
+  if(app&&app!=='Directo')parts.push('<span><b>Tarkvara:</b> '+app+'</span>');
+  if(srcId)parts.push('<span><b>Allika ID:</b> '+srcId+'</span>');
+  if(srcCnt)parts.push('<span><b>Allikaid:</b> '+srcCnt+'</span>');
+  if(parts.length){bar.innerHTML=parts.join('<span style="color:var(--border)">·</span>');bar.style.display='flex';}
+  else{bar.innerHTML='';bar.style.display='none';}
+}
+function onPankrotChange(){
+  const cb=document.getElementById('flt-pankrot');
+  const field=document.getElementById('xml-pankrot');
+  if(cb.checked){if(!field.value.trim())field.value='pankrot';}
+  else{field.value='';}
+  saveSettings();
+}
 function toggleSettings(){document.getElementById('settingsPanel').classList.toggle('open');}
 function saveSettings(){
-  const s={app:document.getElementById('xml-src-app').value,creator:document.getElementById('xml-creator').value,srcId:document.getElementById('xml-src-id').value,srcCnt:document.getElementById('xml-src-cnt').value,pankrot:document.getElementById('xml-pankrot').value};
+  const s={app:document.getElementById('xml-src-app').value,creator:document.getElementById('xml-creator').value,srcId:document.getElementById('xml-src-id').value,srcCnt:document.getElementById('xml-src-cnt').value,pankrot:document.getElementById('xml-pankrot').value,pankrotCb:document.getElementById('flt-pankrot').checked};
   localStorage.setItem('kmd_xml_settings',JSON.stringify(s));
+  updateSettingsBar();
 }
 function loadSettings(){
   try{const s=JSON.parse(localStorage.getItem('kmd_xml_settings')||'{}');
     if(s.app!==undefined)document.getElementById('xml-src-app').value=s.app;
-    if(s.creator)document.getElementById('xml-creator').value=s.creator;
+    if(s.creator){document.getElementById('xml-creator').value=s.creator;const fc=document.getElementById('flt-creator');if(fc)fc.value=s.creator;}
     if(s.srcId)document.getElementById('xml-src-id').value=s.srcId;
     if(s.srcCnt)document.getElementById('xml-src-cnt').value=s.srcCnt;
     if(s.pankrot)document.getElementById('xml-pankrot').value=s.pankrot;
+    if(s.pankrotCb)document.getElementById('flt-pankrot').checked=true;
   }catch(e){}
+  updateSettingsBar();
 }
 document.addEventListener('click',function(e){
   const panel=document.getElementById('settingsPanel');
