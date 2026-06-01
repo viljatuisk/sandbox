@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<title>Digiallkirjastamise aruanne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    background: #f0f2f5;
+    font-family: 'Open Sans', Arial, sans-serif;
+    color: #111;
+  }
+
+  .page {
+    width: 100%;
+    min-width: 1200px;
+    padding: 10px 16px 40px;
+    box-sizing: border-box;
+  }
+
+  .titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: normal;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    height: 30px;
+    background: #1a3869;
+    color: white;
+    border: 1px solid #122852;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  /* Külgriba + sisu paigutus */
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .sidebar {
+    width: 210px;
+    min-width: 210px;
+    background: #ffffff;
+    border: 1px solid #c8d4e8;
+    padding: 10px 10px 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sidebar-field {
+    margin-bottom: 8px;
+  }
+
+  .sidebar-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2px;
+    text-align: left;
+  }
+
+  .sidebar-field input,
+  .sidebar-field select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sidebar-sep {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 8px 0;
+  }
+
+  .sidebar-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .sidebar-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #333;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .btn-naita {
+    width: 100%;
+    height: 34px;
+    background: #1a3869;
+    color: white;
+    border: 1px solid #122852;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  .btn-naita:hover {
+    background: #122852;
+  }
+
+  /* Põhisisu */
+  .main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  label {
+    font-size: 14px;
+    color: #333;
+  }
+
+  input, select {
+    height: 26px;
+    border: 1px solid #bfbfbf;
+    background: white;
+    padding: 2px 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 0;
+  }
+
+  .card-split {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    margin-top: 2px;
+  }
+
+  .card-split-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-split-label {
+    font-size: 11px;
+    color: #666;
+    margin-top: 1px;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid #c8d4e8;
+    padding: 12px;
+  }
+
+  .card .big {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+
+  .card .desc {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .green { border-left: 6px solid #67a85b; }
+  .yellow { border-left: 6px solid #d7aa3c; }
+  .red { border-left: 6px solid #bf5757; }
+  .blue { border-left: 6px solid #5d83bf; }
+
+  .table-wrap {
+    width: 100%;
+    margin-top: 16px;
+    border: 1px solid #c8d4e8;
+    background: white;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead {
+    background: #d6e2f5;
+    border-bottom: 1px solid #b8c8e8;
+  }
+
+  th {
+    font-size: 13px;
+    overflow: hidden;
+    text-align: left;
+    padding: 7px 6px;
+    white-space: nowrap;
+  }
+
+  tr.col-filters th {
+    background: #e8f0fb;
+    border-top: 1px solid #c8d4e8;
+    padding: 3px 4px;
+  }
+
+  tr.col-filters input[type="text"],
+  tr.col-filters select {
+    width: 100%;
+    height: 22px;
+    font-size: 12px;
+    padding: 1px 4px;
+    border: 1px solid #b8c8e8;
+    background: white;
+    box-sizing: border-box;
+  }
+
+  tr.col-filters select {
+    padding: 0 2px;
+  }
+
+  td {
+    font-size: 13px;
+    overflow: hidden;
+    padding: 7px 6px;
+    border-bottom: 1px solid #e0e8f4;
+    vertical-align: top;
+    overflow-wrap: break-word;
+  }
+
+  tbody tr:not(.detail-row):nth-child(4n+1),
+  tbody tr:not(.detail-row):nth-child(4n+2) {
+    background: #f4f7fd;
+  }
+
+  tbody tr:hover {
+    background: #dce8f7;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .status.signed {
+    background: #dff1dc;
+    color: #1d5a1a;
+  }
+
+  .status.partial {
+    background: #fff1cb;
+    color: #755100;
+  }
+
+  .status.missing {
+    background: #f5dcdc;
+    color: #7d1d1d;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #e7e7e7;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .person {
+    line-height: 1.45;
+  }
+
+  .missing-person {
+    color: #b12727;
+    font-weight: bold;
+  }
+
+  .meie-ok {
+    color: #1d6b1a;
+    font-weight: bold;
+  }
+
+  .reminder-count {
+    font-weight: bold;
+    color: #444;
+  }
+
+  .expand-btn {
+    width: 18px;
+    height: 18px;
+    background: white;
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+    color: #444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .expand-btn:hover { background: #eee; }
+
+  td.cb-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 4px;
+    border-bottom: 1px solid #e0e8f4;
+  }
+
+  tr.detail-row { display: none; }
+
+  tr.detail-row > td {
+    background: #f0f5fd;
+    border-bottom: 2px solid #b8c8e8;
+    padding: 12px 16px 14px 40px;
+  }
+
+  .detail-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
+    max-width: 700px;
+  }
+
+  .detail-section-title {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #777;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  .signer-line {
+    font-size: 13px;
+    padding: 2px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .signer-line .signer-date {
+    font-size: 11px;
+    color: #999;
+  }
+
+  .muted {
+    color: #777;
+    font-size: 12px;
+  }
+
+  .row-focus {
+    background: white;
+  }
+
+  a {
+    color: #1a4fad;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .top-note {
+    margin-top: 10px;
+    background: #fff9d8;
+    border: 1px solid #e1d38a;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="titlebar">
+    <h1>Digiallkirjastamise aruanne</h1>
+
+    <div class="actions">
+      <button class="btn">Saada meeldetuletus</button>
+      <button class="btn">Export Excel</button>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- Vasak külgriba filtritega -->
+    <div class="sidebar">
+      <div class="sidebar-field">
+        <label>Dokumendi tüüp</label>
+        <select>
+          <option>Kõik</option>
+          <option>Lepingud</option>
+          <option>Pakkumised</option>
+          <option>Arved</option>
+        </select>
+      </div>
+
+      <div class="sidebar-field">
+        <label>Kliendi staatus</label>
+        <select id="statusFilter">
+          <option value="pending_missing">Allkirjastamata ja osaliselt allkirjastatud</option>
+          <option value="partial">Osaliselt allkirjastatud</option>
+          <option value="missing">Allkirjastamata</option>
+          <option value="signed">Täielikult allkirjastatud</option>
+          <option value="all">Kõik</option>
+        </select>
+      </div>
+
+      <div class="sidebar-field">
+        <label>Saadetud alates</label>
+        <input type="date" id="dateFrom" autocomplete="off" />
+      </div>
+
+      <div class="sidebar-field">
+        <label>Saadetud kuni</label>
+        <input type="date" id="dateTo" autocomplete="off" />
+      </div>
+
+      <div class="sidebar-field">
+        <label>Klient</label>
+        <input placeholder="nimi või kood" />
+      </div>
+
+      <div class="sidebar-field">
+        <label>Algataja</label>
+        <input placeholder="kasutaja" />
+      </div>
+
+      <div class="sidebar-field">
+        <label>Kliendi puuduolev allkirjastaja</label>
+        <input placeholder="kes pole allkirjastanud" />
+      </div>
+
+      <div class="sidebar-field">
+        <label>Meie puuduolev allkirjastaja</label>
+        <input id="internalSignerFilter" placeholder="kes pole allkirjastanud" />
+      </div>
+
+
+      <button class="btn-naita">Näita</button>
+    </div>
+
+    <!-- Põhisisu -->
+    <div class="main-content">
+
+      <div class="top-note">
+        Aruande põhifookus on leida kiiresti dokumendid, millelt on veel allkirjad puudu, ning võimaldada kasutajal saata meeldetuletusi.
+      </div>
+
+      <div class="summary" style="margin-top:10px;">
+        <div class="card yellow">
+          <div class="big" id="kpi-ootel">7</div>
+          <div class="desc" style="margin-bottom:3px;">Ootel allkirjad</div>
+          <div class="card-split">
+            <div class="card-split-item">
+              <div style="font-size:13px;font-weight:bold;" id="kpi-meie">3</div>
+              <div class="card-split-label">meie</div>
+            </div>
+            <div class="card-split-item">
+              <div style="font-size:13px;font-weight:bold;" id="kpi-klient">4</div>
+              <div class="card-split-label">kliendi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card red">
+          <div class="big" id="kpi-vanim">19 päeva</div>
+          <div class="desc">Vanim ootel dokument</div>
+        </div>
+
+        <div class="card red">
+          <div class="big" id="kpi-ule7">2</div>
+          <div class="desc">Üle 7 päeva ootel</div>
+        </div>
+
+        <div class="card yellow">
+          <div class="big" id="kpi-saatmata">3</div>
+          <div class="desc">Saatmata meeldetuletusi</div>
+        </div>
+
+        <div class="card green">
+          <div class="big" id="kpi-allkirjastatud">12</div>
+          <div class="desc">Täielikult allkirjastatud sel kuul</div>
+        </div>
+      </div>
+
+  <div class="table-wrap" style="margin-top:10px;">
+    <table>
+      <colgroup>
+        <col style="width: 3%;">
+        <col style="width: 11%;">
+        <col style="width: 8%;">
+        <col style="width: 11%;">
+        <col style="width: 10%;">
+        <col style="width: 12%;">
+        <col style="width: 6%;">
+        <col style="width: 13%;">
+        <col style="width: 5%;">
+        <col style="width: 10%;">
+        <col style="width: 10%;">
+        <col style="width: 9%;">
+      </colgroup>
+      <thead>
+        <tr>
+          <th style="width:34px;"><input type="checkbox" id="selectAllRows" title="Vali kõik" /></th>
+          <th>Dokument</th>
+          <th>Tüüp</th>
+          <th>Klient</th>
+          <th>Saadetud</th>
+          <th>Kliendi staatus</th>
+          <th>Allkirjastatud</th>
+          <th style="white-space:normal; line-height:1.2;">Kliendi poolel puuduvad</th>
+          <th>Algataja</th>
+          <th style="white-space:normal; line-height:1.2;">Meie poolel puuduvad</th>
+          <th style="white-space:normal; line-height:1.1;">Meeldetuletus</th>
+          <th>Tegevus</th>
+        </tr>
+        <tr class="col-filters">
+          <th></th>
+          <th><input type="text" id="cf-doc" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-type" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-client" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-sent" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-status" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-signed" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-missing" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-sender" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-internal" placeholder="Otsi" /></th>
+          <th><input type="text" id="cf-reminder" placeholder="Otsi" /></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10293</a><br><span class="muted">Rendileping_2026.asice</span></td>
+          <td>Lepingud</td>
+          <td>ABC Ehitus OÜ</td>
+          <td>25.05.2026 10:12<br><span class="muted">3 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">2</span> / 3</td>
+          <td class="person"><span class="missing-person">Jaan Saar</span><br><span class="muted">jaan.saar@abc.ee</span></td>
+          <td>JÜRI</td>
+          <td class="person">-</td>
+          <td>26.05 09:00 <span class="reminder-count">(2×)</span><br><span class="muted">2 päeva tagasi</span></td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Jüri Mägi <span class="signer-date">25.05 10:30</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Toivo Rand <span class="signer-date">26.05 08:15</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Jaan Saar <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">P-100884</a><br><span class="muted">Pakkumine.asice</span></td>
+          <td>Pakkumised</td>
+          <td>Nordtek AS</td>
+          <td>24.05.2026 14:55<br><span class="muted">4 päeva tagasi</span></td>
+          <td><span class="status missing">Allkirjastamata</span></td>
+          <td><span style="color:#b12727;font-weight:bold">0</span> / 2</td>
+          <td class="person"><span class="missing-person">Mari Tamm</span><br><span class="muted">mari.tamm@nordtek.ee</span><br><span class="missing-person">Peeter Kask</span><br><span class="muted">peeter.kask@nordtek.ee</span></td>
+          <td>MARI</td>
+          <td class="person"><span class="missing-person">Mari</span></td>
+          <td>-</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Mari Kask <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Mari Tamm <span class="signer-date">ootel</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Peeter Kask <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10281</a><br><span class="muted">Teenusleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Buildex OÜ</td>
+          <td>21.05.2026 09:11<br><span class="muted">7 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">1</span> / 2</td>
+          <td class="person"><span class="missing-person">Kati Kask</span><br><span class="muted">kati.kask@buildex.ee</span></td>
+          <td>PILLE</td>
+          <td class="person">-</td>
+          <td>22.05 10:15 <span class="reminder-count">(1×)</span><br><span class="muted">6 päeva tagasi</span></td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Pille Leppik <span class="signer-date">21.05 14:22</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Kati Kask <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10277</a><br><span class="muted">Raamleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Infra Grupp AS</td>
+          <td>18.05.2026 15:41<br><span class="muted">10 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>4 / 4</td>
+          <td class="person">-</td>
+          <td>PEETER</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Peeter Vaht <span class="signer-date">19.05 09:10</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Argo Piir <span class="signer-date">20.05 11:00</span></div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Liis Tamm <span class="signer-date">21.05 09:30</span></div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Rauno Kask <span class="signer-date">22.05 14:10</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10301</a><br><span class="muted">Töövõtuleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>EstBuild OÜ</td>
+          <td>27.05.2026 08:44<br><span class="muted">1 päev tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">1</span> / 3</td>
+          <td class="person"><span class="missing-person">Martin Kallas</span><br><span class="muted">martin.kallas@estbuild.ee</span><br><span class="missing-person">Tiina Põder</span><br><span class="muted">tiina.poder@estbuild.ee</span></td>
+          <td>JÜRI</td>
+          <td class="person"><span class="missing-person">Kairi</span></td>
+          <td>-</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Jüri Mägi <span class="signer-date">27.05 09:00</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Kairi Loit <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Martin Kallas <span class="signer-date">ootel</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Tiina Põder <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">A-20441</a><br><span class="muted">Müügiarve.asice</span></td>
+          <td>Arved</td>
+          <td>Meriton Grupp</td>
+          <td>22.05.2026 13:20<br><span class="muted">6 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>2 / 2</td>
+          <td class="person">-</td>
+          <td>PEETER</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Peeter Vaht <span class="signer-date">22.05 14:00</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Siret Kask <span class="signer-date">23.05 10:30</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">P-100912</a><br><span class="muted">Hooldusleping.asice</span></td>
+          <td>Pakkumised</td>
+          <td>DataHub AS</td>
+          <td>20.05.2026 17:03<br><span class="muted">8 päeva tagasi</span></td>
+          <td><span class="status missing">Allkirjastamata</span></td>
+          <td><span style="color:#b12727;font-weight:bold">0</span> / 1</td>
+          <td class="person"><span class="missing-person">Katrin Saar</span><br><span class="muted">katrin.saar@datahub.ee</span></td>
+          <td>MARI</td>
+          <td class="person">-</td>
+          <td>24.05 12:30 <span class="reminder-count">(3×)</span><br><span class="muted">4 päeva tagasi</span></td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Mari Kask <span class="signer-date">21.05 16:00</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Katrin Saar <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10255</a><br><span class="muted">Partnerlusleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Green Energy OÜ</td>
+          <td>11.05.2026 11:45<br><span class="muted">17 päeva tagasi</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">3</span> / 5</td>
+          <td class="person"><span class="missing-person">Andres Kivi</span><br><span class="muted">andres.kivi@greenenergy.ee</span><br><span class="missing-person">Eva Tamm</span><br><span class="muted">eva.tamm@greenenergy.ee</span></td>
+          <td>PILLE</td>
+          <td class="person"><span class="missing-person">Tiit</span><br><span class="missing-person">Kairi</span></td>
+          <td>-</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Pille Leppik <span class="signer-date">12.05 10:05</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Tiit Saar <span class="signer-date">ootel</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Kairi Loit <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Andres Kivi <span class="signer-date">ootel</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Eva Tamm <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">A-20409</a><br><span class="muted">Teenusarve.asice</span></td>
+          <td>Arved</td>
+          <td>Nord Element</td>
+          <td>09.05.2026 09:01<br><span class="muted">19 päeva tagasi</span></td>
+          <td><span class="status signed">Allkirjastatud</span></td>
+          <td>1 / 1</td>
+          <td class="person">-</td>
+          <td>PEETER</td>
+          <td class="person">-</td>
+          <td>-</td>
+          <td><a href="#">Ava dokument</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Peeter Vaht <span class="signer-date">09.05 11:20</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Rein Saar <span class="signer-date">10.05 09:45</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="cb-cell"><button class="expand-btn" title="Detailvaade">+</button><input type="checkbox" class="row-select" /></td>
+          <td><a href="#">L-10315</a><br><span class="muted">Alltöövõtuleping.asice</span></td>
+          <td>Lepingud</td>
+          <td>Ehituspartnerid AS</td>
+          <td>28.05.2026 16:12<br><span class="muted">täna</span></td>
+          <td><span class="status partial">Osaliselt allkirjastatud</span></td>
+          <td><span style="color:#b12727;font-weight:bold">2</span> / 4</td>
+          <td class="person"><span class="missing-person">Rainer Kask</span><br><span class="muted">rainer.kask@ehituspartnerid.ee</span><br><span class="missing-person">Maris Oja</span><br><span class="muted">maris.oja@ehituspartnerid.ee</span></td>
+          <td>JÜRI</td>
+          <td class="person"><span class="missing-person">Jüri</span></td>
+          <td>-</td>
+          <td><a href="#">Saada meeldetuletus</a></td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="12">
+            <div class="detail-panel">
+              <div>
+                <div class="detail-section-title">Meie poolel</div>
+                <div class="signer-line"><span class="missing-person">✗</span> Jüri Mägi <span class="signer-date">ootel</span></div>
+              </div>
+              <div>
+                <div class="detail-section-title">Kliendi poolel</div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Toivo Leppik <span class="signer-date">28.05 17:00</span></div>
+                <div class="signer-line"><span class="meie-ok">✓</span> Kaisa Tamm <span class="signer-date">28.05 17:30</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Rainer Kask <span class="signer-date">ootel</span></div>
+                <div class="signer-line"><span class="missing-person">✗</span> Maris Oja <span class="signer-date">ootel</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div><!-- /table-wrap -->
+
+    </div><!-- /main-content -->
+
+  </div><!-- /layout -->
+
+</div><!-- /page -->
+<script>
+  // Veeru-filtrid (päises)
+  const cfDoc    = document.getElementById('cf-doc');
+  const cfType   = document.getElementById('cf-type');
+  const cfClient = document.getElementById('cf-client');
+  const cfSent   = document.getElementById('cf-sent');
+  const cfStatus = document.getElementById('cf-status');
+  const cfSigned = document.getElementById('cf-signed');
+  const cfReminder = document.getElementById('cf-reminder');
+  const cfMissing = document.getElementById('cf-missing');
+  const cfInternal = document.getElementById('cf-internal');
+  const cfSender = document.getElementById('cf-sender');
+
+  const docTypeFilter = document.querySelectorAll('select')[0];
+  const statusFilter = document.getElementById('statusFilter');
+  const dateFromFilter = document.getElementById('dateFrom');
+  const dateToFilter = document.getElementById('dateTo');
+  const clientFilter = document.querySelector('input[placeholder="nimi või kood"]');
+  const signerFilter = document.querySelector('input[placeholder="kes pole allkirjastanud"]');
+  const internalSignerFilter = document.getElementById('internalSignerFilter');
+  const senderFilter = document.querySelector('input[placeholder="kasutaja"]');
+  const naita = document.querySelector('.btn-naita');
+
+  const rows = Array.from(document.querySelectorAll('tbody tr:not(.detail-row)'));
+  const selectAllRows = document.getElementById('selectAllRows');
+  const rowSelects = Array.from(document.querySelectorAll('.row-select'));
+
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const detailRow = this.closest('tr').nextElementSibling;
+      const isOpen = detailRow.style.display === 'table-row';
+      detailRow.style.display = isOpen ? 'none' : 'table-row';
+      this.textContent = isOpen ? '+' : '−';
+    });
+  });
+
+  function parseDate(str) {
+    // date input tagastab "yyyy-mm-dd"
+    if (!str) return null;
+    const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    return new Date(+m[1], +m[2] - 1, +m[3]);
+  }
+
+  function rowDate(row) {
+    // Veerg 4 (index 4): "25.05.2026 10:12\n3 päeva tagasi"
+    const raw = row.children[4].innerText.split('\n')[0].trim();
+    const m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+    if (!m) return null;
+    return new Date(+m[3], +m[2] - 1, +m[1]);
+  }
+
+  function updateKPIs() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const thisMonth = today.getMonth();
+    const thisYear = today.getFullYear();
+
+    let ootelKokku = 0, ootelMeie = 0, vanimPäevi = 0, ule7 = 0, saatmata = 0, ootelKlient = 0, allkirjastatud = 0;
+
+    rows.forEach(row => {
+      const statusEl = row.querySelector('.status');
+      if (!statusEl) return;
+      const isSigned = statusEl.classList.contains('signed');
+      const rDate = rowDate(row);
+      const daysDiff = rDate ? Math.floor((today - rDate) / 86400000) : 0;
+
+      const meiePuuduvad = row.children[9].innerText.trim();
+      const klientPuuduvad = row.children[7].innerText.trim();
+      const reminder = row.children[10].innerText.trim();
+
+      if (!isSigned) {
+        ootelKokku++;
+        if (meiePuuduvad !== '-' && meiePuuduvad !== '') ootelMeie++;
+        if (daysDiff > vanimPäevi) vanimPäevi = daysDiff;
+        if (daysDiff > 7) ule7++;
+        if (reminder === '-' || reminder === '') saatmata++;
+        if (klientPuuduvad !== '-' && klientPuuduvad !== '') ootelKlient++;
+      }
+
+      if (isSigned && rDate && rDate.getMonth() === thisMonth && rDate.getFullYear() === thisYear) {
+        allkirjastatud++;
+      }
+    });
+
+    document.getElementById('kpi-ootel').textContent = ootelKokku;
+    document.getElementById('kpi-meie').textContent = ootelMeie;
+    document.getElementById('kpi-klient').textContent = ootelKlient;
+    document.getElementById('kpi-vanim').textContent = vanimPäevi + ' päeva';
+    document.getElementById('kpi-ule7').textContent = ule7;
+    document.getElementById('kpi-saatmata').textContent = saatmata;
+    document.getElementById('kpi-allkirjastatud').textContent = allkirjastatud;
+  }
+
+  function applyFilters() {
+    const dateFrom = parseDate(dateFromFilter.value);
+    const dateTo = parseDate(dateToFilter.value);
+
+    rows.forEach(row => {
+      const statusEl = row.querySelector('.status');
+      if (!statusEl) return;
+
+      const docType = row.children[2].innerText.toLowerCase();
+      const client = row.children[3].innerText.toLowerCase();
+      const sender = row.children[8].innerText.toLowerCase();
+      const missingPeople = row.children[7].innerText.toLowerCase();
+      const statusText = statusEl.innerText.toLowerCase();
+      const rDate = rowDate(row);
+
+      let visible = true;
+
+      // staatuse filter
+      const sg = statusFilter.value;
+      if (sg === 'pending_missing') {
+        if (!statusText.includes('osaliselt') && !statusText.includes('allkirjastamata')) visible = false;
+      } else if (sg === 'partial') {
+        if (!statusText.includes('osaliselt')) visible = false;
+      } else if (sg === 'missing') {
+        if (!statusText.includes('allkirjastamata')) visible = false;
+      } else if (sg === 'signed') {
+        if (statusText.includes('osaliselt') || statusText.includes('allkirjastamata')) visible = false;
+      }
+
+      // dokumendi tüüp
+      const selectedDocType = docTypeFilter.value.toLowerCase();
+      if (selectedDocType !== 'kõik' && !docType.includes(selectedDocType)) visible = false;
+
+      // kuupäeva vahemik
+      if (dateFrom && rDate && rDate < dateFrom) visible = false;
+      if (dateTo && rDate && rDate > dateTo) visible = false;
+
+      // saatja
+      if (senderFilter.value.trim() && !sender.includes(senderFilter.value.toLowerCase())) visible = false;
+
+      // klient
+      if (clientFilter.value.trim() && !client.includes(clientFilter.value.toLowerCase())) visible = false;
+
+      // kliendi puuduv allkirjastaja (külgriba)
+      if (signerFilter.value.trim() && !missingPeople.includes(signerFilter.value.toLowerCase())) visible = false;
+
+      // meie puuduv allkirjastaja (külgriba)
+      const internalMissingText = row.children[9].innerText.toLowerCase();
+      if (internalSignerFilter.value.trim() && !internalMissingText.includes(internalSignerFilter.value.toLowerCase())) visible = false;
+
+      // --- veeru-filtrid ---
+      const docText = row.children[1].innerText.toLowerCase();
+      if (cfDoc.value.trim() && !docText.includes(cfDoc.value.toLowerCase())) visible = false;
+
+      if (cfType.value.trim() && !docType.includes(cfType.value.toLowerCase())) visible = false;
+
+      if (cfClient.value.trim() && !client.includes(cfClient.value.toLowerCase())) visible = false;
+
+      const sentText = row.children[4].innerText.toLowerCase();
+      if (cfSent.value.trim() && !sentText.includes(cfSent.value.toLowerCase())) visible = false;
+
+      if (cfStatus.value.trim() && !statusText.includes(cfStatus.value.toLowerCase())) visible = false;
+
+      const signedText = row.children[6].innerText.toLowerCase();
+      if (cfSigned.value.trim() && !signedText.includes(cfSigned.value.toLowerCase())) visible = false;
+
+      if (cfMissing.value.trim() && !missingPeople.includes(cfMissing.value.toLowerCase())) visible = false;
+
+      const reminderText = row.children[10].innerText.toLowerCase();
+      if (cfReminder.value.trim() && !reminderText.includes(cfReminder.value.toLowerCase())) visible = false;
+
+      const internalText = row.children[9].innerText.toLowerCase();
+      if (cfInternal.value.trim() && !internalText.includes(cfInternal.value.toLowerCase())) visible = false;
+
+      if (cfSender.value.trim() && !sender.includes(cfSender.value.toLowerCase())) visible = false;
+
+      row.style.display = visible ? '' : 'none';
+      const detailRow = row.nextElementSibling;
+      if (detailRow && detailRow.classList.contains('detail-row') && !visible) {
+        detailRow.style.display = 'none';
+        row.querySelector('.expand-btn').textContent = '+';
+      }
+    });
+  }
+
+  // Reaalajas filtrid (teksti- ja valikuväljad)
+  docTypeFilter.addEventListener('change', applyFilters);
+  statusFilter.addEventListener('change', applyFilters);
+  clientFilter.addEventListener('input', applyFilters);
+  senderFilter.addEventListener('input', applyFilters);
+  signerFilter.addEventListener('input', applyFilters);
+  internalSignerFilter.addEventListener('input', applyFilters);
+  // Kuupäevad rakenduvad "Näita" nupuga või väljalt lahkudes
+  dateFromFilter.addEventListener('change', applyFilters);
+  dateToFilter.addEventListener('change', applyFilters);
+  naita.addEventListener('click', applyFilters);
+
+  // Veeru-filtrid – reaalajas
+  [cfDoc, cfType, cfClient, cfSent, cfStatus, cfSigned, cfMissing, cfSender, cfInternal, cfReminder].forEach(el => el.addEventListener('input', applyFilters));
+
+  selectAllRows.addEventListener('change', () => {
+    rowSelects.forEach(cb => {
+      if (cb.closest('tr').style.display !== 'none') cb.checked = selectAllRows.checked;
+    });
+  });
+
+  dateFromFilter.value = '';
+  dateToFilter.value = '';
+  applyFilters();
+  updateKPIs();
+</script>
+</body>
+</html>

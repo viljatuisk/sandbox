@@ -104,7 +104,6 @@ td.green{color:#16a34a;font-weight:600}
 .btn-ctrl{background:#7c3aed;color:#fff}
 .btn-pin{background:#b45309;color:#fff}
 .btn-xml{background:#1e3a5f;color:#fff}
-.btn-xls{background:#217346;color:#fff}
 
 /* Kokkuvõte */
 .sum-items{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
@@ -126,13 +125,13 @@ kbd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border
 /* Näide-kast */
 .example{background:#1e3a5f;color:#fff;border-radius:10px;padding:16px 20px}
 .example h3{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#93c5fd;margin-bottom:10px}
-.example table{font-size:13px;background:transparent}
+.example table{font-size:12px}
 .example thead tr{background:rgba(255,255,255,.12)}
 .example thead th{color:#bfdbfe;font-size:11px}
 .example tbody tr{border-color:rgba(255,255,255,.08)}
 .example tbody tr:nth-child(even){background:rgba(255,255,255,.05)}
 .example tbody tr:hover{background:rgba(255,255,255,.1)}
-.example tbody td{color:#f1f5f9;font-size:13px;font-weight:500}
+.example tbody td{color:#e2e8f0}
 .example .note{font-size:12px;color:#93c5fd;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15)}
 
 .tag{display:inline-block;background:#dbeafe;color:#1e40af;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;font-family:monospace}
@@ -225,21 +224,6 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <p>Rahvusvaheline standard majandustehingute vahetamiseks</p>
       </div>
     </div>
-    <div style="margin-top:12px;display:flex;gap:16px;align-items:flex-start">
-      <div style="flex:0 0 auto">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Praegune KMD vorm</div>
-        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-          <img src="vorm_KMD.png" alt="Vorm KMD" style="width:100%;display:block">
-        </div>
-      </div>
-      <div style="flex:0 0 auto">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">e-MTA kasutajaliidese näidis</div>
-        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-          <img src="emta UI pilt 1.png" alt="e-MTA UI 1" style="width:100%;display:block">
-          <img src="emta UI pilt 2.png" alt="e-MTA UI 2" style="width:100%;display:block">
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -257,21 +241,13 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <tr><td>KMD + VD</td><td>Kaks eraldi aruannet</td><td class="green">Koondatud ühte andmefaili</td></tr>
           <tr><td>Kes koostab deklaratsiooni?</td><td>Raamatupidaja / tarkvara</td><td class="green">Riik ise, automaatselt</td></tr>
           <tr><td>Tehingupartneri andmed</td><td>KMD lisadel INFA/INFB, koondina partneri kohta (≥1000 €)</td><td class="green">Arve kaupa, reg-kood kohustuslik (≥1000 €)</td></tr>
-          <tr><td>Klassifikaatorid</td><td>KMK kood → KMD rida (sektsioon)</td><td class="green">Riiklikud taksonoomia koodid — M_101 jne (50+)</td></tr>
+          <tr><td>Klassifikaatorid</td><td>Directo KMK koodid (~35)</td><td class="green">Riiklikud taksonoomia koodid — M_101 jne (50+)</td></tr>
         </tbody>
       </table>
     </div>
     <div class="box box-orange">
       <h3>Oluline</h3>
       <p><strong>APA KMD ei ole enam klassikaline käibedeklaratsiooni raport — see on detailne tehinguklassifikaator.</strong> ERP peab suutma eristada tehingu tüüpi, maksustamise viisi, sisendkäibemaksu liiki, soetuse liiki, pöördmaksu, kassapõhisust jne.</p>
-    </div>
-    <div style="margin-top:10px;display:flex;gap:12px">
-      <div style="flex:1;background:#fee2e2;border-left:4px solid #dc2626;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#dc2626">Praegu</strong><br/>KMK kood klassifitseerib tehingu ja sektsioon määrab, millisele KMD reale see läheb.
-      </div>
-      <div style="flex:1;background:#dcfce7;border-left:4px solid #16a34a;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#16a34a">Uus</strong><br/>Taksonoomia kood (nt <code>M_101</code>, <code>O_401</code>) klassifitseerib tehingu täielikult — kood ise sisaldab kogu vajalikku infot APA KMD genereerimiseks, eraldi sektsiooni välja ei ole vaja.
-      </div>
     </div>
   </div>
 </div>
@@ -321,42 +297,6 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
   </div>
 </div>
 
-<!-- SLAID 5b: ESITAMISE SAGEDUS -->
-<div class="slide" data-title="Millal ja kui tihti esitada?">
-  <div class="s-header"><div class="pre">3. Ajakava</div><h2>Andmete esitamine — millal ja kui tihti?</h2></div>
-  <div class="s-body">
-    <div class="cards" style="margin-bottom:10px">
-      <div class="card" style="border-color:#dc2626">
-        <h3>Praegu (2025–2026)</h3>
-        <p class="big" style="font-size:22px">1× kuus</p>
-        <p>Tähtaeg <strong>maksustamisperioodile järgneva kuu 20. kuupäev</strong> — sama mis KMD praegu</p>
-      </div>
-      <div class="card green">
-        <h3>Tulevikus (pikemas perspektiivis)</h3>
-        <p class="big" style="font-size:22px;color:#16a34a">Reaalajas?</p>
-        <p>Võimalik liikumine <strong>tehingupõhise</strong> ehk pidevesitamise suunas — iga tehing saadetakse kohe</p>
-      </div>
-    </div>
-    <div class="box box-blue" style="margin-bottom:8px">
-      <h3>Mida tehingupõhine esitamine muudaks?</h3>
-      <ul>
-        <li>Andmed edastatakse kohe tehingu toimumisel, mitte kuu lõpus</li>
-        <li><strong>1000 € piirmäär kaob</strong> — see piirmäär põhineb partneri kuise kogusumma arvestusel, mis pole reaalajas esitamisel enam rakendatav</li>
-        <li>Directo peaks toetama automaatset "push" mehhanismi iga kande salvestamisel</li>
-      </ul>
-    </div>
-    <div class="box box-orange">
-      <h3>⚠ Hetkel kinnitamata</h3>
-      <p>Tehingupõhise esitamise täpne ajakava ja nõuded ei ole MTA poolt veel avaldatud. <strong>2027. aastaks on kohustuslik kuine esitamine</strong> — reaalajas esitamine on tõenäoliselt järgmine etapp.</p>
-    </div>
-    <div class="box box-red" style="margin-top:8px">
-      <h3>⚠ Vana KMD aruanne peab Directos ellu jääma</h3>
-      <p>MTA on kinnitanud: <strong>enne 1. jaanuari 2027 maksustamisperioodide andmeid saab esitada ja parandada vanas XML-formaadis edasi.</strong> Alates 01.01.2027 ei võeta enam vastu vana XML-i — ainult XBRL GL.</p>
-      <p style="margin-top:6px">See tähendab, et Directos peab <strong>vana KMD aruanne säilima</strong> seni, kuni vanu perioode enam korrigeerida ei tule. Mõlemad formaadid peavad teatud üleminekuperioodil paralleelselt toimima.</p>
-    </div>
-  </div>
-</div>
-
 <!-- SLAID 6: TAKSONOOMIAD -->
 <div class="slide" data-title="Uued taksonoomiad">
   <div class="s-header"><div class="pre">4. Taksonoomiad</div><h2>Uued taksonoomiad — kui palju muutub?</h2></div>
@@ -397,12 +337,6 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <div style="background:#fff;border-radius:6px;padding:6px 10px;font-size:12px"><strong>300</strong> — KM-grupi liige</div>
       </div>
     </div>
-    <div style="margin-top:12px">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Maksu- ja Tolliameti näidistehingute tabel</div>
-      <div style="overflow-x:auto;width:100%;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-        <img src="lahteandmed.png" alt="Lähteandmed" style="width:2000px;display:block">
-      </div>
-    </div>
   </div>
 </div>
 
@@ -415,7 +349,7 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
       <p>Directo peab suutma genereerida <strong>XBRL GL formaadis XML-faili</strong> ja saatma selle X-tee kaudu EMTA-le (või XML-faili allalaadimine).</p>
     </div>
     <div class="cards">
-      <div class="card"><h3>6.1</h3><p>KMK kaart<br/><span class="muted">3 uut välja + mappimine</span></p></div>
+      <div class="card"><h3>6.1</h3><p>KMK kaart<br/><span class="muted">3 uut välja</span></p></div>
       <div class="card"><h3>6.2</h3><p>Kliendi-/hankijakaart<br/><span class="muted">Isiku tüüp + salastatud</span></p></div>
       <div class="card"><h3>6.3</h3><p>Andmete agregeerimine<br/><span class="muted">1000 € loogika</span></p></div>
       <div class="card"><h3>6.4</h3><p>KM-grupp<br/><span class="muted">Uus andmeedastuse loogika</span></p></div>
@@ -426,19 +360,12 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 </div>
 
 <!-- SLAID 8: KMK KAART -->
-<div class="slide" data-title="6.1 KMK kaart — 3 uut välja + mappimine">
-  <div class="s-header"><div class="pre">5.1 Arendus</div><h2>KMK kaart — 3 uut välja + mappimine</h2></div>
+<div class="slide" data-title="6.1 KMK kaart — 3 uut välja">
+  <div class="s-header"><div class="pre">5.1 Arendus</div><h2>KMK kaart — 3 uut välja</h2></div>
   <div class="s-body">
-    <div style="display:flex;gap:12px;margin-bottom:10px">
-      <div style="flex:1;background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#2d5a9e">1. Mappimine</strong><br/>Olemasolevad KMK koodid tuleb siduda riiklike taksonoomia koodidega.
-      </div>
-      <div style="flex:1;background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#2d5a9e">2. Kolm uut välja</strong><br/>Igale KMK kaardile lisatakse müügi-, ostu- ja soetuse KMD tüüp.
-      </div>
-      <div style="flex:1;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#c2410c">3. Puuduvad koodid</strong><br/>Osad vajalikud KMK koodid puuduvad täna Directos — tuleb luua uued.
-      </div>
+    <div class="box box-red" style="margin-bottom:4px">
+      <h3>⚠ Probleem</h3>
+      <p>Praegustest Directo KMK koodidest <strong>ei piisa</strong> APA KMD korrektseks täitmiseks. Ilma uute väljadeta ei ole võimalik eristada erinevaid APA KMD tüüpe ega genereerida õiget XML-i.</p>
     </div>
     <div class="tbl-wrap">
       <table>
@@ -455,40 +382,42 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
       <table>
         <thead><tr><th>Väli</th><th>Väärtus</th><th>Seletus</th></tr></thead>
         <tbody>
-          <tr><td>Müügi KMD tüüp</td><td style="color:#cbd5e1;font-style:italic">tühi</td><td>Müüki ei ole</td></tr>
-          <tr><td>Ostu KMD tüüp</td><td style="color:#4ade80;font-weight:700">O_401</td><td>Sisendkäibemaks — ühendusesisene kaup pöördmaks</td></tr>
-          <tr><td>Soetuse KMD tüüp</td><td style="color:#4ade80;font-weight:700">S_101</td><td>Kauba ühendusesisene soetamine</td></tr>
+          <tr><td>Müügi KMD tüüp</td><td style="color:#94a3b8;font-style:italic">tühi</td><td style="color:#e2e8f0">Müüki ei ole</td></tr>
+          <tr><td>Ostu KMD tüüp</td><td style="color:#4ade80;font-weight:700">O_401</td><td style="color:#e2e8f0">Sisendkäibemaks — ühendusesisene kaup pöördmaks</td></tr>
+          <tr><td>Soetuse KMD tüüp</td><td style="color:#4ade80;font-weight:700">S_101</td><td style="color:#e2e8f0">Kauba ühendusesisene soetamine</td></tr>
         </tbody>
       </table>
       <div class="note">⚡ Üks KMK kood genereerib APA KMD-s <strong>2 XML kirjet</strong> — nii S_ kui O_ rea</div>
+    </div>
+    <div class="box box-orange">
+      <h3>Lisaks</h3>
+      <p>Osad vajalikud KMK koodid <strong>puuduvad täna Directos</strong> — tuleb luua uued.</p>
     </div>
   </div>
 </div>
 
 <!-- SLAID 9: KLIENDI-/HANKIJAKAART -->
 <div class="slide" data-title="6.2 Kliendi- ja hankijakaart">
-  <div class="s-header"><div class="pre">5.2 Arendus</div><h2>Kliendi- ja hankijakaart — minimaalsed muudatused</h2></div>
+  <div class="s-header"><div class="pre">5.2 Arendus</div><h2>Kliendi- ja hankijakaart — täiendamine</h2></div>
   <div class="s-body">
-    <div class="box box-blue" style="margin-bottom:10px">
-      <p>Kliendi- ja hankijakaarti <strong>ei tule sisuliselt muuta</strong> — olemasolevad väljad annavad XML generaatorile vajaliku info:</p>
-      <ul style="margin-top:6px">
-        <li><strong>Isiku tüüp</strong> (juriidiline / füüsiline) — määrab <span class="code">identifierCategory</span> väärtuse (100 vs 200)</li>
-        <li><strong>Asumaa</strong> — määrab, kas tegemist on välismaa isikuga (ühendusesiseste tehingute jaoks)</li>
-      </ul>
-    </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Muudatus</th><th>Kirjeldus</th><th>Mõju XML-is</th></tr></thead>
+        <thead><tr><th>Uus väli</th><th>Eesmärk</th><th>Mõju XML-is</th></tr></thead>
         <tbody>
           <tr>
-            <td><strong>Salastatud</strong><br/><span class="muted">Lisatakse Tüüp välja valikutesse</span></td>
-            <td>Partner esitatakse anonüümselt — kutse- või ametisaladus. Saab arvel muuta.</td>
+            <td><strong>Isiku tüüp</strong><br/><span class="muted">Juriidiline / füüsiline / välismaa isik</span></td>
+            <td>Määrab, kas tehingupartner esitatakse detailselt või agregeeritult</td>
+            <td class="code">identifierCategory<br/>100 vs 200</td>
+          </tr>
+          <tr>
+            <td><strong>Salastatud</strong> (lipp)<br/><span class="muted">Kutse- ja ametisaladus</span></td>
+            <td>Partner esitatakse anonüümselt, andmeid ei avaldata</td>
             <td class="code">identifierCategory: 101</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div class="cards" style="margin-top:10px">
+    <div class="cards">
       <div class="card">
         <h3>Arvele lisaks</h3>
         <ul style="font-size:13px;padding-left:16px;line-height:1.8">
@@ -568,22 +497,12 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Directo baas</th><th>Ettevõte</th><th>Roll</th><th>Andmeallikas</th><th>Andmeallika kogus</th><th>Saadetavad read</th></tr></thead>
+        <thead><tr><th>Directo baas</th><th>Ettevõte</th><th>Roll</th><th>Saadetavad read</th></tr></thead>
         <tbody>
-          <tr><td class="code">DIRECTO_A</td><td>Firma A</td><td><span class="tag">Esindusisik</span></td><td><span class="code">ERP-01</span></td><td><span class="code">2</span></td><td>Firma A tehingud — <em>esindusisiku reg-koodiga päises</em></td></tr>
-          <tr><td class="code">DIRECTO_B</td><td>Firma B</td><td><span class="tag">Grupiliige</span></td><td><span class="code">ERP-02</span></td><td><span class="code">2</span></td><td>Firma B tehingud — <em>esindusisiku reg-koodiga päises</em></td></tr>
+          <tr><td class="code">DIRECTO_A</td><td>Firma A</td><td><span class="tag">Esindusisik</span></td><td>Firma A tehingud — <em>esindusisiku reg-koodiga päises</em></td></tr>
+          <tr><td class="code">DIRECTO_B</td><td>Firma B</td><td><span class="tag">Grupiliige</span></td><td>Firma B tehingud — <em>esindusisiku reg-koodiga päises</em></td></tr>
         </tbody>
       </table>
-    </div>
-    <div class="box box-blue" style="margin-top:8px">
-      <h3>Andmeallikas — mida see tähendab?</h3>
-      <p>Iga grupi liige (sh esindusisik) saadab oma tehinguread <strong>ise EMTA-sse</strong>, kuid kõik lähevad <strong>ühisele grupi KMD-le</strong> — päises on alati <strong>esindusisiku registrikood</strong>. EMTA koondab kõik read üheks kinnitamata grupi KMD-ks.</p>
-      <p style="margin-top:6px">Selleks, et eri allikatest saabuvad read üksteist üle ei kirjutaks, kasutatakse andmeallika tunnust:</p>
-      <ul style="margin:6px 0 0 0">
-        <li>Baas 1: <span class="code">entrySourceId = ERP-01</span>, <span class="code">entrySourceCount = 2</span></li>
-        <li>Baas 2: <span class="code">entrySourceId = ERP-02</span>, <span class="code">entrySourceCount = 2</span></li>
-      </ul>
-      <p style="margin-top:6px">Lisaks tuleb <strong>kõigi grupi liikmete (sh esindusisiku) igale tehingureal</strong> lisada <span class="code">identifierCategory = 300</span> ja vastava liikme registrikood — et EMTA teaks, kelle rida see on.</p>
     </div>
     <div class="cards">
       <div class="card">
@@ -634,85 +553,76 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
   </div>
 </div>
 
-<!-- SLAID 14: UI PROTOTÜÜP -->
-<div class="slide" data-title="UI prototüüp — kus oleme täna?">
-  <div class="s-header"><div class="pre">6. Prototüüp</div><h2>UI prototüüp — kus oleme täna?</h2></div>
+<!-- SLAID 14: SAATMISE TÖÖVOOG -->
+<div class="slide" data-title="6.6 Saatmise töövoog">
+  <div class="s-header"><div class="pre">5.6 Arendus</div><h2>Saatmise töövoog — 4 nuppu</h2></div>
   <div class="s-body">
-    <div style="margin-top:10px">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Directo APA KMD UI protoüüp</div>
-      <div style="overflow-y:auto;overflow-x:auto;height:900px;width:100%;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-        <img src="KMD UI Proto 2.png" alt="Directo UI prototüüp" style="width:100%;display:block">
+    <div class="btn-row" style="margin-bottom:12px">
+      <div class="wf-btn btn-send"><span class="wf-icon">↑</span>Saada e-MTA-le<div class="wf-sub">Valideerib XML → X-tee → EMTA</div></div>
+      <div style="font-size:22px;color:#94a3b8;align-self:center">→</div>
+      <div class="wf-btn btn-ctrl"><span class="wf-icon">🔍</span>Kontrolli<div class="wf-sub">Tagasisideraport EMTA-lt</div></div>
+      <div style="font-size:22px;color:#94a3b8;align-self:center">→</div>
+      <div class="wf-btn btn-pin"><span class="wf-icon">🔒</span>Kinnita PIN2<div class="wf-sub">Lõplik kinnitus EMTA-s</div></div>
+      <div style="font-size:22px;color:#94a3b8;align-self:center">+</div>
+      <div class="wf-btn btn-xml"><span class="wf-icon">⬇</span>XML<div class="wf-sub">Laadi fail alla</div></div>
+    </div>
+    <div class="cards">
+      <div class="card green">
+        <h3>✓ Kontrolli — õnnestus</h3>
+        <p style="color:#16a34a;font-weight:600">Vead puuduvad → KMD valmis kinnitamiseks</p>
+      </div>
+      <div class="card" style="border-color:#dc2626">
+        <h3>✗ Kontrolli — vead</h3>
+        <p style="color:#dc2626;font-weight:600">Vigaste ridade loend veakoodidega → "Näita vigased read" viib tehingupäevikku</p>
+      </div>
+    </div>
+    <h3 class="sec">Kontrollid enne saatmist</h3>
+    <div class="cards">
+      <div class="card">
+        <h3>KM-grupi korral</h3>
+        <ul style="font-size:12px;padding-left:14px;line-height:1.7">
+          <li>Esindusisiku reg-kood täidetud</li>
+          <li>entrySourceId ja entrySourceCount täidetud</li>
+          <li>Kõigil ridadel identifierCategory=300</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Tehingupartneriga ridadel</h3>
+        <ul style="font-size:12px;padding-left:14px;line-height:1.7">
+          <li>Partneri plokis ei kasutata identifierCategory=300</li>
+          <li>Grupiliikme plokis alati identifierCategory=300</li>
+          <li>Kreeditarvel esialgse arve kuupäev täidetud</li>
+        </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLAID 15: SAATMISE TÖÖVOOG -->
-<div class="slide" data-title="6.1 Saatmise töövoog">
-  <div class="s-header"><div class="pre">6.1 Arendus</div><h2>Saatmise töövoog — 4 nuppu</h2></div>
+<!-- SLAID 15: UI PROTOTÜÜP -->
+<div class="slide" data-title="UI prototüüp — kus oleme täna?">
+  <div class="s-header"><div class="pre">6. Prototüüp</div><h2>UI prototüüp — kus oleme täna?</h2></div>
   <div class="s-body">
-    <!-- Trepp-paigutus -->
-    <div style="display:flex;flex-direction:column;gap:0;position:relative">
-
-      <!-- Samm 1 -->
-      <div style="display:flex;align-items:flex-start;gap:0;margin-left:0">
-        <div style="display:flex;flex-direction:column;align-items:center;margin-right:12px;padding-top:12px">
-          <div class="wf-btn btn-send" style="white-space:nowrap"><span class="wf-icon">↑</span>Saada e-MTA-le<div class="wf-sub">XML → X-tee → EMTA</div></div>
-          <div style="width:2px;height:28px;background:#2d5a9e;opacity:.3;margin-top:4px"></div>
-          <div style="font-size:16px;color:#2d5a9e">↓</div>
-        </div>
-        <div style="background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:620px;margin-top:8px">
-          <div style="font-weight:700;color:#2d5a9e;margin-bottom:5px;font-size:13px">1 · Saada e-MTA-le</div>
-          <div style="color:#1e3a5f;margin-bottom:7px">Directo genereerib XML-faili ja saadab selle X-tee kaudu EMTA-le.</div>
-          <div style="background:#dbeafe;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#1e40af">
-            <strong>Kontrollitakse:</strong> XBRL GL XSD skeemi vastavus — struktuuriline korrektsus, kohustuslike väljade olemasolu, andmetüübid.<br/>
-            <span style="color:#64748b">Ärireegleid siin ei kontrollita.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Samm 2 -->
-      <div style="display:flex;align-items:flex-start;gap:0;margin-left:80px">
-        <div style="display:flex;flex-direction:column;align-items:center;margin-right:12px;padding-top:12px">
-          <div class="wf-btn btn-ctrl" style="white-space:nowrap"><span class="wf-icon">🔍</span>Kontrolli<div class="wf-sub">EMTA ärireeglite tagasiside</div></div>
-          <div style="width:2px;height:28px;background:#16a34a;opacity:.3;margin-top:4px"></div>
-          <div style="font-size:16px;color:#16a34a">↓</div>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:580px;margin-top:8px">
-          <div style="font-weight:700;color:#15803d;margin-bottom:5px;font-size:13px">2 · Kontrolli</div>
-          <div style="color:#14532d;margin-bottom:7px">Directo küsib EMTA-lt tagasisideraporti. EMTA on andmed kontrollinud ärireeglite vastu.</div>
-          <div style="background:#dcfce7;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#14532d">
-            <strong>✓ Vead puuduvad</strong> — KMD on valmis kinnitamiseks.<br/>
-            <strong>✗ Vead leitud</strong> — vigaste ridade loend veakoodidega. „Näita vigased read" viib tehingupäevikku. Paranda andmed ja saada uuesti.
-          </div>
-        </div>
-      </div>
-
-      <!-- Samm 3 -->
-      <div style="display:flex;align-items:flex-start;gap:0;margin-left:160px">
-        <div style="display:flex;flex-direction:column;align-items:center;margin-right:12px;padding-top:12px">
-          <div class="wf-btn btn-pin" style="white-space:nowrap"><span class="wf-icon">🔒</span>Kinnita PIN2<div class="wf-sub">Digikonteineri allkiri</div></div>
-        </div>
-        <div style="background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:540px;margin-top:8px">
-          <div style="font-weight:700;color:#c2410c;margin-bottom:5px;font-size:13px">3 · Kinnita PIN2</div>
-          <div style="color:#7c2d12;margin-bottom:7px">Kui kõik andmed on korras, salvestab Directo andmed digikonteinerisse ja kasutaja lisab PIN2 allkirja.</div>
-          <div style="background:#ffedd5;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#92400e">
-            <strong>⚠ EMTA lahendus pole veel valmis.</strong><br/>
-            Nupp on UI-s olemas, kuid mitteaktiivne kuni EMTA X-tee PIN2 kinnituslahendus valmib.
-          </div>
-        </div>
-      </div>
-
+    <div class="box box-green" style="margin-bottom:6px">
+      <h3>✓ Interaktiivne HTML prototüüp on valmis (apa_kmd.html)</h3>
+      <p>Demonstreerib uue aruande töövoogu, andmestruktuuri ja XML genereerimist.</p>
     </div>
-
-    <!-- XML + Excel nupud -->
-    <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;align-items:center">
-      <div class="wf-btn btn-xml"><span class="wf-icon">⬇</span>XML<div class="wf-sub">Laadi fail alla</div></div>
-      <div class="wf-btn btn-xls"><span class="wf-icon">⬇</span>Excel<div class="wf-sub">Laadi fail alla</div></div>
-      <div style="font-size:12px;color:#64748b;margin-left:8px">
-        <strong style="color:#1e293b">XML</strong> — alternatiiv X-tee saatmisele, import e-MTA portaali kaudu.
-        &nbsp; <strong style="color:#217346">Excel</strong> — tehingute andmed kontrollimiseks või arhiveerimiseks.
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="box"><ul style="font-size:12.5px;padding-left:16px;line-height:1.9">
+        <li>✅ Kõik 50+ KMD tüübi koodid (M_101–A_101) filtrina ja vormides</li>
+        <li>✅ Tehingupäevik — KMD tüüp, D KMK%, partner, arve andmed</li>
+        <li>✅ Koondvaade — tehingud sektsioonide kaupa summadega</li>
+        <li>✅ Lisa kirje / Muuda kirje — pöördmaks, grupp, riik, kreeditarve</li>
+      </ul></div>
+      <div class="box"><ul style="font-size:12.5px;padding-left:16px;line-height:1.9">
+        <li>✅ XBRL GL XML generaator — allalaaditav fail</li>
+        <li>✅ Saada / Kontrolli / Kinnita töövoog (UI demo)</li>
+        <li>✅ XML seaded (tarkvara, andmesaatja, allika ID, pankrotiperiood)</li>
+        <li>✅ D KMK% veerg — <span style="font-family:monospace;background:#f1f5f9;padding:1px 5px;border-radius:3px">24% (1)</span> formaat</li>
+      </ul></div>
+    </div>
+    <div class="box box-orange">
+      <h3>Prototüübi eesmärk</h3>
+      <p>Näitab, milleks Directo peab valmis olema. <strong>Ei ole toodangukoodi</strong> — on disaini ja funktsionaalsuse demonstratsioon, mille alusel alustada pärisarendust.</p>
     </div>
   </div>
 </div>
