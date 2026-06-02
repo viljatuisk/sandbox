@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="et">
 <head>
 <meta charset="UTF-8"/>
@@ -8,13 +8,19 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#1a2a3a;color:#222;overflow:hidden;height:100vh}
 
+/* Directo brand */
+:root{--d-blue:#1C28CC;--d-blue-dark:#1520A8;--d-text:#1e293b}
+
 /* Slaidid */
 .deck{width:100vw;height:100vh;position:relative}
-.slide{position:absolute;inset:0;display:none;flex-direction:column;background:#f4f6f9}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;background:#ffffff url('directo_slide_bg.jpg') no-repeat right bottom/contain}
 .slide.active{display:flex}
 
+/* D logo kõigile sisuslaidile */
+.slide::after{content:'';position:absolute;bottom:18px;left:32px;width:44px;height:44px;background:url('directo_d_logo.jpg') no-repeat center/contain;pointer-events:none}
+
 /* Päis */
-.s-header{background:linear-gradient(135deg,#1e3a5f 0%,#2d5a9e 100%);color:#fff;padding:18px 40px 14px;flex-shrink:0}
+.s-header{background:var(--d-blue);color:#fff;padding:16px 40px 12px;flex-shrink:0}
 .s-header .pre{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.7;margin-bottom:4px}
 .s-header h1{font-size:26px;font-weight:700;line-height:1.2}
 .s-header h2{font-size:20px;font-weight:600;line-height:1.2}
@@ -24,44 +30,47 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#1a2a3a;color:#222;overf
 .s-body{flex:1;padding:24px 40px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
 
 /* Tiitelslaid */
-.slide-title{background:linear-gradient(160deg,#0f2744 0%,#1e3a5f 50%,#2d5a9e 100%)}
-.slide-title .s-body{align-items:center;justify-content:center;text-align:center;color:#fff}
-.slide-title .main-title{font-size:42px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:8px}
-.slide-title .main-sub{font-size:22px;color:rgba(255,255,255,.75);margin-bottom:32px}
-.slide-title .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:10px 24px;font-size:14px;color:rgba(255,255,255,.8)}
-.slide-title .year{font-size:64px;font-weight:900;color:rgba(255,255,255,.08);position:absolute;bottom:20px;right:40px;letter-spacing:-2px}
+.slide-title{background:url('directo_bg.jpg') no-repeat center/cover}
+.slide-title::after{display:none}
+.slide-title .s-body{align-items:flex-start;justify-content:center;padding-left:60px;color:#fff}
+.slide-title .main-title{font-size:42px;font-weight:800;color:var(--d-blue-dark);line-height:1.1;margin-bottom:8px}
+.slide-title .main-sub{font-size:20px;color:#475569;margin-bottom:24px}
+.slide-title .badge{background:rgba(28,40,204,.08);border:1px solid rgba(28,40,204,.2);border-radius:8px;padding:10px 24px;font-size:14px;color:#1e293b}
+.slide-title .year{font-size:64px;font-weight:900;color:rgba(28,40,204,.06);position:absolute;bottom:20px;right:40px;letter-spacing:-2px}
+/* Logo tiitelslaidil vasakul all */
+.slide-title .s-body::before{content:'';display:block;position:absolute;bottom:24px;left:60px;width:120px;height:40px;background:url('directo_logo.jpg') no-repeat left center/contain}
 
 /* Päevakord */
 .agenda-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-.agenda-list li{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#fff;border-radius:8px;border-left:4px solid #2d5a9e;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.agenda-list .num{font-size:18px;font-weight:800;color:#2d5a9e;min-width:28px}
+.agenda-list li{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#fff;border-radius:8px;border-left:4px solid var(--d-blue);font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.agenda-list .num{font-size:18px;font-weight:800;color:var(--d-blue);min-width:28px}
 
 /* Infoblokid */
 .cards{display:flex;gap:12px;flex-wrap:wrap}
-.card{flex:1;min-width:180px;background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:3px solid #2d5a9e}
+.card{flex:1;min-width:180px;background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:3px solid var(--d-blue)}
 .card.green{border-color:#16a34a}
 .card.orange{border-color:#ea580c}
 .card.red{border-color:#dc2626}
 .card h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px}
 .card p{font-size:13px;color:#1e293b;line-height:1.5}
-.card .big{font-size:22px;font-weight:800;color:#2d5a9e}
+.card .big{font-size:22px;font-weight:800;color:var(--d-blue)}
 
 /* Tabel */
 .tbl-wrap{overflow-x:auto;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff}
-thead tr{background:#1e3a5f;color:#fff}
+thead tr{background:#1520A8;color:#fff}
 thead th{padding:8px 12px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 tbody tr{border-bottom:1px solid #e8edf4}
 tbody tr:last-child{border:none}
 tbody td{padding:7px 12px;vertical-align:top;line-height:1.4}
 tbody tr:nth-child(even){background:#f8fafc}
 tbody tr:hover{background:#eef3fb}
-td.code{font-family:monospace;font-size:12px;font-weight:700;color:#1e3a5f;white-space:nowrap}
+td.code{font-family:monospace;font-size:12px;font-weight:700;color:#1520A8;white-space:nowrap}
 td.em{font-weight:600;color:#dc2626}
 td.green{color:#16a34a;font-weight:600}
 
 /* Muutuse tabel */
-.vs-tbl thead tr{background:#1e3a5f}
+.vs-tbl thead tr{background:#1520A8}
 .vs-tbl td:first-child{font-weight:600;color:#334155;width:28%}
 .vs-tbl td:nth-child(2){color:#64748b}
 .vs-tbl td:nth-child(3){color:#16a34a;font-weight:600}
@@ -80,14 +89,14 @@ td.green{color:#16a34a;font-weight:600}
 .step{flex:1;background:#fff;border:1px solid #e2e8f0;padding:12px 14px;position:relative;border-radius:0}
 .step:first-child{border-radius:8px 0 0 8px}
 .step:last-child{border-radius:0 8px 8px 0}
-.step:not(:last-child)::after{content:'▶';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:#2d5a9e;font-size:14px;z-index:1;background:#f4f6f9;padding:2px}
+.step:not(:last-child)::after{content:'▶';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--d-blue);font-size:14px;z-index:1;background:#f4f6f9;padding:2px}
 .step .s-num{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.step .s-time{font-size:13px;font-weight:700;color:#2d5a9e;margin-bottom:4px}
+.step .s-time{font-size:13px;font-weight:700;color:var(--d-blue);margin-bottom:4px}
 .step .s-txt{font-size:11.5px;color:#475569;line-height:1.4}
 
 /* Kast */
 .box{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.box-blue{background:#eff6ff;border-left:4px solid #2d5a9e}
+.box-blue{background:#eff6ff;border-left:4px solid var(--d-blue)}
 .box-green{background:#f0fdf4;border-left:4px solid #16a34a}
 .box-orange{background:#fff7ed;border-left:4px solid #ea580c}
 .box-red{background:#fff1f2;border-left:4px solid #dc2626}
@@ -103,13 +112,13 @@ td.green{color:#16a34a;font-weight:600}
 .btn-send{background:#16a34a;color:#fff}
 .btn-ctrl{background:#7c3aed;color:#fff}
 .btn-pin{background:#b45309;color:#fff}
-.btn-xml{background:#1e3a5f;color:#fff}
+.btn-xml{background:#1520A8;color:#fff}
 .btn-xls{background:#217346;color:#fff}
 
 /* Kokkuvõte */
 .sum-items{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.sum-item{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.08);border-top:4px solid #2d5a9e}
-.sum-item .si-num{font-size:36px;font-weight:900;color:#2d5a9e;line-height:1}
+.sum-item{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.08);border-top:4px solid var(--d-blue)}
+.sum-item .si-num{font-size:36px;font-weight:900;color:var(--d-blue);line-height:1}
 .sum-item .si-lbl{font-size:12px;color:#64748b;margin-top:4px}
 
 /* Navigatsioon */
@@ -124,7 +133,7 @@ td.green{color:#16a34a;font-weight:600}
 kbd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:1px 6px;font-size:10px;color:rgba(255,255,255,.6);font-family:monospace}
 
 /* Näide-kast */
-.example{background:#1e3a5f;color:#fff;border-radius:10px;padding:16px 20px}
+.example{background:#1520A8;color:#fff;border-radius:10px;padding:16px 20px}
 .example h3{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#93c5fd;margin-bottom:10px}
 .example table{font-size:13px;background:transparent}
 .example thead tr{background:rgba(255,255,255,.12)}
@@ -140,7 +149,7 @@ kbd{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border
 .ok{color:#16a34a;font-weight:600}
 .muted{color:#64748b;font-size:12px}
 
-h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbeafe;padding-bottom:4px;margin-bottom:8px}
+h3.sec{font-size:13px;font-weight:700;color:#1520A8;border-bottom:2px solid #dbeafe;padding-bottom:4px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -148,29 +157,29 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 
 <!-- SLAID 1: TIITEL -->
 <div class="slide slide-title active" data-title="Tiitel">
-  <div class="s-body">
-    <div style="margin-bottom:16px">
-      <div style="font-size:13px;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.5);margin-bottom:8px">Directo OÜ · Sisesesitlus</div>
-      <div class="main-title">ANDMEPÕHINE KMD</div>
-      <div class="main-sub">APA KMD — mis muutub ja mida peame arendama?</div>
+  <div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:60px 80px;max-width:72%">
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:#64748b;margin-bottom:20px;font-weight:600">Directo OÜ · Siseesitlus</div>
+    <div style="font-size:52px;font-weight:900;color:#1520A8;line-height:1.05;margin-bottom:12px;letter-spacing:-.5px">ANDMEPÕHINE KMD</div>
+    <div style="font-size:20px;color:#475569;margin-bottom:36px;line-height:1.4">APA KMD — mis muutub ja mida peame arendama?</div>
+    <div style="display:flex;gap:32px;margin-bottom:48px">
+      <div>
+        <div style="font-size:36px;font-weight:900;color:#1C28CC">2027</div>
+        <div style="font-size:12px;color:#64748b;font-weight:500">Kohustuslik I kv.</div>
+      </div>
+      <div style="width:1px;background:#e2e8f0"></div>
+      <div>
+        <div style="font-size:36px;font-weight:900;color:#1C28CC">50+</div>
+        <div style="font-size:12px;color:#64748b;font-weight:500">Uut taksonoomia koodi</div>
+      </div>
+      <div style="width:1px;background:#e2e8f0"></div>
+      <div>
+        <div style="font-size:36px;font-weight:900;color:#1C28CC">XBRL GL</div>
+        <div style="font-size:12px;color:#64748b;font-weight:500">Uus failiformaat</div>
+      </div>
     </div>
-    <div class="badge">🗓 Esitlus koostatud mai 2026 · MTA spetsifikatsioonide alusel</div>
-    <div style="margin-top:28px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 20px;text-align:center">
-        <div style="font-size:24px;font-weight:900;color:#4a9eff">2027</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6)">Kohustuslik I kv.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 20px;text-align:center">
-        <div style="font-size:24px;font-weight:900;color:#4ade80">50+</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6)">Uut taksonoomia koodi</div>
-      </div>
-      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 20px;text-align:center">
-        <div style="font-size:24px;font-weight:900;color:#fb923c">XBRL GL</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6)">Uus failiformaat</div>
-      </div>
-    </div>
+    <div style="font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px">🗓 Esitlus koostatud mai 2026 · MTA spetsifikatsioonide alusel</div>
+    <img src="directo_logo.jpg" style="position:absolute;bottom:36px;left:80px;height:72px;width:auto;object-fit:contain"/>
   </div>
-  <div class="year">2026</div>
 </div>
 
 <!-- SLAID 2: PÄEVAKORD -->
@@ -178,13 +187,12 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
   <div class="s-header"><div class="pre">Ülevaade</div><h2>Päevakord</h2></div>
   <div class="s-body">
     <ul class="agenda-list">
-      <li><span class="num">1</span>Mis on andmepõhine aruandlus?</li>
+      <li><span class="num">1</span>Mis on andmepõhine aruandlus? — miks muutub + ajakava</li>
       <li><span class="num">2</span>Mis muutub — KMD praegu vs uus KMD</li>
-      <li><span class="num">3</span>Miks muutub ja millal?</li>
+      <li><span class="num">3</span>Millal ja kui tihti esitada?</li>
       <li><span class="num">4</span>Uued taksonoomiad — kui palju muutub?</li>
-      <li><span class="num">5</span>Mida peame Directos arendama?</li>
-      <li><span class="num">6</span>UI prototüüp — kus oleme täna?</li>
-      <li><span class="num">7</span>Edasised sammud</li>
+      <li><span class="num">5</span>Mida peame Directos arendama? (5.1–5.7)</li>
+      <li><span class="num">6</span>Edasised sammud</li>
     </ul>
   </div>
 </div>
@@ -193,6 +201,10 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 <div class="slide" data-title="Mis on andmepõhine aruandlus?">
   <div class="s-header"><div class="pre">1. Taust</div><h2>Mis on andmepõhine aruandlus?</h2></div>
   <div class="s-body">
+    <div class="box box-blue">
+      <h3>Mis on APA?</h3>
+      <p>Andmepõhine aruandlus (APA) on osa riiklikust <strong>Reaalajamajanduse programmist</strong>. Eesmärk on esitada aruandluse alusandmed riigile <strong>masinliidese kaudu otse majandustarkvarast</strong> — struktureeritud ja masinloetavas formaadis, mis võimaldab automaatset töötlemist.</p>
+    </div>
     <div class="cards">
       <div class="card" style="border-color:#dc2626">
         <h3>Täna</h3>
@@ -225,20 +237,32 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <p>Rahvusvaheline standard majandustehingute vahetamiseks</p>
       </div>
     </div>
-    <div style="margin-top:12px;display:flex;gap:16px;align-items:flex-start">
-      <div style="flex:0 0 auto">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Praegune KMD vorm</div>
-        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-          <img src="vorm_KMD.png" alt="Vorm KMD" style="width:100%;display:block">
-        </div>
+    <h3 class="sec">Ajakava</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="s-num">Disain</div>
+        <div class="s-time">Märts – Mai 2026</div>
+        <div class="s-txt">Prototüüp, tehniliste nõuete analüüs. MTA spetsifikatsioonid avaldatud.</div>
       </div>
-      <div style="flex:0 0 auto">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">e-MTA kasutajaliidese näidis</div>
-        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
-          <img src="emta UI pilt 1.png" alt="e-MTA UI 1" style="width:100%;display:block">
-          <img src="emta UI pilt 2.png" alt="e-MTA UI 2" style="width:100%;display:block">
-        </div>
+      <div class="step">
+        <div class="s-num">Arendus</div>
+        <div class="s-time">Juuni – Sept 2026</div>
+        <div class="s-txt">XML generaator, KMK kaart, KMD aruanne, X-tee liides.</div>
       </div>
+      <div class="step">
+        <div class="s-num">Testimine</div>
+        <div class="s-time">Okt – Dets 2026</div>
+        <div class="s-txt">Testimine MTA-ga. XBRL GL validatsioon. Klientide teavitamine.</div>
+      </div>
+      <div class="step" style="border-color:#16a34a">
+        <div class="s-num">Kasutusse</div>
+        <div class="s-time" style="color:#16a34a">1.1.2027</div>
+        <div class="s-txt"><strong>Kohustuslik esitamine algab.</strong> Esimene KMD 22.2.2027.</div>
+      </div>
+    </div>
+    <div class="box box-red">
+      <h3>⚠ Aega on vähe</h3>
+      <p>Arenduseni on ~1 kuu. Kõik põhiarendused peavad olema valmis <strong>2026 sügiseks</strong>, et testimiseks aega jääks.</p>
     </div>
   </div>
 </div>
@@ -273,50 +297,20 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <strong style="color:#16a34a">Uus</strong><br/>Taksonoomia kood (nt <code>M_101</code>, <code>O_401</code>) klassifitseerib tehingu täielikult — kood ise sisaldab kogu vajalikku infot APA KMD genereerimiseks, eraldi sektsiooni välja ei ole vaja.
       </div>
     </div>
-  </div>
-</div>
-
-<!-- SLAID 5: MIKS JA MILLAL -->
-<div class="slide" data-title="Miks muutub ja millal?">
-  <div class="s-header"><div class="pre">3. Ajakava</div><h2>Miks muutub ja millal?</h2></div>
-  <div class="s-body">
-    <div class="cards">
-      <div class="card">
-        <h3>Miks?</h3>
-        <ul style="font-size:13px;padding-left:16px;line-height:1.8">
-          <li>Eesti liigub andmepõhise aruandluse suunas</li>
-          <li>XBRL GL standard ühtlustab andmevahetust rahvusvaheliselt</li>
-          <li>Riik saab reaalajas tuvastada vigu ja lahknevusi</li>
-          <li>Pikemas perspektiivis vähem käsitööd raamatupidajatele</li>
-        </ul>
+    <div style="margin-top:12px;display:flex;gap:16px;align-items:flex-start">
+      <div style="flex:0 0 auto">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Praegune KMD vorm</div>
+        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
+          <img src="vorm_KMD.png" alt="Vorm KMD" style="width:100%;display:block">
+        </div>
       </div>
-    </div>
-    <h3 class="sec">Ajakava</h3>
-    <div class="steps">
-      <div class="step">
-        <div class="s-num">Praegu</div>
-        <div class="s-time">Mai 2026</div>
-        <div class="s-txt">MTA spetsifikatsioonid avaldatud. Prototüüp valmis. Arendus käib.</div>
+      <div style="flex:0 0 auto">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">e-MTA kasutajaliidese näidis</div>
+        <div style="overflow-y:auto;height:700px;width:700px;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
+          <img src="emta UI pilt 1.png" alt="e-MTA UI 1" style="width:100%;display:block">
+          <img src="emta UI pilt 2.png" alt="e-MTA UI 2" style="width:100%;display:block">
+        </div>
       </div>
-      <div class="step">
-        <div class="s-num">Testimine</div>
-        <div class="s-time">III pa. 2026</div>
-        <div class="s-txt">Testimine MTA-ga algab. X-tee liides. XBRL GL validatsioon.</div>
-      </div>
-      <div class="step">
-        <div class="s-num">Kliendid</div>
-        <div class="s-time">III–IV pa. 2026</div>
-        <div class="s-txt">Klientide teavitamine. Juhendid, koolitused, KMK koodide ülevaatamine.</div>
-      </div>
-      <div class="step" style="border-color:#16a34a">
-        <div class="s-num">Toodang</div>
-        <div class="s-time" style="color:#16a34a">I kv. 2027</div>
-        <div class="s-txt"><strong>Kohustuslik esitamine algab.</strong> Directo peab olema valmis.</div>
-      </div>
-    </div>
-    <div class="box box-red">
-      <h3>⚠ Aega on vähe</h3>
-      <p>Testimiseni on ~4 kuud. Kõik põhiarendused peavad olema valmis <strong>2026 suveks</strong>.</p>
     </div>
   </div>
 </div>
@@ -373,6 +367,7 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <p>koodi, 6 sektsiooni</p>
       </div>
     </div>
+    <h3 class="sec">Tehingute ja Toimingute liigid</h3>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>Sektsioon</th><th>Koodid</th><th>Sisu</th></tr></thead>
@@ -382,12 +377,12 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <tr><td><span class="pill pill-m3">M_3</span></td><td class="code">M_301 – M_304</td><td>Maksuvaba käive</td></tr>
           <tr><td><span class="pill pill-s">S</span></td><td class="code">S_101 – S_106</td><td>Pöördmaksustatav soetamine</td></tr>
           <tr><td><span class="pill pill-o">O</span></td><td class="code">O_101 – O_601</td><td>Sisendkäibemaks (30+ liiki: põhivara, sõiduautod, import, pöördmaks...)</td></tr>
-          <tr><td><span class="pill pill-a">A</span></td><td class="code">A_101</td><td>Arvestuslikud kanded</td></tr>
+          <tr><td><span class="pill pill-a">A</span></td><td class="code">A_101</td><td>Arvestuslikud kanded <span style="color:#475569;font-weight:400">(omatarve, KMKR-st kustutamisel võõrandamata kaubad, impordi maksustatava väärtuse suurendamine, laoarvestuse erisused)</span></td></tr>
         </tbody>
       </table>
     </div>
-    <div class="box box-blue">
-      <h3>Tehingupartneri erisuse tunnus (identifierCategory)</h3>
+    <h3 class="sec">Tehingupartneri erisuse tunnus (identifierCategory)</h3>
+    <div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
         <div style="background:#fff;border-radius:6px;padding:6px 10px;font-size:12px"><strong>100</strong> — Juriidiline isik ≥1000 €</div>
         <div style="background:#fff;border-radius:6px;padding:6px 10px;font-size:12px"><strong>101</strong> — Salastatud</div>
@@ -398,7 +393,7 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
       </div>
     </div>
     <div style="margin-top:12px">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Maksu- ja Tolliameti näidistehingute tabel</div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Maksu- ja Tolliameti näidistehingute tabel &nbsp;·&nbsp; <a href="https://ncfailid.emta.ee/s/eYF3gCr7rcYHMnz" target="_blank" style="color:#2d5a9e;text-decoration:underline;font-weight:600">E-MTA tehniline dokumentatsioon</a> &nbsp;·&nbsp; <span style="font-family:monospace;font-weight:400;text-transform:none">APA_KMD_lahteandmed_20260507.xlsx</span></div>
       <div style="overflow-x:auto;width:100%;border:1px solid #e2e8f0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff">
         <img src="lahteandmed.png" alt="Lähteandmed" style="width:2000px;display:block">
       </div>
@@ -415,26 +410,27 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
       <p>Directo peab suutma genereerida <strong>XBRL GL formaadis XML-faili</strong> ja saatma selle X-tee kaudu EMTA-le (või XML-faili allalaadimine).</p>
     </div>
     <div class="cards">
-      <div class="card"><h3>6.1</h3><p>KMK kaart<br/><span class="muted">3 uut välja + mappimine</span></p></div>
-      <div class="card"><h3>6.2</h3><p>Kliendi-/hankijakaart<br/><span class="muted">Isiku tüüp + salastatud</span></p></div>
-      <div class="card"><h3>6.3</h3><p>Andmete agregeerimine<br/><span class="muted">1000 € loogika</span></p></div>
-      <div class="card"><h3>6.4</h3><p>KM-grupp<br/><span class="muted">Uus andmeedastuse loogika</span></p></div>
-      <div class="card"><h3>6.5</h3><p>XML generaator<br/><span class="muted">XBRL GL struktuur</span></p></div>
-      <div class="card"><h3>6.6</h3><p>Saatmise töövoog<br/><span class="muted">4 nuppu + validatsioon</span></p></div>
+      <div class="card"><h3>5.1</h3><p>KMK kaart<br/><span class="muted">4 uut välja + mappimine</span></p></div>
+      <div class="card"><h3>5.2</h3><p>Dokumentide KM tüüp<br/><span class="muted">Asetaja + muudetav väli</span></p></div>
+      <div class="card"><h3>5.3</h3><p>Kliendi-/hankijakaart<br/><span class="muted">Isiku tüüp + salastatud</span></p></div>
+      <div class="card"><h3>5.4</h3><p>Andmete agregeerimine<br/><span class="muted">1000 € loogika</span></p></div>
+      <div class="card"><h3>5.5</h3><p>KM-grupp<br/><span class="muted">Uus andmeedastuse loogika</span></p></div>
+      <div class="card"><h3>5.6</h3><p>XML generaator<br/><span class="muted">XBRL GL struktuur</span></p></div>
+      <div class="card"><h3>5.7</h3><p>Uus KMD aruanne + saatmise töövoog<br/><span class="muted">4 nuppu + validatsioon</span></p></div>
     </div>
   </div>
 </div>
 
 <!-- SLAID 8: KMK KAART -->
-<div class="slide" data-title="6.1 KMK kaart — 3 uut välja + mappimine">
-  <div class="s-header"><div class="pre">5.1 Arendus</div><h2>KMK kaart — 3 uut välja + mappimine</h2></div>
+<div class="slide" data-title="5.1 KMK kaart — 4 uut välja + mappimine">
+  <div class="s-header"><div class="pre">5.1 Arendus</div><h2>KMK kaart — 4 uut välja + mappimine</h2></div>
   <div class="s-body">
     <div style="display:flex;gap:12px;margin-bottom:10px">
       <div style="flex:1;background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:10px 14px;font-size:12.5px">
         <strong style="color:#2d5a9e">1. Mappimine</strong><br/>Olemasolevad KMK koodid tuleb siduda riiklike taksonoomia koodidega.
       </div>
       <div style="flex:1;background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:10px 14px;font-size:12.5px">
-        <strong style="color:#2d5a9e">2. Kolm uut välja</strong><br/>Igale KMK kaardile lisatakse müügi-, ostu- ja soetuse KMD tüüp.
+        <strong style="color:#2d5a9e">2. Neli uut välja</strong><br/>Igale KMK kaardile lisatakse müügi-, ostu-, soetuse- ja arvestusliku kande KMD tüüp.
       </div>
       <div style="flex:1;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;padding:10px 14px;font-size:12.5px">
         <strong style="color:#c2410c">3. Puuduvad koodid</strong><br/>Osad vajalikud KMK koodid puuduvad täna Directos — tuleb luua uued.
@@ -447,6 +443,7 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <tr><td><strong>Müügi KMD tüüp</strong></td><td>Müügiarve kandel</td><td class="code">M_101</td></tr>
           <tr><td><strong>Ostu KMD tüüp</strong></td><td>Ostuarve kandel</td><td class="code">O_101</td></tr>
           <tr><td><strong>Soetuse KMD tüüp</strong></td><td>Pöördmaksustataval tehingul</td><td class="code">S_101</td></tr>
+          <tr><td><strong>Arvestusliku kande KMD tüüp</strong></td><td>Arvestuslikul kandel</td><td class="code">A_101</td></tr>
         </tbody>
       </table>
     </div>
@@ -458,16 +455,58 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <tr><td>Müügi KMD tüüp</td><td style="color:#cbd5e1;font-style:italic">tühi</td><td>Müüki ei ole</td></tr>
           <tr><td>Ostu KMD tüüp</td><td style="color:#4ade80;font-weight:700">O_401</td><td>Sisendkäibemaks — ühendusesisene kaup pöördmaks</td></tr>
           <tr><td>Soetuse KMD tüüp</td><td style="color:#4ade80;font-weight:700">S_101</td><td>Kauba ühendusesisene soetamine</td></tr>
+          <tr><td>Arvestusliku kande KMD tüüp</td><td style="color:#cbd5e1;font-style:italic">tühi</td><td>Arvestuslikku kannet ei ole</td></tr>
         </tbody>
       </table>
       <div class="note">⚡ Üks KMK kood genereerib APA KMD-s <strong>2 XML kirjet</strong> — nii S_ kui O_ rea</div>
     </div>
+    <div class="example">
+      <h3>Näide — KMK 1 „24% määraga maksustatavad toimingud ja tehingud"</h3>
+      <table>
+        <thead><tr><th>Väli</th><th>Väärtus</th><th>Seletus</th></tr></thead>
+        <tbody>
+          <tr><td>Müügi KMD tüüp</td><td style="color:#4ade80;font-weight:700">M_101</td><td>Müük 24% KM määraga</td></tr>
+          <tr><td>Ostu KMD tüüp</td><td style="color:#4ade80;font-weight:700">O_101</td><td>Sisendkäibemaks 24% määraga</td></tr>
+          <tr><td>Soetuse KMD tüüp</td><td style="color:#cbd5e1;font-style:italic">tühi</td><td>Pöördmaksustamist ei ole</td></tr>
+          <tr><td>Arvestusliku kande KMD tüüp</td><td style="color:#cbd5e1;font-style:italic">tühi</td><td>Arvestuslikku kannet ei ole</td></tr>
+        </tbody>
+      </table>
+      <div class="note">✅ Tavaline 24% KM tehing — ainult müügi ja ostu tüüp täidetud</div>
+    </div>
   </div>
 </div>
 
-<!-- SLAID 9: KLIENDI-/HANKIJAKAART -->
-<div class="slide" data-title="6.2 Kliendi- ja hankijakaart">
-  <div class="s-header"><div class="pre">5.2 Arendus</div><h2>Kliendi- ja hankijakaart — minimaalsed muudatused</h2></div>
+<!-- SLAID 9b: DOKUMENTIDE KM TÜÜP -->
+<div class="slide" data-title="5.2 Dokumentide KM tüüp — asetaja + muudetav väli">
+  <div class="s-header"><div class="pre">5.2 Arendus</div><h2>Dokumentide KM tüüp — asetaja + muudetav väli</h2></div>
+  <div class="s-body">
+    <div class="box box-blue" style="margin-bottom:8px">
+      <h3>Põhimõte</h3>
+      <p>Igale dokumendile (müügiarve, ostuarve, kulutus, kanne) lisatakse väli <strong>KM tüüp</strong>. Väärtus asetub automaatselt KMK kaardi kaudu, kuid kasutaja saab seda vajadusel käsitsi muuta.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Dokument</th><th>KM tüüp asetub</th><th>Näide</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Müügiarve</strong></td><td>KMK kaardi <em>Müügi KMD tüüp</em> väljast</td><td class="code">M_101</td></tr>
+          <tr><td><strong>Ostuarve ja Kulutus</strong></td><td>KMK kaardi <em>Ostu KMD tüüp</em> väljast</td><td class="code">O_101</td></tr>
+          <tr><td><strong>Ostuarve ja Kulutus (pöördmaksustav)</strong></td><td>KMK kaardi <em>Soetuse KMD tüüp</em> väljast</td><td class="code">S_101</td></tr>
+          <tr><td rowspan="3" style="vertical-align:top"><strong>Kanne</strong><br/><span style="font-size:11px;color:#64748b;font-weight:400">(konto tüübi järgi)</span></td><td>KMK kaardi <em>Müügi KMD tüüp</em> väljast</td><td class="code">Sularaha müügi koondkanne → M_101</td></tr>
+          <tr><td>KMK kaardi <em>Ostu KMD tüüp</em> väljast</td><td class="code">Kulukanne → O_101</td></tr>
+          <tr><td>KMK kaardi <em>Arvestusliku kande KMD tüüp</em> väljast</td><td class="code">Impordi maksustatava väärtuse muutmine → A_101</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box box-orange" style="margin-top:8px">
+      <h3>⚠ Asetaja loogika</h3>
+      <p>KM tüüp asetub rea KMK koodi valimise hetkel. Kui kasutaja muudab KM tüüpi käsitsi, säilib muudetud väärtus — see <strong>ei kirjuta üle</strong> KMK kaardi vaikeväärtust.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLAID 10: KLIENDI-/HANKIJAKAART -->
+<div class="slide" data-title="5.3 Kliendi- ja hankijakaart">
+  <div class="s-header"><div class="pre">5.3 Arendus</div><h2>Kliendi- ja hankijakaart — minimaalsed muudatused</h2></div>
   <div class="s-body">
     <div class="box box-blue" style="margin-bottom:10px">
       <p>Kliendi- ja hankijakaarti <strong>ei tule sisuliselt muuta</strong> — olemasolevad väljad annavad XML generaatorile vajaliku info:</p>
@@ -508,9 +547,9 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
   </div>
 </div>
 
-<!-- SLAID 10: AGREGEERIMINE -->
-<div class="slide" data-title="6.3 Andmete agregeerimine">
-  <div class="s-header"><div class="pre">5.3 Arendus</div><h2>Andmete agregeerimine — 1000 € loogika &amp; segaarve</h2></div>
+<!-- SLAID 11: AGREGEERIMINE -->
+<div class="slide" data-title="5.4 Andmete agregeerimine">
+  <div class="s-header"><div class="pre">5.4 Arendus</div><h2>Andmete agregeerimine — 1000 € loogika &amp; segaarve</h2></div>
   <div class="s-body" style="gap:8px">
     <div class="box box-orange" style="padding:8px 12px">
       <h3>⚠ Piirmäär 1000 € — tehingupartneri perioodi kogusumma järgi</h3>
@@ -553,8 +592,8 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 </div>
 
 <!-- SLAID 12: KM GRUPP -->
-<div class="slide" data-title="6.4 Käibemaksugrupp">
-  <div class="s-header"><div class="pre">5.4 Arendus</div><h2>Käibemaksugrupp — uus andmeedastuse loogika</h2></div>
+<div class="slide" data-title="5.5 Käibemaksugrupp">
+  <div class="s-header"><div class="pre">5.5 Arendus</div><h2>Käibemaksugrupp — uus andmeedastuse loogika</h2></div>
   <div class="s-body">
     <div class="cards">
       <div class="card" style="border-color:#dc2626">
@@ -603,8 +642,8 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 </div>
 
 <!-- SLAID 13: XML GENERAATOR -->
-<div class="slide" data-title="6.5 XML generaator">
-  <div class="s-header"><div class="pre">5.5 Arendus</div><h2>XML generaator — andmeallikad ja erijuhud</h2></div>
+<div class="slide" data-title="5.6 XML generaator">
+  <div class="s-header"><div class="pre">5.6 Arendus</div><h2>XML generaator — andmeallikad ja erijuhud</h2></div>
   <div class="s-body">
     <div class="box box-blue" style="margin-bottom:6px">
       <h3>Andmeallikas on finantskanne, mitte arve</h3>
@@ -635,8 +674,8 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 </div>
 
 <!-- SLAID 14: UI PROTOTÜÜP -->
-<div class="slide" data-title="UI prototüüp — kus oleme täna?">
-  <div class="s-header"><div class="pre">6. Prototüüp</div><h2>UI prototüüp — kus oleme täna?</h2></div>
+<div class="slide" data-title="5.7 Uus KMD aruanne">
+  <div class="s-header"><div class="pre">5.7 Arendus</div><h2>Uus KMD aruanne</h2></div>
   <div class="s-body">
     <div style="margin-top:10px">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:6px;font-weight:600">Directo APA KMD UI protoüüp</div>
@@ -648,8 +687,8 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 </div>
 
 <!-- SLAID 15: SAATMISE TÖÖVOOG -->
-<div class="slide" data-title="6.1 Saatmise töövoog">
-  <div class="s-header"><div class="pre">6.1 Arendus</div><h2>Saatmise töövoog — 4 nuppu</h2></div>
+<div class="slide" data-title="5.7.1 Saatmise töövoog">
+  <div class="s-header"><div class="pre">5.7.1 Arendus</div><h2>Saatmise töövoog — 4 nuppu</h2></div>
   <div class="s-body">
     <!-- Trepp-paigutus -->
     <div style="display:flex;flex-direction:column;gap:0;position:relative">
@@ -661,12 +700,17 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <div style="width:2px;height:28px;background:#2d5a9e;opacity:.3;margin-top:4px"></div>
           <div style="font-size:16px;color:#2d5a9e">↓</div>
         </div>
-        <div style="background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:620px;margin-top:8px">
-          <div style="font-weight:700;color:#2d5a9e;margin-bottom:5px;font-size:13px">1 · Saada e-MTA-le</div>
-          <div style="color:#1e3a5f;margin-bottom:7px">Directo genereerib XML-faili ja saadab selle X-tee kaudu EMTA-le.</div>
-          <div style="background:#dbeafe;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#1e40af">
-            <strong>Kontrollitakse:</strong> XBRL GL XSD skeemi vastavus — struktuuriline korrektsus, kohustuslike väljade olemasolu, andmetüübid.<br/>
-            <span style="color:#64748b">Ärireegleid siin ei kontrollita.</span>
+        <div style="background:#eff6ff;border-left:4px solid #2d5a9e;border-radius:6px;padding:14px 18px;font-size:16px;flex:1;max-width:680px;margin-top:8px">
+          <div style="font-weight:700;color:#2d5a9e;margin-bottom:6px;font-size:17px">1 · Saada e-MTA-le</div>
+          <div style="color:#1e3a5f;margin-bottom:8px">Directo genereerib XML-faili ja saadab selle X-tee kaudu EMTA-le.</div>
+          <div style="background:#dbeafe;border-radius:4px;padding:7px 12px;font-size:15px;color:#1e40af">
+            <strong>Directo ärireeglite kontroll</strong> <span style="color:#64748b;font-weight:400">(enne XML genereerimist)</span><br/>
+            <span style="color:#1e3a5f">Direkto kontrollib andmeid enne XML koostamist. Näiteks: kui esitussagedus on 1x kuus, peab valitud periood olema täiskuu (mitte üksikud päevad) — vastasel juhul kuvatakse viga ja <em>Saada e-MTA-le</em> ei käivitu.</span>
+          </div>
+          <div style="background:#eff6ff;border-radius:4px;padding:7px 12px;font-size:15px;color:#1e40af;margin-top:6px">
+            <strong>XBRL GL XSD skeemi kontroll</strong> <span style="color:#64748b;font-weight:400">(XML struktuur)</span><br/>
+            <span style="color:#1e3a5f">Genereeritud XML-fail valideeritakse MTA avaldatud XSD skeemifaili vastu. Kontrollitakse: elementide olemasolu (kohustuslik / valikuline / tingimuslik), esitusjärjekord, andmetüübid (kuupäev, summa, kood). Näiteks: <span style="font-family:monospace;font-size:14px">&lt;gl-cor:periodCoveredStart&gt;</span> peab olema formaadis <span style="font-family:monospace;font-size:14px">aaaa-kk-pp</span>.</span>
+            <br/><span style="color:#f59e0b;font-size:14.5px">⚠ MTA ei ole KMD ärireeglite spetsifikatsiooni veel avaldanud (TSD jaoks on see olemas). Ärireeglite kontroll MTA poolel täpsustub hiljem.</span>
           </div>
         </div>
       </div>
@@ -678,12 +722,31 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
           <div style="width:2px;height:28px;background:#16a34a;opacity:.3;margin-top:4px"></div>
           <div style="font-size:16px;color:#16a34a">↓</div>
         </div>
-        <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:580px;margin-top:8px">
-          <div style="font-weight:700;color:#15803d;margin-bottom:5px;font-size:13px">2 · Kontrolli</div>
-          <div style="color:#14532d;margin-bottom:7px">Directo küsib EMTA-lt tagasisideraporti. EMTA on andmed kontrollinud ärireeglite vastu.</div>
-          <div style="background:#dcfce7;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#14532d">
-            <strong>✓ Vead puuduvad</strong> — KMD on valmis kinnitamiseks.<br/>
-            <strong>✗ Vead leitud</strong> — vigaste ridade loend veakoodidega. „Näita vigased read" viib tehingupäevikku. Paranda andmed ja saada uuesti.
+        <div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;padding:14px 18px;font-size:16px;flex:1;max-width:640px;margin-top:8px">
+          <div style="font-weight:700;color:#15803d;margin-bottom:6px;font-size:17px">2 · Kontrolli</div>
+          <div style="color:#14532d;margin-bottom:10px">Directo küsib EMTA-lt tagasisideraporti. EMTA on andmed kontrollinud ärireeglite vastu.</div>
+          <!-- Hargnemine -->
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <!-- Vead leitud -->
+            <div style="flex:1;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 12px;font-size:15px">
+              <div style="font-weight:700;color:#dc2626;margin-bottom:5px">✗ Vead leitud</div>
+              <div style="color:#7f1d1d;margin-bottom:8px">Vigaste ridade loend veakoodidega. „Näita vigased read" viib tehingupäevikku.</div>
+              <div style="display:flex;align-items:center;gap:6px;color:#dc2626;font-weight:600;font-size:14.5px">
+                <span style="font-size:17px">✏</span> Paranda andmed
+                <span style="font-size:17px">→</span>
+                <span style="background:#dc2626;color:#fff;border-radius:4px;padding:3px 10px;font-size:14px;white-space:nowrap">↑ Saada uuesti (samm 1)</span>
+              </div>
+            </div>
+            <!-- Vead puuduvad -->
+            <div style="flex:1;background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:10px 12px;font-size:15px">
+              <div style="font-weight:700;color:#15803d;margin-bottom:5px">✓ Vead puuduvad</div>
+              <div style="color:#14532d;margin-bottom:8px">KMD on EMTA poolt vastu võetud.</div>
+              <div style="display:flex;align-items:center;gap:6px;color:#15803d;font-weight:600;font-size:14.5px">
+                <span style="font-size:17px">↓</span>
+                <span style="background:#15803d;color:#fff;border-radius:4px;padding:3px 10px;font-size:14px">Kinnita PIN2 (samm 3)</span>
+                <span style="color:#64748b;font-weight:400">või protsess lõpeb</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -693,10 +756,10 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
         <div style="display:flex;flex-direction:column;align-items:center;margin-right:12px;padding-top:12px">
           <div class="wf-btn btn-pin" style="white-space:nowrap"><span class="wf-icon">🔒</span>Kinnita PIN2<div class="wf-sub">Digikonteineri allkiri</div></div>
         </div>
-        <div style="background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;padding:12px 16px;font-size:12.5px;flex:1;max-width:540px;margin-top:8px">
-          <div style="font-weight:700;color:#c2410c;margin-bottom:5px;font-size:13px">3 · Kinnita PIN2</div>
-          <div style="color:#7c2d12;margin-bottom:7px">Kui kõik andmed on korras, salvestab Directo andmed digikonteinerisse ja kasutaja lisab PIN2 allkirja.</div>
-          <div style="background:#ffedd5;border-radius:4px;padding:6px 10px;font-size:11.5px;color:#92400e">
+        <div style="background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;padding:14px 18px;font-size:16px;flex:1;max-width:580px;margin-top:8px">
+          <div style="font-weight:700;color:#c2410c;margin-bottom:6px;font-size:17px">3 · Kinnita PIN2</div>
+          <div style="color:#7c2d12;margin-bottom:8px">Kui kõik andmed on korras, salvestab Directo andmed digikonteinerisse ja kasutaja lisab PIN2 allkirja.</div>
+          <div style="background:#ffedd5;border-radius:4px;padding:7px 12px;font-size:15px;color:#92400e">
             <strong>⚠ EMTA lahendus pole veel valmis.</strong><br/>
             Nupp on UI-s olemas, kuid mitteaktiivne kuni EMTA X-tee PIN2 kinnituslahendus valmib.
           </div>
@@ -709,7 +772,7 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
     <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;align-items:center">
       <div class="wf-btn btn-xml"><span class="wf-icon">⬇</span>XML<div class="wf-sub">Laadi fail alla</div></div>
       <div class="wf-btn btn-xls"><span class="wf-icon">⬇</span>Excel<div class="wf-sub">Laadi fail alla</div></div>
-      <div style="font-size:12px;color:#64748b;margin-left:8px">
+      <div style="font-size:14px;color:#64748b;margin-left:8px">
         <strong style="color:#1e293b">XML</strong> — alternatiiv X-tee saatmisele, import e-MTA portaali kaudu.
         &nbsp; <strong style="color:#217346">Excel</strong> — tehingute andmed kontrollimiseks või arhiveerimiseks.
       </div>
@@ -719,17 +782,17 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
 
 <!-- SLAID 16: EDASISED SAMMUD -->
 <div class="slide" data-title="Edasised sammud">
-  <div class="s-header"><div class="pre">7. Edasised sammud</div><h2>Tegevusplaan</h2></div>
+  <div class="s-header"><div class="pre">6. Edasised sammud</div><h2>Tegevusplaan</h2></div>
   <div class="s-body">
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>Etapp</th><th>Aeg</th><th>Tegevus</th></tr></thead>
         <tbody>
-          <tr><td><strong>Disain ja spetsifikatsioon</strong></td><td class="code">I pa. 2026</td><td>KMK kaardi laiendus, agregeerimine, grupi loogika täpsustamine, uute KMK koodide loomine</td></tr>
-          <tr><td><strong>Arendus</strong></td><td class="code">II pa. 2026</td><td>XML generaator, KMK kaart, kliendi-/hankijakaart, KMD aruanne</td></tr>
-          <tr><td><strong>Testimine MTA-ga</strong></td><td class="code" style="color:#ea580c">III pa. 2026</td><td>X-tee liides, XBRL GL validatsioon, tagasiside töövoog</td></tr>
-          <tr><td><strong>Klientide teavitamine</strong></td><td class="code">III–IV pa. 2026</td><td>Juhendid, koolitused, KMK koodide ülevaatamine koos klientidega</td></tr>
-          <tr><td><strong>Toodangusse</strong></td><td class="code" style="color:#16a34a">I kv. 2027</td><td><strong>Kohustuslik esitamine algab. Directo peab olema valmis.</strong></td></tr>
+          <tr><td><strong>Disain ja spetsifikatsioon</strong></td><td class="code">Märts – Mai 2026</td><td>KMD aruande prototüübi loomine, tehniliste nõuete analüüs</td></tr>
+          <tr><td><strong>Arendus</strong></td><td class="code">Juuni – Sept 2026</td><td>XML generaator, KMK kaart, kliendi-/hankijakaart, KMD aruanne</td></tr>
+          <tr><td><strong>Testimine MTA-ga</strong></td><td class="code" style="color:#ea580c">Okt – Dets 2026</td><td>X-tee liides, XBRL GL validatsioon, tagasiside töövoog</td></tr>
+          <tr><td><strong>Klientide teavitamine</strong></td><td class="code">Nov – Dets 2026</td><td>Juhendid, koolitused, KMK koodide ülevaatamine koos klientidega</td></tr>
+          <tr><td><strong>Teenus kasutusse</strong></td><td class="code" style="color:#16a34a">1.1.2027<br/><span style="font-size:11px">esimene KMD 22.2.2027 (E)</span></td><td><strong>Kohustuslik esitamine algab. Directo peab olema valmis.</strong></td></tr>
         </tbody>
       </table>
     </div>
@@ -750,38 +813,6 @@ h3.sec{font-size:13px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #dbe
   </div>
 </div>
 
-<!-- SLAID 17: KOKKUVÕTE -->
-<div class="slide" data-title="Kokkuvõte">
-  <div class="s-header"><div class="pre">Lõppsõna</div><h2>Kokkuvõte</h2></div>
-  <div class="s-body">
-    <div class="box box-blue" style="text-align:center;padding:16px">
-      <p style="font-size:16px;font-weight:700;color:#1e3a5f">APA KMD = Directo suurim arendusprojekt 2026. aastal</p>
-    </div>
-    <div class="sum-items">
-      <div class="sum-item">
-        <div class="si-num">3</div>
-        <div class="si-lbl">Peamist muutust<br/><span style="font-size:11px">Klassifikaatorid · Detailsus · Formaat</span></div>
-      </div>
-      <div class="sum-item" style="border-color:#16a34a">
-        <div class="si-num" style="color:#16a34a">50+</div>
-        <div class="si-lbl">Uut taksonoomia koodi<br/><span style="font-size:11px">M_101 kuni A_101</span></div>
-      </div>
-      <div class="sum-item" style="border-color:#ea580c">
-        <div class="si-num" style="color:#ea580c">6</div>
-        <div class="si-lbl">Arendusala<br/><span style="font-size:11px">KMK · Kaardid · Agregeerimine · Grupp · XML · Töövoog</span></div>
-      </div>
-    </div>
-    <div class="cards">
-      <div class="card"><h3>Klassifikaatorid</h3><p>KMK kaardile 3 uut välja, uued koodid vastavalt MTA taksonoomiale</p></div>
-      <div class="card"><h3>Detailsus</h3><p>Arve kaupa, tehingupartneri kood, agregeerimine 1000 € reegli järgi</p></div>
-      <div class="card"><h3>Formaat</h3><p>XBRL GL XML, X-tee kaudu saatmine, T+R loogika</p></div>
-    </div>
-    <div class="box" style="background:#0f2744;color:#fff;text-align:center;padding:12px">
-      <p style="font-size:14px">Küsimused? 🙋</p>
-      <p style="font-size:12px;opacity:.7;margin-top:4px">Materjal põhineb MTA tehnilistel spetsifikatsioonidel · APA_KMD_TAKSONOOMIA_20260507 · MTA_KMD_APA_XBRL_GL_naidis_20260507</p>
-    </div>
-  </div>
-</div>
 
 </div><!-- /deck -->
 
@@ -801,7 +832,7 @@ const slides = document.querySelectorAll('.slide');
 let cur = 0;
 
 function show(n) {
-  slides[cur].classList.remove('active');
+  slides.forEach(s => s.classList.remove('active'));
   cur = Math.max(0, Math.min(n, slides.length - 1));
   slides[cur].classList.add('active');
   document.getElementById('cur').textContent = cur + 1;
@@ -815,8 +846,10 @@ function show(n) {
 function go(d) { show(cur + d); }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (e.key === 'ArrowRight') go(1); else go(-1);
+  }
   if (e.key === 'f' || e.key === 'F') toggleFull();
 });
 
@@ -825,7 +858,9 @@ function toggleFull() {
   else document.exitFullscreen();
 }
 
-show(0);
+document.addEventListener('DOMContentLoaded', function() { show(0); });
 </script>
 </body>
 </html>
+
+
