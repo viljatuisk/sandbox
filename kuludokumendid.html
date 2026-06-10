@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kuludokumendid — MyDirecto</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a237e;
+    --blue-light: #eef1fb;
+    --blue-border: #b0bce8;
+    --red: #c62828;
+    --red-bg: #ffebee;
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --text-tertiary: #999;
+    --border: #e0e0e0;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #e8eaf0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+  }
+
+  .phone-frame { transform-origin: top center; transform: scale(1.3); margin-bottom: 200px; }
+
+  .phone-frame {
+    width: 480px;
+    min-height: 800px;
+    background: var(--bg);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Topbar */
+  .topbar {
+    background: var(--blue);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+  .topbar-logo {
+    font-size: 17px; font-weight: 700; letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  .topbar-logo span { font-weight: 300; }
+  .topbar-company {
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85);
+    flex: 1; text-align: center;
+  }
+  .topbar-logout {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 13px; color: rgba(255,255,255,0.85);
+    cursor: pointer; white-space: nowrap;
+  }
+  .topbar-logout i { font-size: 18px; }
+
+  /* Scrollable content */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .section { padding: 16px 16px 0; }
+  .section h2 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .upload-hint {
+    color: var(--blue); font-size: 14px; text-align: center;
+    margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .upload-btn {
+    border: 1.5px solid var(--blue-border);
+    border-radius: var(--radius-lg);
+    background: var(--blue-light);
+    padding: 22px 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; font-size: 14px; color: var(--blue); font-weight: 500;
+    transition: background .15s;
+  }
+  .upload-btn:hover { background: #dce3f8; }
+  .upload-btn i { font-size: 30px; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 4px; }
+
+  .list-title {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    padding: 0 16px 8px;
+  }
+
+  /* Doc list */
+  .doc-list { padding: 0 16px; }
+  .doc-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    min-height: 64px;
+  }
+  .doc-item:last-child { border-bottom: none; }
+
+  /* Thumbnail */
+  .thumb {
+    width: 56px; height: 64px; border-radius: 6px;
+    flex-shrink: 0; overflow: hidden;
+    background: #ddd;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb.deleted {
+    background: var(--bg-secondary);
+    border: 1.5px dashed var(--border);
+  }
+  .thumb.deleted i { font-size: 24px; color: var(--text-tertiary); }
+
+  /* Meta */
+  .doc-meta { flex: 1; min-width: 0; }
+
+  /* Normal state */
+  .meta-vendor {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 1px;
+  }
+  .meta-amount-date {
+    font-size: 13px; color: var(--text-secondary);
+    margin-bottom: 1px;
+  }
+  .meta-inline-wrap {
+    position: relative; display: inline-flex; align-items: flex-start;
+    gap: 4px; margin-top: 3px;
+  }
+  .meta-inline {
+    font-size: 12px; color: var(--text);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 7px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 195px;
+  }
+  .meta-inline.has-comment {
+    white-space: normal; max-width: 195px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .meta-sep { color: var(--text-tertiary); margin: 0 2px; }
+  .meta-payment { color: var(--blue); }
+  .meta-comment { color: var(--text-secondary); font-style: italic; }
+
+
+  /* Uploading state */
+  .meta-uploading {
+    font-size: 13px; color: var(--text-tertiary);
+    font-style: italic; margin-bottom: 3px;
+  }
+  .meta-desc {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* Error state */
+  .meta-error {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--red); font-weight: 500;
+  }
+  .meta-error i { font-size: 16px; flex-shrink: 0; }
+
+  /* Deleted state */
+  .meta-deleted {
+    font-size: 13px; color: var(--text-tertiary); font-style: italic;
+  }
+
+  /* Action buttons */
+  .action-btn {
+    width: 34px; height: 34px;
+    border: 1.5px solid var(--blue-border); border-radius: 8px;
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background .15s;
+  }
+  .action-btn:hover { background: var(--blue-light); }
+  .action-btn i { font-size: 16px; color: var(--blue); }
+  .action-btn.undo i { color: var(--text-secondary); }
+  .action-btn.undo { border-color: var(--border); }
+  .action-btn.undo:hover { background: var(--bg-secondary); }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: flex-end; justify-content: center;
+    z-index: 10;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border-radius: 14px 14px 0 0;
+    padding: 20px 16px 32px;
+    width: 100%;
+  }
+  .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+  .modal label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; margin-top: 12px; }
+  .modal input, .modal select, .modal textarea {
+    width: 100%; font-size: 14px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 9px 10px;
+    background: var(--bg); color: var(--text);
+    outline: none; transition: border-color .15s;
+    font-family: inherit;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--blue); }
+  .modal textarea { resize: none; height: 60px; }
+  .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .btn-cancel {
+    padding: 11px; border: 1.5px solid var(--blue-border);
+    border-radius: var(--radius); background: transparent;
+    font-size: 14px; color: var(--text); cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-cancel:hover { background: var(--bg-secondary); }
+  .btn-save {
+    padding: 11px; border: none; border-radius: var(--radius);
+    background: var(--blue); font-size: 14px; color: #fff;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-save:hover { background: #283593; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">My<span>Directo</span></div>
+    <div class="topbar-company">OÜ Davai Laama</div>
+    <div class="topbar-logout">
+      Välju <i class="ti ti-logout"></i>
+    </div>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="content">
+    <div class="section">
+      <h2>Kuludokumendid</h2>
+      <p class="upload-hint">Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.</p>
+      <div class="btn-grid">
+        <div class="upload-btn"><i class="ti ti-camera"></i>Pildista</div>
+        <div class="upload-btn"><i class="ti ti-photo-up"></i>Laadi üles</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="list-title">Üles laaditud dokumendid</div>
+
+    <div class="doc-list" id="docList"></div>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3>Muuda dokumenti</h3>
+      <label>Kulu tüüp</label>
+      <select id="editLabel">
+        <option>Kontor</option>
+        <option>Kohvik</option>
+        <option>Transport</option>
+        <option>Majutus</option>
+        <option>Muu</option>
+      </select>
+      <label>Makseviis</label>
+      <select id="editPayment">
+        <option>Firma deebetkaart</option>
+        <option>Isiklik sularaha</option>
+        <option>Isiklik kaart</option>
+      </select>
+      <label>Kommentaar</label>
+      <textarea id="editComment" placeholder="Lisa kommentaar..."></textarea>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeEdit()">Tühista</button>
+        <button class="btn-save" onclick="saveEdit()">Salvesta</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// status: 'uploading' | 'error' | 'deleted' | 'ok' | 'locked' (dokument loodud Directos)
+const docs = [
+  {id:1, status:'uploading', vendor:'', amount:'', date:'', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#c8d4e8'},
+  {id:2, status:'error',    vendor:'', amount:'', date:'', label:'Kontor',    payment:'Isiklik sularaha',  comment:'', color:'#d0d0d0'},
+  {id:3, status:'deleted',  vendor:'', amount:'', date:'', label:'Muu',       payment:'Isiklik kaart',     comment:'', color:'#e0e0e0'},
+  {id:4, status:'ok',       vendor:'OÜ Statoil', amount:'66,6€', date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#b0c4d8'},
+  {id:5, status:'locked',   vendor:'OÜ Statoil', amount:'66,6€', date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#b0c4d8'},
+];
+
+let editingId = null;
+
+function thumbHtml(d) {
+  if (d.status === 'deleted') {
+    return `<div class="thumb deleted"><i class="ti ti-photo-off"></i></div>`;
+  }
+  return `<div class="thumb" style="background:${d.color}"></div>`;
+}
+
+function metaHtml(d) {
+  if (d.status === 'uploading') {
+    return `
+      <div class="meta-uploading">Töötlemisel...</div>
+      ${d.comment ? `<div class="meta-desc">${d.comment}</div>` : ''}`;
+  }
+  if (d.status === 'error') {
+    return `<div class="meta-error"><i class="ti ti-circle-x"></i>Viga ülesslaadimisel!</div>`;
+  }
+  if (d.status === 'deleted') {
+    return `<div class="meta-deleted">Pilt kustutatud!</div>`;
+  }
+  // ok või locked
+  return `
+    <div class="meta-vendor">${d.vendor || d.label}</div>
+    <div class="meta-amount-date">${d.amount}${d.amount && d.date ? ' | ' : ''}${d.date}</div>
+    <div class="meta-inline-wrap">
+      <div class="meta-inline${d.comment ? ' has-comment' : ''}">
+        <span>${d.label}</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-payment">${d.payment}</span>
+        ${d.comment ? `<span class="meta-sep">·</span><span class="meta-comment">${d.comment}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+function actionHtml(d) {
+  if (d.status === 'deleted') {
+    return `<button class="action-btn undo" onclick="undoDelete(${d.id})" aria-label="Võta tagasi"><i class="ti ti-arrow-back-up"></i></button>`;
+  }
+  if (d.status === 'locked') return '';
+  return `<button class="action-btn" onclick="openEdit(${d.id})" aria-label="Muuda"><i class="ti ti-pencil"></i></button>`;
+}
+
+function render() {
+  document.getElementById('docList').innerHTML = docs.map(d => `
+    <div class="doc-item">
+      ${thumbHtml(d)}
+      <div class="doc-meta">${metaHtml(d)}</div>
+      ${actionHtml(d)}
+    </div>`).join('');
+}
+
+function undoDelete(id) {
+  const d = docs.find(x => x.id === id);
+  if (d) { d.status = 'ok'; render(); }
+}
+
+function openEdit(id) {
+  editingId = id;
+  const d = docs.find(x => x.id === id);
+  document.getElementById('editLabel').value = d.label;
+  document.getElementById('editPayment').value = d.payment;
+  document.getElementById('editComment').value = d.comment;
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('open');
+}
+
+function saveEdit() {
+  const d = docs.find(x => x.id === editingId);
+  d.label = document.getElementById('editLabel').value;
+  d.payment = document.getElementById('editPayment').value;
+  d.comment = document.getElementById('editComment').value;
+  closeEdit(); render();
+}
+
+render();
+</script>
+</body>
+</html>
