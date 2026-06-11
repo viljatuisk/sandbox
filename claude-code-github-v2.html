@@ -9,15 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --paper: #fdfbf7;
-      --ink: #1a1a1a;
-      --ink-soft: #555555;
+      --paper: #ffffff;
+      --ink: #111436;
+      --ink-soft: #4a4f6e;
       --rust: #c1502e;
-      --rust-soft: #f6e3da;
-      --pine: #1f5c45;
-      --pine-soft: #e2efe8;
-      --sand: #efe9dd;
-      --line: #d8d2c4;
+      --rust-soft: #f8eae4;
+      --pine: #2230a8;
+      --pine-soft: #e8eaf8;
+      --sand: #dfe2ef;
+      --line: #c9cde0;
+      --directo: #2230a8;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,13 +54,18 @@
     }
     .sheet.active { display: flex; }
 
+    .sheet.title-sheet {
+      background: #fff url('directo_template/blankett/image1.jpeg') center/cover no-repeat;
+      border: none;
+    }
+
     .kicker {
       font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
       font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--rust);
+      color: var(--directo);
       margin-bottom: 1rem;
     }
 
@@ -142,7 +148,7 @@
     .step-col { border-top: 3px solid var(--ink); padding-top: 1.1rem; }
     .step-col .n {
       font-family: 'Fraunces', Georgia, serif; font-size: 3rem; font-weight: 700;
-      color: var(--rust); line-height: 1;
+      color: var(--directo); line-height: 1;
     }
     .step-col h3 { font-size: 1.1rem; margin: 0.7rem 0 0.6rem; }
     .step-col p { font-size: 0.92rem; line-height: 1.55; color: var(--ink-soft); }
@@ -168,7 +174,7 @@
       border: none; width: 40px; height: 40px; border-radius: 50%;
       font-size: 1rem; cursor: pointer;
     }
-    .controls button:hover { background: var(--rust); }
+    .controls button:hover { background: var(--directo); }
     .controls button:disabled { opacity: 0.25; cursor: default; }
     .counter { font-size: 0.85rem; color: var(--ink-soft); min-width: 52px; text-align: center; }
 
@@ -185,12 +191,12 @@
 <div class="deck">
 
   <!-- SLIDE 1: TIITEL -->
-  <section class="sheet active">
-    <div class="corner">Directo · 2026</div>
-    <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+  <section class="sheet title-sheet active">
+    <div class="corner" style="color:#ffffff;">Directo · 2026</div>
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; max-width:62%;">
       <div class="kicker">Prototüüpimise töövoo näide</div>
       <h1>Claude Code<br>+ GitHub (Pages)</h1>
-      <p class="lede">Kuidas luua, muuta ja jagada aruannete ja dokumentide prototüüpe<br>ilma failide saatmiseta.</p>
+      <p class="lede">Kuidas luua, muuta ja jagada aruannete ja dokumentide prototüüpe ilma failide saatmiseta.</p>
       <div class="title-tags">
         <div class="title-tag"><span class="big">⚡</span><span class="small">Kiire</span></div>
         <div class="title-tag"><span class="big">🔄</span><span class="small">Jälgitav</span></div>
@@ -201,7 +207,7 @@
   </section>
 
   <!-- SLIDE 2: KUS LUUA -->
-  <section class="sheet">
+  <section class="sheet content-sheet">
     <div class="corner">02 · 04</div>
     <div class="kicker">Probleem nr 1</div>
     <h2>Kus prototüüpe luua?</h2>
@@ -229,7 +235,7 @@
   </section>
 
   <!-- SLIDE 3: KUIDAS JAGADA -->
-  <section class="sheet">
+  <section class="sheet content-sheet">
     <div class="corner">03 · 04</div>
     <div class="kicker">Probleem nr 2</div>
     <h2>Kuidas prototüüpe jagada?</h2>
@@ -258,7 +264,7 @@
   </section>
 
   <!-- SLIDE 4: KUIDAS TÖÖTAB -->
-  <section class="sheet">
+  <section class="sheet content-sheet">
     <div class="corner">04 · 04</div>
     <div class="kicker">Töövoog</div>
     <h2>Kuidas 'Claude Code + GitHub (Pages)' töötab — 3 sammu</h2>
