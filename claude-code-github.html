@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code + GitHub — Directo prototüüpimise töövoog</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #7c6af7;
+      --accent2: #4fa3e0;
+      --green: #3ecf8e;
+      --text: #e8eaf6;
+      --muted: #8891b4;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(15,17,23,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 56px;
+    }
+    .nav-logo { font-weight: 700; font-size: 1rem; color: var(--accent); letter-spacing: 0.03em; }
+    .nav-dots { display: flex; gap: 6px; }
+    .nav-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); cursor: pointer; transition: background 0.2s;
+    }
+    .nav-dot.active { background: var(--accent); }
+
+    /* SLIDES */
+    .slide {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 2rem 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .slide-inner { max-width: 900px; width: 100%; }
+
+    .slide-num {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; }
+    h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 700; line-height: 1.2; margin-bottom: 0.4rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; color: var(--accent2); margin-bottom: 0.5rem; }
+
+    .subtitle {
+      margin-top: 1rem; font-size: 1.1rem; color: var(--muted);
+    }
+    .author-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-top: 1.5rem; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.4rem 1rem; font-size: 0.9rem; color: var(--muted);
+    }
+
+    .badge-row { display: flex; gap: 1rem; margin-top: 1.8rem; flex-wrap: wrap; }
+    .badge {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 0.4rem 1.1rem;
+      font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* PROBLEM SLIDE */
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem;
+    }
+    .card.bad { border-color: #ff6b6b44; }
+    .card.good { border-color: var(--green); }
+    .card-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 0.8rem;
+    }
+    .card.bad .card-label { color: #ff8080; }
+    .card.good .card-label { color: var(--green); }
+
+    .flow-text { font-size: 0.88rem; color: var(--muted); font-style: italic; margin-bottom: 0.8rem; }
+    .tag { display: inline-block; background: #ff6b6b22; color: #ff8080;
+      border: 1px solid #ff6b6b33; border-radius: 6px;
+      padding: 0.2rem 0.6rem; font-size: 0.8rem; margin: 0.2rem; }
+    .tag.ok { background: #3ecf8e22; color: var(--green); border-color: #3ecf8e33; }
+
+    /* STEPS */
+    .steps { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem; }
+    .step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.4rem 1.6rem;
+      display: flex; gap: 1.2rem; align-items: flex-start;
+    }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-weight: 800; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body h3 { color: var(--white); font-size: 1rem; margin-bottom: 0.3rem; }
+    .step-body p { color: var(--muted); font-size: 0.9rem; }
+    .step-icon { font-size: 1.3rem; }
+
+    /* BENEFITS GRID */
+    .benefits-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.2rem; margin-top: 2rem;
+    }
+    @media (max-width: 640px) { .benefits-grid { grid-template-columns: 1fr; } }
+    .benefit {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.3rem 1.5rem;
+    }
+    .benefit-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+    .benefit h3 { color: var(--white); font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .benefit p { color: var(--muted); font-size: 0.85rem; }
+
+    /* COMPARISON TABLE */
+    .compare-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+    .compare-table th, .compare-table td {
+      padding: 0.85rem 1.1rem; text-align: left;
+      border-bottom: 1px solid var(--border); font-size: 0.9rem;
+    }
+    .compare-table th {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--muted);
+      background: var(--surface);
+    }
+    .compare-table th:first-child { border-radius: 10px 0 0 0; }
+    .compare-table th:last-child { border-radius: 0 10px 0 0; }
+    .compare-table tr:hover td { background: var(--surface2); }
+    .yes { color: var(--green); font-weight: 600; }
+    .no { color: #ff8080; font-weight: 500; }
+    .col-cc { color: var(--accent); font-weight: 600; }
+
+    /* SUMMARY */
+    .summary-list { list-style: none; margin-top: 1.8rem; display: flex; flex-direction: column; gap: 0.85rem; }
+    .summary-list li {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem 1.3rem; font-size: 0.95rem;
+    }
+    .summary-list li span:first-child { font-size: 1.2rem; flex-shrink: 0; }
+
+    .question-block {
+      margin-top: 2.5rem; text-align: center;
+      font-size: 1.8rem; color: var(--muted);
+    }
+
+    /* TITLE accent */
+    .accent { color: var(--accent); }
+    .accent2 { color: var(--accent2); }
+    .green { color: var(--green); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Claude Code + GitHub</span>
+  <div class="nav-dots">
+    <div class="nav-dot active" onclick="scrollTo(0)"></div>
+    <div class="nav-dot" onclick="scrollTo(1)"></div>
+    <div class="nav-dot" onclick="scrollTo(2)"></div>
+    <div class="nav-dot" onclick="scrollTo(3)"></div>
+    <div class="nav-dot" onclick="scrollTo(4)"></div>
+    <div class="nav-dot" onclick="scrollTo(5)"></div>
+  </div>
+</nav>
+
+<!-- SLIDE 1: TIITEL -->
+<section class="slide" id="slide-0">
+  <div class="slide-inner">
+    <div class="slide-num">01 / 06</div>
+    <h1><span class="accent">Claude Code</span> + <span class="accent2">GitHub</span></h1>
+    <p class="subtitle">Miks see on meie prototüüpimise töövoog</p>
+    <div class="author-tag">👤 Vilja &nbsp;·&nbsp; Directo</div>
+    <div class="badge-row">
+      <span class="badge">⚡ Kiire</span>
+      <span class="badge">🔄 Jälgitav</span>
+      <span class="badge">🌐 Jagatav</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: PROBLEEM -->
+<section class="slide" id="slide-1">
+  <div class="slide-inner">
+    <div class="slide-num">02 / 06</div>
+    <h2>Probleem: kuidas prototüüpe luua ja jagada?</h2>
+    <div class="compare-grid">
+      <div class="card bad">
+        <div class="card-label">💬 Chat (claude.ai)</div>
+        <p class="flow-text">Genereerin faili → laen alla → saadan meiliga → kolleeg avab → teen muudatuse → saadan uuesti…</p>
+        <span class="tag">Aeganõudev</span>
+      </div>
+      <div class="card bad">
+        <div class="card-label">💻 Lokaalselt ilma Git'ita</div>
+        <p class="flow-text">Failid arvutis, versioonid puuduvad, jagamine keeruline.</p>
+        <span class="tag">final_v3_FINAL.html</span>
+        <br><br>
+        <span class="tag">Kaootiline</span>
+      </div>
+      <div class="card good" style="grid-column: span 2;">
+        <div class="card-label">✓ Meie valik — Claude Code + GitHub</div>
+        <p class="flow-text">Teen muudatuse → push → link on automaatselt uuenenud. Kõik ajalugu säilib.</p>
+        <span class="tag ok">✓ Kiire</span>
+        <span class="tag ok">✓ Jälgitav</span>
+        <span class="tag ok">✓ Jagatav</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: KUIDAS TÖÖTAB -->
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="slide-num">03 / 06</div>
+    <h2>Kuidas see töötab — 3 sammu</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>💻 Claude Code terminalis</h3>
+          <p>Kirjutan Claude Code'le mida vaja: <em>"tee KMD APA vaade tabeliga"</em>. Claude genereerib HTML-faili otse projektikausta.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>🔄 Git push → GitHub</h3>
+          <p>Muudatused lähevad GitHubi hoidlasse. Kogu ajalugu säilib — saan alati vaadata mis millal muutus.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>🌐 GitHub Pages — jagamine</h3>
+          <p>Kolleeg avab lingi brauseris. Ei pea faili saatma. Link on alati ajakohane.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: MIKS MÕISTLIK -->
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="slide-num">04 / 06</div>
+    <h2>Miks see valik on mõistlik?</h2>
+    <div class="benefits-grid">
+      <div class="benefit">
+        <div class="benefit-icon">📜</div>
+        <h3>Versiooniajalugu</h3>
+        <p>Iga muudatus on salvestatud. "Mis seal eile oli?" — <code>git log</code> näitab täpselt.</p>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">🔗</div>
+        <h3>Püsiv URL</h3>
+        <p><code>viljatuisk.github.io/KMD/</code> — link ei muutu, kolleeg avab alati uusima versiooni.</p>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">↩️</div>
+        <h3>Tagasipööramine</h3>
+        <p>Kui uus versioon ei meeldi, saan ühe käsuga vanale tagasi minna.</p>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">👥</div>
+        <h3>Meeskonnatöö</h3>
+        <p>Tulevikus saab kolleeg sama repo'sse panustada, kommenteerida, reviewda.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: VÕRDLUS -->
+<section class="slide" id="slide-4">
+  <div class="slide-inner">
+    <div class="slide-num">05 / 06</div>
+    <h2>Chat vs Claude Code — millal kumba?</h2>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Omadus</th>
+          <th>💬 Claude Chat</th>
+          <th class="col-cc">✓ Claude Code + GitHub</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kiire ühekordseks prototüübiks</td>
+          <td class="yes">✓</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+        <tr>
+          <td>Fail otse projektikaustas</td>
+          <td class="no">✗ Laen alla</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+        <tr>
+          <td>Püsiv URL kolleegidele</td>
+          <td class="no">✗</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+        <tr>
+          <td>Versiooniajalugu täielik</td>
+          <td class="no">✗</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+        <tr>
+          <td>Iteratiivne muutmine lihtne</td>
+          <td class="no">✗ Uus vestlus</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+        <tr>
+          <td>Pikaajalised prototüübid</td>
+          <td class="no">✗ Fail kaob</td>
+          <td class="yes col-cc">✓</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SLIDE 6: KOKKUVÕTE -->
+<section class="slide" id="slide-5">
+  <div class="slide-inner">
+    <div class="slide-num">06 / 06</div>
+    <h2>Kokkuvõte</h2>
+    <ul class="summary-list">
+      <li><span>💻</span><span>Töötad otse failisüsteemis — ei kaota midagi</span></li>
+      <li><span>🌐</span><span>GitHub annab tasuta jagamise URL-i (GitHub Pages)</span></li>
+      <li><span>📜</span><span>Versiooniajalugu on päästev, kui midagi läheb valesti</span></li>
+      <li><span>👥</span><span>Tulevikus kasvab see meeskonna ühiseks tööruumiks</span></li>
+    </ul>
+    <div class="question-block">Küsimused?</div>
+  </div>
+</section>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav-dot');
+
+  function scrollTo(i) {
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const i = Array.from(slides).indexOf(e.target);
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[i]) dots[i].classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
