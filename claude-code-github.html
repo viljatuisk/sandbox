@@ -214,8 +214,8 @@
     <div class="compare-grid">
       <div class="card bad">
         <div class="card-label">💬 Chat (claude.ai)</div>
-        <p class="flow-text">Genereerin faili → laen alla → saadan meiliga → kolleeg avab → teen muudatuse → saadan uuesti…</p>
-        <span class="tag">Aeganõudev</span>
+        <p class="flow-text">Iga muudatus = uus vestlus, uus fail nullist. Chat ei mäleta eelmist faili.</p>
+        <span class="tag">Aeglane iteratsioon</span>
         <p style="margin-top:0.9rem;font-size:0.82rem;color:#f9a86a;font-weight:600;">💡 Chat loob faili nullist iga kord. Code muudab olemasolevat faili otse — iteratsioon on 10× kiirem.</p>
       </div>
       <div class="card good">
@@ -265,8 +265,10 @@
     <h2>Probleem: kuidas prototüüpe jagada?</h2>
     <div class="compare-grid">
       <div class="card bad">
-        <div class="card-label">☁️ OneDrive / lokaalne C-ketas</div>
-        <p class="flow-text">Fail salvestub isiklikku OneDrive'i. Jagamiseks tuleb link saata, aga kolleeg peab faili alla laadima — HTML ei avane OneDrive'is otse brauseris.</p>
+        <div class="card-label">💬 Chat (claude.ai) või ☁️ OneDrive</div>
+        <p class="flow-text">Genereerin faili → laen alla → saadan meiliga → kolleeg avab → teen muudatuse → saadan uuesti…</p>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">OneDrive share-link nõuab faili allalaadimist — HTML ei avane otse brauseris. Kui kolleeg laadis alla eelmise versiooni, on tal endiselt see vana fail.</p>
+        <span class="tag">Aeganõudev</span>
         <span class="tag">Nõuab allalaadimist</span>
         <span class="tag">final_v3_FINAL.html</span>
         <p style="margin-top:0.9rem;font-size:0.82rem;color:#f9a86a;font-weight:600;">💬 "Pane lihtsalt Directo OneDrive'i, sealt saab share'da?"</p>
