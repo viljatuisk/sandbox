@@ -187,13 +187,14 @@
     <div class="nav-dot" onclick="scrollTo(3)"></div>
     <div class="nav-dot" onclick="scrollTo(4)"></div>
     <div class="nav-dot" onclick="scrollTo(5)"></div>
+    <div class="nav-dot" onclick="scrollTo(6)"></div>
   </div>
 </nav>
 
 <!-- SLIDE 1: TIITEL -->
 <section class="slide" id="slide-0">
   <div class="slide-inner">
-    <div class="slide-num">01 / 06</div>
+    <div class="slide-num">01 / 07</div>
     <h1><span class="accent">Claude Code</span> + <span class="accent2">GitHub</span></h1>
     <p class="subtitle">Prototüüpimise töövoo näide</p>
     <div class="author-tag">👤 Vilja &nbsp;·&nbsp; Directo</div>
@@ -205,11 +206,11 @@
   </div>
 </section>
 
-<!-- SLIDE 2: PROBLEEM -->
+<!-- SLIDE 2: KUS LUUA -->
 <section class="slide" id="slide-1">
   <div class="slide-inner">
-    <div class="slide-num">02 / 06</div>
-    <h2>Probleem: kuidas prototüüpe luua ja jagada?</h2>
+    <div class="slide-num">02 / 07</div>
+    <h2>Probleem: kus prototüüpe luua?</h2>
     <div class="compare-grid">
       <div class="card bad">
         <div class="card-label">💬 Chat (claude.ai)</div>
@@ -217,21 +218,37 @@
         <span class="tag">Aeganõudev</span>
         <p style="margin-top:0.9rem;font-size:0.82rem;color:#f9a86a;font-weight:600;">💡 Chat loob faili nullist iga kord. Code muudab olemasolevat faili otse — iteratsioon on 10× kiirem.</p>
       </div>
+      <div class="card good">
+        <div class="card-label">✓ Claude Code (desktopi rakendus)</div>
+        <p class="flow-text">Kirjutan mida vaja → Claude muudab faili otse projektikausta. Sama vestlus, sama fail, järjepidev iteratsioon.</p>
+        <span class="tag ok">✓ Kiire</span>
+        <span class="tag ok">✓ Iteratiivne</span>
+        <span class="tag ok">✓ Failid otse kaustas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: KUIDAS JAGADA -->
+<section class="slide" id="slide-2b">
+  <div class="slide-inner">
+    <div class="slide-num">03 / 07</div>
+    <h2>Probleem: kuidas prototüüpe jagada?</h2>
+    <div class="compare-grid">
       <div class="card bad">
         <div class="card-label">☁️ OneDrive / lokaalne C-ketas</div>
-        <p class="flow-text">Claude Code genereerib faili → salvestub isiklikku OneDrive'i → kolleeg ei näe, ainult mina. Versiooniajalugu puudub, jagamiseks tuleb fail käsitsi saata.</p>
-        <span class="tag">Ainult minu nähtav</span>
-        <span class="tag">Ei ole jagatav lingina</span>
+        <p class="flow-text">Fail salvestub isiklikku OneDrive'i. Jagamiseks tuleb link saata, aga kolleeg peab faili alla laadima — HTML ei avane OneDrive'is otse brauseris.</p>
+        <span class="tag">Nõuab allalaadimist</span>
         <span class="tag">final_v3_FINAL.html</span>
         <p style="margin-top:0.9rem;font-size:0.82rem;color:#f9a86a;font-weight:600;">💬 "Pane lihtsalt Directo OneDrive'i, sealt saab share'da?"</p>
-        <p style="font-size:0.82rem;color:var(--muted);margin-top:0.3rem;">OneDrive share-link näitab küll alati viimast versiooni — aga kolleeg peab faili <strong style="color:var(--text)">alla laadima</strong> ja avama oma arvutis. HTML-fail ei avane OneDrive'is otse brauseris nagu veebileht. Kui ta laadis alla eelmise versiooni, on tal endiselt see vana fail — ta peab teadma, et tuleb uuesti alla laadida.</p>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:0.3rem;">OneDrive share-link näitab küll alati viimast versiooni — aga kolleeg peab faili <strong style="color:var(--text)">alla laadima</strong> ja avama oma arvutis. Kui ta laadis alla eelmise versiooni, on tal endiselt see vana fail.</p>
       </div>
-      <div class="card good" style="grid-column: span 2;">
+      <div class="card good">
         <div class="card-label">✓ Minu valik — Claude Code + GitHub (Pages)</div>
         <p class="flow-text">Teen muudatuse → push → link on automaatselt uuenenud. Kõik ajalugu säilib.</p>
         <p style="font-size:0.82rem;color:var(--green);margin-top:0.5rem;">✓ GitHub Pages on päris veebiaadress — kolleeg avab brauseris nagu tavalise veebilehe, ei laadi midagi alla, ja näeb alati automaatselt sinu viimast versiooni.</p>
-        <span class="tag ok">✓ Kiire</span>
-        <span class="tag ok">✓ Jälgitav</span>
+        <span class="tag ok">✓ Püsiv URL</span>
+        <span class="tag ok">✓ Alati ajakohane</span>
         <span class="tag ok">✓ Jagatav</span>
       </div>
     </div>
@@ -241,7 +258,7 @@
 <!-- SLIDE 3: KUIDAS TÖÖTAB -->
 <section class="slide" id="slide-2">
   <div class="slide-inner">
-    <div class="slide-num">03 / 06</div>
+    <div class="slide-num">04 / 07</div>
     <h2>Kuidas see töötab — 3 sammu</h2>
     <div class="steps">
       <div class="step">
@@ -272,7 +289,7 @@
 <!-- SLIDE 4: MIKS MÕISTLIK -->
 <section class="slide" id="slide-3">
   <div class="slide-inner">
-    <div class="slide-num">04 / 06</div>
+    <div class="slide-num">05 / 07</div>
     <h2>Miks see valik on mõistlik?</h2>
     <div class="benefits-grid">
       <div class="benefit">
@@ -302,7 +319,7 @@
 <!-- SLIDE 5: VÕRDLUS -->
 <section class="slide" id="slide-4">
   <div class="slide-inner">
-    <div class="slide-num">05 / 06</div>
+    <div class="slide-num">06 / 07</div>
     <h2>Chat vs Claude Code — millal kumba?</h2>
     <table class="compare-table">
       <thead>
@@ -356,7 +373,7 @@
 <!-- SLIDE 6: KOKKUVÕTE -->
 <section class="slide" id="slide-5">
   <div class="slide-inner">
-    <div class="slide-num">06 / 06</div>
+    <div class="slide-num">07 / 07</div>
     <h2>Kokkuvõte</h2>
     <ul class="summary-list">
       <li><span>💻</span><span>Töötad otse failisüsteemis — ei kaota midagi</span></li>
