@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code + GitHub — Prototüüpimise töövoo näide (v2)</title>
+  <style>
+    :root {
+      --paper: #fdfbf7;
+      --ink: #1a1a1a;
+      --ink-soft: #555555;
+      --rust: #c1502e;
+      --rust-soft: #f6e3da;
+      --pine: #1f5c45;
+      --pine-soft: #e2efe8;
+      --sand: #efe9dd;
+      --line: #d8d2c4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--sand);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    .sheet {
+      background: var(--paper);
+      width: min(1000px, 100%);
+      height: min(640px, 100%);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 50px rgba(60, 45, 20, 0.18);
+      padding: 3.2rem 3.6rem;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      position: relative;
+    }
+    .sheet.active { display: flex; }
+
+    .kicker {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.6rem;
+    }
+
+    .lede {
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--ink-soft);
+      margin-top: 1.2rem;
+      max-width: 34ch;
+    }
+
+    .byline {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-top: 2.2rem;
+      letter-spacing: 0.05em;
+    }
+    .byline strong { color: var(--ink); }
+
+    .title-tags { margin-top: 2.6rem; display: flex; gap: 2.2rem; flex-wrap: wrap; }
+    .title-tag { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .title-tag .big { font-size: 1.5rem; }
+    .title-tag .small {
+      display: block; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+      margin-top: 0.25rem;
+    }
+
+    /* Two columns */
+    .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); flex: 1; }
+    .duo > div { padding: 1.6rem 1.8rem; }
+    .duo > div:first-child { border-right: 1px solid var(--line); background: var(--rust-soft); }
+    .duo > div:last-child { background: var(--pine-soft); }
+
+    .col-head {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding-bottom: 0.7rem; margin-bottom: 1rem;
+      border-bottom: 2px solid currentColor;
+    }
+    .duo > div:first-child .col-head { color: var(--rust); }
+    .duo > div:last-child .col-head { color: var(--pine); }
+
+    .duo p { font-size: 0.98rem; line-height: 1.55; margin-bottom: 0.9rem; }
+    .duo .note { font-size: 0.88rem; color: var(--ink-soft); }
+
+    .mark-list { list-style: none; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 0.9rem; }
+    .mark-list li { padding: 0.32rem 0; }
+    .mark-list .x::before { content: "✗  "; color: var(--rust); font-weight: 700; }
+    .mark-list .v::before { content: "✓  "; color: var(--pine); font-weight: 700; }
+
+    .pull {
+      border-left: 3px solid var(--rust);
+      padding: 0.4rem 0 0.4rem 1rem;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      margin-top: 1rem;
+    }
+    .pull.green { border-color: var(--pine); }
+
+    /* Steps slide */
+    .steps-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.4rem; flex: 1; align-content: start; }
+    .step-col { border-top: 3px solid var(--ink); padding-top: 1.1rem; }
+    .step-col .n {
+      font-family: Georgia, serif; font-size: 3rem; font-weight: 700;
+      color: var(--rust); line-height: 1;
+    }
+    .step-col h3 { font-size: 1.1rem; margin: 0.7rem 0 0.6rem; }
+    .step-col p { font-size: 0.92rem; line-height: 1.55; color: var(--ink-soft); }
+    .step-col code {
+      font-family: Consolas, monospace; font-size: 0.85em;
+      background: var(--sand); padding: 0.05rem 0.35rem; border-radius: 3px;
+    }
+    .arrow-line {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin-top: 2rem; text-align: center;
+      font-size: 0.95rem; color: var(--ink-soft); letter-spacing: 0.04em;
+    }
+    .arrow-line strong { color: var(--pine); }
+
+    /* Controls */
+    .controls {
+      position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 1.1rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .controls button {
+      background: var(--ink); color: var(--paper);
+      border: none; width: 40px; height: 40px; border-radius: 50%;
+      font-size: 1rem; cursor: pointer;
+    }
+    .controls button:hover { background: var(--rust); }
+    .controls button:disabled { opacity: 0.25; cursor: default; }
+    .counter { font-size: 0.85rem; color: var(--ink-soft); min-width: 52px; text-align: center; }
+
+    .corner {
+      position: absolute; top: 1.4rem; right: 1.6rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: TIITEL -->
+  <section class="sheet active">
+    <div class="corner">Directo · 2026</div>
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+      <div class="kicker">Prototüüpimise töövoo näide</div>
+      <h1>Claude Code<br>+ GitHub</h1>
+      <p class="lede">Kuidas luua, itereerida ja jagada prototüüpe ilma failide saatmiseta.</p>
+      <div class="title-tags">
+        <div class="title-tag"><span class="big">⚡</span><span class="small">Kiire</span></div>
+        <div class="title-tag"><span class="big">🔄</span><span class="small">Jälgitav</span></div>
+        <div class="title-tag"><span class="big">🌐</span><span class="small">Jagatav</span></div>
+      </div>
+      <div class="byline">Esitleb <strong>Vilja</strong> · Directo</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: KUS LUUA -->
+  <section class="sheet">
+    <div class="corner">02 · 04</div>
+    <div class="kicker">Probleem nr 1</div>
+    <h2>Kus prototüüpe luua?</h2>
+    <div class="duo">
+      <div>
+        <div class="col-head">Chat (claude.ai)</div>
+        <p>Iga muudatus = uus vestlus, uus fail nullist. Chat ei mäleta eelmist faili.</p>
+        <ul class="mark-list">
+          <li class="x">Aeglane iteratsioon</li>
+          <li class="x">Ei saa ühendada OneDrive'i ega lokaalse kettaga</li>
+        </ul>
+        <div class="pull">Chat loob faili nullist iga kord — iteratsioon venib.</div>
+      </div>
+      <div>
+        <div class="col-head">Claude Code (desktopi rakendus)</div>
+        <p>Kirjutan mida vaja → Claude muudab faili otse projektikaustas. Sama vestlus, sama fail, järjepidev iteratsioon.</p>
+        <ul class="mark-list">
+          <li class="v">Kiire ja iteratiivne</li>
+          <li class="v">Failid otse kaustas — ühendub lokaalse kettaga</li>
+          <li class="v">Kõik ühes aknas: Chat + Cowork + Code (Desktop app)</li>
+        </ul>
+        <div class="pull green">Ei pea kahe programmi vahel hüplema — brauser ja terminal on asendatud ühe aknaga.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: KUIDAS JAGADA -->
+  <section class="sheet">
+    <div class="corner">03 · 04</div>
+    <div class="kicker">Probleem nr 2</div>
+    <h2>Kuidas prototüüpe jagada?</h2>
+    <div class="duo">
+      <div>
+        <div class="col-head">Chat või OneDrive</div>
+        <p>Genereerin faili → laen alla → saadan meiliga → kolleeg avab → teen muudatuse → saadan uuesti…</p>
+        <ul class="mark-list">
+          <li class="x">Aeganõudev</li>
+          <li class="x">Nõuab allalaadimist — HTML ei avane OneDrive'is otse brauseris</li>
+          <li class="x">final_v3_FINAL.html</li>
+        </ul>
+        <div class="pull">"Pane lihtsalt Directo OneDrive'i?" — share-link näitab viimast versiooni, aga kolleeg peab faili ikkagi alla laadima. Vana allalaaditud fail jääb vanaks.</div>
+      </div>
+      <div>
+        <div class="col-head">Minu valik — Claude Code + GitHub (Pages)</div>
+        <p>Teen muudatuse → push → link on automaatselt uuenenud. Kõik ajalugu säilib.</p>
+        <ul class="mark-list">
+          <li class="v">Püsiv URL</li>
+          <li class="v">Alati ajakohane</li>
+          <li class="v">Jagatav</li>
+        </ul>
+        <div class="pull green">GitHub Pages on päris veebiaadress — kolleeg avab brauseris nagu tavalise veebilehe ja näeb alati viimast versiooni.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: KUIDAS TÖÖTAB -->
+  <section class="sheet">
+    <div class="corner">04 · 04</div>
+    <div class="kicker">Töövoog</div>
+    <h2>Kuidas 'Claude Code + GitHub (Pages)' töötab — 3 sammu</h2>
+    <div class="steps-row">
+      <div class="step-col">
+        <div class="n">1</div>
+        <h3>Claude Code desktopi rakenduses</h3>
+        <p>Kirjutan Claude Code'le mida vaja: <em>"tee KMD APA vaade tabeliga"</em>. Claude genereerib HTML-faili otse projektikausta. Minul on selle jaoks tehtud C kettale kaust <code>Sandbox</code>.</p>
+      </div>
+      <div class="step-col">
+        <div class="n">2</div>
+        <h3>Git push → GitHub</h3>
+        <p>Muudatused lähevad GitHubi hoidlasse. Kogu ajalugu säilib — saan alati vaadata mis millal muutus. Teen igaks juhuks ka käsitsi turvakoopiaid C ketta kausta.</p>
+      </div>
+      <div class="step-col">
+        <div class="n">3</div>
+        <h3>GitHub Pages — jagamine</h3>
+        <p>Kolleeg avab lingi brauseris. Ei pea faili saatma. Link on alati ajakohane.</p>
+      </div>
+    </div>
+    <div class="arrow-line">muudatus &nbsp;→&nbsp; push &nbsp;→&nbsp; <strong>link uueneb automaatselt</strong></div>
+  </section>
+
+</div>
+
+<div class="controls">
+  <button id="prev" aria-label="Eelmine">←</button>
+  <span class="counter" id="counter">1 / 4</span>
+  <button id="next" aria-label="Järgmine">→</button>
+</div>
+
+<script>
+  const sheets = document.querySelectorAll('.sheet');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+
+  function show(i) {
+    idx = Math.max(0, Math.min(sheets.length - 1, i));
+    sheets.forEach((s, j) => s.classList.toggle('active', j === idx));
+    counter.textContent = (idx + 1) + ' / ' + sheets.length;
+    prev.disabled = idx === 0;
+    next.disabled = idx === sheets.length - 1;
+  }
+
+  prev.addEventListener('click', () => show(idx - 1));
+  next.addEventListener('click', () => show(idx + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') show(idx + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(idx - 1);
+  });
+
+  show(0);
+</script>
+
+</body>
+</html>
