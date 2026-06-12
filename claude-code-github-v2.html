@@ -37,16 +37,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2.5rem 2rem 5rem;
+      padding: 1.2rem 2rem 4.2rem;
     }
 
     .sheet {
       background: var(--paper);
       width: min(1000px, 100%);
-      height: min(640px, 100%);
+      height: min(760px, 100%);
       border: 1px solid var(--line);
       box-shadow: 0 18px 50px rgba(60, 45, 20, 0.18);
-      padding: 3.2rem 3.6rem;
+      padding: 2.2rem 3.6rem 2rem;
       display: none;
       flex-direction: column;
       overflow-y: auto;
@@ -80,7 +80,7 @@
       font-size: clamp(1.6rem, 3.2vw, 2.3rem);
       font-weight: 700;
       line-height: 1.15;
-      margin-bottom: 1.6rem;
+      margin-bottom: 1.2rem;
     }
 
     .lede {
@@ -163,6 +163,26 @@
     }
     .arrow-line strong { color: var(--pine); }
 
+    /* Comparison table */
+    .cmp { width: 100%; border-collapse: collapse; font-family: 'Space Grotesk', 'Segoe UI', sans-serif; }
+    .cmp th, .cmp td { padding: 0.22rem 0.6rem; font-size: 0.76rem; line-height: 1.3; }
+    .cmp td:first-child { text-align: left; font-weight: 500; width: 38%; }
+    .cmp td:not(:first-child), .cmp th:not(:first-child) { text-align: center; width: 31%; }
+    .cmp tbody tr { border-bottom: 1px solid var(--line); }
+    .cmp .sect td {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-soft); background: var(--sand); padding: 0.2rem 0.6rem;
+    }
+    .cmp .chip {
+      display: inline-block; border-radius: 999px; padding: 0.14rem 0.65rem;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .cmp .chip.blue { background: var(--pine-soft); color: var(--pine); border: 1px solid var(--pine); }
+    .cmp .chip.warm { background: var(--rust-soft); color: var(--rust); border: 1px solid var(--rust); }
+    .cmp .yes { color: var(--pine); font-weight: 700; }
+    .cmp .no { color: var(--ink-soft); }
+    .cmp .part { color: var(--rust); font-weight: 500; }
+
     /* Controls */
     .controls {
       position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
@@ -208,7 +228,7 @@
 
   <!-- SLIDE 2: KUS LUUA -->
   <section class="sheet content-sheet">
-    <div class="corner">02 · 04</div>
+    <div class="corner">02 · 05</div>
     <div class="kicker">Probleem nr 1</div>
     <h2>Kus prototüüpe luua?</h2>
     <p style="font-family:'Space Grotesk','Segoe UI',sans-serif;font-size:1.05rem;font-weight:700;color:var(--directo);margin:-0.8rem 0 1.2rem;font-weight:400;">Minu valik: <strong>Claude Terminal</strong> (arvutisse paigaldatud tarkvara)</p>
@@ -242,19 +262,21 @@
 
   <!-- SLIDE 3: KUIDAS JAGADA -->
   <section class="sheet content-sheet">
-    <div class="corner">03 · 04</div>
+    <div class="corner">03 · 05</div>
     <div class="kicker">Probleem nr 2</div>
     <h2>Kuidas prototüüpe jagada?</h2>
     <p style="font-family:'Space Grotesk','Segoe UI',sans-serif;font-size:1.05rem;font-weight:700;color:var(--directo);margin:-0.8rem 0 1.2rem;font-weight:400;">Minu valik: <strong>Claude Code + GitHub (Pages)</strong></p>
 
+    <p style="font-family:'Space Grotesk','Segoe UI',sans-serif;font-size:0.85rem;line-height:1.5;color:var(--ink-soft);border:1px dashed var(--line);padding:0.6rem 0.9rem;margin:-0.4rem 0 1rem;"><strong style="color:var(--ink);">Ühekordne eeltöö:</strong> lõin endale GitHubi konto (github.com, tasuta) ja ühendasin selle Claude Code'iga. Edasi käib kõik juba automaatselt.</p>
+
     <div style="background:var(--pine-soft);border:1px solid var(--line);padding:1.4rem 1.6rem;">
-      <p style="font-size:0.98rem;line-height:1.55;margin-bottom:0.9rem;">Teen muudatuse → push → link on automaatselt uuenenud. Kõik ajalugu säilib.</p>
+      <p style="font-size:0.98rem;line-height:1.55;margin-bottom:0.9rem;">Teen failis muudatuse → push GitHub'i → link on automaatselt uuenenud. Kõik ajalugu säilib.</p>
       <ul class="mark-list">
         <li class="v">Püsiv URL</li>
         <li class="v">Alati ajakohane</li>
         <li class="v">Jagatav</li>
       </ul>
-      <div class="pull green" style="margin-top:1rem;">GitHub Pages loob mulle <strong>päris veebiaadressiga lingi</strong> — kolleeg avab brauseris nagu tavalise veebilehe ja näeb alati viimast versiooni.<br><br>Pane link brauseris järjehoidjate ribale (bookmarks) — edaspidi avaneb prototüüp ühe klõpsuga.</div>
+      <div class="pull green" style="margin-top:1rem;">GitHub Pages loob mulle <strong>päris veebiaadressiga lingi</strong> — kolleeg avab brauseris nagu tavalise veebilehe ja näeb alati viimast versiooni.<br>Pane link brauseris järjehoidjate ribale (bookmarks) — edaspidi avaneb prototüüp ühe klõpsuga.</div>
     </div>
 
     <div style="margin-top:1.1rem;background:var(--rust-soft);border-left:3px solid var(--rust);padding:0.9rem 1.2rem;font-size:0.86rem;line-height:1.55;color:var(--ink-soft);">
@@ -269,9 +291,9 @@
 
   <!-- SLIDE 4: KUIDAS TÖÖTAB -->
   <section class="sheet content-sheet">
-    <div class="corner">04 · 04</div>
+    <div class="corner">04 · 05</div>
     <div class="kicker">Töövoog</div>
-    <h2>Kuidas 'Claude Code + GitHub (Pages)' töötab — 3 sammu</h2>
+    <h2>Kuidas Claude Code + GitHub töötab — 3 sammu</h2>
     <div class="steps-row">
       <div class="step-col">
         <div class="n">1</div>
@@ -290,6 +312,43 @@
       </div>
     </div>
     <div class="arrow-line">muudatus &nbsp;→&nbsp; push &nbsp;→&nbsp; <strong>link uueneb automaatselt</strong></div>
+  </section>
+
+  <!-- SLIDE 5: HIND JA VÕIMEKUS -->
+  <section class="sheet content-sheet">
+    <div class="corner">05 · 05</div>
+    <div class="kicker">Brauser vs terminal</div>
+    <h2 style="margin-bottom:0.9rem;">Mis selline võimekus maksab?</h2>
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th></th>
+          <th><span class="chip blue">🌐 Brauser (claude.ai)</span></th>
+          <th><span class="chip warm">⌨ Terminal (Claude Code)</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sect"><td colspan="3">Kasutamine</td></tr>
+        <tr><td>Seadistust vaja</td><td class="no">Ei — avad lihtsalt</td><td class="part">Node.js + install</td></tr>
+        <tr><td>Töökeskkond</td><td>Veebileht / mobiilirakendus</td><td>Terminal / VS Code / desktop</td></tr>
+        <tr><td>Tehniline kogemus vajalik</td><td class="no">Ei</td><td class="part">Mõningane</td></tr>
+        <tr class="sect"><td colspan="3">Võimekus</td></tr>
+        <tr><td>Juurdepääs kohalikele failidele</td><td class="no">Ei</td><td class="yes">Jah</td></tr>
+        <tr><td>Käivitab koodi / skripte</td><td class="no">Ei</td><td class="yes">Jah</td></tr>
+        <tr><td>Töötab iseseisvalt (agent)</td><td class="no">Ei</td><td class="yes">Jah</td></tr>
+        <tr><td>Loob ja muudab faile</td><td class="no">Ei</td><td class="yes">Jah</td></tr>
+        <tr><td>Git / versioonihaldus</td><td class="no">Ei</td><td class="yes">Jah</td></tr>
+        <tr><td>Ühendub väliste tööriistadega (MCP)</td><td class="part">Osaliselt</td><td class="yes">Täielikult</td></tr>
+        <tr class="sect"><td colspan="3">Tokenikulu</td></tr>
+        <tr><td>Kulu ühe ülesande kohta</td><td><span class="chip blue">1 000 – 5 000</span></td><td><span class="chip warm">400 000 – 2 000 000</span></td></tr>
+        <tr><td>Miks nii palju tokeneid</td><td>Üks voor</td><td>Loeb faile, itereerib, parandab korduvalt</td></tr>
+        <tr class="sect"><td colspan="3">Hind</td></tr>
+        <tr><td>Madalaim plaan</td><td>Pro $20/kuus</td><td>Pro $20 (piiratud)</td></tr>
+        <tr><td>Intensiivseks kasutuseks</td><td>Pro piisab</td><td><span class="chip warm">Max $100–200/kuus</span></td></tr>
+        <tr class="sect"><td colspan="3">Sobib kõige paremini</td></tr>
+        <tr><td>Parim kasutusala</td><td>Küsimused, kirjutamine, analüüs, vestlus</td><td>Koodiprojektid, automatiseerimine, failide töötlus</td></tr>
+      </tbody>
+    </table>
   </section>
 
 </div>
