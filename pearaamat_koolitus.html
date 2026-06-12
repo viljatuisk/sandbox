@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pearaamatu aruanne – lühikoolitus arendajale</title>
+<style>
+  html { background: #fff; }
+  body { font-family: Arial, sans-serif; font-size: 15px; line-height: 1.6; max-width: 860px; margin: 40px auto; padding: 0 24px 60px; color: #222; background: #fff; }
+  h1 { font-size: 22px; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 24px; }
+  h2 { font-size: 17px; margin-top: 36px; margin-bottom: 8px; border-left: 4px solid #555; padding-left: 10px; }
+  h3 { font-size: 15px; margin-top: 20px; margin-bottom: 4px; }
+  p { margin: 8px 0 12px; }
+  ul, ol { margin: 8px 0 12px; padding-left: 24px; }
+  li { margin-bottom: 4px; }
+  hr { border: none; border-top: 1px solid #ccc; margin: 28px 0; }
+  blockquote { border-left: 3px solid #aaa; margin: 16px 0; padding: 8px 16px; background: #f7f7f7; color: #444; font-size: 14px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 14px; }
+  th { background: #f0f0f0; text-align: left; padding: 7px 10px; border: 1px solid #ccc; font-weight: bold; }
+  td { padding: 6px 10px; border: 1px solid #ddd; }
+  td:nth-child(3), td:nth-child(4), td:nth-child(5),
+  th:nth-child(3), th:nth-child(4), th:nth-child(5) { text-align: right; }
+  tr.algsaldo td { background: #f5f5f5; font-style: italic; color: #444; }
+  tr.periood td { background: #f5f5f5; font-weight: bold; color: #444; }
+  tr.loppsaldo td { background: #ebebeb; font-weight: bold; border-top: 2px solid #aaa; }
+  tr.saldeerub td { color: #888; font-style: italic; }
+  .dr { color: #1a5fa8; }
+  .cr { color: #a83232; }
+  .badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+  .badge-def { background: #ddeeff; color: #1a5fa8; border: 1px solid #aaccee; }
+  .badge-opt { background: #fff3d6; color: #7a4f00; border: 1px solid #e0c070; }
+  em { color: #555; }
+  nav { background: #f5f5f5; border: 1px solid #ddd; padding: 12px 18px; margin-bottom: 32px; border-radius: 4px; }
+  nav p { margin: 0 0 6px; font-weight: bold; font-size: 14px; }
+  nav ol { margin: 0; padding-left: 20px; font-size: 14px; }
+  nav li { margin-bottom: 2px; }
+  nav a { color: #1a5fa8; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Pearaamatu aruanne – lühikoolitus arendajale</h1>
+
+<nav>
+  <p>Sisukord</p>
+  <ol>
+    <li><a href="#mis">Mis on pearaamat?</a></li>
+    <li><a href="#mida">Mida aruanne tegelikult näitab?</a></li>
+    <li><a href="#miks">Miks see oluline on (kasutaja vaatest)</a></li>
+    <li><a href="#saldeeritud">Saldeeritud vs saldeerimata pearaamat</a></li>
+    <li><a href="#filtreerimine">Filtreerimine: konto, objekt, projekt jms</a></li>
+    <li><a href="#tehniline">Tehniline mudel arendajale</a></li>
+  </ol>
+</nav>
+
+<h2 id="mis">Mis on pearaamat?</h2>
+<p>Pearaamat (general ledger) on kõigi raamatupidamiskannete koondaruanne, kus näidatakse iga kontoplaani konto käibed ja saldod konkreetsel perioodil.</p>
+<p>Igal majandustehingul (arvel, maksel, palgal jne) on alati vähemalt kaks rida – deebet ja kreedit (kahekordne kirjendamine) – ja need read jõuavad kontode kaupa pearaamatusse.</p>
+
+<hr>
+
+<h2 id="mida">Mida aruanne tegelikult näitab?</h2>
+<p>Pearaamatu aruanne on sisuliselt kontode kaupa grupeeritud tehingute nimekiri:</p>
+<ul>
+  <li><strong>Konto</strong> (nt 1010 Pank, 2010 Ostuvõlad, 6010 Käibemaks)</li>
+  <li><strong>Algsaldo</strong> perioodi alguses</li>
+  <li><strong>Kõik perioodi kanded</strong> sellel kontol (kuupäev, dokumendi number, vastaskonto, summa deebet/kreedit, selgitus)</li>
+  <li><strong>Perioodi muutus kokku</strong> – perioodi kannete deebet- ja kreeditsummad kokku (algsaldota)</li>
+  <li><strong>Lõppsaldo</strong> perioodi lõpus = algsaldo + deebetid − kreeditid (sõltuvalt konto tüübist)</li>
+</ul>
+<p>Aruanne käib alati perioodi (algus–lõpp kuupäev) kohta ja võimaldab valida konto(d) – kas üksik konto, kontogrupp või kõik kontod.</p>
+
+<hr>
+
+<h2 id="miks">Miks see oluline on (kasutaja vaatest)</h2>
+<p>Raamatupidaja kasutab pearaamatut, et:</p>
+<ul>
+  <li>kontrollida, kust konto saldo "tuli" – iga number bilansis on tuletatav konkreetsetest kannetest</li>
+  <li>leida vigu või kahtlasi kandeid ning puurida alla algdokumendile</li>
+  <li>jälgida üksikut tehingut algusest lõpuni (nt mis kontodele üks arve laiali jagunes)</li>
+</ul>
+
+<hr>
+
+<h2 id="saldeeritud">Saldeeritud vs saldeerimata pearaamat</h2>
+<p>See on oluline tehniline erinevus, mis mõjutab seda, millisel tasemel kandeid kuvatakse.</p>
+<p><strong>Saldeeritud pearaamat</strong> <span class="badge badge-def">vaikimisi</span> tähendab, et omavahel tasakaalustavad kanded on koondatud – kuvatakse ühe rea ja summana, mitte iga algset kannet eraldi. Algsaldo näidatakse netosummana (ainult deebet või kreedit, sõltuvalt konto tüübist). Aruanne on lühem ja kiirem lugeda.</p>
+<p><strong>Saldeerimata pearaamat</strong> <span class="badge badge-opt">linnuke sees</span> tähendab, et kõik algkanded kuvatakse eraldi ridadena – iga deebet ja kreedit on näha üksikult, sõltumata sellest, kas nad üksteist tühistavad. Algsaldo näidatakse mõlema poolena eraldi (deebet ja kreedit). Aruanne on pikem, aga annab täieliku pildi kõigist liikumistest.</p>
+
+<p><strong>Näide – konto 1010 Pank, periood 01.06–30.06.2025:</strong></p>
+
+<h3>Saldeerimata <span class="badge badge-opt">linnuke sees</span></h3>
+<em>Kõik algkanded eraldi ridadena</em>
+<table>
+  <thead>
+    <tr><th>Kuupäev</th><th>Selgitus</th><th>Deebet</th><th>Kreedit</th><th>Saldo</th></tr>
+  </thead>
+  <tbody>
+    <tr class="algsaldo">
+      <td colspan="2">Algsaldo</td>
+      <td class="dr">5 000,00</td>
+      <td class="cr">2 000,00</td>
+      <td>3 000,00</td>
+    </tr>
+    <tr><td>03.06</td><td>Müügiarve #1042</td><td class="dr">1 200,00</td><td>—</td><td>4 200,00</td></tr>
+    <tr><td>05.06</td><td>Ostuarve #887</td><td>—</td><td class="cr">400,00</td><td>3 800,00</td></tr>
+    <tr><td>05.06</td><td>Ostuarve #887 korr.</td><td class="dr">400,00</td><td>—</td><td>4 200,00</td></tr>
+    <tr><td>12.06</td><td>Palgamakse</td><td>—</td><td class="cr">2 100,00</td><td>2 100,00</td></tr>
+    <tr><td>20.06</td><td>Müügiarve #1055</td><td class="dr">850,00</td><td>—</td><td>2 950,00</td></tr>
+    <tr class="periood">
+      <td colspan="2">Perioodi muutus kokku</td>
+      <td class="dr">2 450,00</td>
+      <td class="cr">2 500,00</td>
+      <td>−50,00</td>
+    </tr>
+    <tr class="loppsaldo">
+      <td colspan="2">Lõppsaldo</td>
+      <td class="dr">7 450,00</td>
+      <td class="cr">4 500,00</td>
+      <td>2 950,00</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Saldeeritud <span class="badge badge-def">vaikimisi</span></h3>
+<em>Tasakaalustavad kanded koondatuna</em>
+<table>
+  <thead>
+    <tr><th>Kuupäev</th><th>Selgitus</th><th>Deebet</th><th>Kreedit</th><th>Saldo</th></tr>
+  </thead>
+  <tbody>
+    <tr class="algsaldo">
+      <td colspan="2">Algsaldo</td>
+      <td class="dr">3 000,00</td>
+      <td>—</td>
+      <td>3 000,00</td>
+    </tr>
+    <tr><td>03.06</td><td>Müügiarve #1042</td><td class="dr">1 200,00</td><td>—</td><td>4 200,00</td></tr>
+    <tr class="saldeerub"><td>05.06</td><td><em>Ostuarve #887 + korr. (saldeerub)</em></td><td>—</td><td>—</td><td>4 200,00</td></tr>
+    <tr><td>12.06</td><td>Palgamakse</td><td>—</td><td class="cr">2 100,00</td><td>2 100,00</td></tr>
+    <tr><td>20.06</td><td>Müügiarve #1055</td><td class="dr">850,00</td><td>—</td><td>2 950,00</td></tr>
+    <tr class="periood">
+      <td colspan="2">Perioodi muutus kokku</td>
+      <td class="dr">2 050,00</td>
+      <td class="cr">2 100,00</td>
+      <td>−50,00</td>
+    </tr>
+    <tr class="loppsaldo">
+      <td colspan="2">Lõppsaldo</td>
+      <td class="dr">2 950,00</td>
+      <td>—</td>
+      <td>2 950,00</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>Lõppsaldo netosumma (2 950,00) on mõlemal juhul identne. Saldeerimata vaates on käibetotaalid suuremad, sest kõik liikumised on näha – sh #887 korrektuuri paar, mis saldeeritud vaates kaob. Saldeeritud algsaldo näitab netosummat (3 000,00 deebet), saldeerimata algsaldo näitab mõlemat poolt eraldi (deebet 5 000,00 ja kreedit 2 000,00).</blockquote>
+
+<hr>
+
+<h2 id="filtreerimine">Filtreerimine: konto, objekt, projekt jms</h2>
+<p>Pearaamatu kanded sisaldavad palju analüütilisi tunnuseid (dimensioone) iga rea kohta. Filtreerimine võimaldab samast andmehulgast vaadata erinevaid "läbilõikeid":</p>
+<ul>
+  <li><strong>Konto järgi</strong> – kõige levinum: vaata ühe konto (nt pangakonto, ostuvõlad) kõiki liikumisi, et kontrollida saldot ja selle kujunemist.</li>
+  <li><strong>Objekti järgi</strong> – objekt tähistab tavaliselt kuluüksust (nt osakond, kauplus, auto, masin). Näitab, kui palju kulusid/tulusid on seotud konkreetse üksusega – oluline kuluarvestuse ja vastutuskeskuste analüüsiks.</li>
+  <li><strong>Projekti järgi</strong> – kui ettevõte teeb projektipõhist tööd (ehitus, konsultatsioon, tootearendus), näitab projekti kaupa tekkinud kulusid ja tulusid – vajalik projekti kasumlikkuse arvutamiseks.</li>
+  <li><strong>Partneri järgi</strong> – kõik tehingud ühe kliendi/tarnijaga, sõltumata kontost – aitab kontrollida vastaspoole saldot.</li>
+  <li><strong>Muud dimensioonid</strong> (osakond, valuuta, dokumenditüüp jms) – sõltuvalt ettevõtte struktuurist annavad erinevad vaatenurkade "lõiked".</li>
+</ul>
+<p>Kombineerimine on oluline: enamasti kasutatakse mitut filtrit korraga (nt konto + objekt), et saada täpselt vajalik lõige.</p>
+
+<hr>
+
+<h2 id="tehniline">Tehniline mudel arendajale</h2>
+<p>Iga kanne koosneb tavaliselt:</p>
+<ul>
+  <li><strong>Päise andmed:</strong> dokumendi number, kuupäev, koostaja, kirjeldus</li>
+  <li><strong>Kannereaandmed:</strong> konto, deebet/kreedit summa, vastaskonto(d), partner, projekt/objekt (analüütika), valuuta</li>
+</ul>
+<p><strong>Aruande loogika:</strong></p>
+<ol>
+  <li>Filtreeri kanneridu valitud dimensioonide järgi (konto, objekt, projekt, partner jne – WHERE-tingimus)</li>
+  <li>Arvuta algsaldo (kõik eelnevad kanded enne perioodi algust selle filtri raames)
+    <ul>
+      <li>Saldeeritud: netosumma (deebet või kreedit)</li>
+      <li>Saldeerimata: deebet ja kreedit eraldi</li>
+    </ul>
+  </li>
+  <li>Loetle perioodi kanded kronoloogiliselt</li>
+  <li>Arvuta jooksev saldo igale reale</li>
+  <li>Kuva perioodi muutus kokku (perioodi kannete deebet- ja kreeditsumma, algsaldota)</li>
+  <li>Näita lõppsaldo
+    <ul>
+      <li>Saldeeritud: netosumma deebet- või kreeditiveerus (teine tühi)</li>
+      <li>Saldeerimata: deebet ja kreedit eraldi (kõigi ridade kogusummad sh algsaldo)</li>
+    </ul>
+  </li>
+</ol>
+
+</body>
+</html>
