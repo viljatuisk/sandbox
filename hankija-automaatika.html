@@ -805,27 +805,48 @@ function renderTable(){
 function renderPreview(){
   const tbody = document.getElementById('preview-body');
   tbody.innerHTML = '';
+
+  // Build consolidated view: group rows with same group+koond=rida|dok into one
+  const seenGroups = new Set();
+  const displayRows = [];
   ROWS.forEach(r => {
     const s = state[r.id];
+    const grouped = s.group !== null && (s.koond === 'rida' || s.koond === 'dok');
+    if (grouped && seenGroups.has(s.group)) {
+      // Add summa to the first row of this group
+      const existing = displayRows.find(d => d.groupKey === s.group);
+      if (existing) existing.summa += r.summa;
+      return;
+    }
+    if (grouped) seenGroups.add(s.group);
+    displayRows.push({ r, s, summa: r.summa, groupKey: grouped ? s.group : null });
+  });
+
+  displayRows.forEach(({ r, s, summa, groupKey }) => {
+    const isGrouped = groupKey !== null;
     const tr = document.createElement('tr');
     if (s.saved) tr.className = 'saved';
     else if (s.mapped) tr.className = 'sel';
+    const sisuHtml = s.sisu
+      ? `<span style="color:var(--green);font-weight:500">${esc(s.sisu)}</span>`
+      : `<span style="color:var(--text2)">${esc(r.sisu.split(';')[0].trim())}</span>`;
+    const badge = s.saved
+      ? '<span class="badge badge-saved" style="font-size:10px">&#128274;</span>'
+      : s.mapped ? '<span class="badge badge-set" style="font-size:10px">&#10003;</span>' : '';
+    const koondBadge = isGrouped
+      ? `<span style="font-size:9px;color:var(--blue-t);margin-left:3px">[${s.koond==='dok'?'Dok':'Rida'}]</span>` : '';
     tr.innerHTML = `
       <td></td>
-      <td class="row-num">${r.id}</td>
+      <td class="row-num">${isGrouped ? '…' : r.id}${koondBadge}</td>
       <td></td><td></td>
       <td style="font-size:11px">${esc(s.konto)}</td>
       <td style="font-size:11px">${esc(s.obj)}</td>
       <td style="font-size:11px">${esc(s.proj)}</td>
       <td style="font-size:11px">${esc(s.kasutaja)}</td>
-      <td class="sisu-cell"><div class="sisu-text">${
-        s.sisu
-          ? `<span style="color:var(--green);font-weight:500">${esc(s.sisu)}</span>`
-          : `<span style="color:var(--text2)">${esc(r.sisu.split(';')[0].trim())}</span>`
-      }</div></td>
-      <td class="summa-val">${r.summa.toFixed(2)} €</td>
+      <td class="sisu-cell"><div class="sisu-text">${sisuHtml}</div></td>
+      <td class="summa-val">${summa.toFixed(2)} €</td>
       <td></td>
-      <td>${s.saved ? '<span class="badge badge-saved" style="font-size:10px">&#128274;</span>' : s.mapped ? '<span class="badge badge-set" style="font-size:10px">&#10003;</span>' : ''}</td>`;
+      <td>${badge}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -913,6 +934,7 @@ function applyRule(){
     s.sisu     = document.getElementById('r-sisu').value.trim();
     s.mapped   = true;
     s.group    = groupCounter;
+    s.koond    = koond;
   });
   selected.clear();
   document.getElementById('chk-all').checked = false;

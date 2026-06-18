@@ -241,7 +241,6 @@
             <input type="text" style="width:50px">
           </div>
         </div>
-        <div class="sf"><label>Vahesumma</label><select><option></option></select></div>
         <div class="sf"><label>Tasemeta</label><input type="text" placeholder=""></div>
       </div>
     </div>
@@ -332,6 +331,14 @@
             <th class="col-corr">corrAccount</th>
             <th class="col-docnr">documentNumber</th>
             <th class="col-obj">Objekt</th>
+            <th style="width:55px">Pinnad</th>
+            <th style="width:55px">Masin</th>
+            <th style="width:55px">Isik</th>
+            <th style="width:55px">Liin</th>
+            <th style="width:65px">Osakond</th>
+            <th style="width:80px">Alamosakond</th>
+            <th style="width:55px">Auto</th>
+            <th style="width:55px">Erikord</th>
             <th class="col-proj">Projekt</th>
             <th class="col-date">Aeg</th>
             <th class="col-expl">lineExplanation</th>
@@ -348,7 +355,6 @@
             <th class="col-num r">balance</th>
             <th style="width:60px">Manused</th>
             <th style="width:70px">OID info</th>
-            <th style="width:70px">Tasemed</th>
           </tr>
         </thead>
         <tbody id="mainTbody">
@@ -356,20 +362,22 @@
           <!-- 111201 group -->
           <tr class="grp-header" data-group="g1" data-has-change="true" data-has-balance="true" data-algsaldo-dr="5000.00" data-algsaldo-cr="1500.00" onclick="toggleGroup('g1', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111201</td>
-            <td colspan="8">Pangakonto EUR</td>
+            <td colspan="4">Pangakonto EUR</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;">Algsaldo</td>
             <td class="r">3 500,00</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
           <tr class="corr-sub" data-grp="g1" data-corr-sub style="display:none; background:#e8f0f8;">
-            <td colspan="22" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111202 — Pangakonto EUR</td>
+            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111202 — Pangakonto EUR</td>
           </tr>
           <tr class="data" data-grp="g1" data-unsettled="true">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">PER_TASU.100004</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>17.01.2025</td>
             <td>Pangakonto</td>
             <td>Kati lisatasu</td>
@@ -383,14 +391,14 @@
             <td class="r">1,0000</td>
             <td class="r">−289,20</td>
             <td class="r">3 210,80</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="data" data-grp="g1">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">TASU.100014</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>31.01.2025</td>
             <td>100026 CAT Demo</td>
             <td>Arve nr 100026</td>
@@ -404,14 +412,14 @@
             <td class="r">1,0000</td>
             <td class="r">−411,20</td>
             <td class="r">3 088,80</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="data" data-grp="g1">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">PER_TASU.100005</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>05.02.2025</td>
             <td>Pangakonto</td>
             <td>Kati jaanuari palk</td>
@@ -425,14 +433,14 @@
             <td class="r">1,0000</td>
             <td class="r">−1 635,00</td>
             <td class="r">1 865,00</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="data" data-grp="g1">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">PER_TASU.100006</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>21.02.2025</td>
             <td>Pangakonto</td>
             <td>Kati lisatasu 02</td>
@@ -446,14 +454,14 @@
             <td class="r">1,0000</td>
             <td class="r">−1 812,62</td>
             <td class="r">1 687,38</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="data" data-grp="g1">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">PER_TASU.100008</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>27.02.2025</td>
             <td>Pangakonto EUR</td>
             <td>Kati märtsi puhkusetasu</td>
@@ -467,17 +475,17 @@
             <td class="r">1,0000</td>
             <td class="r">−2 086,91</td>
             <td class="r">1 413,09</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="corr-sub" data-grp="g1" data-corr-sub style="display:none; background:#e8f0f8;">
-            <td colspan="22" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111204 — Bank Demo</td>
+            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111204 — Bank Demo</td>
           </tr>
           <tr class="data" data-grp="g1" data-unsettled="true">
             <td class="muted">Pangakonto EUR</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">LAEK.100012</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>17.03.2025</td>
             <td>Bank Demo</td>
             <td>Bank Demo</td>
@@ -491,39 +499,45 @@
             <td class="r">1,0000</td>
             <td class="r">−1 086,91</td>
             <td class="r">2 413,09</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="grp-sub" data-grp="g1">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
             <td class="r" style="font-weight:600;">1 000,00</td>
             <td class="r" style="font-weight:600;">2 086,91</td>
             <td colspan="5"></td>
             <td class="r" style="font-weight:600;">−1 086,91</td>
             <td class="r" style="font-weight:600;">2 413,09</td>
-            <td colspan="3"></td>
+            <td colspan="2"></td>
           </tr>
           <tr class="grp-sub" data-grp="g1" data-loppsaldo-dr="6000.00" data-loppsaldo-cr="3586.91">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
             <td class="r" style="font-weight:600;">2 413,09</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
 
           <!-- 111204 group -->
           <tr class="grp-header" data-group="g2" data-has-change="true" data-has-balance="true" data-algsaldo-dr="3080.00" data-algsaldo-cr="500.00" onclick="toggleGroup('g2', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111204</td>
-            <td colspan="8">Pangakonto SEK</td>
+            <td colspan="4">Pangakonto SEK</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;">Algsaldo</td>
             <td class="r">2 580,00</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
           <tr class="data" data-grp="g2">
             <td class="muted">Pangakonto SEK</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">PER_TASU.100004</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>17.01.2025</td>
             <td>Pangakonto</td>
             <td>Kati lisatasu</td>
@@ -537,14 +551,14 @@
             <td class="r">10,0100</td>
             <td class="r">−289,20</td>
             <td class="r">2 290,80</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="data" data-grp="g2">
             <td class="muted">Pangakonto SEK</td>
             <td></td>
             <td class="muted">111202</td>
             <td class="link">TASU.100014</td>
-            <td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>31.01.2025</td>
             <td>100026 CAT Demo</td>
             <td>Arve nr 100026</td>
@@ -558,48 +572,58 @@
             <td class="r">10,0100</td>
             <td class="r">−411,20</td>
             <td class="r">2 168,80</td>
-            <td></td><td></td><td></td>
+            <td></td><td></td>
           </tr>
           <tr class="grp-sub" data-grp="g2">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td class="r" style="font-weight:600;">411,20</td>
             <td colspan="5"></td>
             <td class="r" style="font-weight:600;">−411,20</td>
             <td class="r" style="font-weight:600;">2 168,80</td>
-            <td colspan="3"></td>
+            <td colspan="2"></td>
           </tr>
           <tr class="grp-sub" data-grp="g2" data-loppsaldo-dr="3080.00" data-loppsaldo-cr="911.20">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
             <td class="r" style="font-weight:600;">2 168,80</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
 
           <!-- 111202 group — no changes, no balance (demo for filtering tabs) -->
           <tr class="grp-header" data-group="g3" data-has-change="false" data-has-balance="false" onclick="toggleGroup('g3', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111202</td>
-            <td colspan="8">Pangakonto USD</td>
+            <td colspan="4">Pangakonto USD</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;">Algsaldo</td>
             <td class="r">0,00</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
           <tr class="grp-sub" data-grp="g3">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td colspan="5"></td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td class="r" style="font-weight:600;">0,00</td>
-            <td colspan="3"></td>
+            <td colspan="2"></td>
           </tr>
           <tr class="grp-sub" data-grp="g3">
-            <td colspan="9"></td>
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
             <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
             <td class="r" style="font-weight:600;">0,00</td>
-            <td colspan="11"></td>
+            <td colspan="10"></td>
           </tr>
 
         </tbody>
@@ -658,7 +682,7 @@
         const tr = document.createElement('tr');
         tr.dataset.vaheldumisiRow = '1';
         tr.style.cssText = 'background:#e4edf5;';
-        tr.innerHTML = '<td colspan="21" style="font-style:italic;font-size:10px;text-align:right;padding:2px 6px;' + (border ? 'border-top:2px solid #9ab4c8;' : '') + 'color:#1a3a5a;">' + label + '</td>' +
+        tr.innerHTML = '<td colspan="28" style="font-style:italic;font-size:10px;text-align:right;padding:2px 6px;' + (border ? 'border-top:2px solid #9ab4c8;' : '') + 'color:#1a3a5a;">' + label + '</td>' +
           '<td class="r" style="font-weight:700;padding:2px 6px;' + (border ? 'border-top:2px solid #9ab4c8;' : '') + '">' + fmtNum(val) + '</td>';
         return tr;
       };
@@ -683,8 +707,8 @@
         const cr = parseFloat(h.dataset.algsaldoCr);
         h.dataset.origHtml = h.innerHTML;
         const tds = h.querySelectorAll('td');
-        tds[3].textContent = fmtNum(dr);
-        tds[4].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="10"></td>';
+        tds[5].textContent = fmtNum(dr);
+        tds[6].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
       });
       // lõppsaldo: show DR + CR separately
       tbody.querySelectorAll('.grp-sub[data-loppsaldo-dr]').forEach(row => {
@@ -692,8 +716,8 @@
         const cr = parseFloat(row.dataset.loppsaldoCr);
         row.dataset.origHtml = row.innerHTML;
         const tds = row.querySelectorAll('td');
-        tds[2].textContent = fmtNum(dr);
-        tds[3].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="10"></td>';
+        tds[4].textContent = fmtNum(dr);
+        tds[5].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
       });
 
     } else if (name === 'ainult-saldoga') {
@@ -762,28 +786,29 @@
     { key: 'corrAccount',    label: 'corrAccount',    nth: 3  },
     { key: 'documentNumber', label: 'documentNumber', nth: 4  },
     { key: 'objekt',         label: 'Objekt',         nth: 5  },
-    { key: 'projekt',        label: 'Projekt',        nth: 6  },
-    { key: 'aeg',            label: 'Aeg',            nth: 7  },
-    { key: 'lineExpl',       label: 'lineExplanation',nth: 8  },
-    { key: 'transDesc',      label: 'transactionDesc',nth: 9  },
-    { key: 'kmk',            label: 'kmk',            nth: 10 },
-    { key: 'deebet',         label: 'Deebet',         nth: 11 },
-    { key: 'kreedit',        label: 'Kreedit',        nth: 12 },
-    { key: 'debitCurr',      label: 'debitCurrency',  nth: 13 },
-    { key: 'creditCurr',     label: 'creditCurrency', nth: 14 },
-    { key: 'valuuta',        label: 'Valuuta',        nth: 15 },
-    { key: 'exchRate',       label: 'exchangeRate',   nth: 16 },
-    { key: 'reverseRate',    label: 'reverseRate',    nth: 17 },
-    { key: 'change',         label: 'change',         nth: 18 },
-    { key: 'balance',        label: 'balance',        nth: 19 },
-    { key: 'attachments',    label: 'Manused',        nth: 20 },
-    { key: 'oidInfo',        label: 'OID info',       nth: 21 },
-    { key: 'tasemed',        label: 'Tasemed',        nth: 22 },
+    { key: 'tasemed',        label: 'Tasemed',        nth: null, group: true, dimNths: [6,7,8,9,10,11,12,13] },
+    { key: 'projekt',        label: 'Projekt',        nth: 14 },
+    { key: 'aeg',            label: 'Aeg',            nth: 15 },
+    { key: 'lineExpl',       label: 'lineExplanation',nth: 16 },
+    { key: 'transDesc',      label: 'transactionDesc',nth: 17 },
+    { key: 'kmk',            label: 'kmk',            nth: 18 },
+    { key: 'deebet',         label: 'Deebet',         nth: 19 },
+    { key: 'kreedit',        label: 'Kreedit',        nth: 20 },
+    { key: 'debitCurr',      label: 'debitCurrency',  nth: 21 },
+    { key: 'creditCurr',     label: 'creditCurrency', nth: 22 },
+    { key: 'valuuta',        label: 'Valuuta',        nth: 23 },
+    { key: 'exchRate',       label: 'exchangeRate',   nth: 24 },
+    { key: 'reverseRate',    label: 'reverseRate',    nth: 25 },
+    { key: 'change',         label: 'change',         nth: 26 },
+    { key: 'balance',        label: 'balance',        nth: 27 },
+    { key: 'attachments',    label: 'Manused',        nth: 28 },
+    { key: 'oidInfo',        label: 'OID info',       nth: 29 },
     { key: 'openingBalance', label: 'openingBalance', nth: null },
     { key: 'closingBalance', label: 'closingBalance', nth: null },
   ];
   const colVisible = {};
   COL_DEFS.forEach(c => colVisible[c.key] = true);
+  colVisible.tasemed = false;
 
   function buildColPicker() {
     const list = document.getElementById('colPickerList');
@@ -792,7 +817,8 @@
       const item = document.createElement('label');
       item.className = 'col-picker-item';
       item.dataset.label = c.label.toLowerCase();
-      item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="toggleCol(\'' + c.key + '\', this.checked)"> ' + c.label;
+      const extra = c.group ? ' <span style="font-size:10px;color:#888">(Pinnad..Erikord)</span>' : '';
+      item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="toggleCol(\'' + c.key + '\', this.checked)"> ' + c.label + extra;
       list.appendChild(item);
     });
   }
@@ -805,7 +831,14 @@
   function applyColStyles() {
     let css = '';
     COL_DEFS.forEach(c => {
-      if (!colVisible[c.key] && c.nth) {
+      if (c.group) {
+        if (!colVisible[c.key]) {
+          c.dimNths.forEach(n => {
+            css += 'thead th:nth-child(' + n + '),tr.data td:nth-child(' + n + '){display:none}\n';
+          });
+          css += 'td.dim-span{display:none}\n';
+        }
+      } else if (!colVisible[c.key] && c.nth) {
         css += 'thead th:nth-child(' + c.nth + '),tr.data td:nth-child(' + c.nth + '){display:none}\n';
       }
     });
@@ -821,8 +854,9 @@
 
   function resetCols() {
     COL_DEFS.forEach(c => colVisible[c.key] = true);
-    document.getElementById('colHideStyles').textContent = '';
+    colVisible.tasemed = false;
     buildColPicker();
+    applyColStyles();
   }
 
   function toggleColPicker() {
@@ -915,6 +949,7 @@
   }
 
   buildColPicker();
+  applyColStyles();
 </script>
 </body>
 </html>
