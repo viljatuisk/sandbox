@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="et">
 <head>
 <meta charset="UTF-8">
@@ -70,6 +70,11 @@
   .table-options { display: flex; align-items: center; gap: 10px; padding: 0 12px; margin-left: auto; font-size: 11px; color: #4a6a8a; }
   .table-options label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
   .table-options input[type=checkbox] { accent-color: #3a6a9a; }
+  .tab-modifiers { display: flex; align-items: center; gap: 16px; padding: 5px 14px; background: #f7f9fb; border-bottom: 1px solid #e0e7ef; font-size: 11px; color: #4a6a8a; flex-shrink: 0; }
+  .tab-modifiers:empty { padding: 0; border-bottom: none; }
+  .tab-modifiers label { display: flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; }
+  .tab-modifiers input[type=checkbox] { accent-color: #3a6a9a; }
+  .tab-modifiers .mod-sep { width: 1px; height: 14px; background: #d0dae6; }
 
   /* ── TABLE ── */
   .table-wrap { flex: 1; overflow: auto; }
@@ -80,27 +85,30 @@
   thead th .sort:hover { opacity: 1; }
 
   /* group header rows */
-  tr.grp-header td { background: #2d4a6b; color: #fff; font-weight: 700; padding: 3px 6px; }
+  tr.grp-header td { background: #eaf0f7; color: #1a3a5a; font-weight: 700; padding: 5px 8px; border-top: 2px solid #c4d4e4; border-bottom: 1px solid #c4d4e4; }
   tr.grp-header td.r { text-align: right; }
-  tr.grp-sub td { background: #e4edf5; color: #1a3a5a; font-size: 10px; font-weight: 600; padding: 2px 6px; font-style: italic; }
+  tr.grp-sub td { background: #f5f8fb; color: #1a3a5a; font-weight: 600; padding: 4px 8px; font-style: normal; border-bottom: 1px solid #e0e8f0; }
   tr.grp-sub td.r { text-align: right; }
-  tr.saldeerub td { color: #aaa; font-style: italic; }
-  tr.grp-total td { background: #c8d8ea; color: #0a2a4a; font-weight: 700; padding: 3px 6px; border-top: 1px solid #9ab4c8; }
+  tr.vahe-obj-hdr td { background: #dce8f5; color: #1a3a5a; font-weight: 700; font-size: 11px; padding: 4px 8px; border-top: 1px solid #b8cfe0; }
+  tr.vahe-kokku td { background: #f0f5fa; color: #2a4a6a; font-size: 10px; padding: 2px 8px; border-top: 1px solid #c8d8e8; }
+  tr.saldeerub td { color: #bbb; font-style: italic; }
+  tr.grp-total td { background: #dde8f2; color: #0a2a4a; font-weight: 700; padding: 4px 8px; border-top: 1px solid #b0c8dc; }
   tr.grp-total td.r { text-align: right; }
 
   /* data rows */
-  tbody tr.data { border-bottom: 1px solid #e8eef4; }
-  tbody tr.data:hover { background: #eef4fa; }
-  tbody tr.data td { padding: 3px 6px; color: #1a2a3a; }
+  tbody tr.data { border-bottom: 1px solid #edf1f6; }
+  tbody tr.data:hover { background: #f4f8fc; }
+  tbody tr.data td { padding: 4px 8px; color: #1a2a3a; }
   tbody tr.data td.r { text-align: right; }
-  tbody tr.data td.link { color: #1a5a9a; cursor: pointer; }
+  tbody tr.data td.link { color: #2a6aaa; cursor: pointer; }
   tbody tr.data td.link:hover { text-decoration: underline; }
-  tbody tr.data td.muted { color: #6a8aa8; }
+  tbody tr.data td.muted { color: #7a9ab8; }
   tbody tr.data td.neg { text-align: right; }
 
   /* toggle */
   .grp-toggle { display: inline-block; width: 14px; font-size: 10px; transition: transform 0.15s; }
   .grp-header.collapsed .grp-toggle { transform: rotate(-90deg); }
+  .grp-filter-hidden { display: none !important; }
 
   /* column widths */
   .col-konto { width: 70px; }
@@ -268,10 +276,7 @@
       <div class="tabs">
         <div class="tab active">Detailvaade</div>
         <div class="tab">Ainult summa</div>
-        <div class="tab">Vaheldumisi kontod</div>
-        <div class="tab">Muutusega kontod</div>
         <div class="tab">Saldeerimata</div>
-        <div class="tab">Ainult saldoga</div>
       </div>
       <div class="table-options">
         <label style="display:flex;align-items:center;gap:5px;">Firma
@@ -294,19 +299,6 @@
             </div>
           </div>
         </label>
-        <label style="display:flex;align-items:center;gap:5px;">Näita vahesummat
-          <select style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;">
-            <option value=""></option>
-            <option value="byObject">byObject</option>
-            <option value="byProject">byProject</option>
-            <option value="byCustomer">byCustomer</option>
-            <option value="bySupplier">bySupplier</option>
-            <option value="byVatCode">byVatCode</option>
-            <option value="byCurrency">byCurrency</option>
-            <option value="bySpecialDiscount">bySpecialDiscount</option>
-          </select>
-        </label>
-
         <div class="col-picker-wrap" id="colPickerWrap">
           <button class="col-picker-btn" id="colPickerBtn" title="Vali tulbad" onclick="toggleColPicker()">🔧</button>
           <div class="col-picker-panel" id="colPickerPanel">
@@ -319,6 +311,15 @@
         <span style="color:#b0b8c4; font-size:15px; cursor:pointer" title="Eksport Excel">📊</span>
         <span style="color:#b0b8c4; font-size:15px; cursor:pointer" title="Eksport CSV">📋</span>
       </div>
+    </div>
+    <div class="tab-modifiers" id="tabModifiers">
+      <label id="modLblVaheldumisi"><input type="checkbox" id="cbVaheldumisi" onchange="modVaheldumisiChange(this.checked)"> Vaheldumisi kontod</label>
+      <div class="mod-sep" id="modSepVaheldumisi"></div>
+      <label><input type="checkbox" id="cbMuutusega" onchange="modMuutusegaChange(this.checked)"> Muutusega kontod</label>
+      <div class="mod-sep"></div>
+      <label><input type="checkbox" id="cbSaldoga" onchange="modSaldogaChange(this.checked)"> Ainult saldoga</label>
+      <div class="mod-sep"></div>
+      <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
     </div>
 
     <!-- TABLE -->
@@ -398,7 +399,7 @@
             <td></td>
             <td class="muted">111202</td>
             <td class="link">TASU.100014</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PROJ2025</td>
             <td>31.01.2025</td>
             <td>100026 CAT Demo</td>
             <td>Arve nr 100026</td>
@@ -485,7 +486,7 @@
             <td></td>
             <td class="muted">111202</td>
             <td class="link">LAEK.100012</td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>OBJ001</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>17.03.2025</td>
             <td>Bank Demo</td>
             <td>Bank Demo</td>
@@ -505,7 +506,7 @@
             <td colspan="5"></td>
             <td class="dim-span" colspan="8"></td>
             <td colspan="4"></td>
-            <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
             <td class="r" style="font-weight:600;">1 000,00</td>
             <td class="r" style="font-weight:600;">2 086,91</td>
             <td colspan="5"></td>
@@ -578,7 +579,7 @@
             <td colspan="5"></td>
             <td class="dim-span" colspan="8"></td>
             <td colspan="4"></td>
-            <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td class="r" style="font-weight:600;">411,20</td>
             <td colspan="5"></td>
@@ -609,7 +610,7 @@
             <td colspan="5"></td>
             <td class="dim-span" colspan="8"></td>
             <td colspan="4"></td>
-            <td style="text-align:right;font-style:normal;">KOKKU (periood)</td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td class="r" style="font-weight:600;">0,00</td>
             <td colspan="5"></td>
@@ -626,6 +627,288 @@
             <td colspan="10"></td>
           </tr>
 
+          <!-- 10101 group: Kassa EUR -->
+          <tr class="grp-header" data-group="g4" data-has-change="true" data-has-balance="true" data-algsaldo-dr="850.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g4', this)" style="cursor:pointer;">
+            <td><span class="grp-toggle">▾</span> 10101</td>
+            <td colspan="4">Kassa EUR</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;">Algsaldo</td>
+            <td class="r">850,00</td>
+            <td colspan="10"></td>
+          </tr>
+          <tr class="data" data-grp="g4">
+            <td class="muted">Kassa EUR</td>
+            <td></td>
+            <td class="muted">411000</td>
+            <td class="link">ARVE.20001</td>
+            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PROJ2025</td>
+            <td>15.01.2025</td>
+            <td>Eestimaa Kaubandus AS</td>
+            <td>Müügitulu kassasse</td>
+            <td></td>
+            <td class="r">1 200,00</td>
+            <td class="r">0,00</td>
+            <td class="r">1 200,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">1 200,00</td>
+            <td class="r">2 050,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g4">
+            <td class="muted">Kassa EUR</td>
+            <td></td>
+            <td class="muted">552000</td>
+            <td class="link">KULUTUS.30001</td>
+            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>08.02.2025</td>
+            <td>Kontorikulu</td>
+            <td>Kontorikulu tasumine</td>
+            <td></td>
+            <td class="r">0,00</td>
+            <td class="r">450,00</td>
+            <td class="r">0,00</td>
+            <td class="r">450,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">750,00</td>
+            <td class="r">1 600,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g4">
+            <td class="muted">Kassa EUR</td>
+            <td></td>
+            <td class="muted">551000</td>
+            <td class="link">KULUTUS.30002</td>
+            <td>TARTU</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IT-ARENDUS</td>
+            <td>14.02.2025</td>
+            <td>Transpordikulu</td>
+            <td>Tallinn-Tartu sõidukulu</td>
+            <td></td>
+            <td class="r">0,00</td>
+            <td class="r">280,00</td>
+            <td class="r">0,00</td>
+            <td class="r">280,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">470,00</td>
+            <td class="r">1 320,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g4">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
+            <td class="r" style="font-weight:600;">1 200,00</td>
+            <td class="r" style="font-weight:600;">730,00</td>
+            <td colspan="5"></td>
+            <td class="r" style="font-weight:600;">470,00</td>
+            <td class="r" style="font-weight:600;">1 320,00</td>
+            <td colspan="2"></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g4" data-loppsaldo-dr="2050.00" data-loppsaldo-cr="730.00">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
+            <td class="r" style="font-weight:600;">1 320,00</td>
+            <td colspan="10"></td>
+          </tr>
+
+          <!-- 211000 group: Ostjate arved -->
+          <tr class="grp-header" data-group="g5" data-has-change="true" data-has-balance="true" data-algsaldo-dr="4200.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g5', this)" style="cursor:pointer;">
+            <td><span class="grp-toggle">▾</span> 211000</td>
+            <td colspan="4">Ostjate arved</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;">Algsaldo</td>
+            <td class="r">4 200,00</td>
+            <td colspan="10"></td>
+          </tr>
+          <tr class="data" data-grp="g5">
+            <td class="muted">Ostjate arved</td>
+            <td></td>
+            <td class="muted">411000</td>
+            <td class="link">ARVE.20001</td>
+            <td>OBJ001</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PROJ2025</td>
+            <td>15.01.2025</td>
+            <td>Eestimaa Kaubandus AS</td>
+            <td>Arve nr 20001</td>
+            <td>KM20</td>
+            <td class="r">3 600,00</td>
+            <td class="r">0,00</td>
+            <td class="r">3 600,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">3 600,00</td>
+            <td class="r">7 800,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g5" data-unsettled="true">
+            <td class="muted">Ostjate arved</td>
+            <td></td>
+            <td class="muted">411001</td>
+            <td class="link">ARVE.20002</td>
+            <td>OBJ002</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>TURUNDUS</td>
+            <td>28.01.2025</td>
+            <td>Lambi OÜ</td>
+            <td>Arve nr 20002</td>
+            <td>KM20</td>
+            <td class="r">1 800,00</td>
+            <td class="r">0,00</td>
+            <td class="r">1 800,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">5 400,00</td>
+            <td class="r">9 600,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g5">
+            <td class="muted">Ostjate arved</td>
+            <td></td>
+            <td class="muted">111201</td>
+            <td class="link">LAEK.10001</td>
+            <td>OBJ001</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>10.02.2025</td>
+            <td>Eestimaa Kaubandus AS</td>
+            <td>Laekumine arve 20001</td>
+            <td></td>
+            <td class="r">0,00</td>
+            <td class="r">3 600,00</td>
+            <td class="r">0,00</td>
+            <td class="r">3 600,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">1 800,00</td>
+            <td class="r">6 000,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g5">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
+            <td class="r" style="font-weight:600;">5 400,00</td>
+            <td class="r" style="font-weight:600;">3 600,00</td>
+            <td colspan="5"></td>
+            <td class="r" style="font-weight:600;">1 800,00</td>
+            <td class="r" style="font-weight:600;">6 000,00</td>
+            <td colspan="2"></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g5" data-loppsaldo-dr="9600.00" data-loppsaldo-cr="3600.00">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
+            <td class="r" style="font-weight:600;">6 000,00</td>
+            <td colspan="10"></td>
+          </tr>
+
+          <!-- 521000 group: Palgakulu -->
+          <tr class="grp-header" data-group="g6" data-has-change="true" data-has-balance="true" data-algsaldo-dr="0.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g6', this)" style="cursor:pointer;">
+            <td><span class="grp-toggle">▾</span> 521000</td>
+            <td colspan="4">Palgakulu</td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;">Algsaldo</td>
+            <td class="r">0,00</td>
+            <td colspan="10"></td>
+          </tr>
+          <tr class="data" data-grp="g6">
+            <td class="muted">Palgakulu</td>
+            <td></td>
+            <td class="muted">211100</td>
+            <td class="link">PALK.10001</td>
+            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IT-ARENDUS</td>
+            <td>28.01.2025</td>
+            <td>Jaan Tamm</td>
+            <td>Jaanuari palk</td>
+            <td></td>
+            <td class="r">2 500,00</td>
+            <td class="r">0,00</td>
+            <td class="r">2 500,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">2 500,00</td>
+            <td class="r">2 500,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g6">
+            <td class="muted">Palgakulu</td>
+            <td></td>
+            <td class="muted">211100</td>
+            <td class="link">PALK.10002</td>
+            <td>TARTU</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>TURUNDUS</td>
+            <td>28.01.2025</td>
+            <td>Mari Mets</td>
+            <td>Jaanuari palk</td>
+            <td></td>
+            <td class="r">1 800,00</td>
+            <td class="r">0,00</td>
+            <td class="r">1 800,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">4 300,00</td>
+            <td class="r">4 300,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="data" data-grp="g6">
+            <td class="muted">Palgakulu</td>
+            <td></td>
+            <td class="muted">211100</td>
+            <td class="link">PALK.10003</td>
+            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PROJ2025</td>
+            <td>28.02.2025</td>
+            <td>Kati Kask</td>
+            <td>Veebruari palk</td>
+            <td></td>
+            <td class="r">2 500,00</td>
+            <td class="r">0,00</td>
+            <td class="r">2 500,00</td>
+            <td class="r">0,00</td>
+            <td>EUR</td>
+            <td class="r">1,0000</td>
+            <td class="r">1,0000</td>
+            <td class="r">6 800,00</td>
+            <td class="r">6 800,00</td>
+            <td></td><td></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g6">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Kokku (periood)</td>
+            <td class="r" style="font-weight:600;">6 800,00</td>
+            <td class="r" style="font-weight:600;">0,00</td>
+            <td colspan="5"></td>
+            <td class="r" style="font-weight:600;">6 800,00</td>
+            <td class="r" style="font-weight:600;">6 800,00</td>
+            <td colspan="2"></td>
+          </tr>
+          <tr class="grp-sub" data-grp="g6" data-loppsaldo-dr="6800.00" data-loppsaldo-cr="0.00">
+            <td colspan="5"></td>
+            <td class="dim-span" colspan="8"></td>
+            <td colspan="4"></td>
+            <td style="text-align:right;font-style:normal;">Lõppsaldo</td>
+            <td class="r" style="font-weight:600;">6 800,00</td>
+            <td colspan="10"></td>
+          </tr>
+
         </tbody>
       </table>
     </div>
@@ -638,7 +921,8 @@
     const rows = document.querySelectorAll('[data-grp="' + grp + '"]');
     const isCollapsed = headerRow.classList.toggle('collapsed');
     rows.forEach(r => {
-      if (r.hasAttribute('data-corr-sub')) return; // corr-sub managed by tab logic
+      if (r.hasAttribute('data-corr-sub')) return;
+      if (isCollapsed && r.classList.contains('grp-sub')) return;
       r.style.display = isCollapsed ? 'none' : '';
     });
   }
@@ -652,11 +936,22 @@
     tbody.querySelectorAll('.grp-header').forEach(h => h.classList.remove('collapsed'));
     tbody.querySelectorAll('[data-corr-sub]').forEach(r => r.style.display = 'none');
     tbody.querySelectorAll('.saldeerub').forEach(r => r.classList.remove('saldeerub'));
+    tbody.querySelectorAll('.grp-filter-hidden').forEach(r => r.classList.remove('grp-filter-hidden'));
+    document.querySelectorAll('tr.grp-header.grp-filter-hidden').forEach(r => r.classList.remove('grp-filter-hidden'));
+    if (_vaheObjOn) { tbody.innerHTML = _origTbodyVahe; _vaheObjOn = false; _origTbodyVahe = null; }
     tbody.querySelectorAll('[data-orig-html]').forEach(r => { r.innerHTML = r.dataset.origHtml; delete r.dataset.origHtml; });
     tbody.querySelectorAll('[data-vaheldumisi-row]').forEach(r => r.remove());
 
     if (name === 'vaheldumisi-kontod') {
-      // Swap Konto (col1) to show corrAccount; get name from adjacent corr-sub header
+      const selVahe = document.getElementById('selVahesumma');
+      const vahesummaVal = selVahe ? selVahe.value : '';
+      if (vahesummaVal === 'byObject') {
+        _origTbodyVahe = tbody.innerHTML;
+        _vaheObjOn = true;
+        _renderVaheldumisiByObj(tbody);
+        return;
+      }
+      // flat list — swap Konto col to show corrAccount
       let lastCorrName = '';
       tbody.querySelectorAll('tr[data-grp]').forEach(row => {
         if (row.classList.contains('corr-sub')) {
@@ -690,12 +985,6 @@
       if (_firstData) tbody.insertBefore(_mkRow('Algsaldo', _totAlg, false), _firstData);
       tbody.appendChild(_mkRow('Lõppsaldo', _totL, true));
 
-    } else if (name === 'muutusega-kontod') {
-      tbody.querySelectorAll('.grp-header[data-has-change="false"]').forEach(h => {
-        h.style.display = 'none';
-        tbody.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.style.display = 'none');
-      });
-
     } else if (name === 'saldeerimata') {
       // settled rows faded/italic; unsettled rows normal
       tbody.querySelectorAll('tr.data[data-grp]').forEach(r => {
@@ -720,13 +1009,10 @@
         tds[5].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
       });
 
-    } else if (name === 'ainult-saldoga') {
-      tbody.querySelectorAll('.grp-header[data-has-balance="false"]').forEach(h => {
-        h.style.display = 'none';
-        tbody.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.style.display = 'none');
-      });
     }
   }
+
+  let _currentTab = 'detailvaade';
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -735,14 +1021,111 @@
       const map = {
         'Detailvaade': 'detailvaade',
         'Ainult summa': 'ainult-summa',
-        'Vaheldumisi kontod': 'vaheldumisi-kontod',
-        'Muutusega kontod': 'muutusega-kontod',
         'Saldeerimata': 'saldeerimata',
-        'Ainult saldoga': 'ainult-saldoga'
       };
-      showTab(map[tab.textContent.trim()] || '');
+      const name = map[tab.textContent.trim()] || '';
+      showTab(name);
+      updateTabModifiers(name);
     });
   });
+
+  const VAHESUMMA_OPTS = ['byObject','byProject','byCustomer','bySupplier','byVatCode','byCurrency','bySpecialDiscount'];
+
+  function updateTabModifiers(tabName) {
+    _currentTab = tabName;
+    ['cbVaheldumisi','cbMuutusega','cbSaldoga'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.checked = false;
+    });
+    const sel = document.getElementById('selVahesumma');
+    if (sel) sel.value = '';
+    const showVahe = tabName !== 'ainult-summa';
+    document.getElementById('modLblVaheldumisi').style.display = showVahe ? '' : 'none';
+    document.getElementById('modSepVaheldumisi').style.display = showVahe ? '' : 'none';
+  }
+
+  function modVaheldumisiChange(checked) {
+    if (checked) {
+      if (_currentTab === 'saldeerimata') { saldeerimataVaheldumisiChange(true); return; }
+      showTab('vaheldumisi-kontod');
+    } else {
+      document.getElementById('selVahesumma').value = '';
+      if (_currentTab === 'saldeerimata') { saldeerimataVaheldumisiChange(false); return; }
+      showTab('detailvaade');
+    }
+  }
+
+  function modVahesummaChange(val) {
+    const cb = document.getElementById('cbVaheldumisi');
+    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
+    if (_currentTab === 'saldeerimata') {
+      if (val) { if (cb) cb.checked = true; saldeerimataVaheldumisiChange(true); }
+      else { if (cb) cb.checked = false; saldeerimataVaheldumisiChange(false); }
+      return;
+    }
+    if (val) { if (cb) cb.checked = true; showTab('vaheldumisi-kontod'); }
+    else { if (cb) cb.checked = false; showTab('detailvaade'); }
+  }
+
+  function modMuutusegaChange(checked) {
+    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
+    detailMuutusegaChange(checked);
+  }
+
+  function modSaldogaChange(checked) {
+    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
+    detailSaldogaChange(checked);
+  }
+
+  function detailSaldogaChange(checked) {
+    document.querySelectorAll('tr.grp-header').forEach(hdr => {
+      if (hdr.dataset.hasBalance === 'true') return;
+      const grp = hdr.dataset.group;
+      hdr.classList.toggle('grp-filter-hidden', checked);
+      document.querySelectorAll('[data-grp="' + grp + '"]').forEach(r => r.classList.toggle('grp-filter-hidden', checked));
+    });
+  }
+
+  function detailMuutusegaChange(checked) {
+    document.querySelectorAll('tr.grp-header').forEach(hdr => {
+      if (hdr.dataset.hasChange === 'true') return;
+      const grp = hdr.dataset.group;
+      hdr.classList.toggle('grp-filter-hidden', checked);
+      document.querySelectorAll('[data-grp="' + grp + '"]').forEach(r => r.classList.toggle('grp-filter-hidden', checked));
+    });
+  }
+
+  function saldeerimataVaheldumisiChange(checked) {
+    const tbody = document.getElementById('mainTbody');
+    if (checked) {
+      let lastCorrName = '';
+      tbody.querySelectorAll('tr[data-grp]').forEach(row => {
+        if (row.classList.contains('corr-sub')) {
+          const m = row.textContent.trim().match(/Korr\. konto: \S+ — (.+)/);
+          lastCorrName = m ? m[1] : '';
+        } else if (row.classList.contains('data')) {
+          const tds = row.querySelectorAll('td');
+          const corrVal = tds[2] ? tds[2].textContent.trim() : '';
+          if (!corrVal) return;
+          row.dataset.origHtml = row.innerHTML;
+          tds[0].textContent = corrVal;
+          tds[0].className = '';
+          tds[1].textContent = lastCorrName;
+          tds[2].textContent = '';
+        }
+      });
+    } else {
+      tbody.querySelectorAll('tr.data[data-orig-html]').forEach(r => {
+        r.innerHTML = r.dataset.origHtml; delete r.dataset.origHtml;
+      });
+    }
+  }
+
+  (function() {
+    const sel = document.getElementById('selVahesumma');
+    if (sel) sel.innerHTML = '<option value=""></option>' + VAHESUMMA_OPTS.map(o => '<option value="' + o + '">' + o + '</option>').join('');
+  })();
+
+  updateTabModifiers('detailvaade');
 
   function toggleMc() {
     document.getElementById('mcDropdown').classList.toggle('open');
@@ -872,11 +1255,65 @@
 
   // ── AINULT SUMMA VIEW ──
   const SUMMA_DATA = [
-    { konto: '111201', nimetus: 'Pangakonto EUR', algsaldo: 3500.00, deebet: 1000.00, kreedit: 2086.91, muutus: -1086.91, loppsaldo: 2413.09 },
-    { konto: '111204', nimetus: 'Pangakonto SEK', algsaldo: 2580.00, deebet: 0.00,    kreedit: 411.20,  muutus: -411.20,  loppsaldo: 2168.80 },
-    { konto: '111202', nimetus: 'Pangakonto USD', algsaldo: 0.00,    deebet: 0.00,    kreedit: 0.00,    muutus: 0.00,     loppsaldo: 0.00   },
+    { konto: '10101',  nimetus: 'Kassa EUR',       algsaldo: 850.00,  deebet: 1200.00, kreedit: 730.00,  muutus: 470.00,   loppsaldo: 1320.00 },
+    { konto: '111201', nimetus: 'Pangakonto EUR',   algsaldo: 3500.00, deebet: 1000.00, kreedit: 2086.91, muutus: -1086.91, loppsaldo: 2413.09 },
+    { konto: '111202', nimetus: 'Pangakonto USD',   algsaldo: 0.00,    deebet: 0.00,    kreedit: 0.00,    muutus: 0.00,     loppsaldo: 0.00   },
+    { konto: '111204', nimetus: 'Pangakonto SEK',   algsaldo: 2580.00, deebet: 0.00,    kreedit: 411.20,  muutus: -411.20,  loppsaldo: 2168.80 },
+    { konto: '211000', nimetus: 'Ostjate arved',    algsaldo: 4200.00, deebet: 5400.00, kreedit: 3600.00, muutus: 1800.00,  loppsaldo: 6000.00 },
+    { konto: '521000', nimetus: 'Palgakulu',        algsaldo: 0.00,    deebet: 6800.00, kreedit: 0.00,    muutus: 6800.00,  loppsaldo: 6800.00 },
   ];
   let _origThead = null, _origTbody = null, _summaOn = false;
+  let _vaheObjOn = false, _origTbodyVahe = null;
+
+  function _parseNum(td) {
+    if (!td) return 0;
+    const s = td.textContent.trim().replace(/\s/g, '').replace(',', '.').replace('−', '-');
+    return parseFloat(s) || 0;
+  }
+
+  function _renderVaheldumisiByObj(tbody) {
+    const rows = Array.from(tbody.querySelectorAll('tr.data[data-grp]'));
+    const groups = new Map();
+    rows.forEach(row => {
+      const tds = row.querySelectorAll('td');
+      const obj = tds[4] ? tds[4].textContent.trim() : '';
+      if (!groups.has(obj)) groups.set(obj, []);
+      groups.get(obj).push({ row, corrAcct: tds[2] ? tds[2].textContent.trim() : '', dr: _parseNum(tds[18]), cr: _parseNum(tds[19]) });
+    });
+    const keys = Array.from(groups.keys()).sort((a, b) => {
+      if (!a && b) return -1; if (a && !b) return 1;
+      return a.localeCompare(b, 'et');
+    });
+    tbody.innerHTML = '';
+    keys.forEach(objKey => {
+      const grpRows = groups.get(objKey);
+      const label = objKey || 'puudub:';
+      let sumDr = 0, sumCr = 0;
+      const hdr = document.createElement('tr');
+      hdr.className = 'vahe-obj-hdr';
+      hdr.innerHTML = '<td colspan="29">' + label + '</td>';
+      tbody.appendChild(hdr);
+      grpRows.forEach(rd => {
+        const row = rd.row.cloneNode(true);
+        const tds = row.querySelectorAll('td');
+        tds[0].textContent = rd.corrAcct;
+        tds[0].className = '';
+        tds[2].textContent = '';
+        tbody.appendChild(row);
+        sumDr += rd.dr;
+        sumCr += rd.cr;
+      });
+      const kokku = document.createElement('tr');
+      kokku.className = 'vahe-kokku';
+      kokku.innerHTML =
+        '<td colspan="5"></td><td class="dim-span" colspan="8"></td><td colspan="4"></td>' +
+        '<td style="text-align:right;font-style:italic;font-size:10px;color:#1a3a5a;">Kokku:</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(sumDr) + '</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(sumCr) + '</td>' +
+        '<td colspan="9"></td>';
+      tbody.appendChild(kokku);
+    });
+  }
 
   function fmtNum(n) {
     const neg = n < 0;
@@ -907,8 +1344,14 @@
       '<th class="r" style="width:110px">Muutus</th>' +
       '<th class="r" style="width:110px">Lõppsaldo</th>';
 
+    _renderSummaRows(SUMMA_DATA);
+    document.getElementById('colHideStyles').textContent = '';
+  }
+
+  function _renderSummaRows(data) {
+    const tbody = document.getElementById('mainTbody');
     let html = '';
-    SUMMA_DATA.forEach(r => {
+    data.forEach(r => {
       html += '<tr class="data">' +
         '<td>' + r.konto + '</td>' +
         '<td>' + r.nimetus + '</td>' +
@@ -919,9 +1362,9 @@
         '<td class="r" style="font-weight:700' + (r.loppsaldo < 0 ? ';color:#b00' : '') + '">' + fmtNum(r.loppsaldo) + '</td>' +
         '</tr>';
     });
-    const totAlg = SUMMA_DATA.reduce((s, r) => s + r.algsaldo, 0);
-    const totD   = SUMMA_DATA.reduce((s, r) => s + r.deebet,   0);
-    const totK   = SUMMA_DATA.reduce((s, r) => s + r.kreedit,  0);
+    const totAlg = data.reduce((s, r) => s + r.algsaldo, 0);
+    const totD   = data.reduce((s, r) => s + r.deebet,   0);
+    const totK   = data.reduce((s, r) => s + r.kreedit,  0);
     const totM   = totD - totK;
     const totL   = totAlg + totM;
     html += '<tr class="grp-total">' +
@@ -933,7 +1376,17 @@
       '<td class="r"' + (totL < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(totL) + '</td>' +
       '</tr>';
     tbody.innerHTML = html;
-    document.getElementById('colHideStyles').textContent = '';
+  }
+
+  function summaFilterChange() {
+    const muutusega = document.getElementById('cbMuutusega');
+    const saldoga   = document.getElementById('cbSaldoga');
+    const data = SUMMA_DATA.filter(r => {
+      if (muutusega && muutusega.checked && r.muutus === 0) return false;
+      if (saldoga   && saldoga.checked   && r.loppsaldo === 0) return false;
+      return true;
+    });
+    _renderSummaRows(data);
   }
 
   function exitSummaView() {
