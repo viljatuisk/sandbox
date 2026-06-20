@@ -18,21 +18,25 @@
   .layout { display: flex; flex: 1; overflow: hidden; }
 
   /* ── LEFT SIDEBAR ── */
-  .sidebar { width: 240px; background: #1e2d3d; color: #c8d8e8; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; font-size: 11px; }
+  .sidebar { width: 240px; min-width: 240px; background: #1e2d3d; color: #c8d8e8; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; font-size: 11px; transition: width .18s, min-width .18s; }
+  .sidebar.hidden { width: 0; min-width: 0; overflow: hidden; }
+  .tog-btn { background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; padding: 2px 8px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; white-space: nowrap; height: 24px; }
+  .tog-btn:hover { background: #eef3f8; }
   .sidebar-section { border-bottom: 1px solid rgba(255,255,255,0.07); }
-  .sidebar-head { padding: 6px 10px; font-size: 10px; font-weight: 700; color: #7a9ab8; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
-  .sidebar-head:hover { color: #a8c4d8; }
-  .sidebar-head .arrow { font-size: 9px; opacity: 0.6; }
-  .sidebar-body { padding: 4px 10px 8px; display: flex; flex-direction: column; gap: 5px; }
-  .sf { display: flex; flex-direction: column; gap: 2px; }
-  .sf label { font-size: 11px; font-weight: 600; color: #a8c8e0; }
-  .sf input, .sf select { height: 22px; background: #d8e8f4; border: 1px solid #8aaac8; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
+  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c0d8f0; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: rgba(255,255,255,0.06); border-left: 3px solid #4a7aaa; }
+  .sidebar-head:hover { color: #e0f0ff; background: rgba(255,255,255,0.1); }
+  .sidebar-head .arrow { font-size: 10px; opacity: 0.7; }
+  .sidebar-body { padding: 2px 8px 4px; display: flex; flex-direction: column; gap: 3px; }
+  .sf { display: flex; flex-direction: column; gap: 1px; }
+  .sf label { font-size: 10px; font-weight: 600; color: #a8c8e0; }
+  .sf input, .sf select { height: 20px; background: #d8e8f4; border: 1px solid #8aaac8; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
   .sf input:focus, .sf select:focus { outline: none; border-color: #5a8ab8; }
   .sf-row { display: flex; gap: 4px; align-items: flex-end; }
-  .sf-row .sf { flex: 1; }
-  .sf-check { display: flex; align-items: center; gap: 5px; padding: 2px 0; color: #c8d8e8; cursor: pointer; }
+  .sf-row .sf { flex: 1; min-width: 0; }
+  .sidebar-body.collapsed { display: none; }
+  .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #c8d8e8; cursor: pointer; font-size: 10px; }
   .sf-check input[type=checkbox] { accent-color: #5a8ab8; }
-  .sidebar-btn { margin: 8px 10px; height: 26px; background: #3a6a9a; color: #fff; border: none; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; }
+  .sidebar-btn { margin: 4px 8px; height: 22px; background: #3a6a9a; color: #fff; border: none; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; }
   .sidebar-btn:hover { background: #4a7aaa; }
 
   /* ── MULTISELECT ── */
@@ -61,17 +65,19 @@
   .ra-btn.primary:hover { background: #4a7aaa; }
 
   /* ── TABS + TABLE CONTROLS ── */
-  .table-controls { display: flex; align-items: center; border-bottom: 1px solid #dde3ea; background: #f0f4f8; flex-shrink: 0; }
-  .tabs { display: flex; }
-  .tab { padding: 7px 13px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #4a6a8a; border-bottom: 2px solid transparent; border-right: 1px solid #dde3ea; white-space: nowrap; background: transparent; user-select: none; }
-  .tab:hover { background: #e4ecf4; color: #2a4a6a; }
-  .tab.active { color: #1a5a9a; border-bottom-color: #2d6aaa; background: #fff; font-weight: 600; }
+  .table-controls { display: flex; align-items: center; border-bottom: 3px solid #8aafc8; background: #f0f4f8; flex-shrink: 0; }
+  .tabs { display: flex; border-right: 2px solid #c4d0dc; }
+  .tab { padding: 7px 14px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #4a6a8a; border-bottom: 2px solid transparent; border-right: 1px solid #c8d4e0; white-space: nowrap; background: #dce8f4; user-select: none; }
+  .tab:hover { background: #ccdaec; color: #1a3a5a; }
+  .tab.active { color: #1a4a8a; border-bottom: 2px solid #2d6aaa; background: #fff; font-weight: 700; }
   .tab-sep { width: 1px; background: #dde3ea; align-self: stretch; }
   .table-options { display: flex; align-items: center; gap: 10px; padding: 0 12px; margin-left: auto; font-size: 11px; color: #4a6a8a; }
   .table-options label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
   .table-options input[type=checkbox] { accent-color: #3a6a9a; }
-  .tab-modifiers { display: flex; align-items: center; gap: 16px; padding: 5px 14px; background: #f7f9fb; border-bottom: 1px solid #e0e7ef; font-size: 11px; color: #4a6a8a; flex-shrink: 0; }
-  .tab-modifiers:empty { padding: 0; border-bottom: none; }
+  .view-controls { display: flex; align-items: center; gap: 14px; padding: 0 14px; border-left: 1px solid #dde3ea; font-size: 11px; color: #4a6a8a; }
+  .view-controls label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+  .view-controls input[type=checkbox] { accent-color: #3a6a9a; }
+  .view-ctrl-sep { width: 1px; height: 14px; background: #dde3ea; }
   .tab-modifiers label { display: flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; }
   .tab-modifiers input[type=checkbox] { accent-color: #3a6a9a; }
   .tab-modifiers .mod-sep { width: 1px; height: 14px; background: #d0dae6; }
@@ -188,6 +194,8 @@
           <div class="sf"><label>Lõpp</label><input type="text" value="111201"></div>
         </div>
         <div class="sf"><label>Korr. konto</label><input type="text" placeholder=""></div>
+        <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
+        <label class="sf-check"><input type="checkbox" id="cbSaldoga" onchange="sidebarFilterChange()"> Ainult saldoga</label>
       </div>
     </div>
 
@@ -213,7 +221,7 @@
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-head">Filtrid <span class="arrow">▾</span></div>
+      <div class="sidebar-head">Kande filtrid <span class="arrow">▾</span></div>
       <div class="sidebar-body">
 <div class="sf"><label>transaction</label>
           <div class="mc-wrap" id="mcTransWrap">
@@ -253,7 +261,19 @@
       </div>
     </div>
 
-
+    <div class="sidebar-section">
+      <div class="sidebar-head">Lisaväljad <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf-row">
+          <div class="sf" style="flex:1.6"><select><option value="">(lisaväli)</option><option>Consolidation group</option><option>Lisaväli 2</option><option>Lisaväli 3</option></select></div>
+          <div class="sf" style="flex:1"><input type="text" placeholder=""></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf" style="flex:1.6"><select><option value="">(lisaväli)</option><option>Consolidation group</option><option>Lisaväli 2</option><option>Lisaväli 3</option></select></div>
+          <div class="sf" style="flex:1"><input type="text" placeholder=""></div>
+        </div>
+      </div>
+    </div>
 
     <button class="sidebar-btn">▶ Näita</button>
   </div>
@@ -262,6 +282,7 @@
   <div class="main">
 
     <div class="report-head">
+      <button class="tog-btn" id="togBtn" onclick="toggleSidebar()">&#9664; Filtrid</button>
       <span class="report-title">Pearaamat</span>
       <div class="report-actions">
         <button class="ra-btn">🖨 Trüki</button>
@@ -275,8 +296,13 @@
     <div class="table-controls">
       <div class="tabs">
         <div class="tab active">Detailvaade</div>
-        <div class="tab">Ainult summa</div>
+        <div class="tab" title="vanas 'Ainult summa'">Koondvaade</div>
         <div class="tab">Saldeerimata</div>
+      </div>
+      <div class="view-controls" id="viewControls">
+        <label id="modLblKronoloogiline" title="vanas 'Vaheldumisi kontod'"><input type="checkbox" id="cbVaheldumisi" onchange="modVaheldumisiChange(this.checked)"> Kronoloogiline</label>
+        <div class="view-ctrl-sep" id="viewCtrlSep"></div>
+        <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
       </div>
       <div class="table-options">
         <label style="display:flex;align-items:center;gap:5px;">Firma
@@ -312,15 +338,7 @@
         <span style="color:#b0b8c4; font-size:15px; cursor:pointer" title="Eksport CSV">📋</span>
       </div>
     </div>
-    <div class="tab-modifiers" id="tabModifiers">
-      <label id="modLblVaheldumisi"><input type="checkbox" id="cbVaheldumisi" onchange="modVaheldumisiChange(this.checked)"> Vaheldumisi kontod</label>
-      <div class="mod-sep" id="modSepVaheldumisi"></div>
-      <label><input type="checkbox" id="cbMuutusega" onchange="modMuutusegaChange(this.checked)"> Muutusega kontod</label>
-      <div class="mod-sep"></div>
-      <label><input type="checkbox" id="cbSaldoga" onchange="modSaldogaChange(this.checked)"> Ainult saldoga</label>
-      <div class="mod-sep"></div>
-      <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
-    </div>
+
 
     <!-- TABLE -->
     <div class="table-wrap">
@@ -928,8 +946,8 @@
   }
 
   function showTab(name) {
-    if (name !== 'ainult-summa') exitSummaView();
-    if (name === 'ainult-summa') { enterSummaView(); return; }
+    if (name !== 'koondvaade') exitSummaView();
+    if (name === 'koondvaade') { _currentTab = name; enterSummaView(); return; }
     const tbody = document.getElementById('mainTbody');
     // Reset: show all, remove collapsed, hide corr-subs, clear saldeerub
     tbody.querySelectorAll('tr').forEach(r => r.style.display = '');
@@ -984,13 +1002,10 @@
       const _firstData = tbody.querySelector('tr.data');
       if (_firstData) tbody.insertBefore(_mkRow('Algsaldo', _totAlg, false), _firstData);
       tbody.appendChild(_mkRow('Lõppsaldo', _totL, true));
-
     } else if (name === 'saldeerimata') {
-      // settled rows faded/italic; unsettled rows normal
       tbody.querySelectorAll('tr.data[data-grp]').forEach(r => {
         if (!r.dataset.unsettled) r.classList.add('saldeerub');
       });
-      // algsaldo: show DR + CR separately instead of net
       tbody.querySelectorAll('.grp-header[data-algsaldo-dr]').forEach(h => {
         const dr = parseFloat(h.dataset.algsaldoDr);
         const cr = parseFloat(h.dataset.algsaldoCr);
@@ -999,7 +1014,6 @@
         tds[5].textContent = fmtNum(dr);
         tds[6].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
       });
-      // lõppsaldo: show DR + CR separately
       tbody.querySelectorAll('.grp-sub[data-loppsaldo-dr]').forEach(row => {
         const dr = parseFloat(row.dataset.loppsaldoDr);
         const cr = parseFloat(row.dataset.loppsaldoCr);
@@ -1008,19 +1022,37 @@
         tds[4].textContent = fmtNum(dr);
         tds[5].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
       });
-
     }
+
+    if (name !== 'vaheldumisi-kontod') applyDetailFilters();
   }
 
   let _currentTab = 'detailvaade';
+
+  document.querySelectorAll('.sidebar-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const body = head.nextElementSibling;
+      if (!body || !body.classList.contains('sidebar-body')) return;
+      const isOpen = !body.classList.contains('collapsed');
+      body.classList.toggle('collapsed', isOpen);
+      head.querySelector('.arrow').textContent = isOpen ? '▸' : '▾';
+    });
+  });
+
+  let _sidebarOpen = true;
+  function toggleSidebar() {
+    _sidebarOpen = !_sidebarOpen;
+    document.querySelector('.sidebar').classList.toggle('hidden', !_sidebarOpen);
+    document.getElementById('togBtn').textContent = (_sidebarOpen ? '◄' : '►') + ' Filtrid';
+  }
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const map = {
-        'Detailvaade': 'detailvaade',
-        'Ainult summa': 'ainult-summa',
+        'Detailvaade':  'detailvaade',
+        'Koondvaade':   'koondvaade',
         'Saldeerimata': 'saldeerimata',
       };
       const name = map[tab.textContent.trim()] || '';
@@ -1033,92 +1065,55 @@
 
   function updateTabModifiers(tabName) {
     _currentTab = tabName;
-    ['cbVaheldumisi','cbMuutusega','cbSaldoga'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.checked = false;
-    });
+    const cbV = document.getElementById('cbVaheldumisi');
+    if (cbV) cbV.checked = false;
     const sel = document.getElementById('selVahesumma');
     if (sel) sel.value = '';
-    const showVahe = tabName !== 'ainult-summa';
-    document.getElementById('modLblVaheldumisi').style.display = showVahe ? '' : 'none';
-    document.getElementById('modSepVaheldumisi').style.display = showVahe ? '' : 'none';
+    const isKoond = tabName === 'koondvaade';
+    const lblK = document.getElementById('modLblKronoloogiline');
+    const sep  = document.getElementById('viewCtrlSep');
+    if (lblK) lblK.style.display = isKoond ? 'none' : '';
+    if (sep)  sep.style.display  = isKoond ? 'none' : '';
   }
 
   function modVaheldumisiChange(checked) {
     if (checked) {
-      if (_currentTab === 'saldeerimata') { saldeerimataVaheldumisiChange(true); return; }
       showTab('vaheldumisi-kontod');
     } else {
       document.getElementById('selVahesumma').value = '';
-      if (_currentTab === 'saldeerimata') { saldeerimataVaheldumisiChange(false); return; }
       showTab('detailvaade');
     }
   }
 
   function modVahesummaChange(val) {
     const cb = document.getElementById('cbVaheldumisi');
-    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
-    if (_currentTab === 'saldeerimata') {
-      if (val) { if (cb) cb.checked = true; saldeerimataVaheldumisiChange(true); }
-      else { if (cb) cb.checked = false; saldeerimataVaheldumisiChange(false); }
-      return;
-    }
+    if (_currentTab === 'koondvaade') { summaFilterChange(); return; }
     if (val) { if (cb) cb.checked = true; showTab('vaheldumisi-kontod'); }
     else { if (cb) cb.checked = false; showTab('detailvaade'); }
   }
 
-  function modMuutusegaChange(checked) {
-    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
-    detailMuutusegaChange(checked);
+  function sidebarFilterChange() {
+    if (_currentTab === 'koondvaade') { summaFilterChange(); return; }
+    applyDetailFilters();
   }
 
-  function modSaldogaChange(checked) {
-    if (_currentTab === 'ainult-summa') { summaFilterChange(); return; }
-    detailSaldogaChange(checked);
-  }
-
-  function detailSaldogaChange(checked) {
+  function applyDetailFilters() {
+    const muutusega = document.getElementById('cbMuutusega');
+    const saldoga   = document.getElementById('cbSaldoga');
     document.querySelectorAll('tr.grp-header').forEach(hdr => {
-      if (hdr.dataset.hasBalance === 'true') return;
-      const grp = hdr.dataset.group;
-      hdr.classList.toggle('grp-filter-hidden', checked);
-      document.querySelectorAll('[data-grp="' + grp + '"]').forEach(r => r.classList.toggle('grp-filter-hidden', checked));
+      hdr.classList.remove('grp-filter-hidden');
+      document.querySelectorAll('[data-grp="' + hdr.dataset.group + '"]').forEach(r => r.classList.remove('grp-filter-hidden'));
+    });
+    document.querySelectorAll('tr.grp-header').forEach(hdr => {
+      const hide = (muutusega && muutusega.checked && hdr.dataset.hasChange !== 'true') ||
+                   (saldoga   && saldoga.checked   && hdr.dataset.hasBalance !== 'true');
+      if (hide) {
+        hdr.classList.add('grp-filter-hidden');
+        document.querySelectorAll('[data-grp="' + hdr.dataset.group + '"]').forEach(r => r.classList.add('grp-filter-hidden'));
+      }
     });
   }
 
-  function detailMuutusegaChange(checked) {
-    document.querySelectorAll('tr.grp-header').forEach(hdr => {
-      if (hdr.dataset.hasChange === 'true') return;
-      const grp = hdr.dataset.group;
-      hdr.classList.toggle('grp-filter-hidden', checked);
-      document.querySelectorAll('[data-grp="' + grp + '"]').forEach(r => r.classList.toggle('grp-filter-hidden', checked));
-    });
-  }
-
-  function saldeerimataVaheldumisiChange(checked) {
-    const tbody = document.getElementById('mainTbody');
-    if (checked) {
-      let lastCorrName = '';
-      tbody.querySelectorAll('tr[data-grp]').forEach(row => {
-        if (row.classList.contains('corr-sub')) {
-          const m = row.textContent.trim().match(/Korr\. konto: \S+ — (.+)/);
-          lastCorrName = m ? m[1] : '';
-        } else if (row.classList.contains('data')) {
-          const tds = row.querySelectorAll('td');
-          const corrVal = tds[2] ? tds[2].textContent.trim() : '';
-          if (!corrVal) return;
-          row.dataset.origHtml = row.innerHTML;
-          tds[0].textContent = corrVal;
-          tds[0].className = '';
-          tds[1].textContent = lastCorrName;
-          tds[2].textContent = '';
-        }
-      });
-    } else {
-      tbody.querySelectorAll('tr.data[data-orig-html]').forEach(r => {
-        r.innerHTML = r.dataset.origHtml; delete r.dataset.origHtml;
-      });
-    }
-  }
 
   (function() {
     const sel = document.getElementById('selVahesumma');
@@ -1344,7 +1339,7 @@
       '<th class="r" style="width:110px">Muutus</th>' +
       '<th class="r" style="width:110px">Lõppsaldo</th>';
 
-    _renderSummaRows(SUMMA_DATA);
+    summaFilterChange();
     document.getElementById('colHideStyles').textContent = '';
   }
 
