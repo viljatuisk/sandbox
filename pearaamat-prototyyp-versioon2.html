@@ -18,24 +18,24 @@
   .layout { display: flex; flex: 1; overflow: hidden; }
 
   /* ── LEFT SIDEBAR ── */
-  .sidebar { width: 240px; min-width: 240px; background: #1e2d3d; color: #c8d8e8; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; font-size: 11px; transition: width .18s, min-width .18s; }
+  .sidebar { width: 240px; min-width: 240px; background: #e8f0f8; color: #1a2a3a; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; font-size: 11px; transition: width .18s, min-width .18s; border-right: 1px solid #b0c8e0; }
   .sidebar.hidden { width: 0; min-width: 0; overflow: hidden; }
   .tog-btn { background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; padding: 2px 8px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; white-space: nowrap; height: 24px; }
   .tog-btn:hover { background: #eef3f8; }
-  .sidebar-section { border-bottom: 1px solid rgba(255,255,255,0.07); }
-  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c0d8f0; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: rgba(255,255,255,0.06); border-left: 3px solid #4a7aaa; }
-  .sidebar-head:hover { color: #e0f0ff; background: rgba(255,255,255,0.1); }
+  .sidebar-section { border-bottom: 1px solid #c8daea; }
+  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c8e4f8; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: #2d4f72; border-left: 3px solid #5a9fd4; }
+  .sidebar-head:hover { background: #264566; }
   .sidebar-head .arrow { font-size: 10px; opacity: 0.7; }
-  .sidebar-body { padding: 2px 8px 4px; display: flex; flex-direction: column; gap: 3px; }
+  .sidebar-body { padding: 8px 8px 14px; display: flex; flex-direction: column; gap: 4px; background: #f4f8fd; }
   .sf { display: flex; flex-direction: column; gap: 1px; }
-  .sf label { font-size: 10px; font-weight: 600; color: #a8c8e0; }
-  .sf input, .sf select { height: 20px; background: #d8e8f4; border: 1px solid #8aaac8; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
-  .sf input:focus, .sf select:focus { outline: none; border-color: #5a8ab8; }
+  .sf label { font-size: 10px; font-weight: 600; color: #2a4a6a; }
+  .sf input, .sf select { height: 20px; background: #fff; border: 1px solid #9ab8d4; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
+  .sf input:focus, .sf select:focus { outline: none; border-color: #3a7abf; }
   .sf-row { display: flex; gap: 4px; align-items: flex-end; }
   .sf-row .sf { flex: 1; min-width: 0; }
   .sidebar-body.collapsed { display: none; }
-  .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #c8d8e8; cursor: pointer; font-size: 10px; }
-  .sf-check input[type=checkbox] { accent-color: #5a8ab8; }
+  .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #2a4a6a; cursor: pointer; font-size: 10px; }
+  .sf-check input[type=checkbox] { accent-color: #3a7abf; }
   .sidebar-btn { margin: 4px 8px; height: 22px; background: #3a6a9a; color: #fff; border: none; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; }
   .sidebar-btn:hover { background: #4a7aaa; }
 
@@ -200,7 +200,7 @@
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-head">Dimensioonid <span class="arrow">▾</span></div>
+      <div class="sidebar-head">Kande filtrid <span class="arrow">▾</span></div>
       <div class="sidebar-body">
         <div class="sf"><label>levelType</label><select>
           <option value=""></option>
@@ -213,17 +213,7 @@
           <option>Osakond</option>
           <option>Pinnad</option>
         </select></div>
-        <div class="sf"><label>Objekt</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Projekt</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Klient</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Hankija</label><input type="text" placeholder=""></div>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-head">Kande filtrid <span class="arrow">▾</span></div>
-      <div class="sidebar-body">
-<div class="sf"><label>transaction</label>
+        <div class="sf"><label>transaction</label>
           <div class="mc-wrap" id="mcTransWrap">
             <div class="mc-trigger" id="mcTransTrigger" onclick="toggleMcTrans()" style="background:#d8e8f4;border-color:#8aaac8;color:#1a2a3a;">
               <span id="mcTransLabel" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;">&nbsp;</span>
@@ -247,6 +237,10 @@
             </div>
           </div>
         </div>
+        <div class="sf"><label>Objekt</label><input type="text" placeholder=""></div>
+        <div class="sf"><label>Projekt</label><input type="text" placeholder=""></div>
+        <div class="sf"><label>Klient</label><input type="text" placeholder=""></div>
+        <div class="sf"><label>Hankija</label><input type="text" placeholder=""></div>
         <div class="sf"><label>Selgitus</label><input type="text" placeholder=""></div>
         <div class="sf"><label>Viide</label><input type="text" placeholder=""></div>
         <div class="sf"><label>KM kood</label><select><option>(kõik)</option></select></div>
