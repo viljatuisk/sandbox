@@ -29,6 +29,9 @@
   .sidebar-body { padding: 8px 8px 14px; display: flex; flex-direction: column; gap: 4px; background: #f4f8fd; }
   .sf { display: flex; flex-direction: column; gap: 1px; }
   .sf label { font-size: 10px; font-weight: 600; color: #2a4a6a; }
+  .sf label[title]::after { content: ' ⓘ'; font-size: 9px; color: #5a9fd4; font-weight: 400; }
+  .tab[title]::after { content: ' ⓘ'; font-size: 9px; color: #7aaad4; font-weight: 400; }
+  .view-controls label[title]::after { content: ' ⓘ'; font-size: 9px; color: #7aaad4; font-weight: 400; }
   .sf input, .sf select { height: 20px; background: #fff; border: 1px solid #9ab8d4; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
   .sf input:focus, .sf select:focus { outline: none; border-color: #3a7abf; }
   .sf-row { display: flex; gap: 4px; align-items: flex-end; }
@@ -36,6 +39,14 @@
   .sidebar-body.collapsed { display: none; }
   .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #2a4a6a; cursor: pointer; font-size: 10px; }
   .sf-check input[type=checkbox] { accent-color: #3a7abf; }
+  .sf-lookup { display: flex; gap: 0; }
+  .sf-lookup input { flex: 1; min-width: 0; border-radius: 2px 0 0 2px; }
+  .sf-lookup .lkp-btn { height: 20px; padding: 0 5px; background: #e0ecf8; border: 1px solid #9ab8d4; border-left: none; border-radius: 0 2px 2px 0; font-size: 11px; color: #2a4a6a; cursor: pointer; white-space: nowrap; }
+  .sf-lookup .lkp-btn:hover { background: #c8dff0; }
+  .konto-nr-toggle { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+  .knt-lbl { font-size: 10px; font-weight: 600; color: #2a4a6a; }
+  .knt-btn { font-size: 10px; padding: 1px 7px; height: 18px; border: 1px solid #9ab8d4; border-radius: 2px; background: #fff; color: #3a5a7a; cursor: pointer; }
+  .knt-btn.active { background: #2d4f72; color: #fff; border-color: #2d4f72; }
   .sidebar-btn { margin: 4px 8px; height: 22px; background: #3a6a9a; color: #fff; border: none; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; font-weight: 600; letter-spacing: 0.3px; }
   .sidebar-btn:hover { background: #4a7aaa; }
 
@@ -170,14 +181,14 @@
       <div class="sidebar-head">Periood <span class="arrow">▾</span></div>
       <div class="sidebar-body">
         <div class="sf-row">
-          <div class="sf"><label>Algus</label><input type="text" value="01.01.2025"></div>
-          <div class="sf"><label>Lõpp</label><input type="text" value="31.12.2026"></div>
+          <div class="sf"><label>Algus</label><div class="sf-lookup"><input type="text" value="01.01.2025"><button class="lkp-btn" title="Vali kuupäev">📅</button></div></div>
+          <div class="sf"><label>Lõpp</label><div class="sf-lookup"><input type="text" value="31.12.2026"><button class="lkp-btn" title="Vali kuupäev">📅</button></div></div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-section">
-      <div class="sidebar-head">Simulation <span class="arrow">▾</span></div>
+      <div class="sidebar-head">Simulatsioonid <span class="arrow">▾</span></div>
       <div class="sidebar-body">
         <div class="sf">
           <select><option>includingSimulations</option><option>onlySimulations</option><option>excludeSimulations</option></select>
@@ -189,11 +200,16 @@
     <div class="sidebar-section">
       <div class="sidebar-head">Kontod <span class="arrow">▾</span></div>
       <div class="sidebar-body">
-        <div class="sf-row">
-          <div class="sf"><label>Algus</label><input type="text" value="111201"></div>
-          <div class="sf"><label>Lõpp</label><input type="text" value="111201"></div>
+        <div class="konto-nr-toggle">
+          <span class="knt-lbl">Konto nr:</span>
+          <button class="knt-btn active" id="btnOmaKonto" onclick="setKontoNrType('oma')">Oma</button>
+          <button class="knt-btn" id="btnRiigiKonto" onclick="setKontoNrType('riigi')">Riigi</button>
         </div>
-        <div class="sf"><label>Korr. konto</label><input type="text" placeholder=""></div>
+        <div class="sf-row">
+          <div class="sf"><label>Algus</label><select><option value=""></option><option selected>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
+          <div class="sf"><label>Lõpp</label><select><option value=""></option><option>111201</option><option selected>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
+        </div>
+        <div class="sf"><label>Korr. konto</label><select><option value=""></option><option>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
         <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
         <label class="sf-check"><input type="checkbox" id="cbSaldoga" onchange="sidebarFilterChange()"> Ainult saldoga</label>
       </div>
@@ -202,18 +218,7 @@
     <div class="sidebar-section">
       <div class="sidebar-head">Kande filtrid <span class="arrow">▾</span></div>
       <div class="sidebar-body">
-        <div class="sf"><label>levelType</label><select>
-          <option value=""></option>
-          <option>ALAMOSAKOND</option>
-          <option>Auto</option>
-          <option>Erikord</option>
-          <option>Isik</option>
-          <option>Liin</option>
-          <option>Masin</option>
-          <option>Osakond</option>
-          <option>Pinnad</option>
-        </select></div>
-        <div class="sf"><label>transaction</label>
+        <div class="sf"><label title="vanas 'Kanne'">Kande tüüp</label>
           <div class="mc-wrap" id="mcTransWrap">
             <div class="mc-trigger" id="mcTransTrigger" onclick="toggleMcTrans()" style="background:#d8e8f4;border-color:#8aaac8;color:#1a2a3a;">
               <span id="mcTransLabel" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;">&nbsp;</span>
@@ -237,14 +242,25 @@
             </div>
           </div>
         </div>
-        <div class="sf"><label>Objekt</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Projekt</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Klient</label><input type="text" placeholder=""></div>
-        <div class="sf"><label>Hankija</label><input type="text" placeholder=""></div>
+        <div class="sf"><label title="Vanas 'Tüüp'">Objekti tase</label><select>
+          <option value=""></option>
+          <option>ALAMOSAKOND</option>
+          <option>Auto</option>
+          <option>Erikord</option>
+          <option>Isik</option>
+          <option>Liin</option>
+          <option>Masin</option>
+          <option>Osakond</option>
+          <option>Pinnad</option>
+        </select></div>
+        <div class="sf"><label>Objekt</label><select><option value=""></option><option>OBJ001</option><option>OBJ002</option><option>OSAKOND1</option><option>OSAKOND2</option></select></div>
+        <div class="sf"><label>Projekt</label><select><option value=""></option><option>PROJ2025</option><option>PROJ2024</option><option>PROJ2023</option></select></div>
+        <div class="sf"><label>Klient</label><select><option value=""></option><option>Estimaa Kaubandus AS</option><option>CAT Demo</option><option>Lambi OÜ</option></select></div>
+        <div class="sf"><label>Hankija</label><select><option value=""></option><option>IT-Arendus OÜ</option><option>Bank Demo</option></select></div>
         <div class="sf"><label>Selgitus</label><input type="text" placeholder=""></div>
         <div class="sf"><label>Viide</label><input type="text" placeholder=""></div>
         <div class="sf"><label>KM kood</label><select><option>(kõik)</option></select></div>
-        <div class="sf"><label>Valuuta</label><input type="text" placeholder=""></div>
+        <div class="sf"><label>Valuuta</label><select><option value=""></option><option>EUR</option><option>USD</option><option>SEK</option><option>GBP</option></select></div>
         <div class="sf"><label>Muutus</label>
           <div class="sf-row">
             <select style="flex:1"><option>on suurem kui</option></select>
@@ -1084,6 +1100,13 @@
     if (_currentTab === 'koondvaade') { summaFilterChange(); return; }
     if (val) { if (cb) cb.checked = true; showTab('vaheldumisi-kontod'); }
     else { if (cb) cb.checked = false; showTab('detailvaade'); }
+  }
+
+  let _kontoNrType = 'oma';
+  function setKontoNrType(type) {
+    _kontoNrType = type;
+    document.getElementById('btnOmaKonto').classList.toggle('active', type === 'oma');
+    document.getElementById('btnRiigiKonto').classList.toggle('active', type === 'riigi');
   }
 
   function sidebarFilterChange() {
