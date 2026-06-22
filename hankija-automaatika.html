@@ -220,6 +220,37 @@
   .inv-table tr.grp td   { background: var(--grp-bg); }
   .inv-table tr.saved td { background: var(--saved-bg); }
 
+  /* ── GROUP HEADER ROW ── */
+  .inv-table tr.grp-hdr > td {
+    background: var(--amber-bg);
+    border-bottom: 1px solid var(--amber-bd);
+  }
+  .inv-table tr.grp-hdr:hover > td { background: #f5e2c0; }
+  .inv-table tr.grp-hdr.sel > td   { background: #e8f3dd; border-bottom-color: var(--green-bd); }
+  .inv-table tr.grp-hdr.saved > td { background: var(--saved-bg); border-bottom-color: var(--gray-bd); }
+  .grp-hdr-marker { border-left: 3px solid var(--amber-bd) !important; }
+  .grp-hdr.sel .grp-hdr-marker { border-left-color: var(--green-bd) !important; }
+  .grp-hdr.saved .grp-hdr-marker { border-left-color: var(--gray-bd) !important; }
+  .grp-desc-text { color: var(--amber); font-weight: 600; font-size: 11px; }
+  .grp-hdr.sel .grp-desc-text { color: var(--green); }
+  .grp-hdr.saved .grp-desc-text { color: #5a5a56; }
+
+  /* ── TASE TOGGLE ── */
+  .tase-grp { display: flex; gap: 0; }
+  .tase-btn {
+    padding: 2px 9px; font-size: 11px; cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--surface); color: var(--text2);
+    white-space: nowrap;
+  }
+  .tase-btn:first-child { border-radius: 3px 0 0 3px; }
+  .tase-btn:last-child  { border-radius: 0 3px 3px 0; border-left: none; }
+  .tase-btn.on { background: var(--blue-bg); color: var(--blue-t); font-weight: 500; }
+  .tase-label {
+    font-size: 10px; color: var(--text3); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;
+  }
+
   .row-num { color: var(--text3); font-size: 10px; }
   .row-check { width: 14px; height: 14px; cursor: pointer; accent-color: var(--blue); }
   .konto-in {
@@ -228,7 +259,7 @@
     background: var(--surface); color: var(--text);
   }
   .konto-in:focus { outline: none; border-color: var(--blue); }
-  .sisu-cell { max-width: 220px; }
+  .sisu-cell { max-width: 260px; }
   .sisu-text { font-size: 11px; color: var(--text2); word-break: break-word; line-height: 1.4; }
   .sisu-hi  { background: #fac775; color: #412402; border-radius: 2px; padding: 0 2px; font-weight: 500; }
   .summa-val { font-weight: 500; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -239,6 +270,7 @@
   }
   .badge-saved  { background: var(--gray-bg); color: #444441; border: 1px solid var(--gray-bd); }
   .badge-set    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  .badge-group  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); border-radius: 3px; font-size: 10px; padding: 1px 5px; font-weight: 500; }
   .badge-none   { color: var(--text3); }
 
   /* ── AUTOMAATIKA PANEL ── */
@@ -252,13 +284,13 @@
   .ap-left {
     flex: 1;
     overflow-y: auto;
-    max-height: 520px;
+    max-height: 560px;
     border-right: 1px solid var(--border);
   }
   .ap-right {
     width: 290px;
     overflow-y: auto;
-    max-height: 520px;
+    max-height: 560px;
     background: var(--surface);
   }
 
@@ -282,11 +314,13 @@
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     position: sticky; top: 32px; z-index: 2;
+    flex-wrap: wrap;
   }
   .filter-bar input[type=text] {
     flex: 1; font-size: 11px; padding: 3px 7px; height: 26px;
     border: 1px solid var(--border2); border-radius: 3px;
     background: var(--surface); color: var(--text);
+    min-width: 100px;
   }
   .filter-bar input[type=text]:focus { outline: none; border-color: var(--blue); }
   .fb-btn {
@@ -296,6 +330,7 @@
   }
   .fb-btn:hover { background: var(--surface2); }
   .fb-btn.on { background: var(--blue-bg); color: var(--blue-t); border-color: #85b7eb; }
+  .filter-sep { width: 1px; height: 18px; background: var(--border2); flex-shrink: 0; }
 
   /* ── RULE PANEL ── */
   .rp-section {
@@ -318,6 +353,9 @@
     border-radius: 3px; padding: 5px 7px; min-height: 28px;
     font-size: 11px; color: var(--text); line-height: 1.6;
   }
+  .sisaldus-box.group-mode {
+    background: #fffbf0; border-color: var(--amber-bd);
+  }
   .s-chip {
     display: inline-flex; align-items: center; gap: 3px;
     background: var(--green-bg); color: var(--green);
@@ -325,6 +363,8 @@
     font-size: 11px; border: 1px solid var(--green-bd);
   }
   .s-chip:hover { background: #c0dd97; }
+  .s-chip.amber-chip { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
+  .s-chip.amber-chip:hover { background: #f0d6a0; }
   .s-sep { color: var(--text2); font-weight: 600; padding: 0 3px; }
 
   .koond-grp { display: flex; gap: 4px; }
@@ -468,9 +508,9 @@
   <!-- DOC HEADER -->
   <div class="doc-header">
     <span class="doc-title">Ostuarve</span>
-    <span class="doc-code">OA-2026-0412</span>
+    <span class="doc-code">OA-2026-05-2718</span>
     <span class="badge-new">Uus</span>
-    <span style="margin-left:auto; font-size:11px; color:var(--text3)">Telia Eesti AS · 12.05.2026 · 847,34 €</span>
+    <span style="margin-left:auto; font-size:11px; color:var(--text3)">Eesti Keskkonnateenused AS · 31.05.2026 · 3 650,94 €</span>
   </div>
 
   <!-- SUBTABS -->
@@ -485,9 +525,9 @@
   <div class="form-section">
     <div class="fields-grid" style="grid-template-columns: 120px 1fr 110px 1fr 130px;">
       <div class="field"><label>Hankija</label><div class="fbox" style="background:#e8f0fb;border-color:#85b7eb;"></div></div>
-      <div class="field"><label>Hankija nimi</label><div class="fbox" style="background:#e8f0fb;border-color:#85b7eb; display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">Telia Eesti AS</div></div>
+      <div class="field"><label>Hankija nimi</label><div class="fbox" style="background:#e8f0fb;border-color:#85b7eb; display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">Eesti Keskkonnateenused AS</div></div>
       <div class="field"><label>KM reg nr</label><div class="fbox"></div></div>
-      <div class="field"><label>Hankija arve</label><div class="fbox yellow" style="display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">TEL-2026-05-8812</div></div>
+      <div class="field"><label>Hankija arve</label><div class="fbox yellow" style="display:flex;align-items:center;padding:0 6px;font-size:11px;color:var(--text2)">TRTE26000578</div></div>
       <div class="field"><label>Makse saaja</label><div class="fbox"></div></div>
     </div>
   </div>
@@ -566,6 +606,12 @@
       </div>
 
       <div class="filter-bar">
+        <span class="tase-label">Tase:</span>
+        <div class="tase-grp">
+          <button class="tase-btn on" id="tase-item" onclick="setTase('item')">ItemEntry</button>
+          <button class="tase-btn" id="tase-group" onclick="setTase('group')">GroupEntry</button>
+        </div>
+        <div class="filter-sep"></div>
         <svg class="icon" style="stroke:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="search-in" placeholder="Filtreeri sisu järgi..." oninput="renderTable()">
         <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2);white-space:nowrap;cursor:pointer;">
@@ -581,7 +627,7 @@
             <tr>
               <th style="width:24px"><input type="checkbox" id="chk-all" onchange="toggleAll(this)" style="width:13px;height:13px;accent-color:var(--blue)"></th>
               <th style="width:22px">Nr</th>
-              <th style="min-width:200px">Sisu (e-arve)</th>
+              <th id="th-sisu" style="min-width:200px">Sisu (e-arve)</th>
               <th style="width:70px;text-align:right">Summa</th>
               <th style="width:75px">Konto</th>
               <th style="width:90px">Olek</th>
@@ -599,11 +645,11 @@
       </div>
 
       <div class="rp-section">
-        <div class="rp-label">Sisaldus (automaatika filter)</div>
+        <div class="rp-label" id="sisaldus-src-label">Sisaldus (automaatika filter)</div>
         <div class="sisaldus-box" id="sisaldus-box">
           <span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>
         </div>
-        <div style="font-size:10px;color:var(--text3);margin-top:4px">Klõpsa tükil eemaldamiseks &nbsp;·&nbsp; % = „kõik muud"</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px" id="sisaldus-hint">Klõpsa tükil eemaldamiseks &nbsp;·&nbsp; % = „kõik muud"</div>
       </div>
 
       <div class="rp-section">
@@ -628,7 +674,7 @@
       </div>
       <div class="rp-section">
         <div class="rp-label">Sisu (kirje tekst arvel)</div>
-        <input type="text" class="rp-input" id="r-sisu" placeholder="nt Andmeside">
+        <input type="text" class="rp-input" id="r-sisu" placeholder="nt Konteineri rent">
       </div>
 
       <div class="rp-section">
@@ -675,7 +721,7 @@
       <div class="save-bar">
         <button class="btn-full btn-apply" onclick="applyRule()">
           <svg class="icon" style="stroke:white"><path d="M20 6L9 17l-5-5"/></svg>
-          Rakenda valitud ridadele
+          <span id="apply-btn-label">Rakenda valitud ridadele</span>
         </button>
         <button class="btn-full btn-save" onclick="saveAutomaatika()">
           <svg class="icon" style="stroke:white"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21" style="stroke:white"/><polyline points="7 3 7 8 15 8" style="stroke:white"/></svg>
@@ -699,7 +745,7 @@
     <table class="rules-tbl" id="rules-tbl">
       <thead>
         <tr>
-          <th>#</th><th>Sisaldus</th><th>Konto</th><th>KM kood</th>
+          <th>#</th><th>Tase</th><th>Sisaldus</th><th>Konto</th><th>KM kood</th>
           <th>Objekt</th><th>Projekt</th><th>Kasutaja</th><th>Sisu</th>
           <th>Koond</th><th>Kinnita</th>
         </tr>
@@ -720,33 +766,55 @@
 <div id="toast"></div>
 
 <script>
-const ROWS = [
-  { id:1,  sisu:"Andmeside 5GB; Leping 12345; 55001122; DateTime: 01.05.2026", summa:12.50 },
-  { id:2,  sisu:"Andmeside 5GB; Leping 12345; 55001122; DateTime: 02.05.2026", summa:12.50 },
-  { id:3,  sisu:"Kõneteenus; 55001122; Kuutasu; DateTime: 01.05.2026",          summa:4.99  },
-  { id:4,  sisu:"Parkimistasu; 55001122; Laagri; DateTime: 03.05.2026",         summa:3.00  },
-  { id:5,  sisu:"Andmeside 5GB; Leping 67890; 55009988; DateTime: 01.05.2026",  summa:12.50 },
-  { id:6,  sisu:"Andmeside 5GB; Leping 67890; 55009988; DateTime: 02.05.2026",  summa:12.50 },
-  { id:7,  sisu:"Kõneteenus; 55009988; Kuutasu; DateTime: 01.05.2026",          summa:4.99  },
-  { id:8,  sisu:"Parkimistasu; 55009988; Ülemiste; DateTime: 05.05.2026",       summa:5.50  },
-  { id:9,  sisu:"Interneti kuutasu; Fiiberühendus; Kontor; Leping 99001",        summa:45.00 },
-  { id:10, sisu:"Interneti paigaldusteenus; Kontor; Leping 99001",               summa:25.00 },
-  { id:11, sisu:"Lisateenus SMS lühikood; Leping 44512",                         summa:18.00 },
-  { id:12, sisu:"Lisateenus roaming; 55001122; Läti; Mai 2026",                  summa:7.20  },
+/* ── DATA ── */
+const GROUPS = [
+  { id:'G1', desc:'Lääneringtee 39, Tartu linn, Tartu linn', rows:[
+    { id:1,  sisu:'Konteineri rent – 16 m³ · Komprimaator · B01602',   summa:115.42 },
+    { id:2,  sisu:'Konteineri rent – 20 m³ · Komprimaator · B02007',   summa:199.00 },
+    { id:3,  sisu:'Konteineri rent – 16 m³ · Komprimaator · B02008',   summa:29.25  },
+    { id:4,  sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E602',   summa:121.39 },
+    { id:5,  sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E7602',  summa:161.19 },
+    { id:6,  sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
+    { id:7,  sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+  ]},
+  { id:'G2', desc:'Riia tn 179a, Tartu linn, Tartu linn', rows:[
+    { id:8,  sisu:'Konteineri rent – 20 m³ · Laddustamine · 200301',   summa:249.00 },
+    { id:9,  sisu:'Segaolmejäätmete äraveos · 200301',                  summa:390.37 },
+    { id:10, sisu:'Paber- ja kartongipakend · 150101',                  summa:280.00 },
+    { id:11, sisu:'Plast- ja pakend · 150101',                          summa:68.00  },
+  ]},
+  { id:'G3', desc:'Lääneringtee 35-F, Tartu linn, Tartu linn', rows:[
+    { id:12, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02010',   summa:161.19 },
+    { id:13, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
+    { id:14, sisu:'Konteineri rent – 16 m³ · Komprimaator · B1E602',   summa:121.39 },
+    { id:15, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+  ]},
+  { id:'G4', desc:'Optika tn 24, Räni alevik, Kambja vald', rows:[
+    { id:16, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+  ]},
+  { id:'G5', desc:'Ränilaste tee 21, Tartu linn, Tartu linn', rows:[
+    { id:17, sisu:'Konteineri rent – 20 m³ · Komprimaator',            summa:199.00 },
+    { id:18, sisu:'Konteineri rent – 16 m³ · Komprimaator · B01701',   summa:121.39 },
+  ]},
 ];
+
+const ROWS = GROUPS.flatMap(g => g.rows.map(r => ({...r, groupId: g.id})));
+const rowGroupMap = {};
+GROUPS.forEach(g => g.rows.forEach(r => { rowGroupMap[r.id] = g; }));
 
 const state = {};
 ROWS.forEach(r => {
   state[r.id] = { konto:'', km:'', obj:'', proj:'', kasutaja:'', sisu:'',
-                  mapped:false, saved:false, group:null };
+                  mapped:false, saved:false, group:null, koond:'no' };
 });
 
-let selected = new Set();
-let koond = 'no';
-let groupCounter = 0;
-const savedRules = [];
+let selected    = new Set();
+let koond       = 'no';
+let groupCounter= 0;
+let sisuTase    = 'item'; // 'item' | 'group'
+const savedRules= [];
 
-/* ─ helpers ─ */
+/* ── helpers ── */
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function toast(msg, ok){
   const el = document.getElementById('toast');
@@ -756,88 +824,169 @@ function toast(msg, ok){
   el._t = setTimeout(()=>el.className='', 2800);
 }
 
-/* ─ render map table ─ */
+/* ── tase toggle ── */
+function setTase(v){
+  sisuTase = v;
+  document.getElementById('tase-item').classList.toggle('on', v==='item');
+  document.getElementById('tase-group').classList.toggle('on', v==='group');
+  document.getElementById('th-sisu').textContent = v==='group' ? 'GroupEntry kirjeldus (aadress)' : 'Sisu (e-arve)';
+  document.getElementById('sisaldus-src-label').textContent = v==='group'
+    ? 'Sisaldus (GroupEntry – aadress/kirjeldus)'
+    : 'Sisaldus (automaatika filter)';
+  document.getElementById('apply-btn-label').textContent = v==='group'
+    ? 'Rakenda valitud gruppidele'
+    : 'Rakenda valitud ridadele';
+  const box = document.getElementById('sisaldus-box');
+  v==='group' ? box.classList.add('group-mode') : box.classList.remove('group-mode');
+  selected.clear();
+  updateSisaldus();
+  renderTable();
+}
+
+/* ── group state helpers ── */
+function groupSelState(g){
+  const ids = g.rows.map(r=>r.id);
+  const n   = ids.filter(id=>selected.has(id)).length;
+  return n===0 ? 'none' : n===ids.length ? 'all' : 'some';
+}
+function groupMappedState(g){
+  const ids = g.rows.map(r=>r.id);
+  if (ids.every(id=>state[id].saved))  return 'saved';
+  if (ids.some(id=>state[id].mapped||state[id].saved)) return 'mapped';
+  return 'none';
+}
+
+/* ── render map table ── */
 function renderTable(){
   const q    = document.getElementById('search-in').value.toLowerCase();
   const unm  = document.getElementById('unmapped-only').checked;
   const tbody = document.getElementById('map-body');
   tbody.innerHTML = '';
 
-  ROWS.forEach(r => {
-    const s = state[r.id];
-    if (q && !r.sisu.toLowerCase().includes(q)) return;
-    if (unm && (s.mapped || s.saved)) return;
-
-    const cls = s.saved ? 'saved' : selected.has(r.id) ? 'sel' : (s.group !== null && s.mapped) ? 'grp' : '';
-    const tr = document.createElement('tr');
-    if (cls) tr.className = cls;
-
-    const parts = r.sisu.split(';');
-    const sisuHtml = parts.map((p,i) => {
-      p = p.trim();
-      return i === 0 || /\d{8,}/.test(p)
-        ? `<span class="sisu-hi">${esc(p)}</span>`
-        : `<span style="color:var(--text2)">${esc(p)}</span>`;
-    }).join('<span style="color:var(--border2)"> · </span>');
-
-    const statusHtml = s.saved
-      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
-      : s.mapped
-        ? `<span class="badge badge-set">&#10003; Määratud</span>`
-        : `<span class="badge-none">–</span>`;
-
-    const kontoVal = s.konto || '';
-    tr.innerHTML = `
-      <td><input type="checkbox" class="row-check" ${selected.has(r.id)?'checked':''} onchange="toggleRow(${r.id},this)"></td>
-      <td class="row-num">${r.id}</td>
-      <td class="sisu-cell"><div class="sisu-text">${sisuHtml}</div></td>
-      <td class="summa-val">${r.summa.toFixed(2)} €</td>
-      <td><input type="text" class="konto-in" value="${esc(kontoVal)}" placeholder="–" onchange="updateKonto(${r.id},this.value)" aria-label="Konto rida ${r.id}"></td>
-      <td>${statusHtml}</td>`;
-    tbody.appendChild(tr);
-  });
+  if (sisuTase === 'group') renderTableGroup(tbody, q, unm);
+  else                      renderTableItem(tbody, q, unm);
 
   updateSelCount();
   renderPreview();
 }
 
-/* ─ render preview table (above panel) ─ */
+function sisuChips(s){
+  return s.split('·').map((p,i)=>{
+    p=p.trim();
+    return i===0
+      ? `<span class="sisu-hi">${esc(p)}</span>`
+      : `<span style="color:var(--text2)">${esc(p)}</span>`;
+  }).join('<span style="color:var(--border2)"> · </span>');
+}
+
+function renderTableItem(tbody, q, unm){
+  ROWS.forEach(r => {
+    const s = state[r.id];
+    if (q && !r.sisu.toLowerCase().includes(q)) return;
+    if (unm && (s.mapped || s.saved)) return;
+    const cls = s.saved ? 'saved' : selected.has(r.id) ? 'sel' : (s.group!==null&&s.mapped)?'grp':'';
+    const tr = document.createElement('tr');
+    if (cls) tr.className = cls;
+    const statusHtml = s.saved
+      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      : s.mapped ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
+    tr.innerHTML = `
+      <td><input type="checkbox" class="row-check" ${selected.has(r.id)?'checked':''} onchange="toggleRow(${r.id},this)"></td>
+      <td class="row-num">${r.id}</td>
+      <td class="sisu-cell"><div class="sisu-text">${sisuChips(r.sisu)}</div></td>
+      <td class="summa-val">${r.summa.toFixed(2)} €</td>
+      <td><input type="text" class="konto-in" value="${esc(s.konto)}" placeholder="–" onchange="updateKonto(${r.id},this.value)" aria-label="Konto rida ${r.id}"></td>
+      <td>${statusHtml}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderTableGroup(tbody, q, unm){
+  GROUPS.forEach(g => {
+    const match = !q || g.desc.toLowerCase().includes(q) || g.rows.some(r=>r.sisu.toLowerCase().includes(q));
+    if (!match) return;
+    const gState  = groupMappedState(g);
+    if (unm && gState!=='none') return;
+
+    const selState = groupSelState(g);
+    const groupSumma = g.rows.reduce((a,r)=>a+r.summa,0);
+
+    let hCls = 'grp-hdr';
+    if (gState==='saved')       hCls += ' saved';
+    else if (selState!=='none') hCls += ' sel';
+
+    const statusHtml = gState==='saved'
+      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      : gState==='mapped' ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
+
+    const htr = document.createElement('tr');
+    htr.className = hCls;
+    htr.innerHTML = `
+      <td class="grp-hdr-marker"><input type="checkbox" class="row-check" ${selState==='all'?'checked':''} onchange="toggleGroup('${g.id}',this)"></td>
+      <td class="row-num" style="color:var(--amber-bd);font-size:14px;line-height:1">▸</td>
+      <td class="sisu-cell" colspan="2">
+        <div class="sisu-text grp-desc-text">
+          <svg style="width:11px;height:11px;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:2;margin-right:3px;opacity:.7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(g.desc)}
+          <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px">${g.rows.length} rida</span>
+        </div>
+      </td>
+      <td class="summa-val" style="color:var(--amber)">${groupSumma.toFixed(2)} €</td>
+      <td>${statusHtml}</td>`;
+    tbody.appendChild(htr);
+
+    if (selState==='some') {
+      const cb = htr.querySelector('input[type=checkbox]');
+      if (cb) cb.indeterminate = true;
+    }
+
+    g.rows.forEach(r => {
+      if (q && !r.sisu.toLowerCase().includes(q) && !g.desc.toLowerCase().includes(q)) return;
+      const s = state[r.id];
+      const cls = s.saved ? 'saved' : s.mapped ? 'grp' : '';
+      const tr = document.createElement('tr');
+      if (cls) tr.className = cls;
+      tr.innerHTML = `
+        <td></td>
+        <td class="row-num" style="padding-left:10px;color:var(--text3)">${r.id}</td>
+        <td class="sisu-cell" style="padding-left:18px"><div class="sisu-text">${sisuChips(r.sisu)}</div></td>
+        <td class="summa-val" style="color:var(--text2)">${r.summa.toFixed(2)} €</td>
+        <td><input type="text" class="konto-in" value="${esc(s.konto)}" placeholder="–" onchange="updateKonto(${r.id},this.value)"></td>
+        <td></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+/* ── render preview table ── */
 function renderPreview(){
   const tbody = document.getElementById('preview-body');
   tbody.innerHTML = '';
-
-  // Build consolidated view: group rows with same group+koond=rida|dok into one
   const seenGroups = new Set();
   const displayRows = [];
   ROWS.forEach(r => {
     const s = state[r.id];
-    const grouped = s.group !== null && (s.koond === 'rida' || s.koond === 'dok');
-    if (grouped && seenGroups.has(s.group)) {
-      // Add summa to the first row of this group
-      const existing = displayRows.find(d => d.groupKey === s.group);
-      if (existing) existing.summa += r.summa;
+    const grouped = s.group!==null && (s.koond==='rida'||s.koond==='dok');
+    if (grouped && seenGroups.has(s.group)){
+      const ex = displayRows.find(d=>d.groupKey===s.group);
+      if (ex) ex.summa += r.summa;
       return;
     }
     if (grouped) seenGroups.add(s.group);
-    displayRows.push({ r, s, summa: r.summa, groupKey: grouped ? s.group : null });
+    displayRows.push({ r, s, summa:r.summa, groupKey:grouped?s.group:null });
   });
-
   displayRows.forEach(({ r, s, summa, groupKey }) => {
-    const isGrouped = groupKey !== null;
     const tr = document.createElement('tr');
-    if (s.saved) tr.className = 'saved';
-    else if (s.mapped) tr.className = 'sel';
+    if (s.saved) tr.className='saved'; else if (s.mapped) tr.className='sel';
     const sisuHtml = s.sisu
       ? `<span style="color:var(--green);font-weight:500">${esc(s.sisu)}</span>`
-      : `<span style="color:var(--text2)">${esc(r.sisu.split(';')[0].trim())}</span>`;
+      : `<span style="color:var(--text2)">${esc(r.sisu.split('·')[0].trim())}</span>`;
     const badge = s.saved
       ? '<span class="badge badge-saved" style="font-size:10px">&#128274;</span>'
       : s.mapped ? '<span class="badge badge-set" style="font-size:10px">&#10003;</span>' : '';
-    const koondBadge = isGrouped
+    const koondBadge = groupKey!==null
       ? `<span style="font-size:9px;color:var(--blue-t);margin-left:3px">[${s.koond==='dok'?'Dok':'Rida'}]</span>` : '';
     tr.innerHTML = `
-      <td></td>
-      <td class="row-num">${isGrouped ? '…' : r.id}${koondBadge}</td>
+      <td></td><td class="row-num">${groupKey!==null?'…':r.id}${koondBadge}</td>
       <td></td><td></td>
       <td style="font-size:11px">${esc(s.konto)}</td>
       <td style="font-size:11px">${esc(s.obj)}</td>
@@ -845,87 +994,123 @@ function renderPreview(){
       <td style="font-size:11px">${esc(s.kasutaja)}</td>
       <td class="sisu-cell"><div class="sisu-text">${sisuHtml}</div></td>
       <td class="summa-val">${summa.toFixed(2)} €</td>
-      <td></td>
-      <td>${badge}</td>`;
+      <td></td><td>${badge}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-/* ─ selection ─ */
+/* ── selection ── */
 function toggleRow(id, cb){
   cb.checked ? selected.add(id) : selected.delete(id);
   updateSisaldus(); renderTable();
 }
+function toggleGroup(gid, cb){
+  const g = GROUPS.find(x=>x.id===gid);
+  if (!g) return;
+  g.rows.forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
+  updateSisaldus(); renderTable();
+}
 function toggleAll(cb){
-  ROWS.forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
+  (sisuTase==='group' ? GROUPS.flatMap(g=>g.rows) : ROWS).forEach(r =>
+    cb.checked ? selected.add(r.id) : selected.delete(r.id));
   updateSisaldus(); renderTable();
 }
 function selectFiltered(){
   const q   = document.getElementById('search-in').value.toLowerCase();
   const unm = document.getElementById('unmapped-only').checked;
-  ROWS.forEach(r => {
-    if (q && !r.sisu.toLowerCase().includes(q)) return;
-    if (unm && (state[r.id].mapped || state[r.id].saved)) return;
-    selected.add(r.id);
-  });
+  if (sisuTase==='group'){
+    GROUPS.forEach(g => {
+      if (!(!q || g.desc.toLowerCase().includes(q) || g.rows.some(r=>r.sisu.toLowerCase().includes(q)))) return;
+      if (unm && groupMappedState(g)!=='none') return;
+      g.rows.forEach(r => selected.add(r.id));
+    });
+  } else {
+    ROWS.forEach(r => {
+      if (q && !r.sisu.toLowerCase().includes(q)) return;
+      if (unm && (state[r.id].mapped||state[r.id].saved)) return;
+      selected.add(r.id);
+    });
+  }
   updateSisaldus(); renderTable();
 }
 function updateSelCount(){
   const el = document.getElementById('sel-count');
-  if (selected.size > 0){ el.style.display='inline-flex'; el.textContent = selected.size + ' valitud'; }
-  else el.style.display = 'none';
+  if (selected.size===0){ el.style.display='none'; return; }
+  const label = sisuTase==='group'
+    ? (()=>{ const n=GROUPS.filter(g=>groupSelState(g)==='all').length; return n+' grupp'+(n===1?'':'i')+' ('+selected.size+' rida)'; })()
+    : selected.size + ' valitud';
+  el.style.display='inline-flex'; el.textContent=label;
 }
 
-/* ─ sisaldus chips ─ */
+/* ── sisaldus chips ── */
 function updateSisaldus(){
   const box = document.getElementById('sisaldus-box');
-  if (selected.size === 0){
-    box.innerHTML = '<span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>';
+  if (selected.size===0){
+    box.innerHTML = `<span style="color:var(--text3);font-size:11px">${
+      sisuTase==='group'
+        ? 'Vali grupid vasakult → GroupEntry kirjeldus ilmub siia'
+        : 'Vali read vasakult → ühised sisu tükid ilmuvad siia'
+    }</span>`;
     return;
   }
-  const freq = new Map();
-  selected.forEach(id => {
-    const r = ROWS.find(x=>x.id===id);
-    if (!r) return;
-    r.sisu.split(';').forEach(w => {
-      w = w.trim(); if (!w) return;
-      freq.set(w, (freq.get(w)||0)+1);
+  if (sisuTase==='group'){
+    const full = GROUPS.filter(g=>groupSelState(g)==='all');
+    if (full.length===0){
+      box.innerHTML='<span style="color:var(--text3);font-size:11px">Vali terve grupp (kõik read)</span>';
+      return;
+    }
+    if (full.length===1){
+      const parts = full[0].desc.split(',').map(s=>s.trim()).filter(Boolean);
+      const chips = parts.slice(0, 2);
+      box.innerHTML = chips.map((w,i)=>
+        `<span class="s-chip amber-chip" onclick="this.nextElementSibling&&this.nextElementSibling.remove();this.remove()">${esc(w)} <span style="font-size:9px;opacity:.6">✕</span></span>${i<chips.length-1?'<span class="s-sep">%</span>':''}`
+      ).join('');
+    } else {
+      box.innerHTML = `<span class="s-chip amber-chip" onclick="this.remove()">% <span style="font-size:9px;opacity:.6">✕</span></span>`
+        + `<span style="font-size:10px;color:var(--text3);margin-left:5px">${full.length} gruppi valitud</span>`;
+    }
+  } else {
+    const freq = new Map();
+    selected.forEach(id=>{
+      const r=ROWS.find(x=>x.id===id); if (!r) return;
+      r.sisu.split('·').forEach(w=>{ w=w.trim(); if (!w) return; freq.set(w,(freq.get(w)||0)+1); });
     });
-  });
-  const common = [...freq.entries()].filter(([,c])=>c===selected.size).map(([w])=>w);
-  const chips = (common.length ? common.slice(0,3) : ROWS.find(x=>selected.has(x.id))?.sisu.split(';').map(s=>s.trim()).filter(Boolean).slice(0,2) || []);
-  box.innerHTML = chips.map((w,i) =>
-    `<span class="s-chip" onclick="this.nextSibling&&this.nextSibling.remove();this.remove()">${esc(w)} <span style="font-size:9px;opacity:.6">✕</span></span>${i<chips.length-1?'<span class="s-sep">%</span>':''}`
-  ).join('');
+    const common = [...freq.entries()].filter(([,c])=>c===selected.size).map(([w])=>w);
+    const chips  = (common.length ? common.slice(0,3)
+      : ROWS.find(x=>selected.has(x.id))?.sisu.split('·').map(s=>s.trim()).filter(Boolean).slice(0,2) || []);
+    box.innerHTML = chips.map((w,i)=>
+      `<span class="s-chip" onclick="this.nextElementSibling&&this.nextElementSibling.remove();this.remove()">${esc(w)} <span style="font-size:9px;opacity:.6">✕</span></span>${i<chips.length-1?'<span class="s-sep">%</span>':''}`
+    ).join('');
+  }
 }
 
-/* ─ koond ─ */
+/* ── koond ── */
 function setKoond(v){
   koond=v;
-  ['no','rida','dok'].forEach(k => document.getElementById('kn-'+k).classList.toggle('on', k===v));
+  ['no','rida','dok'].forEach(k=>document.getElementById('kn-'+k).classList.toggle('on',k===v));
 }
 
-/* ─ kinnita ─ */
+/* ── kinnita ── */
 function toggleKinnita(){
   document.getElementById('summa-section').style.display =
     document.getElementById('r-kinnita').checked ? 'block' : 'none';
 }
 
-/* ─ inline konto update ─ */
+/* ── inline konto update ── */
 function updateKonto(id, val){
   state[id].konto = val;
   state[id].mapped = !!val;
+  renderPreview();
 }
 
-/* ─ apply rule ─ */
+/* ── apply rule ── */
 function applyRule(){
-  if (selected.size === 0){ toast('Vali esmalt read linnukestega', false); return; }
+  if (selected.size===0){ toast('Vali esmalt read/grupid linnukestega', false); return; }
   const konto = document.getElementById('r-konto').value.trim();
   if (!konto){ toast('Sisesta konto number paremalt', false); return; }
   groupCounter++;
-  const count = selected.size;
-  selected.forEach(id => {
-    const s = state[id];
+  selected.forEach(id=>{
+    const s=state[id];
     s.konto    = konto;
     s.km       = document.getElementById('r-km').value.trim();
     s.obj      = document.getElementById('r-obj').value.trim();
@@ -936,33 +1121,34 @@ function applyRule(){
     s.group    = groupCounter;
     s.koond    = koond;
   });
+  const label = sisuTase==='group'
+    ? GROUPS.filter(g=>groupSelState(g)==='all').length + ' grupile (' + selected.size + ' rida)'
+    : selected.size + ' reale';
   selected.clear();
   document.getElementById('chk-all').checked = false;
-  toast(`${count} reale määratud konto ${konto} ✓`, true);
+  toast(`Määratud ${label} konto ${konto} ✓`, true);
   renderTable();
 }
 
-/* ─ save automaatika ─ */
+/* ── save automaatika ── */
 function saveAutomaatika(){
-  const mapped = ROWS.filter(r => state[r.id].mapped);
-  if (mapped.length === 0){ toast('Kõigepealt rakenda reeglid ridadele', false); return; }
-
-  const chips = [...document.getElementById('sisaldus-box').querySelectorAll('.s-chip')];
-  const sisaldus = chips.map(c=>c.textContent.replace('✕','').trim()).join('%') || '%';
-  const konto = document.getElementById('r-konto').value.trim();
-
+  const mapped = ROWS.filter(r=>state[r.id].mapped);
+  if (mapped.length===0){ toast('Kõigepealt rakenda reeglid ridadele', false); return; }
+  const chips   = [...document.getElementById('sisaldus-box').querySelectorAll('.s-chip')];
+  const sisaldus= chips.map(c=>c.textContent.replace('✕','').trim()).join('%') || '%';
   savedRules.push({
-    sisaldus, konto,
+    tase:     sisuTase==='group' ? 'GroupEntry' : 'ItemEntry',
+    sisaldus,
+    konto:    document.getElementById('r-konto').value.trim(),
     km:       document.getElementById('r-km').value.trim(),
     obj:      document.getElementById('r-obj').value.trim(),
     proj:     document.getElementById('r-proj').value.trim(),
     kasutaja: document.getElementById('r-kasutaja').value.trim(),
     sisu:     document.getElementById('r-sisu').value.trim(),
-    koond:    koond === 'no' ? '' : koond === 'rida' ? 'Rida' : 'Dokument',
-    kinnita:  document.getElementById('r-kinnita').checked ? 'Jah' : '',
+    koond:    koond==='no'?'':koond==='rida'?'Rida':'Dokument',
+    kinnita:  document.getElementById('r-kinnita').checked?'Jah':'',
   });
-
-  mapped.forEach(r => { state[r.id].saved = true; state[r.id].mapped = false; state[r.id].group = null; });
+  mapped.forEach(r=>{ state[r.id].saved=true; state[r.id].mapped=false; state[r.id].group=null; });
   selected.clear();
   renderRulesTable();
   document.getElementById('rules-panel').classList.add('open');
@@ -970,13 +1156,17 @@ function saveAutomaatika(){
   renderTable();
 }
 
-/* ─ render saved rules ─ */
+/* ── render saved rules ── */
 function renderRulesTable(){
   const tbody = document.getElementById('rules-body');
   tbody.innerHTML = '';
-  savedRules.forEach((r,i) => {
+  savedRules.forEach((r,i)=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td><code style="font-size:10px">${esc(r.sisaldus)}</code></td>
+    const taseBadge = r.tase==='GroupEntry'
+      ? `<span class="badge-group">${esc(r.tase)}</span>`
+      : `<span style="font-size:10px;color:var(--text3)">${esc(r.tase)}</span>`;
+    tr.innerHTML = `<td>${i+1}</td><td>${taseBadge}</td>
+      <td><code style="font-size:10px">${esc(r.sisaldus)}</code></td>
       <td>${esc(r.konto)}</td><td>${esc(r.km)}</td><td>${esc(r.obj)}</td>
       <td>${esc(r.proj)}</td><td>${esc(r.kasutaja)}</td><td>${esc(r.sisu)}</td>
       <td>${esc(r.koond)}</td><td>${esc(r.kinnita)}</td>`;
@@ -985,22 +1175,17 @@ function renderRulesTable(){
   document.getElementById('rules-count').textContent = savedRules.length + ' reeglit';
 }
 
-/* ─ reset ─ */
+/* ── reset ── */
 function resetAll(){
-  ROWS.forEach(r => { const s=state[r.id]; s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';s.mapped=false;s.saved=false;s.group=null; });
+  ROWS.forEach(r=>{ const s=state[r.id]; s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';s.mapped=false;s.saved=false;s.group=null; });
   selected.clear();
-  document.getElementById('r-konto').value='';
-  document.getElementById('r-km').value='';
-  document.getElementById('r-obj').value='';
-  document.getElementById('r-proj').value='';
-  document.getElementById('r-kasutaja').value='';
-  document.getElementById('r-sisu').value='';
-  document.getElementById('sisaldus-box').innerHTML='<span style="color:var(--text3);font-size:11px">Vali read vasakult → ühised sisu tükid ilmuvad siia</span>';
+  ['r-konto','r-km','r-obj','r-proj','r-kasutaja','r-sisu'].forEach(id=>document.getElementById(id).value='');
+  updateSisaldus();
   toast('Originaal e-arve read taastatud', true);
   renderTable();
 }
 
-/* ─ panel toggle ─ */
+/* ── panel toggle ── */
 let panelOpen = false;
 function toggleAutoPanel(){
   panelOpen = !panelOpen;
@@ -1012,7 +1197,7 @@ function toggleAutoPanel(){
 }
 function togglePanel(){ toggleAutoPanel(); }
 
-/* ─ init ─ */
+/* ── init ── */
 renderPreview();
 </script>
 </body>
