@@ -1134,7 +1134,8 @@
 
   (function() {
     const sel = document.getElementById('selVahesumma');
-    if (sel) sel.innerHTML = '<option value=""></option>' + VAHESUMMA_OPTS.map(o => '<option value="' + o + '">' + o + '</option>').join('');
+    const VAHESUMMA_LABELS = { byObject: 'Objekt', byProject: 'Projekt', byCustomer: 'Klient', bySupplier: 'Hankija', byVatCode: 'KM kood', byCurrency: 'Valuuta', bySpecialDiscount: 'Eriallahindlus' };
+    if (sel) sel.innerHTML = '<option value=""></option>' + VAHESUMMA_OPTS.map(o => '<option value="' + o + '">' + (VAHESUMMA_LABELS[o] || o) + '</option>').join('');
   })();
 
   updateTabModifiers('detailvaade');
@@ -1274,6 +1275,22 @@
     { konto: '211000', nimetus: 'Ostjate arved',    algsaldo: 4200.00, deebet: 5400.00, kreedit: 3600.00, muutus: 1800.00,  loppsaldo: 6000.00 },
     { konto: '521000', nimetus: 'Palgakulu',        algsaldo: 0.00,    deebet: 6800.00, kreedit: 0.00,    muutus: 6800.00,  loppsaldo: 6800.00 },
   ];
+  const ALGSALDO_DIM = {
+    byObject: {
+      'OBJ001':        { '111201': 1200,    '211000': 2500    },
+      'OBJ002':        { '211000': 1700    },
+      'TALLINN':       { '10101':  600,     '111201': 1800,   '521000': 0 },
+      'TARTU':         { '10101':  250,     '521000': 0       },
+      '(määramata)':   { '111201': 500,     '111204': 2580    },
+    },
+    byProject: {
+      'IT-ARENDUS':    { '10101':  200,     '521000': 0       },
+      'PROJ2025':      { '10101':  550,     '111201': 2800,   '211000': 1800, '521000': 0 },
+      'TURUNDUS':      { '211000': 1500,    '521000': 0       },
+      '(määramata)':   { '10101':  100,     '111201': 700,    '111204': 2580, '211000': 900 },
+    },
+  };
+
   let _origThead = null, _origTbody = null, _summaOn = false;
   let _vaheObjOn = false, _origTbodyVahe = null;
 
@@ -1283,6 +1300,13 @@
     return parseFloat(s) || 0;
   }
 
+  function _parseDateSortKey(td) {
+    if (!td) return 0;
+    const s = td.textContent.trim();
+    const m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    return m ? parseInt(m[3] + m[2] + m[1]) : 0;
+  }
+
   function _renderVaheldumisiByObj(tbody) {
     const rows = Array.from(tbody.querySelectorAll('tr.data[data-grp]'));
     const groups = new Map();
@@ -1290,7 +1314,7 @@
       const tds = row.querySelectorAll('td');
       const obj = tds[4] ? tds[4].textContent.trim() : '';
       if (!groups.has(obj)) groups.set(obj, []);
-      groups.get(obj).push({ row, corrAcct: tds[2] ? tds[2].textContent.trim() : '', dr: _parseNum(tds[18]), cr: _parseNum(tds[19]) });
+      groups.get(obj).push({ row, corrAcct: tds[2] ? tds[2].textContent.trim() : '', dr: _parseNum(tds[18]), cr: _parseNum(tds[19]), dateKey: _parseDateSortKey(tds[14]) });
     });
     const keys = Array.from(groups.keys()).sort((a, b) => {
       if (!a && b) return -1; if (a && !b) return 1;
@@ -1305,6 +1329,7 @@
       hdr.className = 'vahe-obj-hdr';
       hdr.innerHTML = '<td colspan="29">' + label + '</td>';
       tbody.appendChild(hdr);
+      grpRows.sort((a, b) => a.dateKey - b.dateKey);
       grpRows.forEach(rd => {
         const row = rd.row.cloneNode(true);
         const tds = row.querySelectorAll('td');
@@ -1390,7 +1415,102 @@
 
   function _renderSummaRows(data, vahesummaVal) {
     const tbody = document.getElementById('mainTbody');
+    const theadRow = document.querySelector('table thead tr');
     let html = '';
+
+    // Always use the standard 7-column header
+    theadRow.innerHTML =
+      '<th style="width:70px">Konto</th>' +
+      '<th style="width:200px">Nimetus</th>' +
+      '<th class="r" style="width:110px">Algsaldo</th>' +
+      '<th class="r" style="width:110px">Deebet</th>' +
+      '<th class="r" style="width:110px">Kreedit</th>' +
+      '<th class="r" style="width:110px">Muutus</th>' +
+      '<th class="r" style="width:110px">Lõppsaldo</th>';
+
+    if (vahesummaVal === 'byObject' || vahesummaVal === 'byProject') {
+      const dimIdx = vahesummaVal === 'byObject' ? 4 : 13;
+
+      // Build nimetus lookup from SUMMA_DATA; algsaldo comes from ALGSALDO_DIM per dimension
+      const nimetusMap = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
+      const dimAlgsaldo = (ALGSALDO_DIM[vahesummaVal] || {});
+
+      // Parse detail rows: iterate in order, track current konto from grp-header rows
+      const tmp = document.createElement('tbody');
+      tmp.innerHTML = _origTbody || '';
+      const grpKeys = [], grpMap = new Map();
+      let curKonto = '';
+      Array.from(tmp.querySelectorAll('tr')).forEach(row => {
+        if (row.classList.contains('grp-header')) {
+          const td0 = row.querySelector('td');
+          curKonto = td0 ? td0.textContent.trim().replace(/^[▾▸]\s*/, '') : '';
+          return;
+        }
+        if (!row.classList.contains('data') || !row.getAttribute('data-grp')) return;
+        const tds = row.querySelectorAll('td');
+        const dimRaw = tds[dimIdx] ? tds[dimIdx].textContent.trim() : '';
+        const dimKey = dimRaw || '(määramata)';
+        const konto  = curKonto;
+        if (!grpMap.has(dimKey)) { grpMap.set(dimKey, new Map()); grpKeys.push(dimKey); }
+        const kontoMap = grpMap.get(dimKey);
+        if (!kontoMap.has(konto)) kontoMap.set(konto, { deebet: 0, kreedit: 0 });
+        const acc = kontoMap.get(konto);
+        acc.deebet  += _parseNum(tds[18]);
+        acc.kreedit += _parseNum(tds[19]);
+      });
+
+      grpKeys.sort((a, b) => {
+        if (a === '(määramata)') return 1;
+        if (b === '(määramata)') return -1;
+        return a.localeCompare(b, 'et');
+      });
+
+      let totAlg = 0, totD = 0, totK = 0;
+      grpKeys.forEach(dimKey => {
+        const kontoMap = grpMap.get(dimKey);
+        html += '<tr class="grp-sub" style="background:#d8e8f4;"><td colspan="7" style="font-weight:700;padding-left:6px;">' + dimKey + '</td></tr>';
+        let grpD = 0, grpK = 0;
+        let grpAlg = 0;
+        Array.from(kontoMap.keys()).sort().forEach(konto => {
+          const acc     = kontoMap.get(konto);
+          const nimetus = nimetusMap.get(konto) || '';
+          const alg     = (dimAlgsaldo[dimKey] || {})[konto] ?? 0;
+          const m       = acc.deebet - acc.kreedit;
+          const lopp    = alg + m;
+          grpD += acc.deebet; grpK += acc.kreedit; grpAlg += alg;
+          html += '<tr class="data">' +
+            '<td>' + konto + '</td>' +
+            '<td>' + nimetus + '</td>' +
+            '<td class="r"' + (alg  < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(alg)  + '</td>' +
+            '<td class="r">' + fmtNum(acc.deebet)  + '</td>' +
+            '<td class="r">' + fmtNum(acc.kreedit) + '</td>' +
+            '<td class="r"' + (m    < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(m)    + '</td>' +
+            '<td class="r"' + (lopp < 0 ? ' style="color:#b00;font-weight:700"' : ' style="font-weight:700"') + '>' + fmtNum(lopp) + '</td></tr>';
+        });
+        const grpM = grpD - grpK;
+        const grpL = grpAlg + grpM;
+        totD += grpD; totK += grpK; totAlg += grpAlg;
+        html += '<tr class="grp-sub">' +
+          '<td colspan="2" style="text-align:right;">' + dimKey + ' kokku</td>' +
+          '<td class="r">' + fmtNum(grpAlg) + '</td>' +
+          '<td class="r">' + fmtNum(grpD) + '</td>' +
+          '<td class="r">' + fmtNum(grpK) + '</td>' +
+          '<td class="r"' + (grpM < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(grpM) + '</td>' +
+          '<td class="r"' + (grpL < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(grpL) + '</td></tr>';
+      });
+      const totM = totD - totK;
+      const totL = totAlg + totM;
+      html += '<tr class="grp-total">' +
+        '<td colspan="2">Kontod kokku</td>' +
+        '<td class="r">' + fmtNum(totAlg) + '</td>' +
+        '<td class="r">' + fmtNum(totD) + '</td>' +
+        '<td class="r">' + fmtNum(totK) + '</td>' +
+        '<td class="r"' + (totM < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(totM) + '</td>' +
+        '<td class="r"' + (totL < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(totL) + '</td></tr>';
+      tbody.innerHTML = html;
+      return;
+    }
+
     if (vahesummaVal) {
       const grpKeys = [], grpMap = new Map();
       data.forEach(r => {
