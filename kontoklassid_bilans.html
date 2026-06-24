@@ -5,7 +5,7 @@
 <title>Kontoklassid — Bilans</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; font-size: 12px; background: #e8ecf0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  body { font-family: Arial, sans-serif; font-size: 14px; background: #e8ecf0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
   .topbar { background: #2d4a6b; color: #fff; height: 32px; display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; font-size: 11px; }
   .topbar-logo { font-weight: 700; font-size: 13px; margin-right: 8px; }
@@ -46,8 +46,8 @@
 
   .table-wrap { flex: 1; overflow: auto; padding: 0; }
 
-  table { width: auto; min-width: 100%; border-collapse: collapse; font-size: 11px; }
-  thead th { position: sticky; top: 0; background: #2d4a6b; color: #c8d8e8; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.1); z-index: 2; }
+  table { width: auto; min-width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { position: sticky; top: 0; background: #2d4a6b; color: #c8d8e8; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.1); z-index: 2; }
   thead th:last-child { border-right: none; }
   thead th.col-kood { width: 130px; }
   thead th.col-nimi { width: 240px; }
@@ -65,15 +65,15 @@
   td { padding: 4px 8px; vertical-align: middle; }
   td.col-tase { text-align: center; }
   td.col-sort { text-align: right; color: #8aaacc; }
-  td.col-vaartus { color: #4a7a4a; font-size: 10px; }
-  td.col-kuva { color: #7a6a3a; font-size: 10px; }
-  td.col-hierarhia { color: #9aaabb; font-size: 10px; font-family: monospace; }
+  td.col-vaartus { color: #4a7a4a; font-size: 12px; }
+  td.col-kuva { color: #7a6a3a; font-size: 12px; }
+  td.col-hierarhia { color: #9aaabb; font-size: 12px; font-family: monospace; }
 
-  .row-tase-0 td { background: #1e2d3d; color: #ffffff; font-weight: 700; font-size: 12px; }
+  .row-tase-0 td { background: #1e2d3d; color: #ffffff; font-weight: 700; font-size: 14px; }
   .row-tase-0 td.col-vaartus, .row-tase-0 td.col-kuva, .row-tase-0 td.col-hierarhia, .row-tase-0 td.col-sort { color: rgba(255,255,255,0.5); }
   .row-tase-0:hover td { background: #2a3d52; }
 
-  .row-tase-1 td { background: #2d4a6b; color: #ffffff; font-weight: 700; font-size: 11px; }
+  .row-tase-1 td { background: #2d4a6b; color: #ffffff; font-weight: 700; font-size: 13px; }
   .row-tase-1 td.col-vaartus, .row-tase-1 td.col-kuva, .row-tase-1 td.col-hierarhia, .row-tase-1 td.col-sort { color: rgba(255,255,255,0.5); }
   .row-tase-1:hover td { background: #3a5a7a; }
 
@@ -104,12 +104,12 @@
   .row-tase-0 .toggle-btn:hover, .row-tase-1 .toggle-btn:hover { background: rgba(255,255,255,0.35); }
   .no-toggle { width: 14px; height: 14px; display: inline-block; margin-right: 4px; flex-shrink: 0; }
 
-  .badge-vaartus { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge-vaartus { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 11px; font-weight: 600; }
   .badge-kontode { background: #d8eed8; color: #2a6a2a; }
   .badge-valem { background: #dde8f8; color: #2a4a8a; }
-  .valem-formula { font-weight: 400; font-size: 9px; color: #4a6aaa; display: block; line-height: 1.3; margin-top: 1px; word-break: break-all; }
+  .valem-formula { font-weight: 400; font-size: 10px; color: #4a6aaa; display: block; line-height: 1.3; margin-top: 1px; word-break: break-all; }
 
-  .badge-kuva { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 9px; }
+  .badge-kuva { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 11px; }
   .badge-alati { background: #fff3d0; color: #7a5a00; }
   .badge-kui { background: #f0f0f0; color: #6a6a6a; }
 
@@ -117,7 +117,7 @@
   .row-tase-2 .count-badge, .row-tase-3 .count-badge { background: rgba(0,0,0,0.07); color: #6a8aaa; }
   .row-tase-4 .count-badge, .row-tase-5 .count-badge { display: none; }
 
-  .stats-bar { display: flex; gap: 16px; padding: 6px 14px; background: #f0f4f8; border-bottom: 1px solid #dde3ea; font-size: 10px; color: #6a8aaa; flex-shrink: 0; }
+  .stats-bar { display: flex; gap: 16px; padding: 6px 14px; background: #f0f4f8; border-bottom: 1px solid #dde3ea; font-size: 12px; color: #6a8aaa; flex-shrink: 0; }
   .stat { display: flex; gap: 4px; }
   .stat strong { color: #2a4a6a; }
 
