@@ -369,7 +369,8 @@ const DATA = [
   {kood:"DIR2280",nimi:"Muu omakapital",master:"DIR1012",hierarhia:"/10/30/80/",sort:"80",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
   {kood:"DIR2290",nimi:"Eelmiste perioodide jaotamata kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/90/",sort:"90",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
   {kood:"DIR2300",nimi:"Aruandeaasta kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/100/",sort:"100",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
-  {kood:"DIR1012S",nimi:"Omakapital kokku",master:"DIR1000",hierarhia:"/10/30/",sort:"30",tase:1,vaartus:"Valem",kuva:"Alati"}
+  {kood:"DIR1012S",nimi:"Omakapital kokku",master:"DIR1000",hierarhia:"/10/30/",sort:"30",tase:1,vaartus:"Valem",kuva:"Alati"},
+  {kood:"DIR1000S",nimi:"Passiva (kohustused ja omakapital) kokku",master:"DIR1000",hierarhia:"/10/40/",sort:"40",tase:1,vaartus:"Valem",kuva:"Alati",formula:"DIR1011S+DIR1012S"}
 ];
 
 // Build children map
@@ -406,6 +407,8 @@ function isVisible(d) {
 }
 
 function getValemFormula(kood) {
+  const node = DATA.find(d => d.kood === kood);
+  if (node && node.formula) return node.formula;
   const baseKood = kood.endsWith('S') ? kood.slice(0, -1) : kood;
   const children = childrenMap[baseKood] || [];
   if (!children.length) return '';
