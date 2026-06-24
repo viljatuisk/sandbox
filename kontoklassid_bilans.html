@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<title>Kontoklassid — Bilans</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; background: #e8ecf0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  .topbar { background: #2d4a6b; color: #fff; height: 32px; display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; font-size: 11px; }
+  .topbar-logo { font-weight: 700; font-size: 13px; margin-right: 8px; }
+  .topbar-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+  .topbar-link { color: rgba(255,255,255,0.75); cursor: pointer; }
+  .topbar-link:hover { color: #fff; text-decoration: underline; }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  .sidebar { width: 220px; background: #1e2d3d; color: #c8d8e8; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; font-size: 11px; padding: 10px 0; }
+  .sidebar-section { border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 8px; margin-bottom: 4px; }
+  .sidebar-head { padding: 6px 10px; font-size: 10px; font-weight: 700; color: #7a9ab8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sb-item { padding: 5px 14px; cursor: pointer; color: #a8c8e0; border-left: 2px solid transparent; font-size: 11px; }
+  .sb-item:hover { background: rgba(255,255,255,0.05); color: #d8eaf8; }
+  .sb-item.active { background: rgba(90,138,184,0.15); border-left-color: #5a8ab8; color: #fff; font-weight: 600; }
+
+  .sb-legend { padding: 8px 10px 4px; }
+  .sb-legend-title { font-size: 10px; font-weight: 700; color: #7a9ab8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .leg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; color: #a8c8e0; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .sb-controls { padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+  .sb-btn { height: 24px; background: #2d4a6b; color: #c8d8e8; border: 1px solid #3a5a78; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; }
+  .sb-btn:hover { background: #3a5a7a; color: #fff; }
+
+  .sb-filter { padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+  .sb-filter label { font-size: 10px; color: #7a9ab8; text-transform: uppercase; letter-spacing: 0.3px; }
+  .sb-filter input { height: 22px; background: #253545; border: 1px solid #3a5268; border-radius: 2px; color: #d0e4f4; font-size: 11px; padding: 0 6px; font-family: Arial, sans-serif; width: 100%; }
+  .sb-filter input:focus { outline: none; border-color: #5a8ab8; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+  .report-head { padding: 8px 14px; border-bottom: 1px solid #dde3ea; background: #f5f7fa; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .report-title { font-size: 15px; font-weight: 700; color: #1a2a3a; }
+  .report-sub { font-size: 11px; color: #6a8aaa; margin-left: 6px; }
+  .report-actions { margin-left: auto; display: flex; gap: 4px; }
+  .ra-btn { height: 24px; padding: 0 9px; background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; }
+  .ra-btn:hover { background: #eef3f8; }
+
+  .table-wrap { flex: 1; overflow: auto; padding: 0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  thead th { position: sticky; top: 0; background: #2d4a6b; color: #c8d8e8; text-align: left; padding: 6px 8px; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.1); z-index: 2; }
+  thead th:last-child { border-right: none; }
+  thead th.col-kood { width: 130px; }
+  thead th.col-nimi { min-width: 280px; }
+  thead th.col-tase { width: 55px; text-align: center; }
+  thead th.col-vaartus { width: 130px; }
+  thead th.col-kuva { width: 100px; }
+  thead th.col-hierarhia { width: 160px; }
+  thead th.col-sort { width: 65px; text-align: right; }
+
+  tbody tr { border-bottom: 1px solid #eef1f4; cursor: pointer; transition: background 0.1s; }
+  tbody tr:hover { background: #f0f5fa; }
+  tbody tr.hidden { display: none; }
+  tbody tr.filtered-out { display: none; }
+
+  td { padding: 4px 8px; vertical-align: middle; }
+  td.col-tase { text-align: center; }
+  td.col-sort { text-align: right; color: #8aaacc; }
+  td.col-vaartus { color: #4a7a4a; font-size: 10px; }
+  td.col-kuva { color: #7a6a3a; font-size: 10px; }
+  td.col-hierarhia { color: #9aaabb; font-size: 10px; font-family: monospace; }
+
+  .row-tase-0 td { background: #1e2d3d; color: #ffffff; font-weight: 700; font-size: 12px; }
+  .row-tase-0 td.col-vaartus, .row-tase-0 td.col-kuva, .row-tase-0 td.col-hierarhia, .row-tase-0 td.col-sort { color: rgba(255,255,255,0.5); }
+  .row-tase-0:hover td { background: #2a3d52; }
+
+  .row-tase-1 td { background: #2d4a6b; color: #ffffff; font-weight: 700; font-size: 11px; }
+  .row-tase-1 td.col-vaartus, .row-tase-1 td.col-kuva, .row-tase-1 td.col-hierarhia, .row-tase-1 td.col-sort { color: rgba(255,255,255,0.5); }
+  .row-tase-1:hover td { background: #3a5a7a; }
+
+  .row-tase-2 td { background: #e8f0f8; color: #1a2a3a; font-weight: 600; }
+  .row-tase-2:hover td { background: #d8e8f4; }
+
+  .row-tase-3 td { background: #f5f8fc; color: #2a3a4a; font-weight: 500; }
+  .row-tase-3:hover td { background: #e8f0f8; }
+
+  .row-tase-4 td { background: #ffffff; color: #2a3a4a; }
+  .row-tase-4:hover td { background: #f5f8fc; }
+
+  .row-tase-5 td { background: #fffff8; color: #3a4a3a; }
+  .row-tase-5:hover td { background: #f8f8ee; }
+
+  .row-summary td { font-style: italic; }
+  .row-summary td.col-nimi { font-weight: 600; }
+  .row-tase-1.row-summary td { font-style: normal; }
+  .row-tase-2.row-summary td { border-top: 1px solid #b0c8e8; }
+  .row-tase-3.row-summary td { border-top: 1px solid #c8d8e8; }
+  .row-tase-4.row-summary td { border-top: 1px solid #d8e4ec; }
+
+  .nimi-cell { display: flex; align-items: center; }
+  .indent { display: inline-block; }
+  .toggle-btn { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: rgba(0,0,0,0.12); border-radius: 2px; font-size: 9px; cursor: pointer; margin-right: 4px; flex-shrink: 0; color: inherit; user-select: none; }
+  .toggle-btn:hover { background: rgba(0,0,0,0.22); }
+  .row-tase-0 .toggle-btn, .row-tase-1 .toggle-btn { background: rgba(255,255,255,0.2); }
+  .row-tase-0 .toggle-btn:hover, .row-tase-1 .toggle-btn:hover { background: rgba(255,255,255,0.35); }
+  .no-toggle { width: 14px; height: 14px; display: inline-block; margin-right: 4px; flex-shrink: 0; }
+
+  .badge-vaartus { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .badge-kontode { background: #d8eed8; color: #2a6a2a; }
+  .badge-valem { background: #dde8f8; color: #2a4a8a; }
+
+  .badge-kuva { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 9px; }
+  .badge-alati { background: #fff3d0; color: #7a5a00; }
+  .badge-kui { background: #f0f0f0; color: #6a6a6a; }
+
+  .count-badge { margin-left: auto; font-size: 10px; background: rgba(255,255,255,0.15); padding: 1px 5px; border-radius: 8px; color: rgba(255,255,255,0.7); }
+  .row-tase-2 .count-badge, .row-tase-3 .count-badge { background: rgba(0,0,0,0.07); color: #6a8aaa; }
+  .row-tase-4 .count-badge, .row-tase-5 .count-badge { display: none; }
+
+  .stats-bar { display: flex; gap: 16px; padding: 6px 14px; background: #f0f4f8; border-bottom: 1px solid #dde3ea; font-size: 10px; color: #6a8aaa; flex-shrink: 0; }
+  .stat { display: flex; gap: 4px; }
+  .stat strong { color: #2a4a6a; }
+
+  .no-results { text-align: center; padding: 40px; color: #9aaabb; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-logo">Directo</span>
+  <span class="topbar-sep"></span>
+  <span class="topbar-link">Seadistused</span>
+  <span class="topbar-sep"></span>
+  <span class="topbar-link">Raamatupidamine</span>
+  <span class="topbar-sep"></span>
+  <span style="color:#fff">Kontoklasside register — Bilans</span>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-head">Vaade</div>
+      <div class="sb-item active" onclick="setView('tree')">Puuvaade</div>
+      <div class="sb-item" onclick="setView('flat')">Loend</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-head">Tasemed</div>
+      <div class="sb-controls">
+        <button class="sb-btn" onclick="collapseToLevel(1)">Tase 1</button>
+        <button class="sb-btn" onclick="collapseToLevel(2)">Tase 2</button>
+        <button class="sb-btn" onclick="collapseToLevel(3)">Tase 3</button>
+        <button class="sb-btn" onclick="expandAll()">Laienda kõik</button>
+        <button class="sb-btn" onclick="collapseAll()">Ahenda kõik</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-head">Otsing</div>
+      <div class="sb-filter">
+        <label>Nimi / kood</label>
+        <input type="text" id="searchInput" placeholder="Otsi..." oninput="filterTable()">
+      </div>
+    </div>
+
+    <div class="sb-legend">
+      <div class="sb-legend-title">Legend</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#1e2d3d"></div>Juur (tase 0)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#2d4a6b"></div>Põhigrupp (tase 1)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#e8f0f8"></div>Alamgrupp (tase 2)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#f5f8fc"></div>Kategooria (tase 3)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#ffffff; border:1px solid #dde3ea"></div>Kirje (tase 4)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#fffff8; border:1px solid #e8e8d8"></div>Alamkirje (tase 5)</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="report-head">
+      <div class="report-title">Kontoklasside register</div>
+      <span class="report-sub">Bilansiskeem</span>
+      <div class="report-actions">
+        <button class="ra-btn" onclick="window.print()">Prindi</button>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat">Kokku: <strong id="statTotal">147</strong> kirjet</div>
+      <div class="stat">Näidatav: <strong id="statVisible">147</strong></div>
+      <div class="stat">Tasemeid: <strong>0–5</strong></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th class="col-kood">Kood</th>
+            <th class="col-nimi">Nimi</th>
+            <th class="col-tase">Tase</th>
+            <th class="col-vaartus">Väärtus</th>
+            <th class="col-kuva">Kuva</th>
+            <th class="col-hierarhia">Hierarhia</th>
+            <th class="col-sort">Sort</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="no-results" id="noResults" style="display:none">Tulemusi ei leitud</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {kood:"DIR1000",nimi:"Kontoklassid",master:"",hierarhia:"/10/",sort:"10",tase:0,vaartus:"",kuva:""},
+  {kood:"DIR1010",nimi:"Varad",master:"DIR1000",hierarhia:"/10/10/",sort:"10",tase:1,vaartus:"",kuva:"Alati"},
+  {kood:"DIR2010",nimi:"Käibevara",master:"DIR1010",hierarhia:"/10/10/10/",sort:"10",tase:2,vaartus:"",kuva:"Alati"},
+  {kood:"DIR3010",nimi:"Raha ja pangakontod",master:"DIR2010",hierarhia:"/10/10/10/10/",sort:"10",tase:3,vaartus:"",kuva:"Alati"},
+  {kood:"DIR4010",nimi:"Sularaha",master:"DIR3010",hierarhia:"/10/10/10/10/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4020",nimi:"Arvelduskontod",master:"DIR3010",hierarhia:"/10/10/10/10/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4030",nimi:"Hoiused",master:"DIR3010",hierarhia:"/10/10/10/10/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4040",nimi:"Muud",master:"DIR3010",hierarhia:"/10/10/10/10/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3010S",nimi:"Raha ja pangakontod kokku",master:"DIR2010",hierarhia:"/10/10/10/10/",sort:"10",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3020",nimi:"Nõuded ja ettemaksed",master:"DIR2010",hierarhia:"/10/10/10/20/",sort:"20",tase:3,vaartus:"",kuva:"Alati"},
+  {kood:"DIR4050",nimi:"Nõuded ostjate vastu",master:"DIR3020",hierarhia:"/10/10/10/20/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4060",nimi:"Ebatõenäoliselt laekuvad nõuded ostjate vastu",master:"DIR3020",hierarhia:"/10/10/10/20/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4070",nimi:"Laenunõuded",master:"DIR3020",hierarhia:"/10/10/10/20/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4080",nimi:"Intressid",master:"DIR3020",hierarhia:"/10/10/10/20/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4090",nimi:"Dividendid",master:"DIR3020",hierarhia:"/10/10/10/20/50/",sort:"50",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4100",nimi:"Viitlaekumised",master:"DIR3020",hierarhia:"/10/10/10/20/60/",sort:"60",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4110",nimi:"Nõuded seotud osapoolte vastu",master:"DIR3020",hierarhia:"/10/10/10/20/70/",sort:"70",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4120",nimi:"Maksude ettemaksed ja tagasinõuded",master:"DIR3020",hierarhia:"/10/10/10/20/80/",sort:"80",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4130",nimi:"Muud nõuded",master:"DIR3020",hierarhia:"/10/10/10/20/90/",sort:"90",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4140",nimi:"Ettemaksed",master:"DIR3020",hierarhia:"/10/10/10/20/100/",sort:"100",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3020S",nimi:"Nõuded ja ettemaksed kokku",master:"DIR2010",hierarhia:"/10/10/10/20/",sort:"20",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3030",nimi:"Varud",master:"DIR2010",hierarhia:"/10/10/10/30/",sort:"30",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4150",nimi:"Tooraine ja materjal",master:"DIR3030",hierarhia:"/10/10/10/30/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4160",nimi:"Lõpetamata toodang",master:"DIR3030",hierarhia:"/10/10/10/30/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4170",nimi:"Valmistoodang",master:"DIR3030",hierarhia:"/10/10/10/30/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4180",nimi:"Müügiks ostetud kaubad",master:"DIR3030",hierarhia:"/10/10/10/30/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4190",nimi:"Ettemaksed varude eest",master:"DIR3030",hierarhia:"/10/10/10/30/50/",sort:"50",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4200",nimi:"Muud",master:"DIR3030",hierarhia:"/10/10/10/30/60/",sort:"60",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3030S",nimi:"Varud kokku",master:"DIR2010",hierarhia:"/10/10/10/30/",sort:"30",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3040",nimi:"Bioloogilised varad",master:"DIR2010",hierarhia:"/10/10/10/40/",sort:"40",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3050",nimi:"Finantsinvesteeringud",master:"DIR2010",hierarhia:"/10/10/10/50/",sort:"50",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR2010S",nimi:"Käibevara kokku",master:"DIR1010",hierarhia:"/10/10/10/",sort:"10",tase:2,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR2020",nimi:"Põhivara",master:"DIR1010",hierarhia:"/10/10/20/",sort:"20",tase:2,vaartus:"",kuva:"Alati"},
+  {kood:"DIR3060",nimi:"Investeeringud tütar- ja sidusettevõtjatesse",master:"DIR2020",hierarhia:"/10/10/20/10/",sort:"10",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4210",nimi:"Tütarettevõtjate aktsiad ja osad",master:"DIR3060",hierarhia:"/10/10/20/10/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4220",nimi:"Sidusettevõtjate aktsiad ja osad",master:"DIR3060",hierarhia:"/10/10/20/10/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3060S",nimi:"Investeeringud tütar- ja sidusettevõtjatesse kokku",master:"DIR2020",hierarhia:"/10/10/20/10/",sort:"10",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3070",nimi:"Finantsinvesteeringud (Põhivara)",master:"DIR2020",hierarhia:"/10/10/20/20/",sort:"20",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3080",nimi:"Nõuded ja ettemaksed (Põhivara)",master:"DIR2020",hierarhia:"/10/10/20/30/",sort:"30",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4230",nimi:"Nõuded ostjate vastu (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4240",nimi:"Nõuded seotud osapoolte vastu (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4250",nimi:"Ebatõenäoliselt laekuvad nõuded ostjate vastu (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4260",nimi:"Intressid (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4270",nimi:"Dividendid (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/50/",sort:"50",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4280",nimi:"Viitlaekumised (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/60/",sort:"60",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4290",nimi:"Laenunõuded (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/70/",sort:"70",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4300",nimi:"Maksude ettemaksed ja tagasinõuded (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/80/",sort:"80",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4310",nimi:"Muud nõuded (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/90/",sort:"90",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4320",nimi:"Ettemaksed (Põhivara)",master:"DIR3080",hierarhia:"/10/10/20/30/100/",sort:"100",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3080S",nimi:"Nõuded ja ettemaksed kokku (Põhivara)",master:"DIR2020",hierarhia:"/10/10/20/30/",sort:"30",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3090",nimi:"Kinnisvarainvesteeringud",master:"DIR2020",hierarhia:"/10/10/20/40/",sort:"40",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3100",nimi:"Materiaalsed põhivarad",master:"DIR2020",hierarhia:"/10/10/20/50/",sort:"50",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3110",nimi:"Bioloogilised varad (Põhivara)",master:"DIR2020",hierarhia:"/10/10/20/60/",sort:"60",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3120",nimi:"Immateriaalsed põhivarad",master:"DIR2020",hierarhia:"/10/10/20/70/",sort:"70",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR2020S",nimi:"Põhivara kokku",master:"DIR1010",hierarhia:"/10/10/20/",sort:"20",tase:2,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR1010S",nimi:"Varad kokku",master:"DIR1000",hierarhia:"/10/10/",sort:"10",tase:1,vaartus:"Valem",kuva:"Alati"},
+  {kood:"DIR1011",nimi:"Võlad",master:"DIR1000",hierarhia:"/10/20/",sort:"20",tase:1,vaartus:"",kuva:"Alati"},
+  {kood:"DIR2030",nimi:"Lühiajalised kohustused",master:"DIR1011",hierarhia:"/10/20/10/",sort:"10",tase:2,vaartus:"",kuva:"Alati"},
+  {kood:"DIR3130",nimi:"Laenukohustised",master:"DIR2030",hierarhia:"/10/20/10/10/",sort:"10",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3140",nimi:"Võlad ja ettemaksed",master:"DIR2030",hierarhia:"/10/20/10/20/",sort:"20",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4330",nimi:"Võlad tarnijatele",master:"DIR3140",hierarhia:"/10/20/10/20/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4340",nimi:"Maksuvõlad",master:"DIR3140",hierarhia:"/10/20/10/20/20/",sort:"20",tase:4,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR5010",nimi:"Käibemaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/10/",sort:"10",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5020",nimi:"Ettevõtte tulumaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/20/",sort:"20",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5030",nimi:"Üksikisiku tulumaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/30/",sort:"30",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5040",nimi:"Erisoodustuse tulumaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/40/",sort:"40",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5050",nimi:"Sotsiaalmaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/50/",sort:"50",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5060",nimi:"Töötuskindlustusmaksed (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/60/",sort:"60",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5070",nimi:"Kohustuslik kogumispension (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/70/",sort:"70",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5080",nimi:"Maamaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/80/",sort:"80",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5090",nimi:"Aktsiisimaks (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/90/",sort:"90",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5100",nimi:"Intress (Maksuvõlad)",master:"DIR4340",hierarhia:"/10/20/10/20/20/100/",sort:"100",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4340S",nimi:"Maksuvõlad kokku",master:"DIR3140",hierarhia:"/10/20/10/20/20/",sort:"20",tase:4,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR4350",nimi:"Võlad töövõtjatele",master:"DIR3140",hierarhia:"/10/20/10/20/30/",sort:"30",tase:4,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR5110",nimi:"Palgavõlg",master:"DIR4350",hierarhia:"/10/20/10/20/30/10/",sort:"10",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5120",nimi:"Puhkusereserv",master:"DIR4350",hierarhia:"/10/20/10/20/30/20/",sort:"20",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5130",nimi:"Muu arvestatud tasud koos maksudega",master:"DIR4350",hierarhia:"/10/20/10/20/30/30/",sort:"30",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4350S",nimi:"Võlad töövõtjatele kokku",master:"DIR3140",hierarhia:"/10/20/10/20/30/",sort:"30",tase:4,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR4360",nimi:"Arvelduskrediit",master:"DIR3140",hierarhia:"/10/20/10/20/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4370",nimi:"Laenud",master:"DIR3140",hierarhia:"/10/20/10/20/50/",sort:"50",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4380",nimi:"Kapitalirent",master:"DIR3140",hierarhia:"/10/20/10/20/60/",sort:"60",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4390",nimi:"Võlakirjad",master:"DIR3140",hierarhia:"/10/20/10/20/70/",sort:"70",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4400",nimi:"Intressid",master:"DIR3140",hierarhia:"/10/20/10/20/80/",sort:"80",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4410",nimi:"Dividendid",master:"DIR3140",hierarhia:"/10/20/10/20/90/",sort:"90",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4420",nimi:"Muud võlad",master:"DIR3140",hierarhia:"/10/20/10/20/100/",sort:"100",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4430",nimi:"Tulevaste perioodide tulu",master:"DIR3140",hierarhia:"/10/20/10/20/110/",sort:"110",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4440",nimi:"Muud saadud ettemaksed",master:"DIR3140",hierarhia:"/10/20/10/20/120/",sort:"120",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3140S",nimi:"Võlad ja ettemaksed kokku",master:"DIR2030",hierarhia:"/10/20/10/20/",sort:"20",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3150",nimi:"Eraldised",master:"DIR2030",hierarhia:"/10/20/10/30/",sort:"30",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4450",nimi:"Garantiieraldis",master:"DIR3150",hierarhia:"/10/20/10/30/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4460",nimi:"Maksueraldis",master:"DIR3150",hierarhia:"/10/20/10/30/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4470",nimi:"Muud eraldised",master:"DIR3150",hierarhia:"/10/20/10/30/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3150S",nimi:"Eraldised kokku",master:"DIR2030",hierarhia:"/10/20/10/30/",sort:"30",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3160",nimi:"Sihtfinantseerimine",master:"DIR2030",hierarhia:"/10/20/10/40/",sort:"40",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4480",nimi:"Tegevuskulud",master:"DIR3160",hierarhia:"/10/20/10/40/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3160S",nimi:"Sihtfinantseerimine kokku",master:"DIR2030",hierarhia:"/10/20/10/40/",sort:"40",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR2030S",nimi:"Lühiajalised kohustused kokku",master:"DIR1011",hierarhia:"/10/20/10/",sort:"10",tase:2,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR2040",nimi:"Pikaajalised kohustused",master:"DIR1011",hierarhia:"/10/20/20/",sort:"20",tase:2,vaartus:"",kuva:"Alati"},
+  {kood:"DIR3170",nimi:"Laenukohustised (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/10/",sort:"10",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3180",nimi:"Võlad ja ettemaksed (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/20/",sort:"20",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4490",nimi:"Võlad tarnijatele (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4500",nimi:"Maksuvõlad (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/20/",sort:"20",tase:4,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR5140",nimi:"Käibemaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/10/",sort:"10",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5150",nimi:"Ettevõtte tulumaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/20/",sort:"20",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5160",nimi:"Üksikisiku tulumaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/30/",sort:"30",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5170",nimi:"Erisoodustuse tulumaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/40/",sort:"40",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5180",nimi:"Sotsiaalmaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/50/",sort:"50",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5190",nimi:"Töötuskindlustusmaksed (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/60/",sort:"60",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5200",nimi:"Kohustuslik kogumispension (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/70/",sort:"70",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5210",nimi:"Maamaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/80/",sort:"80",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5220",nimi:"Aktsiisimaks (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/90/",sort:"90",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5230",nimi:"Intress (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/100/",sort:"100",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5240",nimi:"Muud maksude ettemaksed ja maksuvõlad (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/110/",sort:"110",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR5250",nimi:"Ettemaksukonto jääk (Maksuvõlad, pikaajal)",master:"DIR4500",hierarhia:"/10/20/20/20/20/120/",sort:"120",tase:5,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4500S",nimi:"Maksuvõlad kokku (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/20/",sort:"20",tase:4,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR4510",nimi:"Võlad töövõtjatele (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4520",nimi:"Tarnijad (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/40/",sort:"40",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4530",nimi:"Laenud (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/50/",sort:"50",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4540",nimi:"Kapitalirent (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/60/",sort:"60",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4550",nimi:"Võlakirjad (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/70/",sort:"70",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4560",nimi:"Muud võlad (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/80/",sort:"80",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4570",nimi:"Tulevaste perioodide tulud (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/90/",sort:"90",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4580",nimi:"Muud saadud ettemaksed (pikaajal)",master:"DIR3180",hierarhia:"/10/20/20/20/100/",sort:"100",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3180S",nimi:"Võlad ja ettemaksed kokku (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/20/",sort:"20",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3190",nimi:"Eraldised (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/30/",sort:"30",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4590",nimi:"Garantiieraldis (pikaajal)",master:"DIR3190",hierarhia:"/10/20/20/30/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4600",nimi:"Maksueraldis (pikaajal)",master:"DIR3190",hierarhia:"/10/20/20/30/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4610",nimi:"Muud eraldised (pikaajal)",master:"DIR3190",hierarhia:"/10/20/20/30/30/",sort:"30",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3190S",nimi:"Eraldised kokku (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/30/",sort:"30",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR3200",nimi:"Sihtfinantseerimine (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/40/",sort:"40",tase:3,vaartus:"",kuva:"Kui pole 0"},
+  {kood:"DIR4620",nimi:"Põhivara (pikaajal)",master:"DIR3200",hierarhia:"/10/20/20/40/10/",sort:"10",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR4630",nimi:"Sihtfinantseerimise amortisatsioon (pikaajal)",master:"DIR3200",hierarhia:"/10/20/20/40/20/",sort:"20",tase:4,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3200S",nimi:"Sihtfinantseerimine kokku (pikaajal)",master:"DIR2040",hierarhia:"/10/20/20/40/",sort:"40",tase:3,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR2040S",nimi:"Pikaajalised kohustused kokku",master:"DIR1011",hierarhia:"/10/20/20/",sort:"20",tase:2,vaartus:"Valem",kuva:"Kui pole 0"},
+  {kood:"DIR1011S",nimi:"Võlad kokku",master:"DIR1000",hierarhia:"/10/20/",sort:"20",tase:1,vaartus:"Valem",kuva:"Alati"},
+  {kood:"DIR1012",nimi:"Omakapital",master:"DIR1000",hierarhia:"/10/30/",sort:"30",tase:1,vaartus:"",kuva:"Alati"},
+  {kood:"DIR3210",nimi:"Aktsiakapital või osakapital nimiväärtuses",master:"DIR1012",hierarhia:"/10/30/10/",sort:"10",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3220",nimi:"Registreerimata aktsiakapital või osakapital",master:"DIR1012",hierarhia:"/10/30/20/",sort:"20",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3230",nimi:"Sissemaksmata aktsiakapital või osakapital",master:"DIR1012",hierarhia:"/10/30/30/",sort:"30",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3240",nimi:"Ülekurss",master:"DIR1012",hierarhia:"/10/30/40/",sort:"40",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3250",nimi:"Oma aktsiad või osad",master:"DIR1012",hierarhia:"/10/30/50/",sort:"50",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3260",nimi:"Kohustuslik reservkapital",master:"DIR1012",hierarhia:"/10/30/60/",sort:"60",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3270",nimi:"Muud reservid",master:"DIR1012",hierarhia:"/10/30/70/",sort:"70",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3280",nimi:"Muu omakapital",master:"DIR1012",hierarhia:"/10/30/80/",sort:"80",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3290",nimi:"Eelmiste perioodide jaotamata kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/90/",sort:"90",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR3300",nimi:"Aruandeaasta kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/100/",sort:"100",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
+  {kood:"DIR1012S",nimi:"Omakapital kokku",master:"DIR1000",hierarhia:"/10/30/",sort:"30",tase:1,vaartus:"Valem",kuva:"Alati"}
+];
+
+// Build children map
+const childrenMap = {};
+DATA.forEach(d => {
+  if (!childrenMap[d.master]) childrenMap[d.master] = [];
+  childrenMap[d.master].push(d.kood);
+});
+const hasChildren = k => childrenMap[k] && childrenMap[k].length > 0;
+
+// Track collapsed state (default: tase 0 and 1 expanded, rest collapsed)
+const collapsed = new Set();
+DATA.forEach(d => { if (d.tase >= 2) collapsed.add(d.kood); });
+
+// All ancestors of a node
+function ancestors(kood) {
+  const result = [];
+  let cur = DATA.find(d => d.kood === kood);
+  while (cur && cur.master) {
+    result.push(cur.master);
+    cur = DATA.find(d => d.kood === cur.master);
+  }
+  return result;
+}
+
+// Is row visible? All ancestors must be expanded
+function isVisible(d) {
+  let cur = DATA.find(x => x.kood === d.master);
+  while (cur) {
+    if (collapsed.has(cur.kood)) return false;
+    cur = DATA.find(x => x.kood === cur.master);
+  }
+  return true;
+}
+
+let currentView = 'tree';
+
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  tbody.innerHTML = '';
+  let visCount = 0;
+
+  DATA.forEach(d => {
+    const isSummary = d.kood.endsWith('S');
+    const vis = currentView === 'flat' ? true : isVisible(d);
+    const matchesSearch = !q || d.kood.toLowerCase().includes(q) || d.nimi.toLowerCase().includes(q);
+
+    const tr = document.createElement('tr');
+    tr.dataset.kood = d.kood;
+    tr.className = [
+      `row-tase-${d.tase}`,
+      isSummary ? 'row-summary' : '',
+      (!vis || !matchesSearch) ? 'hidden' : ''
+    ].filter(Boolean).join(' ');
+
+    if (vis && matchesSearch) visCount++;
+
+    const indent = d.tase * 12;
+    const hasC = hasChildren(d.kood) && currentView === 'tree';
+    const isCollapsed = collapsed.has(d.kood);
+
+    const toggleHtml = hasC
+      ? `<span class="toggle-btn" onclick="toggleRow('${d.kood}',event)">${isCollapsed ? '▶' : '▼'}</span>`
+      : `<span class="no-toggle"></span>`;
+
+    const vaartusHtml = d.vaartus === 'Kontode saldo'
+      ? `<span class="badge-vaartus badge-kontode">Kontode saldo</span>`
+      : d.vaartus === 'Valem'
+      ? `<span class="badge-vaartus badge-valem">Valem</span>`
+      : '';
+
+    const kuvaHtml = d.kuva === 'Alati'
+      ? `<span class="badge-kuva badge-alati">Alati</span>`
+      : d.kuva === 'Kui pole 0'
+      ? `<span class="badge-kuva badge-kui">Kui pole 0</span>`
+      : '';
+
+    const childCount = (childrenMap[d.kood] || []).length;
+    const countHtml = hasC && d.tase <= 3 ? `<span class="count-badge">${childCount}</span>` : '';
+
+    tr.innerHTML = `
+      <td class="col-kood">${d.kood}</td>
+      <td class="col-nimi">
+        <div class="nimi-cell">
+          <span class="indent" style="width:${indent}px"></span>
+          ${toggleHtml}
+          <span>${d.nimi}</span>
+          ${countHtml}
+        </div>
+      </td>
+      <td class="col-tase">${d.tase}</td>
+      <td class="col-vaartus">${vaartusHtml}</td>
+      <td class="col-kuva">${kuvaHtml}</td>
+      <td class="col-hierarhia">${d.hierarhia}</td>
+      <td class="col-sort">${d.sort}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('statVisible').textContent = visCount;
+  document.getElementById('noResults').style.display = visCount === 0 ? 'block' : 'none';
+}
+
+function toggleRow(kood, e) {
+  e.stopPropagation();
+  if (collapsed.has(kood)) {
+    collapsed.delete(kood);
+  } else {
+    collapsed.add(kood);
+    // collapse all descendants
+    function collapseDesc(k) {
+      (childrenMap[k] || []).forEach(child => {
+        collapsed.add(child);
+        collapseDesc(child);
+      });
+    }
+    collapseDesc(kood);
+  }
+  renderTable();
+}
+
+function collapseToLevel(maxLevel) {
+  collapsed.clear();
+  DATA.forEach(d => {
+    if (d.tase >= maxLevel) collapsed.add(d.kood);
+  });
+  renderTable();
+}
+
+function expandAll() {
+  collapsed.clear();
+  renderTable();
+}
+
+function collapseAll() {
+  DATA.forEach(d => { if (d.tase > 0) collapsed.add(d.kood); });
+  renderTable();
+}
+
+function filterTable() {
+  renderTable();
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.sb-item').forEach((el, i) => {
+    el.classList.toggle('active', (i === 0 && v === 'tree') || (i === 1 && v === 'flat'));
+  });
+  if (v === 'flat') {
+    collapsed.clear();
+  } else {
+    DATA.forEach(d => { if (d.tase >= 2) collapsed.add(d.kood); });
+  }
+  renderTable();
+}
+
+renderTable();
+</script>
+</body>
+</html>
