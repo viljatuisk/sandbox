@@ -1366,7 +1366,7 @@
     const theadRow = document.querySelector('table thead tr');
     const tbody = document.getElementById('mainTbody');
     if (!_origThead) _origThead = theadRow.innerHTML;
-    if (!_origTbody) _origTbody = tbody.innerHTML;
+    if (!_origTbody) _origTbody = (_vaheObjOn && _origTbodyVahe) ? _origTbodyVahe : tbody.innerHTML;
 
     const tbl = document.querySelector('table');
     tbl.dataset.origWidth = tbl.style.width;
