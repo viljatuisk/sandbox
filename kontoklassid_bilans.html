@@ -195,6 +195,10 @@
   .tag-tulud { display: inline-block; background: #d8f0d8; color: #2a6a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-kulud { display: inline-block; background: #f8e0d8; color: #8a2a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-sk2 { display: inline-block; background: #e8d8f8; color: #4a2a8a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+  /* Bilansiaruanne */
+  #bilansiaruanne-view { display:none; flex:1; overflow:auto; padding:24px; background:#e8ecf0; }
+  .ba-alati-badge { display:inline-block; font-size:9px; background:#fff3cd; color:#856404; border:1px solid #ffc107; padding:0 3px; border-radius:2px; flex-shrink:0; }
+  .ba-kui-badge   { display:inline-block; font-size:9px; background:#e8f4f8; color:#1a6080;  border:1px solid #b8d8e8; padding:0 3px; border-radius:2px; flex-shrink:0; }
   /* Demo2 level selector */
   #kontokaart2-view { display:none; flex:1; overflow:auto; padding:24px; background:#e8ecf0; }
   .lv2-row { display:flex; align-items:center; gap:6px; padding:2px 0; min-height:28px; }
@@ -281,6 +285,7 @@
       <button class="tab-btn active" data-tab="bilans" onclick="setTab('bilans')">Bilans</button>
       <button class="tab-btn" data-tab="sk1" onclick="setTab('sk1')">Kasumiaruanne SK1</button>
       <button class="tab-btn" data-tab="sk2" onclick="setTab('sk2')">Kasumiaruanne SK2</button>
+      <button class="tab-btn" data-tab="bilansiaruanne" onclick="setTab('bilansiaruanne')">Bilansiaruanne</button>
       <button class="tab-btn" data-tab="kontokaart" onclick="setTab('kontokaart')">Kontokaart (demo)</button>
       <button class="tab-btn" data-tab="kontokaart2" onclick="setTab('kontokaart2')">Kontokaart (demo 2)</button>
     </div>
@@ -525,6 +530,33 @@
           </div>
         </div>
       </div>
+    </div>
+    <div id="bilansiaruanne-view">
+  <div style="max-width:1020px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <span style="font-size:15px;font-weight:700;color:#2d4a6b;">Bilanss — kontoklasside struktuur</span>
+        <span style="font-size:11px;color:#8a9aaa;margin-left:12px;">Demo-andmetega · kontrolli Kuva: Alati loogika</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <label style="font-size:11px;color:#5a7a9a;display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="checkbox" id="baShowZero" onchange="renderBa()" checked> Näita nullridu
+        </label>
+        <span class="ba-alati-badge" style="font-size:10px;padding:2px 7px;">A = Alati nähtav</span>
+        <span class="ba-kui-badge"   style="font-size:10px;padding:2px 7px;">0 = Kui pole 0</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start;">
+      <div style="flex:1;background:#fff;border-radius:4px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.1);min-width:0;">
+        <div style="font-size:12px;font-weight:700;color:#2d4a6b;border-bottom:2px solid #2d4a6b;padding-bottom:7px;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;">Aktiva (Varad)</div>
+        <div id="ba-varad"></div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:4px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.1);min-width:0;">
+        <div style="font-size:12px;font-weight:700;color:#2d4a6b;border-bottom:2px solid #2d4a6b;padding-bottom:7px;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;">Passiva (Kohustused ja omakapital)</div>
+        <div id="ba-passiva"></div>
+      </div>
+    </div>
+  </div>
     </div>
   </div>
 </div>
@@ -964,7 +996,8 @@ const TAB_LABELS = {
   sk1: 'Kasumiaruanne — Skeem 1',
   sk2: 'Kasumiaruanne — Skeem 2',
   kontokaart: 'Kontokaart (demo)',
-  kontokaart2: 'Kontokaart — tasemel valik'
+  kontokaart2: 'Kontokaart — tasemel valik',
+  bilansiaruanne: 'Bilansiaruanne (demo)'
 };
 
 function setTab(tab) {
@@ -974,11 +1007,13 @@ function setTab(tab) {
   });
   document.getElementById('reportSub').textContent = TAB_LABELS[tab] || '';
   const isKontokaart = tab === 'kontokaart' || tab === 'kontokaart2';
-  document.getElementById('table-section').style.display = isKontokaart ? 'none' : 'flex';
+  const isBa = tab === 'bilansiaruanne';
+  document.getElementById('table-section').style.display = (isKontokaart || isBa) ? 'none' : 'flex';
   document.getElementById('kontokaart-view').style.display = tab === 'kontokaart' ? 'block' : 'none';
   document.getElementById('kontokaart2-view').style.display = tab === 'kontokaart2' ? 'block' : 'none';
+  document.getElementById('bilansiaruanne-view').style.display = isBa ? 'flex' : 'none';
+  if (isBa) { renderBa(); return; }
   if (!isKontokaart) {
-    // reset collapse for new tab — all expanded
     collapsed.clear();
     renderTable();
   }
@@ -1421,6 +1456,88 @@ d2TyypChanged();
 addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud', 'd2ObjSk2Tbody');
 addObjSk2Row('TURUNDUS', 'Turustuskulud',                         'd2ObjSk2Tbody');
 addObjSk2Row('ÜLD',      'Üldhalduskulud',                        'd2ObjSk2Tbody');
+
+// === BILANSIARUANNE ===
+const BA_VALS = {
+  DIR4010:4200,  DIR4020:38500,
+  DIR4050:22400, DIR4100:1800,  DIR4120:600,  DIR4140:2800,
+  DIR4150:9800,  DIR4160:3600,  DIR4170:6400, DIR4180:2200,
+  DIR4640:45000, DIR4650:112000,DIR4660:28000,
+  DIR4710:10500,
+  DIR4330:7200,
+  DIR5010:2100,  DIR5030:1300,  DIR5050:2900, DIR5060:350,  DIR5070:175,
+  DIR5110:2900,  DIR5120:1600,
+  DIR2210:2500,  DIR2290:166825,DIR2300:38750,
+};
+
+function baVal(kood) {
+  const node = DATA.find(d => d.kood === kood);
+  if (!node) return 0;
+  if (node.vaartus === 'Kontode saldo') return BA_VALS[kood] || 0;
+  const baseKood = kood.endsWith('S') ? kood.slice(0,-1) : kood;
+  const children = DATA.filter(d => d.master === baseKood && !d.kood.endsWith('S') && (d.aruanne||'bilans')==='bilans');
+  return children.reduce((s,c) => s + baVal(c.kood), 0);
+}
+
+function renderBa() {
+  const showZero = document.getElementById('baShowZero').checked;
+  const bilansData = DATA.filter(d => (d.aruanne||'bilans')==='bilans' && d.tase > 0);
+
+  const varadSet = new Set();
+  const passivaSet = new Set();
+  function addDesc(kood, set) {
+    set.add(kood);
+    bilansData.filter(d => d.master === kood).forEach(d => addDesc(d.kood, set));
+  }
+  addDesc('DIR1010', varadSet);
+  varadSet.add('DIR1010S');
+  addDesc('DIR1011', passivaSet);
+  addDesc('DIR1012', passivaSet);
+  passivaSet.add('DIR1011S');
+  passivaSet.add('DIR1012S');
+  passivaSet.add('DIR1000S');
+
+  document.getElementById('ba-varad').innerHTML = '';
+  document.getElementById('ba-passiva').innerHTML = '';
+
+  bilansData.forEach(node => {
+    const val = baVal(node.kood);
+    const isAlati = node.kuva === 'Alati';
+    if (!isAlati && !showZero && val === 0) return;
+
+    const isSummary = node.kood.endsWith('S');
+    const isGrandTotal = node.kood === 'DIR1010S' || node.kood === 'DIR1000S';
+    const isTopGroup = node.tase === 1 && !isSummary;
+    const indent = Math.max(0, node.tase - 1) * 14;
+
+    const row = document.createElement('div');
+    row.style.cssText = [
+      'display:flex;align-items:baseline;gap:4px;',
+      isGrandTotal  ? 'padding:6px 0 3px;border-top:2px solid #2d4a6b;margin-top:10px;' :
+      isSummary     ? 'padding:4px 0 2px;border-top:1px solid #d0dce8;margin-top:3px;' :
+      isTopGroup    ? 'padding:10px 0 2px;margin-top:4px;' :
+                      'padding:2px 0;'
+    ].join('');
+
+    const dimmed = !isAlati && val === 0;
+    const nameEl = document.createElement('span');
+    nameEl.style.cssText = `padding-left:${indent}px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:${(isTopGroup||isGrandTotal)?'12px':'11px'};font-weight:${(isTopGroup||isSummary||isGrandTotal)?'700':'400'};color:${dimmed?'#aac0cc':'#1e2d3d'};`;
+    nameEl.textContent = node.nimi;
+
+    const badge = document.createElement('span');
+    badge.className = isAlati ? 'ba-alati-badge' : 'ba-kui-badge';
+    badge.textContent = isAlati ? 'A' : '0';
+
+    const valEl = document.createElement('span');
+    valEl.style.cssText = `font-size:${(isSummary||isGrandTotal)?'12px':'11px'};font-weight:${(isSummary||isGrandTotal)?'700':'400'};color:${val===0?'#9abacc':'#1e3050'};min-width:70px;text-align:right;flex-shrink:0;`;
+    valEl.textContent = val === 0 ? '—' : val.toLocaleString('et-EE');
+
+    row.appendChild(nameEl); row.appendChild(badge); row.appendChild(valEl);
+
+    const target = varadSet.has(node.kood) ? 'ba-varad' : passivaSet.has(node.kood) ? 'ba-passiva' : null;
+    if (target) document.getElementById(target).appendChild(row);
+  });
+}
 </script>
 </body>
 </html>
