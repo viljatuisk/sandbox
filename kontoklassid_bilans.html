@@ -492,7 +492,7 @@
                   <div class="kk-label" style="padding-top:5px">SK2 — objekti kaupa</div>
                   <div style="flex:1">
                     <table style="width:100%;border-collapse:collapse"><tbody id="d2ObjSk2Tbody"></tbody></table>
-                    <button class="kk-add-btn" onclick="addObjSk2Row()">+ Lisa objekt</button>
+                    <button class="kk-add-btn" onclick="addObjSk2Row('','','d2ObjSk2Tbody')">+ Lisa objekt</button>
                   </div>
                 </div>
               </div>
@@ -1237,7 +1237,7 @@ const OBJ_DATA = [
 // ===== SK2 OBJEKTI KAUPA (kontokaardil) =====
 let objSk2Cnt = 0;
 
-function addObjSk2Row(objKood='', sk2Label='') {
+function addObjSk2Row(objKood='', sk2Label='', tbodyId='objSk2Tbody') {
   const id = ++objSk2Cnt;
   const objOptions = OBJ_DATA.map(o =>
     `<option value="${o.kood}" ${o.kood === objKood ? 'selected' : ''}>${o.kood} — ${o.nimi}</option>`
@@ -1262,7 +1262,7 @@ function addObjSk2Row(objKood='', sk2Label='') {
     <td style="padding:2px;width:22px;vertical-align:middle;text-align:center">
       <span style="cursor:pointer;color:#cc4444;font-size:15px;line-height:1" onclick="removeObjSk2Row(${id})">×</span>
     </td>`;
-  document.getElementById('objSk2Tbody').appendChild(tr);
+  document.getElementById(tbodyId).appendChild(tr);
 }
 
 function removeObjSk2Row(id) {
@@ -1406,6 +1406,9 @@ lv2Init('bilans','bilans',null);
 lv2Init('sk1','sk1','DIR6351');
 lv2Init('sk2','sk2',null);
 d2TyypChanged();
+addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud', 'd2ObjSk2Tbody');
+addObjSk2Row('TURUNDUS', 'Turustuskulud',                         'd2ObjSk2Tbody');
+addObjSk2Row('ÜLD',      'Üldhalduskulud',                        'd2ObjSk2Tbody');
 </script>
 </body>
 </html>
