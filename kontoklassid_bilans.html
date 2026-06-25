@@ -1327,31 +1327,41 @@ function lv2Render(fg) {
   if (!container) return;
   container.innerHTML = '';
 
-  for (let i = 0; i < path.length; i++) {
-    const node = path[i];
-    const isLocked = i < path.length - 1;
-    const isSaldo = lv2IsSaldo(node);
-    const siblings = i===0 ? lv2Nodes(aruanne,null) : lv2Nodes(aruanne, path[i-1].kood);
-    const row = document.createElement('div');
-    row.className = 'lv2-row';
-    const saldoBadge = isSaldo ? '<span class="lv2-saldo-badge">kontode saldo</span>' : '';
-    if (isLocked) {
-      row.innerHTML = `<span class="lv2-level-label">Tase ${node.tase}</span><span class="lv2-locked"><span class="lv2-lock-icon">🔒</span>${node.nimi}</span>${saldoBadge}`;
-    } else {
-      const opts = siblings.map(s=>`<option value="${s.kood}"${s.kood===node.kood?' selected':''}>${s.nimi}</option>`).join('');
-      row.innerHTML = `<span class="lv2-level-label">Tase ${node.tase}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${i},this.value)"><option value="">—</option>${opts}</select>${saldoBadge}<span class="lv2-clear" onclick="lv2ClearFrom('${fg}',${i})" title="Tühjenda">×</span>`;
-    }
-    container.appendChild(row);
-  }
+  const maxTase = Math.max(0, ...DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase > 0).map(d => d.tase));
+  const deepestIdx = path.length - 1;
 
-  const lastNode = path[path.length-1]||null;
-  const children = lv2Nodes(aruanne, lastNode ? lastNode.kood : null);
-  if (children.length > 0) {
-    const nextTase = lastNode ? lastNode.tase+1 : 1;
+  for (let level = 1; level <= maxTase; level++) {
+    const pathIdx = level - 1;
+    const nodeAtLevel = path[pathIdx] || null;
     const row = document.createElement('div');
     row.className = 'lv2-row';
-    const opts = children.map(c=>`<option value="${c.kood}">${c.nimi}</option>`).join('');
-    row.innerHTML = `<span class="lv2-level-label">Tase ${nextTase}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${path.length},this.value)"><option value="">— vali —</option>${opts}</select>`;
+
+    if (nodeAtLevel) {
+      const isLocked = pathIdx < deepestIdx;
+      const isSaldo = lv2IsSaldo(nodeAtLevel);
+      const saldoBadge = isSaldo ? '<span class="lv2-saldo-badge">kontode saldo</span>' : '';
+      if (isLocked) {
+        row.innerHTML = `<span class="lv2-level-label">Tase ${level}</span><span class="lv2-locked"><span class="lv2-lock-icon">🔒</span>${nodeAtLevel.nimi}</span>${saldoBadge}`;
+      } else {
+        const siblings = pathIdx===0 ? lv2Nodes(aruanne,null) : lv2Nodes(aruanne, path[pathIdx-1].kood);
+        const opts = siblings.map(s=>`<option value="${s.kood}"${s.kood===nodeAtLevel.kood?' selected':''}>${s.nimi}</option>`).join('');
+        row.innerHTML = `<span class="lv2-level-label">Tase ${level}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${pathIdx},this.value)"><option value="">—</option>${opts}</select>${saldoBadge}<span class="lv2-clear" onclick="lv2ClearFrom('${fg}',${pathIdx})" title="Tühjenda">×</span>`;
+      }
+    } else {
+      // Valik puudub — näita kõiki selle taseme sõlmi (või filtrit kui vanem valitud)
+      const parentNode = pathIdx > 0 ? path[pathIdx-1] : null;
+      let options;
+      if (pathIdx === 0) {
+        options = lv2Nodes(aruanne, null);
+      } else if (parentNode) {
+        options = lv2Nodes(aruanne, parentNode.kood);
+      } else {
+        options = DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===level);
+      }
+      if (options.length === 0) continue;
+      const opts = options.map(c=>`<option value="${c.kood}">${c.nimi}</option>`).join('');
+      row.innerHTML = `<span class="lv2-level-label">Tase ${level}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${pathIdx},this.value)"><option value="">— vali —</option>${opts}</select>`;
+    }
     container.appendChild(row);
   }
 }
