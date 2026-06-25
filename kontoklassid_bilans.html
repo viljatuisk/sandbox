@@ -91,6 +91,7 @@
 
   .row-summary td { font-style: italic; }
   .row-summary td.col-nimi { font-weight: 600; }
+  .row-saldo td.col-nimi { font-weight: 400; }
   .row-tase-1.row-summary td { font-style: normal; }
   .row-tase-2.row-summary td { border-top: 1px solid #b0c8e8; }
   .row-tase-3.row-summary td { border-top: 1px solid #c8d8e8; }
@@ -995,6 +996,7 @@ function renderTable() {
     tr.className = [
       `row-tase-${d.tase}`,
       isSummary ? 'row-summary' : '',
+      d.vaartus === 'Kontode saldo' ? 'row-saldo' : '',
       (!vis || !matchesSearch) ? 'hidden' : ''
     ].filter(Boolean).join(' ');
 
