@@ -367,38 +367,6 @@
           </div>
         </div>
 
-        <div class="kk-card" style="width:100%">
-          <div class="kk-card-head">
-            Objektikaart
-            <button class="kk-save">Salvesta</button>
-          </div>
-          <div class="kk-body">
-            <div class="kk-row">
-              <div class="kk-label" style="padding-top:4px">Vaata objekti</div>
-              <div class="obj-asetaja-wrap" id="objAsetajaWrap">
-                <div class="obj-asetaja-field" id="objAsetajaField" onclick="objAsetajaToggle()">
-                  <span id="objAsetajaText">TOOTMINE — Tootmine</span>
-                  <span style="color:#8aaabb;font-size:10px">▾</span>
-                </div>
-                <div class="obj-asetaja-drop" id="objAsetajaDrop"></div>
-              </div>
-            </div>
-            <div class="kk-divider"></div>
-            <div class="kk-row">
-              <div class="kk-label req">Kood</div>
-              <input class="kk-input" id="objKood" type="text" style="max-width:130px">
-            </div>
-            <div class="kk-row">
-              <div class="kk-label req">Kirjeldus (est)</div>
-              <input class="kk-input" id="objNimi" type="text">
-            </div>
-            <div class="kk-row">
-              <div class="kk-label">Kirjeldus (eng)</div>
-              <input class="kk-input" id="objEng" type="text">
-            </div>
-            <p style="font-size:11px;color:#8a9aaa;margin-top:2px;padding-left:158px">Objekti SK2 seosed määratakse kontokaardil — <em>SK2 objekti kaupa</em>.</p>
-          </div>
-        </div>
         </div><!-- /kk-cards-col -->
 
         <div class="kk-info">
@@ -1134,41 +1102,12 @@ document.addEventListener('click', e => {
 // init kontokaart (kulu tüüp on vaikimisi valitud)
 kkTyypChanged();
 
-// ===== OBJEKTIKAART DEMO =====
+// ===== SK2 OBJEKTI KAUPA (kontokaardil) =====
 const OBJ_DATA = [
-  {kood:'TOOTMINE', nimi:'Tootmine',  eng:'Production'},
-  {kood:'TURUNDUS', nimi:'Turundus',  eng:'Marketing'},
-  {kood:'ÜLD',      nimi:'Üldkulu',   eng:'General'},
+  {kood:'TOOTMINE', nimi:'Tootmine'},
+  {kood:'TURUNDUS', nimi:'Turundus'},
+  {kood:'ÜLD',      nimi:'Üldkulu'},
 ];
-
-function selectObj(kood) {
-  const o = OBJ_DATA.find(x => x.kood === kood);
-  if (!o) return;
-  document.getElementById('objKood').value = o.kood;
-  document.getElementById('objNimi').value = o.nimi;
-  document.getElementById('objEng').value  = o.eng;
-  document.getElementById('objAsetajaText').textContent = o.kood + ' — ' + o.nimi;
-  document.getElementById('objAsetajaDrop').classList.remove('open');
-}
-
-function objAsetajaToggle() {
-  const drop = document.getElementById('objAsetajaDrop');
-  if (drop.classList.contains('open')) { drop.classList.remove('open'); return; }
-  drop.innerHTML = OBJ_DATA.map(o =>
-    `<div class="obj-asetaja-item" onclick="selectObj('${o.kood}')">
-       <span class="oai-kood">${o.kood}</span><span class="oai-nimi">${o.nimi}</span>
-     </div>`
-  ).join('');
-  drop.classList.add('open');
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#objAsetajaWrap')) {
-    document.getElementById('objAsetajaDrop').classList.remove('open');
-  }
-});
-
-selectObj('TOOTMINE');
 
 // ===== SK2 OBJEKTI KAUPA (kontokaardil) =====
 let objSk2Cnt = 0;
