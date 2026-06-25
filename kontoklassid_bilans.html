@@ -194,6 +194,27 @@
   .tag-tulud { display: inline-block; background: #d8f0d8; color: #2a6a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-kulud { display: inline-block; background: #f8e0d8; color: #8a2a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-sk2 { display: inline-block; background: #e8d8f8; color: #4a2a8a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+  /* Demo2 level selector */
+  #kontokaart2-view { display:none; flex:1; overflow:auto; padding:24px; background:#e8ecf0; }
+  .lv2-row { display:flex; align-items:center; gap:6px; padding:2px 0; min-height:28px; }
+  .lv2-level-label { width:48px; font-size:10px; font-weight:700; color:#8a9aaa; text-transform:uppercase; flex-shrink:0; text-align:right; }
+  .lv2-select { height:26px; border:1px solid #b8c8d8; border-radius:2px; font-size:11px; padding:0 4px; color:#2d4a6b; background:#fff; min-width:220px; max-width:300px; }
+  .lv2-select:focus { outline:none; border-color:#5a8ab8; }
+  .lv2-locked { display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 8px; background:#f0f4f8; border:1px solid #d0dce8; border-radius:2px; font-size:11px; color:#4a6a8a; }
+  .lv2-lock-icon { font-size:11px; opacity:0.6; }
+  .lv2-clear { cursor:pointer; color:#aabbcc; font-size:15px; line-height:1; padding:0 3px; margin-left:2px; }
+  .lv2-clear:hover { color:#cc4444; }
+  .lv2-saldo-badge { display:inline-block; background:#fff3cd; color:#856404; border:1px solid #ffc107; padding:0 5px; border-radius:8px; font-size:10px; font-weight:600; margin-left:4px; }
+  .lv2-search-wrap { position:relative; margin-bottom:6px; }
+  .lv2-search-input { width:100%; height:26px; border:1px solid #b8c8d8; border-radius:2px; font-size:11px; padding:0 8px; color:#2d4a6b; box-sizing:border-box; background:#fff; }
+  .lv2-search-input:focus { outline:none; border-color:#5a8ab8; }
+  .lv2-search-results { position:absolute; top:100%; left:0; right:0; z-index:300; background:#fff; border:1px solid #b8c8d8; border-radius:2px; box-shadow:0 4px 10px rgba(0,0,0,0.13); max-height:220px; overflow-y:auto; margin-top:2px; display:none; }
+  .lv2-search-item { padding:5px 9px; cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11px; border-left:3px solid transparent; }
+  .lv2-search-item:hover { background:#f0f4f8; }
+  .lv2-search-item.is-saldo { border-left-color:#ffc107; }
+  .lv2-search-kood { font-family:monospace; font-size:10px; color:#8aaabb; min-width:64px; flex-shrink:0; }
+  .lv2-search-nimi { flex:1; color:#2d4a6b; }
+  .lv2-search-tase { font-size:10px; color:#aabbc8; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -260,6 +281,7 @@
       <button class="tab-btn" data-tab="sk1" onclick="setTab('sk1')">Kasumiaruanne SK1</button>
       <button class="tab-btn" data-tab="sk2" onclick="setTab('sk2')">Kasumiaruanne SK2</button>
       <button class="tab-btn" data-tab="kontokaart" onclick="setTab('kontokaart')">Kontokaart (demo)</button>
+      <button class="tab-btn" data-tab="kontokaart2" onclick="setTab('kontokaart2')">Kontokaart (demo 2)</button>
     </div>
 
     <div id="table-section">
@@ -398,6 +420,107 @@
               <tr><td><em>objekt puudub</em></td><td style="color:#cc6600">⚠ SK2 määramata</td></tr>
             </table>
             <p style="margin-top:8px;color:#6a7a8a;font-size:11px">SK2 vaikimisi väli kontokaardil jääb tühjaks — SK2 tuleb objektist. Objektide arv pole piiratud.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="kontokaart2-view">
+      <div class="kk-cols">
+        <div style="display:flex;flex-direction:column;gap:16px;flex-shrink:0;width:520px">
+          <div class="kk-card" style="width:100%">
+            <div class="kk-card-head">Konto <button class="kk-save">Salvesta</button></div>
+            <div class="kk-body">
+              <div class="kk-row">
+                <div class="kk-label req">Kood</div>
+                <input class="kk-input" type="text" placeholder="nt 5001" style="max-width:100px">
+              </div>
+              <div class="kk-row">
+                <div class="kk-label req">Kirjeldus (est)</div>
+                <input class="kk-input" type="text" placeholder="Palgakulu">
+              </div>
+              <div class="kk-row">
+                <div class="kk-label">Kirjeldus (eng)</div>
+                <input class="kk-input" type="text" placeholder="Salary expense">
+              </div>
+              <div class="kk-row">
+                <div class="kk-label req">Konto tüüp</div>
+                <select class="kk-select" id="d2Tyyp" onchange="d2TyypChanged()">
+                  <option value="">— vali —</option>
+                  <option value="aktiva">Aktiva</option>
+                  <option value="passiva">Passiva</option>
+                  <option value="tulu">Tulu</option>
+                  <option value="kulu" selected>Kulu</option>
+                </select>
+              </div>
+              <div class="kk-divider"></div>
+              <div class="kk-section-title">Aruanderead</div>
+              <div id="d2BilansSection" style="display:none">
+                <div class="kk-row" style="align-items:flex-start">
+                  <div class="kk-label" style="padding-top:4px">Bilansi rida</div>
+                  <div style="flex:1">
+                    <div class="lv2-search-wrap">
+                      <input class="lv2-search-input" id="lv2-bilans-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('bilans',this.value)">
+                      <div class="lv2-search-results" id="lv2-bilans-res"></div>
+                    </div>
+                    <div id="lv2-bilans"></div>
+                  </div>
+                </div>
+              </div>
+              <div id="d2KasumiSection" style="display:flex;flex-direction:column;gap:0">
+                <div class="kk-row" style="align-items:flex-start">
+                  <div class="kk-label" style="padding-top:4px">Kasumiaruande rida (SK1)</div>
+                  <div style="flex:1">
+                    <div class="lv2-search-wrap">
+                      <input class="lv2-search-input" id="lv2-sk1-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('sk1',this.value)">
+                      <div class="lv2-search-results" id="lv2-sk1-res"></div>
+                    </div>
+                    <div id="lv2-sk1"></div>
+                  </div>
+                </div>
+                <div class="kk-row" style="align-items:flex-start;margin-top:8px">
+                  <div class="kk-label" style="padding-top:4px">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">vaikimisi</span></div>
+                  <div style="flex:1">
+                    <div class="lv2-search-wrap">
+                      <input class="lv2-search-input" id="lv2-sk2-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('sk2',this.value)">
+                      <div class="lv2-search-results" id="lv2-sk2-res"></div>
+                    </div>
+                    <div id="lv2-sk2"></div>
+                  </div>
+                </div>
+                <div class="kk-row" id="d2ObjSk2Section" style="align-items:flex-start;margin-top:8px">
+                  <div class="kk-label" style="padding-top:5px">SK2 — objekti kaupa</div>
+                  <div style="flex:1">
+                    <table style="width:100%;border-collapse:collapse"><tbody id="d2ObjSk2Tbody"></tbody></table>
+                    <button class="kk-add-btn" onclick="addObjSk2Row()">+ Lisa objekt</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="kk-info">
+          <div class="kk-info-card">
+            <h4>Tasemel valik — kuidas töötab</h4>
+            <p><strong>Ülevalt alla:</strong> vali tase 1 → avaneb tase 2 (ainult selle all olevad); vali tase 2 → avaneb tase 3 jne.</p>
+            <p><strong>Alt üles (otsing):</strong> kirjuta otsingusse mis tahes taseme kirje nimi või kood → kliki → kõik ülemised tasemed täidetakse automaatselt.</p>
+            <p><strong>Lukustus:</strong> kui tase N on valitud, on kõik eelnevad tasemed lukus. Et muuta taset N-1, tuleb esmalt tühjendada tase N (×).</p>
+            <table class="kk-info-table" style="margin-top:10px">
+              <tr><th>Märge</th><th>Tähendus</th></tr>
+              <tr><td><span class="lv2-saldo-badge">kontode saldo</span></td><td>Sellele tasemele seotakse kontod — see peab olema täidetud</td></tr>
+              <tr><td>🔒</td><td>Lukus — sellest madalamal on valik tehtud</td></tr>
+            </table>
+          </div>
+          <div class="kk-info-card">
+            <h4>Näide — tasemel valik SK1 jaoks</h4>
+            <p style="margin-bottom:6px">Konto <strong>5001 Palgakulu</strong>, tüüp <em>Kulu</em>:</p>
+            <table class="kk-info-table">
+              <tr><th>Tase</th><th>Valitud väärtus</th><th>Olek</th></tr>
+              <tr><td>Tase 1</td><td>Ärikulud liigi järgi</td><td>🔒 lukus</td></tr>
+              <tr><td>Tase 2</td><td>Tööjõukulud</td><td>🔒 lukus</td></tr>
+              <tr><td>Tase 3</td><td>Palgakulu <span class="lv2-saldo-badge">kontode saldo</span></td><td>✏️ muudetav</td></tr>
+            </table>
+            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">Tase 3 tühjendamisel muutub tase 2 muudetavaks, tase 2 tühjendamisel tase 1.</p>
           </div>
         </div>
       </div>
@@ -829,7 +952,8 @@ const TAB_LABELS = {
   bilans: 'Bilansiskeem',
   sk1: 'Kasumiaruanne — Skeem 1',
   sk2: 'Kasumiaruanne — Skeem 2',
-  kontokaart: 'Kontokaart (demo)'
+  kontokaart: 'Kontokaart (demo)',
+  kontokaart2: 'Kontokaart — tasemel valik'
 };
 
 function setTab(tab) {
@@ -838,9 +962,10 @@ function setTab(tab) {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
   document.getElementById('reportSub').textContent = TAB_LABELS[tab] || '';
-  const isKontokaart = tab === 'kontokaart';
+  const isKontokaart = tab === 'kontokaart' || tab === 'kontokaart2';
   document.getElementById('table-section').style.display = isKontokaart ? 'none' : 'flex';
-  document.getElementById('kontokaart-view').style.display = isKontokaart ? 'block' : 'none';
+  document.getElementById('kontokaart-view').style.display = tab === 'kontokaart' ? 'block' : 'none';
+  document.getElementById('kontokaart2-view').style.display = tab === 'kontokaart2' ? 'block' : 'none';
   if (!isKontokaart) {
     // reset collapse for new tab — all expanded
     collapsed.clear();
@@ -1149,6 +1274,128 @@ function removeObjSk2Row(id) {
 addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud');
 addObjSk2Row('TURUNDUS', 'Turustuskulud');
 addObjSk2Row('ÜLD',      'Üldhalduskulud');
+
+// ===== DEMO2: TASEMEL VALIK =====
+const lv2State = {}; // fg -> {aruanne, path:[node,...]}
+
+function lv2Nodes(aruanne, parentKood) {
+  if (parentKood) return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.master===parentKood);
+  return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===1);
+}
+
+function lv2Ancestors(kood, aruanne) {
+  const map = {};
+  DATA.filter(d => (d.aruanne||'bilans')===aruanne).forEach(d => { map[d.kood]=d; });
+  const path = [];
+  let cur = map[kood];
+  while (cur && cur.tase > 0) { path.unshift(cur); cur = cur.master ? map[cur.master] : null; }
+  return path;
+}
+
+function lv2IsSaldo(node) { return node.vaartus === 'Kontode saldo'; }
+
+function lv2Init(fg, aruanne, preKood) {
+  lv2State[fg] = {aruanne, path:[]};
+  if (preKood) lv2State[fg].path = lv2Ancestors(preKood, aruanne);
+  lv2Render(fg);
+}
+
+function lv2Select(fg, kood) {
+  const {aruanne} = lv2State[fg];
+  lv2State[fg].path = lv2Ancestors(kood, aruanne);
+  const srch = document.getElementById('lv2-'+fg+'-srch');
+  if (srch) srch.value = '';
+  const res = document.getElementById('lv2-'+fg+'-res');
+  if (res) res.style.display = 'none';
+  lv2Render(fg);
+}
+
+function lv2ChangeAt(fg, idx, kood) {
+  if (!kood) { lv2ClearFrom(fg, idx); return; }
+  lv2State[fg].path = lv2Ancestors(kood, lv2State[fg].aruanne);
+  lv2Render(fg);
+}
+
+function lv2ClearFrom(fg, idx) {
+  lv2State[fg].path = lv2State[fg].path.slice(0, idx);
+  lv2Render(fg);
+}
+
+function lv2Render(fg) {
+  const {aruanne, path} = lv2State[fg];
+  const container = document.getElementById('lv2-'+fg);
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (let i = 0; i < path.length; i++) {
+    const node = path[i];
+    const isLocked = i < path.length - 1;
+    const isSaldo = lv2IsSaldo(node);
+    const siblings = i===0 ? lv2Nodes(aruanne,null) : lv2Nodes(aruanne, path[i-1].kood);
+    const row = document.createElement('div');
+    row.className = 'lv2-row';
+    const saldoBadge = isSaldo ? '<span class="lv2-saldo-badge">kontode saldo</span>' : '';
+    if (isLocked) {
+      row.innerHTML = `<span class="lv2-level-label">Tase ${node.tase}</span><span class="lv2-locked"><span class="lv2-lock-icon">🔒</span>${node.nimi}</span>${saldoBadge}`;
+    } else {
+      const opts = siblings.map(s=>`<option value="${s.kood}"${s.kood===node.kood?' selected':''}>${s.nimi}</option>`).join('');
+      row.innerHTML = `<span class="lv2-level-label">Tase ${node.tase}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${i},this.value)"><option value="">—</option>${opts}</select>${saldoBadge}<span class="lv2-clear" onclick="lv2ClearFrom('${fg}',${i})" title="Tühjenda">×</span>`;
+    }
+    container.appendChild(row);
+  }
+
+  const lastNode = path[path.length-1]||null;
+  const children = lv2Nodes(aruanne, lastNode ? lastNode.kood : null);
+  if (children.length > 0) {
+    const nextTase = lastNode ? lastNode.tase+1 : 1;
+    const row = document.createElement('div');
+    row.className = 'lv2-row';
+    const opts = children.map(c=>`<option value="${c.kood}">${c.nimi}</option>`).join('');
+    row.innerHTML = `<span class="lv2-level-label">Tase ${nextTase}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${path.length},this.value)"><option value="">— vali —</option>${opts}</select>`;
+    container.appendChild(row);
+  }
+}
+
+function lv2Search(fg, query) {
+  const {aruanne} = lv2State[fg];
+  const res = document.getElementById('lv2-'+fg+'-res');
+  if (!query.trim()) { res.style.display='none'; return; }
+  const q = query.toLowerCase();
+  const hits = DATA.filter(d =>
+    (d.aruanne||'bilans')===aruanne && d.tase>0 &&
+    (d.nimi.toLowerCase().includes(q) || d.kood.toLowerCase().includes(q))
+  ).slice(0,10);
+  res.style.display = hits.length ? 'block' : 'none';
+  res.innerHTML = hits.map(n => {
+    const isSaldo = lv2IsSaldo(n);
+    return `<div class="lv2-search-item${isSaldo?' is-saldo':''}" onclick="lv2Select('${fg}','${n.kood}')">
+      <span class="lv2-search-kood">${n.kood}</span>
+      <span class="lv2-search-nimi">${n.nimi}</span>
+      ${isSaldo?'<span class="lv2-saldo-badge">kontode saldo</span>':''}
+      <span class="lv2-search-tase">tase ${n.tase}</span>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.lv2-search-wrap')) {
+    document.querySelectorAll('.lv2-search-results').forEach(r => r.style.display='none');
+  }
+});
+
+function d2TyypChanged() {
+  const t = document.getElementById('d2Tyyp').value;
+  const isBilans = t==='aktiva'||t==='passiva';
+  const isKasumi = t==='tulu'||t==='kulu';
+  document.getElementById('d2BilansSection').style.display = isBilans ? 'block' : 'none';
+  document.getElementById('d2KasumiSection').style.display = isKasumi ? 'flex' : 'none';
+}
+
+// init Demo2
+lv2Init('bilans','bilans',null);
+lv2Init('sk1','sk1','DIR6351');
+lv2Init('sk2','sk2',null);
+d2TyypChanged();
 </script>
 </body>
 </html>
