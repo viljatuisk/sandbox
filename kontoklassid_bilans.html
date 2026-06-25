@@ -179,6 +179,9 @@
   .kk-info-table th { background: #eef3f8; padding: 4px 8px; text-align: left; color: #2d4a6b; font-weight: 600; border: 1px solid #d0dce8; }
   .kk-info-table td { padding: 4px 8px; border: 1px solid #d0dce8; color: #3a4a5a; vertical-align: top; }
   .kk-info-table tr:nth-child(even) td { background: #f8fafc; }
+  .obj-tab { padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer; color: #6a8aaa; border-bottom: 2px solid transparent; border: 1px solid transparent; border-radius: 3px 3px 0 0; margin-bottom: -1px; }
+  .obj-tab:hover { color: #2d4a6b; background: rgba(255,255,255,0.6); }
+  .obj-tab.active { color: #2d4a6b; background: #fff; border-color: #dde8f4 #dde8f4 #fff #dde8f4; }
   .tag-tulud { display: inline-block; background: #d8f0d8; color: #2a6a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-kulud { display: inline-block; background: #f8e0d8; color: #8a2a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-sk2 { display: inline-block; background: #e8d8f8; color: #4a2a8a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
@@ -351,34 +354,35 @@
             Objekt
             <button class="kk-save">Salvesta</button>
           </div>
+          <div style="display:flex;border-bottom:1px solid #dde8f4;background:#f0f4f8;padding:0 8px;gap:2px;flex-wrap:wrap">
+            <div class="obj-tab active" id="objTab0" onclick="selectObj(0)">TOOTMINE</div>
+            <div class="obj-tab" id="objTab1" onclick="selectObj(1)">TURUNDUS</div>
+            <div class="obj-tab" id="objTab2" onclick="selectObj(2)">ÜLD</div>
+            <div class="obj-tab" style="color:#7a9ab8;border-style:dashed" onclick="">+ Lisa uus</div>
+          </div>
           <div class="kk-body">
             <div class="kk-row">
               <div class="kk-label req">Kood</div>
-              <input class="kk-input" type="text" placeholder="nt TOOTMINE" style="max-width:130px">
+              <input class="kk-input" id="objKood" type="text" style="max-width:130px">
             </div>
             <div class="kk-row">
               <div class="kk-label req">Kirjeldus (est)</div>
-              <input class="kk-input" type="text" placeholder="Tootmine">
+              <input class="kk-input" id="objNimi" type="text">
             </div>
             <div class="kk-row">
               <div class="kk-label">Kirjeldus (eng)</div>
-              <input class="kk-input" type="text" placeholder="Production">
+              <input class="kk-input" id="objEng" type="text">
             </div>
             <div class="kk-divider"></div>
             <div class="kk-section-title">Aruanderead</div>
             <div class="kk-row">
               <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">valikuline</span></div>
-              <div class="bc-field" id="bcObjSK2">
-                <div class="bc-display" id="bcObjSK2-display" onclick="bcOpen('bcObjSK2')">
-                  <span class="bc-crumb">
-                    <span class="bc-crumb-text">Tootmiskulud</span>
-                  </span>
-                  <span class="bc-clear" onclick="bcClear('bcObjSK2',event)">×</span>
-                </div>
-                <div class="bc-dropdown" id="bcObjSK2-drop"></div>
+              <div style="flex:1;height:26px;border:1px solid #b8c8d8;border-radius:2px;padding:0 8px;display:flex;align-items:center;font-size:12px;background:#fff">
+                <span id="objSK2label" style="color:#2d4a6b;font-weight:500"></span>
+                <span id="objSK2code" style="color:#8aaabb;font-size:10px;font-family:monospace;margin-left:6px"></span>
               </div>
             </div>
-            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;padding-left:158px">Kui objekt on täidetud, kasutatakse seda SK2 rea määramisel (ületab kontokaardi SK2 välja).</p>
+            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;padding-left:158px">Iga objekt on eraldi kaart — igal oma SK2 rida. Sama konto kirjed lähevad erinevatele SK2 ridadele sõltuvalt, milline objekt on dokumendile märgitud.</p>
           </div>
         </div>
         </div><!-- /kk-cards-col -->
@@ -403,14 +407,15 @@
               <tr><td>5002 Palgakulu turundus</td><td><code>DIR6351</code></td><td><code>DIR9400</code> Turustuskulud</td></tr>
               <tr><td>5003 Palgakulu üldkulu</td><td><code>DIR6351</code></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
             </table>
-            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, objekt määrab funktsiooni. Kontokaardi SK2 väli tühi, objektikaardil täidetud:</p>
+            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, iga objekt on eraldi kaart oma SK2 reaga. Klikk vasakul objektikaardil TOOTMINE → TURUNDUS → ÜLD, et näha, kuidas igaühel erinev SK2 rida:</p>
             <table class="kk-info-table">
-              <tr><th>Konto</th><th>Objekt</th><th>SK2 rida (objektil)</th></tr>
-              <tr><td>5000 Palgakulu</td><td>TOOTMINE</td><td><code>DIR9210</code> Tootmiskulud</td></tr>
-              <tr><td>5000 Palgakulu</td><td>TURUNDUS</td><td><code>DIR9400</code> Turustuskulud</td></tr>
-              <tr><td>5000 Palgakulu</td><td>ÜLDKULU</td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
+              <tr><th>Dokumendil konto + objekt</th><th>SK2 rida tuleneb</th></tr>
+              <tr><td>5000 Palgakulu + <strong>TOOTMINE</strong></td><td><code>DIR9200</code> Müüdud toodete kulud</td></tr>
+              <tr><td>5000 Palgakulu + <strong>TURUNDUS</strong></td><td><code>DIR9400</code> Turustuskulud</td></tr>
+              <tr><td>5000 Palgakulu + <strong>ÜLD</strong></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
+              <tr><td>5000 Palgakulu + <em>objekt puudub</em></td><td style="color:#cc6600">⚠ SK2 määramata</td></tr>
             </table>
-            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">Objekti SK2 rida ületab kontokaardi SK2 välja — saab kasutada mõlemat korraga.</p>
+            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">Objektide arv pole piiratud — iga uus objekt on uus kaart. Objekti SK2 rida ületab kontokaardi SK2 välja.</p>
           </div>
         </div>
       </div>
@@ -1115,6 +1120,24 @@ document.addEventListener('click', e => {
 
 // init kontokaart (kulu tüüp on vaikimisi valitud)
 kkTyypChanged();
+
+// ===== OBJEKTIKAART DEMO =====
+const OBJ_DATA = [
+  {kood:'TOOTMINE', nimi:'Tootmine',     eng:'Production',   sk2label:'Müüdud toodete/kaupade/teenuste kulud', sk2code:'DIR9200'},
+  {kood:'TURUNDUS', nimi:'Turundus',     eng:'Marketing',    sk2label:'Turustuskulud',                         sk2code:'DIR9400'},
+  {kood:'ÜLD',      nimi:'Üldkulu',      eng:'General',      sk2label:'Üldhalduskulud',                        sk2code:'DIR9500'},
+];
+
+function selectObj(idx) {
+  const o = OBJ_DATA[idx];
+  document.getElementById('objKood').value  = o.kood;
+  document.getElementById('objNimi').value  = o.nimi;
+  document.getElementById('objEng').value   = o.eng;
+  document.getElementById('objSK2label').textContent = o.sk2label;
+  document.getElementById('objSK2code').textContent  = o.sk2code;
+  document.querySelectorAll('.obj-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+selectObj(0);
 </script>
 </body>
 </html>
