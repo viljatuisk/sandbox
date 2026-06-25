@@ -179,9 +179,15 @@
   .kk-info-table th { background: #eef3f8; padding: 4px 8px; text-align: left; color: #2d4a6b; font-weight: 600; border: 1px solid #d0dce8; }
   .kk-info-table td { padding: 4px 8px; border: 1px solid #d0dce8; color: #3a4a5a; vertical-align: top; }
   .kk-info-table tr:nth-child(even) td { background: #f8fafc; }
-  .obj-tab { padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer; color: #6a8aaa; border-bottom: 2px solid transparent; border: 1px solid transparent; border-radius: 3px 3px 0 0; margin-bottom: -1px; }
-  .obj-tab:hover { color: #2d4a6b; background: rgba(255,255,255,0.6); }
-  .obj-tab.active { color: #2d4a6b; background: #fff; border-color: #dde8f4 #dde8f4 #fff #dde8f4; }
+  .obj-asetaja-field { display:inline-flex; align-items:center; gap:4px; height:26px; padding:0 8px; border:1px solid #b8c8d8; border-radius:2px; background:#fff; font-size:12px; cursor:pointer; color:#2d4a6b; font-weight:500; }
+  .obj-asetaja-field:hover { border-color:#2d4a6b; background:#f0f6ff; }
+  .obj-asetaja-wrap { position:relative; display:inline-block; }
+  .obj-asetaja-drop { display:none; position:absolute; top:100%; left:0; z-index:200; background:#fff; border:1px solid #b8c8d8; border-radius:2px; box-shadow:0 3px 8px rgba(0,0,0,0.12); min-width:220px; margin-top:2px; }
+  .obj-asetaja-drop.open { display:block; }
+  .obj-asetaja-item { padding:6px 10px; font-size:12px; cursor:pointer; color:#2d4a6b; display:flex; align-items:center; gap:8px; }
+  .obj-asetaja-item:hover { background:#f0f4f8; }
+  .obj-asetaja-item .oai-kood { font-weight:600; min-width:70px; font-family:monospace; font-size:11px; }
+  .obj-asetaja-item .oai-nimi { color:#4a6a8a; }
   .tag-tulud { display: inline-block; background: #d8f0d8; color: #2a6a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-kulud { display: inline-block; background: #f8e0d8; color: #8a2a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
   .tag-sk2 { display: inline-block; background: #e8d8f8; color: #4a2a8a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
@@ -351,16 +357,21 @@
 
         <div class="kk-card" style="width:100%">
           <div class="kk-card-head">
-            Objekt
+            Objektikaart
             <button class="kk-save">Salvesta</button>
           </div>
-          <div style="display:flex;border-bottom:1px solid #dde8f4;background:#f0f4f8;padding:0 8px;gap:2px;flex-wrap:wrap">
-            <div class="obj-tab active" id="objTab0" onclick="selectObj(0)">TOOTMINE</div>
-            <div class="obj-tab" id="objTab1" onclick="selectObj(1)">TURUNDUS</div>
-            <div class="obj-tab" id="objTab2" onclick="selectObj(2)">ÜLD</div>
-            <div class="obj-tab" style="color:#7a9ab8;border-style:dashed" onclick="">+ Lisa uus</div>
-          </div>
           <div class="kk-body">
+            <div class="kk-row">
+              <div class="kk-label" style="padding-top:4px">Vaata objekti</div>
+              <div class="obj-asetaja-wrap" id="objAsetajaWrap">
+                <div class="obj-asetaja-field" id="objAsetajaField" onclick="objAsetajaToggle()">
+                  <span id="objAsetajaText">TOOTMINE — Tootmine</span>
+                  <span style="color:#8aaabb;font-size:10px">▾</span>
+                </div>
+                <div class="obj-asetaja-drop" id="objAsetajaDrop"></div>
+              </div>
+            </div>
+            <div class="kk-divider"></div>
             <div class="kk-row">
               <div class="kk-label req">Kood</div>
               <input class="kk-input" id="objKood" type="text" style="max-width:130px">
@@ -377,12 +388,14 @@
             <div class="kk-section-title">Aruanderead</div>
             <div class="kk-row">
               <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">valikuline</span></div>
-              <div style="flex:1;height:26px;border:1px solid #b8c8d8;border-radius:2px;padding:0 8px;display:flex;align-items:center;font-size:12px;background:#fff">
-                <span id="objSK2label" style="color:#2d4a6b;font-weight:500"></span>
-                <span id="objSK2code" style="color:#8aaabb;font-size:10px;font-family:monospace;margin-left:6px"></span>
+              <div class="bc-field" id="bcObjSK2">
+                <div class="bc-display" id="bcObjSK2-display" onclick="bcOpen('bcObjSK2')">
+                  <span class="bc-placeholder">otsi...</span>
+                </div>
+                <div class="bc-dropdown" id="bcObjSK2-drop"></div>
               </div>
             </div>
-            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;padding-left:158px">Iga objekt on eraldi kaart — igal oma SK2 rida. Sama konto kirjed lähevad erinevatele SK2 ridadele sõltuvalt, milline objekt on dokumendile märgitud.</p>
+            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;padding-left:158px">Iga objekt on eraldi kaart — igal oma SK2 rida. Sama konto erinevate objektidega → erinevad SK2 read.</p>
           </div>
         </div>
         </div><!-- /kk-cards-col -->
@@ -407,7 +420,7 @@
               <tr><td>5002 Palgakulu turundus</td><td><code>DIR6351</code></td><td><code>DIR9400</code> Turustuskulud</td></tr>
               <tr><td>5003 Palgakulu üldkulu</td><td><code>DIR6351</code></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
             </table>
-            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, iga objekt on eraldi kaart oma SK2 reaga. Klikk vasakul objektikaardil TOOTMINE → TURUNDUS → ÜLD, et näha, kuidas igaühel erinev SK2 rida:</p>
+            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, iga objekt on eraldi kaart oma SK2 reaga. Objektid on ettevõttespetsiifilised — igal ettevõttel oma nimekiri. Objektikaardil vali asetajast objekt ja määra SK2 rida:</p>
             <table class="kk-info-table">
               <tr><th>Dokumendil konto + objekt</th><th>SK2 rida tuleneb</th></tr>
               <tr><td>5000 Palgakulu + <strong>TOOTMINE</strong></td><td><code>DIR9200</code> Müüdud toodete kulud</td></tr>
@@ -1123,21 +1136,46 @@ kkTyypChanged();
 
 // ===== OBJEKTIKAART DEMO =====
 const OBJ_DATA = [
-  {kood:'TOOTMINE', nimi:'Tootmine',     eng:'Production',   sk2label:'Müüdud toodete/kaupade/teenuste kulud', sk2code:'DIR9200'},
-  {kood:'TURUNDUS', nimi:'Turundus',     eng:'Marketing',    sk2label:'Turustuskulud',                         sk2code:'DIR9400'},
-  {kood:'ÜLD',      nimi:'Üldkulu',      eng:'General',      sk2label:'Üldhalduskulud',                        sk2code:'DIR9500'},
+  {kood:'TOOTMINE', nimi:'Tootmine',  eng:'Production', sk2label:'Müüdud toodete/kaupade/teenuste kulud'},
+  {kood:'TURUNDUS', nimi:'Turundus',  eng:'Marketing',  sk2label:'Turustuskulud'},
+  {kood:'ÜLD',      nimi:'Üldkulu',   eng:'General',    sk2label:'Üldhalduskulud'},
 ];
 
-function selectObj(idx) {
-  const o = OBJ_DATA[idx];
-  document.getElementById('objKood').value  = o.kood;
-  document.getElementById('objNimi').value  = o.nimi;
-  document.getElementById('objEng').value   = o.eng;
-  document.getElementById('objSK2label').textContent = o.sk2label;
-  document.getElementById('objSK2code').textContent  = o.sk2code;
-  document.querySelectorAll('.obj-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+function objBcPreset(sk2label) {
+  const display = document.getElementById('bcObjSK2-display');
+  display.innerHTML = `<span class="bc-crumb"><span class="bc-crumb-text">${sk2label}</span></span><span class="bc-clear" onclick="bcClear('bcObjSK2',event)">×</span>`;
+  bcState['bcObjSK2'] = null;
 }
-selectObj(0);
+
+function selectObj(kood) {
+  const o = OBJ_DATA.find(x => x.kood === kood);
+  if (!o) return;
+  document.getElementById('objKood').value = o.kood;
+  document.getElementById('objNimi').value = o.nimi;
+  document.getElementById('objEng').value  = o.eng;
+  document.getElementById('objAsetajaText').textContent = o.kood + ' — ' + o.nimi;
+  objBcPreset(o.sk2label);
+  document.getElementById('objAsetajaDrop').classList.remove('open');
+}
+
+function objAsetajaToggle() {
+  const drop = document.getElementById('objAsetajaDrop');
+  if (drop.classList.contains('open')) { drop.classList.remove('open'); return; }
+  drop.innerHTML = OBJ_DATA.map(o =>
+    `<div class="obj-asetaja-item" onclick="selectObj('${o.kood}')">
+       <span class="oai-kood">${o.kood}</span><span class="oai-nimi">${o.nimi}</span>
+     </div>`
+  ).join('');
+  drop.classList.add('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#objAsetajaWrap')) {
+    document.getElementById('objAsetajaDrop').classList.remove('open');
+  }
+});
+
+selectObj('TOOTMINE');
 </script>
 </body>
 </html>
