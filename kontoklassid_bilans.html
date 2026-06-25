@@ -179,6 +179,9 @@
   .kk-info-table th { background: #eef3f8; padding: 4px 8px; text-align: left; color: #2d4a6b; font-weight: 600; border: 1px solid #d0dce8; }
   .kk-info-table td { padding: 4px 8px; border: 1px solid #d0dce8; color: #3a4a5a; vertical-align: top; }
   .kk-info-table tr:nth-child(even) td { background: #f8fafc; }
+  .kk-select-small { height:26px; border:1px solid #b8c8d8; border-radius:2px; font-size:11px; padding:0 4px; color:#2d4a6b; background:#fff; min-width:140px; }
+  .kk-add-btn { font-size:11px; color:#2d4a6b; background:#eef4fb; border:1px solid #b8c8d8; border-radius:2px; padding:2px 8px; cursor:pointer; margin-top:4px; }
+  .kk-add-btn:hover { background:#dde8f4; }
   .obj-asetaja-field { display:inline-flex; align-items:center; gap:4px; height:26px; padding:0 8px; border:1px solid #b8c8d8; border-radius:2px; background:#fff; font-size:12px; cursor:pointer; color:#2d4a6b; font-weight:500; }
   .obj-asetaja-field:hover { border-color:#2d4a6b; background:#f0f6ff; }
   .obj-asetaja-wrap { position:relative; display:inline-block; }
@@ -344,12 +347,21 @@
               </div>
             </div>
             <div class="kk-row" id="kkSK2Row">
-              <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">valikuline</span></div>
+              <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">vaikimisi</span></div>
               <div class="bc-field" id="bcSK2">
                 <div class="bc-display" id="bcSK2-display" onclick="bcOpen('bcSK2')">
                   <span class="bc-placeholder">otsi...</span>
                 </div>
                 <div class="bc-dropdown" id="bcSK2-drop"></div>
+              </div>
+            </div>
+            <div id="kkObjSk2Section" class="kk-row" style="display:flex;align-items:flex-start;padding-top:4px">
+              <div class="kk-label" style="padding-top:5px">SK2 — objekti kaupa</div>
+              <div style="flex:1">
+                <table style="width:100%;border-collapse:collapse">
+                  <tbody id="objSk2Tbody"></tbody>
+                </table>
+                <button class="kk-add-btn" onclick="addObjSk2Row()">+ Lisa objekt</button>
               </div>
             </div>
           </div>
@@ -384,18 +396,7 @@
               <div class="kk-label">Kirjeldus (eng)</div>
               <input class="kk-input" id="objEng" type="text">
             </div>
-            <div class="kk-divider"></div>
-            <div class="kk-section-title">Aruanderead</div>
-            <div class="kk-row">
-              <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">valikuline</span></div>
-              <div class="bc-field" id="bcObjSK2">
-                <div class="bc-display" id="bcObjSK2-display" onclick="bcOpen('bcObjSK2')">
-                  <span class="bc-placeholder">otsi...</span>
-                </div>
-                <div class="bc-dropdown" id="bcObjSK2-drop"></div>
-              </div>
-            </div>
-            <p style="font-size:11px;color:#8a9aaa;margin-top:4px;padding-left:158px">Iga objekt on eraldi kaart — igal oma SK2 rida. Sama konto erinevate objektidega → erinevad SK2 read.</p>
+            <p style="font-size:11px;color:#8a9aaa;margin-top:2px;padding-left:158px">Objekti SK2 seosed määratakse kontokaardil — <em>SK2 objekti kaupa</em>.</p>
           </div>
         </div>
         </div><!-- /kk-cards-col -->
@@ -420,15 +421,15 @@
               <tr><td>5002 Palgakulu turundus</td><td><code>DIR6351</code></td><td><code>DIR9400</code> Turustuskulud</td></tr>
               <tr><td>5003 Palgakulu üldkulu</td><td><code>DIR6351</code></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
             </table>
-            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, iga objekt on eraldi kaart oma SK2 reaga. Objektid on ettevõttespetsiifilised — igal ettevõttel oma nimekiri. Objektikaardil vali asetajast objekt ja määra SK2 rida:</p>
+            <p style="margin-top:10px;margin-bottom:8px"><strong>B) SK2 objekti kaudu</strong> — üks lai konto, kontokaardil määratakse iga objekti jaoks oma SK2 rida (<em>SK2 — objekti kaupa</em> tabel). Objektid on ettevõttespetsiifilised.</p>
             <table class="kk-info-table">
-              <tr><th>Dokumendil konto + objekt</th><th>SK2 rida tuleneb</th></tr>
-              <tr><td>5000 Palgakulu + <strong>TOOTMINE</strong></td><td><code>DIR9200</code> Müüdud toodete kulud</td></tr>
-              <tr><td>5000 Palgakulu + <strong>TURUNDUS</strong></td><td><code>DIR9400</code> Turustuskulud</td></tr>
-              <tr><td>5000 Palgakulu + <strong>ÜLD</strong></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
-              <tr><td>5000 Palgakulu + <em>objekt puudub</em></td><td style="color:#cc6600">⚠ SK2 määramata</td></tr>
+              <tr><th>Konto</th><th>Objekt</th><th>SK2 rida</th></tr>
+              <tr><td rowspan="4" style="vertical-align:middle">5000 Palgakulu</td><td><strong>TOOTMINE</strong></td><td><code>DIR9200</code> Müüdud toodete kulud</td></tr>
+              <tr><td><strong>TURUNDUS</strong></td><td><code>DIR9400</code> Turustuskulud</td></tr>
+              <tr><td><strong>ÜLD</strong></td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
+              <tr><td><em>objekt puudub</em></td><td style="color:#cc6600">⚠ SK2 määramata</td></tr>
             </table>
-            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">Objektide arv pole piiratud — iga uus objekt on uus kaart. Objekti SK2 rida ületab kontokaardi SK2 välja.</p>
+            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">SK2 vaikimisi väli kontokaardil jääb tühjaks — SK2 tuleb objektist. Objektide arv pole piiratud.</p>
           </div>
         </div>
       </div>
@@ -1015,6 +1016,7 @@ function kkTyypChanged() {
   document.getElementById('kkBilansRow').style.display = isBilans ? 'flex' : 'none';
   document.getElementById('kkSK1Row').style.display = isKasumi ? 'flex' : 'none';
   document.getElementById('kkSK2Row').style.display = isKasumi ? 'flex' : 'none';
+  document.getElementById('kkObjSk2Section').style.display = isKasumi ? 'flex' : 'none';
 }
 
 // Build tree for picker: {kood, nimi, children:[...]}
@@ -1042,7 +1044,7 @@ function bcOpen(fieldId) {
   document.getElementById(fieldId + '-display') && document.getElementById(fieldId + '-display').classList.add('open');
   drop.classList.add('open');
   if (!bcState[fieldId]) {
-    const aruanne = fieldId === 'bcSK1' ? 'sk1' : (fieldId === 'bcSK2' || fieldId === 'bcObjSK2') ? 'sk2' : 'bilans';
+    const aruanne = fieldId === 'bcSK1' ? 'sk1' : (fieldId === 'bcSK2' || fieldId === 'bcObjSK2' || fieldId.startsWith('bcObjSk2_')) ? 'sk2' : 'bilans';
     const roots = buildPickerTree(aruanne);
     // start from tase 1 children of the root
     const tase1 = roots[0] ? roots[0].children : [];
@@ -1134,16 +1136,10 @@ kkTyypChanged();
 
 // ===== OBJEKTIKAART DEMO =====
 const OBJ_DATA = [
-  {kood:'TOOTMINE', nimi:'Tootmine',  eng:'Production', sk2label:'Müüdud toodete/kaupade/teenuste kulud'},
-  {kood:'TURUNDUS', nimi:'Turundus',  eng:'Marketing',  sk2label:'Turustuskulud'},
-  {kood:'ÜLD',      nimi:'Üldkulu',   eng:'General',    sk2label:'Üldhalduskulud'},
+  {kood:'TOOTMINE', nimi:'Tootmine',  eng:'Production'},
+  {kood:'TURUNDUS', nimi:'Turundus',  eng:'Marketing'},
+  {kood:'ÜLD',      nimi:'Üldkulu',   eng:'General'},
 ];
-
-function objBcPreset(sk2label) {
-  const display = document.getElementById('bcObjSK2-display');
-  display.innerHTML = `<span class="bc-crumb"><span class="bc-crumb-text">${sk2label}</span></span><span class="bc-clear" onclick="bcClear('bcObjSK2',event)">×</span>`;
-  bcState['bcObjSK2'] = null;
-}
 
 function selectObj(kood) {
   const o = OBJ_DATA.find(x => x.kood === kood);
@@ -1152,7 +1148,6 @@ function selectObj(kood) {
   document.getElementById('objNimi').value = o.nimi;
   document.getElementById('objEng').value  = o.eng;
   document.getElementById('objAsetajaText').textContent = o.kood + ' — ' + o.nimi;
-  objBcPreset(o.sk2label);
   document.getElementById('objAsetajaDrop').classList.remove('open');
 }
 
@@ -1174,6 +1169,47 @@ document.addEventListener('click', e => {
 });
 
 selectObj('TOOTMINE');
+
+// ===== SK2 OBJEKTI KAUPA (kontokaardil) =====
+let objSk2Cnt = 0;
+
+function addObjSk2Row(objKood='', sk2Label='') {
+  const id = ++objSk2Cnt;
+  const objOptions = OBJ_DATA.map(o =>
+    `<option value="${o.kood}" ${o.kood === objKood ? 'selected' : ''}>${o.kood} — ${o.nimi}</option>`
+  ).join('');
+  const sk2Display = sk2Label
+    ? `<span class="bc-crumb"><span class="bc-crumb-text">${sk2Label}</span></span><span class="bc-clear" onclick="bcClear('bcObjSk2_${id}',event)">×</span>`
+    : '<span class="bc-placeholder">otsi...</span>';
+  const tr = document.createElement('tr');
+  tr.id = 'objSk2Row_' + id;
+  tr.innerHTML = `
+    <td style="padding:2px 6px 2px 0;width:155px;vertical-align:middle">
+      <select class="kk-select-small" id="objSk2Obj_${id}">
+        <option value="">— objekt —</option>${objOptions}
+      </select>
+    </td>
+    <td style="padding:2px 4px;vertical-align:middle">
+      <div class="bc-field" id="bcObjSk2_${id}">
+        <div class="bc-display" id="bcObjSk2_${id}-display" onclick="bcOpen('bcObjSk2_${id}')">${sk2Display}</div>
+        <div class="bc-dropdown" id="bcObjSk2_${id}-drop"></div>
+      </div>
+    </td>
+    <td style="padding:2px;width:22px;vertical-align:middle;text-align:center">
+      <span style="cursor:pointer;color:#cc4444;font-size:15px;line-height:1" onclick="removeObjSk2Row(${id})">×</span>
+    </td>`;
+  document.getElementById('objSk2Tbody').appendChild(tr);
+}
+
+function removeObjSk2Row(id) {
+  const row = document.getElementById('objSk2Row_' + id);
+  if (row) row.remove();
+}
+
+// eeltäidetud demo
+addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud');
+addObjSk2Row('TURUNDUS', 'Turustuskulud');
+addObjSk2Row('ÜLD',      'Üldhalduskulud');
 </script>
 </body>
 </html>
