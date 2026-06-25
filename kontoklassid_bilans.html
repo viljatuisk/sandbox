@@ -814,9 +814,8 @@ DATA.forEach(d => {
 });
 const hasChildren = k => childrenMap[k] && childrenMap[k].length > 0;
 
-// Track collapsed state (default: tase 0 and 1 expanded, rest collapsed)
+// Track collapsed state (default: all expanded)
 const collapsed = new Set();
-DATA.forEach(d => { if (d.tase >= 2) collapsed.add(d.kood); });
 
 // All ancestors of a node
 function ancestors(kood) {
@@ -874,9 +873,8 @@ function setTab(tab) {
   document.getElementById('table-section').style.display = isKontokaart ? 'none' : 'flex';
   document.getElementById('kontokaart-view').style.display = isKontokaart ? 'block' : 'none';
   if (!isKontokaart) {
-    // reset collapse for new tab
+    // reset collapse for new tab — all expanded
     collapsed.clear();
-    tabData().forEach(d => { if (d.tase >= 2) collapsed.add(d.kood); });
     renderTable();
   }
 }
