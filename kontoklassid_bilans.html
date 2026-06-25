@@ -122,6 +122,66 @@
   .stat strong { color: #2a4a6a; }
 
   .no-results { text-align: center; padding: 40px; color: #9aaabb; font-size: 13px; }
+
+  /* Tabs */
+  .tab-bar { display: flex; align-items: center; gap: 2px; padding: 0 14px; background: #f5f7fa; border-bottom: 1px solid #dde3ea; flex-shrink: 0; }
+  .tab-btn { height: 32px; padding: 0 14px; background: transparent; border: none; border-bottom: 2px solid transparent; font-size: 12px; font-family: Arial, sans-serif; cursor: pointer; color: #6a8aaa; font-weight: 500; white-space: nowrap; }
+  .tab-btn:hover { color: #2d4a6b; }
+  .tab-btn.active { color: #2d4a6b; border-bottom-color: #2d4a6b; font-weight: 700; }
+
+  #table-section { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+  /* Kontokaart demo */
+  #kontokaart-view { display: none; flex: 1; overflow: auto; padding: 24px; background: #e8ecf0; }
+  .kk-cols { display: flex; gap: 20px; align-items: flex-start; max-width: 1100px; }
+  .kk-card { background: #fff; border: 1px solid #c8d4e0; border-radius: 3px; width: 420px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .kk-card-head { background: #2d4a6b; color: #fff; padding: 8px 14px; font-weight: 700; font-size: 13px; border-radius: 3px 3px 0 0; display: flex; align-items: center; justify-content: space-between; }
+  .kk-card-head .kk-save { background: #5a9a5a; color: #fff; border: none; border-radius: 2px; padding: 3px 10px; font-size: 11px; cursor: pointer; }
+  .kk-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .kk-row { display: flex; align-items: flex-start; gap: 8px; }
+  .kk-label { width: 150px; flex-shrink: 0; font-size: 12px; color: #4a6a8a; padding-top: 5px; }
+  .kk-label.req::after { content: " *"; color: #cc4444; }
+  .kk-input { flex: 1; height: 26px; border: 1px solid #b8c8d8; border-radius: 2px; padding: 0 7px; font-size: 12px; font-family: Arial; color: #1a2a3a; }
+  .kk-input:focus { outline: none; border-color: #5a8ab8; }
+  .kk-select { flex: 1; height: 26px; border: 1px solid #b8c8d8; border-radius: 2px; padding: 0 4px; font-size: 12px; font-family: Arial; color: #1a2a3a; background: #fff; }
+  .kk-divider { border-top: 1px solid #dde8f4; margin: 4px 0; }
+  .kk-section-title { font-size: 11px; font-weight: 700; color: #2d4a6b; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+
+  /* Breadcrumb picker */
+  .bc-field { flex: 1; position: relative; }
+  .bc-display { min-height: 26px; border: 1px solid #b8c8d8; border-radius: 2px; padding: 3px 7px; font-size: 12px; cursor: pointer; background: #fff; display: flex; align-items: center; flex-wrap: wrap; gap: 3px; }
+  .bc-display:hover { border-color: #5a8ab8; }
+  .bc-display.open { border-color: #5a8ab8; box-shadow: 0 0 0 2px rgba(90,138,184,0.15); }
+  .bc-crumb { display: inline-flex; align-items: center; gap: 3px; }
+  .bc-crumb-text { color: #2d4a6b; font-weight: 500; }
+  .bc-sep { color: #9aaabb; font-size: 11px; }
+  .bc-clear { color: #9aaabb; cursor: pointer; margin-left: 4px; font-size: 13px; line-height: 1; }
+  .bc-clear:hover { color: #cc4444; }
+  .bc-placeholder { color: #aabbcc; font-style: italic; }
+  .bc-dropdown { position: absolute; top: calc(100% + 2px); left: 0; right: 0; background: #fff; border: 1px solid #b8c8d8; border-radius: 3px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 100; max-height: 260px; overflow-y: auto; font-size: 12px; display: none; }
+  .bc-dropdown.open { display: block; }
+  .bc-item { padding: 5px 10px; cursor: pointer; color: #2a3a4a; display: flex; align-items: center; gap: 6px; }
+  .bc-item:hover { background: #eef4fb; }
+  .bc-item.bc-has-children { font-weight: 600; }
+  .bc-item .bc-arrow { color: #9aaabb; font-size: 10px; margin-left: auto; }
+  .bc-item .bc-kood { color: #8aaabb; font-size: 10px; font-family: monospace; }
+  .bc-back { padding: 5px 10px; cursor: pointer; color: #5a8ab8; border-bottom: 1px solid #eee; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .bc-back:hover { background: #f0f5fb; }
+  .bc-path-bar { padding: 4px 10px; background: #f5f7fa; border-bottom: 1px solid #eee; font-size: 10px; color: #8aaabb; }
+
+  /* Explanation panel */
+  .kk-info { flex: 1; min-width: 0; }
+  .kk-info-card { background: #fff; border: 1px solid #c8d4e0; border-radius: 3px; padding: 14px 16px; margin-bottom: 14px; font-size: 12px; line-height: 1.6; }
+  .kk-info-card h4 { font-size: 12px; color: #2d4a6b; margin-bottom: 8px; font-weight: 700; }
+  .kk-info-card p { color: #4a5a6a; margin-bottom: 6px; }
+  .kk-info-card code { background: #eef3f8; padding: 1px 4px; border-radius: 2px; font-family: monospace; font-size: 11px; color: #2d4a6b; }
+  .kk-info-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+  .kk-info-table th { background: #eef3f8; padding: 4px 8px; text-align: left; color: #2d4a6b; font-weight: 600; border: 1px solid #d0dce8; }
+  .kk-info-table td { padding: 4px 8px; border: 1px solid #d0dce8; color: #3a4a5a; vertical-align: top; }
+  .kk-info-table tr:nth-child(even) td { background: #f8fafc; }
+  .tag-tulud { display: inline-block; background: #d8f0d8; color: #2a6a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+  .tag-kulud { display: inline-block; background: #f8e0d8; color: #8a2a2a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+  .tag-sk2 { display: inline-block; background: #e8d8f8; color: #4a2a8a; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -177,34 +237,141 @@
   <div class="main">
     <div class="report-head">
       <div class="report-title">Kontoklasside register</div>
-      <span class="report-sub">Bilansiskeem</span>
+      <span class="report-sub" id="reportSub">Bilansiskeem</span>
       <div class="report-actions">
         <button class="ra-btn" onclick="window.print()">Prindi</button>
       </div>
     </div>
 
-    <div class="stats-bar" id="statsBar">
-      <div class="stat">Kokku: <strong id="statTotal">147</strong> kirjet</div>
-      <div class="stat">Näidatav: <strong id="statVisible">147</strong></div>
-      <div class="stat">Tasemeid: <strong>0–5</strong></div>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="bilans" onclick="setTab('bilans')">Bilans</button>
+      <button class="tab-btn" data-tab="sk1" onclick="setTab('sk1')">Kasumiaruanne SK1</button>
+      <button class="tab-btn" data-tab="sk2" onclick="setTab('sk2')">Kasumiaruanne SK2</button>
+      <button class="tab-btn" data-tab="kontokaart" onclick="setTab('kontokaart')">Kontokaart (demo)</button>
     </div>
 
-    <div class="table-wrap">
-      <table id="mainTable">
-        <thead>
-          <tr>
-            <th class="col-kood">Kood</th>
-            <th class="col-nimi">Nimi</th>
-            <th class="col-tase">Tase</th>
-            <th class="col-vaartus">Väärtus</th>
-            <th class="col-kuva">Kuva</th>
-            <th class="col-hierarhia">Hierarhia</th>
-            <th class="col-sort">Sort</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-      <div class="no-results" id="noResults" style="display:none">Tulemusi ei leitud</div>
+    <div id="table-section">
+      <div class="stats-bar" id="statsBar">
+        <div class="stat">Kokku: <strong id="statTotal">0</strong> kirjet</div>
+        <div class="stat">Näidatav: <strong id="statVisible">0</strong></div>
+        <div class="stat">Tasemeid: <strong>0–5</strong></div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th class="col-kood">Kood</th>
+              <th class="col-nimi">Nimi</th>
+              <th class="col-tase">Tase</th>
+              <th class="col-vaartus">Väärtus</th>
+              <th class="col-kuva">Kuva</th>
+              <th class="col-hierarhia">Hierarhia</th>
+              <th class="col-sort">Sort</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="no-results" id="noResults" style="display:none">Tulemusi ei leitud</div>
+      </div>
+    </div>
+
+    <div id="kontokaart-view">
+      <div class="kk-cols">
+        <div class="kk-card">
+          <div class="kk-card-head">
+            Konto
+            <button class="kk-save">Salvesta</button>
+          </div>
+          <div class="kk-body">
+            <div class="kk-row">
+              <div class="kk-label req">Kood</div>
+              <input class="kk-input" type="text" placeholder="nt 5001" style="max-width:100px">
+            </div>
+            <div class="kk-row">
+              <div class="kk-label req">Kirjeldus (est)</div>
+              <input class="kk-input" type="text" placeholder="Palgakulu">
+            </div>
+            <div class="kk-row">
+              <div class="kk-label">Kirjeldus (eng)</div>
+              <input class="kk-input" type="text" placeholder="Salary expense">
+            </div>
+            <div class="kk-row">
+              <div class="kk-label req">Konto tüüp</div>
+              <select class="kk-select" id="kkTyyp" onchange="kkTyypChanged()">
+                <option value="">— vali —</option>
+                <option value="aktiva">Aktiva</option>
+                <option value="passiva">Passiva</option>
+                <option value="tulu">Tulu</option>
+                <option value="kulu" selected>Kulu</option>
+              </select>
+            </div>
+            <div class="kk-divider"></div>
+            <div class="kk-section-title">Aruanderead</div>
+            <div class="kk-row" id="kkBilansRow" style="display:none">
+              <div class="kk-label">Bilansi rida</div>
+              <div class="bc-field" id="bcBilans">
+                <div class="bc-display" onclick="bcOpen('bcBilans')">
+                  <span class="bc-placeholder">otsi...</span>
+                </div>
+                <div class="bc-dropdown" id="bcBilans-drop"></div>
+              </div>
+            </div>
+            <div class="kk-row" id="kkSK1Row">
+              <div class="kk-label">Kasumiaruande rida (SK1)</div>
+              <div class="bc-field" id="bcSK1">
+                <div class="bc-display open" id="bcSK1-display" onclick="bcOpen('bcSK1')">
+                  <span class="bc-crumb">
+                    <span class="bc-crumb-text">Ärikulud liigi järgi</span>
+                    <span class="bc-sep">›</span>
+                    <span class="bc-crumb-text">Tööjõukulud</span>
+                    <span class="bc-sep">›</span>
+                    <span class="bc-crumb-text">Palgakulu</span>
+                  </span>
+                  <span class="bc-clear" onclick="bcClear('bcSK1',event)">×</span>
+                </div>
+                <div class="bc-dropdown" id="bcSK1-drop"></div>
+              </div>
+            </div>
+            <div class="kk-row" id="kkSK2Row">
+              <div class="kk-label">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">valikuline</span></div>
+              <div class="bc-field" id="bcSK2">
+                <div class="bc-display" id="bcSK2-display" onclick="bcOpen('bcSK2')">
+                  <span class="bc-placeholder">otsi...</span>
+                </div>
+                <div class="bc-dropdown" id="bcSK2-drop"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kk-info">
+          <div class="kk-info-card">
+            <h4>Kuidas kontoklassi valida</h4>
+            <p>Üks otsingulahter näitab valitud tee <em>leivapururajana</em> (breadcrumb). Klikid lahtril → avaneb puuvaade; valid taseme kaupa.</p>
+            <p>Konto tüüp määrab, millised väljad kuvatakse:</p>
+            <table class="kk-info-table">
+              <tr><th>Tüüp</th><th>Väljad</th></tr>
+              <tr><td><strong>Aktiva</strong></td><td>Bilansi rida</td></tr>
+              <tr><td><strong>Passiva</strong></td><td>Bilansi rida</td></tr>
+              <tr><td><strong>Tulu</strong></td><td>Kasumiaruande rida SK1 + SK2 (valikuline)</td></tr>
+              <tr><td><strong>Kulu</strong></td><td>Kasumiaruande rida SK1 + SK2 (valikuline)</td></tr>
+            </table>
+          </div>
+          <div class="kk-info-card">
+            <h4>SK1 vs SK2 — kuidas ettevõte valib</h4>
+            <p><span class="tag-tulud">SK1</span> Kulu liigi järgi — <code>DIR6351 Palgakulu</code> katab kõik tööjõukulud, objekt määrab funktsiooni.</p>
+            <p><span class="tag-sk2">SK2</span> Kulu funktsiooni järgi — eraldi kontod funktsioonide kaupa:</p>
+            <table class="kk-info-table">
+              <tr><th>Konto</th><th>SK2 rida</th></tr>
+              <tr><td>5001 Palgakulu tootmine</td><td><code>DIR9210</code> Tootmiskulud</td></tr>
+              <tr><td>5002 Palgakulu turundus</td><td><code>DIR9400</code> Turustuskulud</td></tr>
+              <tr><td>5003 Palgakulu üldkulu</td><td><code>DIR9500</code> Üldhalduskulud</td></tr>
+            </table>
+            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">SK2 väli jääb tühjaks, kui ettevõte kasutab objekte funktsiooni määramiseks.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -370,7 +537,63 @@ const DATA = [
   {kood:"DIR2290",nimi:"Eelmiste perioodide jaotamata kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/90/",sort:"90",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
   {kood:"DIR2300",nimi:"Aruandeaasta kasum (kahjum)",master:"DIR1012",hierarhia:"/10/30/100/",sort:"100",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0"},
   {kood:"DIR1012S",nimi:"Omakapital kokku",master:"DIR1000",hierarhia:"/10/30/",sort:"30",tase:1,vaartus:"Valem",kuva:"Alati"},
-  {kood:"DIR1000S",nimi:"Passiva (kohustused ja omakapital) kokku",master:"DIR1000",hierarhia:"/10/40/",sort:"40",tase:1,vaartus:"Valem",kuva:"Alati",formula:"DIR1011S+DIR1012S"}
+  {kood:"DIR1000S",nimi:"Passiva (kohustused ja omakapital) kokku",master:"DIR1000",hierarhia:"/10/40/",sort:"40",tase:1,vaartus:"Valem",kuva:"Alati",formula:"DIR1011S+DIR1012S"},
+
+  // === KASUMIARUANNE — SKEEM 1 (kulud liigi järgi) ===
+  {kood:"DIR6000",nimi:"Kasumiaruanne — Skeem 1",master:"",hierarhia:"/20/",sort:"10",tase:0,vaartus:"",kuva:"",aruanne:"sk1"},
+  {kood:"DIR6100",nimi:"Müügitulu",master:"DIR6000",hierarhia:"/20/10/",sort:"10",tase:1,vaartus:"Kontode saldo",kuva:"Alati",aruanne:"sk1"},
+  {kood:"DIR6200",nimi:"Muud äritulud",master:"DIR6000",hierarhia:"/20/20/",sort:"20",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6300",nimi:"Ärikulud liigi järgi",master:"DIR6000",hierarhia:"/20/30/",sort:"30",tase:1,vaartus:"",kuva:"Alati",aruanne:"sk1"},
+  {kood:"DIR6310",nimi:"Müüdud kaubad, toorained, materjalid ja teenused",master:"DIR6300",hierarhia:"/20/30/10/",sort:"10",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6320",nimi:"Muu laovarude muutus",master:"DIR6300",hierarhia:"/20/30/20/",sort:"20",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6330",nimi:"Toodetud põhivara aktiveerimine",master:"DIR6300",hierarhia:"/20/30/30/",sort:"30",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6340",nimi:"Mitmesugused tegevuskulud",master:"DIR6300",hierarhia:"/20/30/40/",sort:"40",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6350",nimi:"Tööjõukulud",master:"DIR6300",hierarhia:"/20/30/50/",sort:"50",tase:2,vaartus:"",kuva:"Alati",aruanne:"sk1"},
+  {kood:"DIR6351",nimi:"Palgakulu",master:"DIR6350",hierarhia:"/20/30/50/10/",sort:"10",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6352",nimi:"Sotsiaalmaksud",master:"DIR6350",hierarhia:"/20/30/50/20/",sort:"20",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6353",nimi:"Töötuskindlustusmaksed",master:"DIR6350",hierarhia:"/20/30/50/30/",sort:"30",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6354",nimi:"Kogumispensioni maksed",master:"DIR6350",hierarhia:"/20/30/50/40/",sort:"40",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6350S",nimi:"Tööjõukulud kokku",master:"DIR6300",hierarhia:"/20/30/50/",sort:"50",tase:2,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6360",nimi:"Põhivara kulum ja väärtuse langus",master:"DIR6300",hierarhia:"/20/30/60/",sort:"60",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6370",nimi:"Muud ärikulud",master:"DIR6300",hierarhia:"/20/30/70/",sort:"70",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6400",nimi:"Ärikasum (-kahjum)",master:"DIR6000",hierarhia:"/20/40/",sort:"40",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk1",formula:"DIR6100+DIR6200−DIR6310−DIR6320+DIR6330−DIR6340−DIR6350S−DIR6360−DIR6370"},
+  {kood:"DIR6500",nimi:"Finantstulud ja -kulud",master:"DIR6000",hierarhia:"/20/50/",sort:"50",tase:1,vaartus:"",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6510",nimi:"Finantstulud",master:"DIR6500",hierarhia:"/20/50/10/",sort:"10",tase:2,vaartus:"",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6511",nimi:"Dividendid",master:"DIR6510",hierarhia:"/20/50/10/10/",sort:"10",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6512",nimi:"Intressitulud",master:"DIR6510",hierarhia:"/20/50/10/20/",sort:"20",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6513",nimi:"Muud finantstulud",master:"DIR6510",hierarhia:"/20/50/10/30/",sort:"30",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6510S",nimi:"Finantstulud kokku",master:"DIR6500",hierarhia:"/20/50/10/",sort:"10",tase:2,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6520",nimi:"Finantskulud",master:"DIR6500",hierarhia:"/20/50/20/",sort:"20",tase:2,vaartus:"",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6521",nimi:"Intressikulud",master:"DIR6520",hierarhia:"/20/50/20/10/",sort:"10",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6522",nimi:"Valuutakursi kahjumid",master:"DIR6520",hierarhia:"/20/50/20/20/",sort:"20",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6523",nimi:"Muud finantskulud",master:"DIR6520",hierarhia:"/20/50/20/30/",sort:"30",tase:3,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6520S",nimi:"Finantskulud kokku",master:"DIR6500",hierarhia:"/20/50/20/",sort:"20",tase:2,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6500S",nimi:"Finantstulud ja -kulud kokku",master:"DIR6000",hierarhia:"/20/50/",sort:"50",tase:1,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6600",nimi:"Kasum (kahjum) enne tulumaksu",master:"DIR6000",hierarhia:"/20/60/",sort:"60",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk1",formula:"DIR6400+DIR6500S"},
+  {kood:"DIR6700",nimi:"Tulumaks",master:"DIR6000",hierarhia:"/20/70/",sort:"70",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk1"},
+  {kood:"DIR6800",nimi:"Aruandeaasta kasum (kahjum)",master:"DIR6000",hierarhia:"/20/80/",sort:"80",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk1",formula:"DIR6600−DIR6700"},
+
+  // === KASUMIARUANNE — SKEEM 2 (kulud funktsioonide järgi) ===
+  {kood:"DIR9000",nimi:"Kasumiaruanne — Skeem 2",master:"",hierarhia:"/30/",sort:"10",tase:0,vaartus:"",kuva:"",aruanne:"sk2"},
+  {kood:"DIR9100",nimi:"Müügitulu",master:"DIR9000",hierarhia:"/30/10/",sort:"10",tase:1,vaartus:"Kontode saldo",kuva:"Alati",aruanne:"sk2"},
+  {kood:"DIR9200",nimi:"Müüdud toodete/kaupade/teenuste kulud",master:"DIR9000",hierarhia:"/30/20/",sort:"20",tase:1,vaartus:"",kuva:"Alati",aruanne:"sk2"},
+  {kood:"DIR9210",nimi:"Tootmiskulud",master:"DIR9200",hierarhia:"/30/20/10/",sort:"10",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9220",nimi:"Kaupade ostukulu",master:"DIR9200",hierarhia:"/30/20/20/",sort:"20",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9230",nimi:"Teenuste osutamise kulud",master:"DIR9200",hierarhia:"/30/20/30/",sort:"30",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9200S",nimi:"Müüdud toodete/kaupade/teenuste kulud kokku",master:"DIR9000",hierarhia:"/30/20/",sort:"20",tase:1,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9300",nimi:"Brutokasum (-kahjum)",master:"DIR9000",hierarhia:"/30/30/",sort:"30",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk2",formula:"DIR9100−DIR9200S"},
+  {kood:"DIR9400",nimi:"Turustuskulud",master:"DIR9000",hierarhia:"/30/40/",sort:"40",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9500",nimi:"Üldhalduskulud",master:"DIR9000",hierarhia:"/30/50/",sort:"50",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9600",nimi:"Muud äritulud",master:"DIR9000",hierarhia:"/30/60/",sort:"60",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9700",nimi:"Muud ärikulud",master:"DIR9000",hierarhia:"/30/70/",sort:"70",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9800",nimi:"Ärikasum (-kahjum)",master:"DIR9000",hierarhia:"/30/80/",sort:"80",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk2",formula:"DIR9300−DIR9400−DIR9500+DIR9600−DIR9700"},
+  {kood:"DIR9850",nimi:"Finantstulud ja -kulud",master:"DIR9000",hierarhia:"/30/85/",sort:"85",tase:1,vaartus:"",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9851",nimi:"Finantstulud",master:"DIR9850",hierarhia:"/30/85/10/",sort:"10",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9852",nimi:"Finantskulud",master:"DIR9850",hierarhia:"/30/85/20/",sort:"20",tase:2,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9850S",nimi:"Finantstulud ja -kulud kokku",master:"DIR9000",hierarhia:"/30/85/",sort:"85",tase:1,vaartus:"Valem",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9900",nimi:"Kasum (kahjum) enne tulumaksu",master:"DIR9000",hierarhia:"/30/90/",sort:"90",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk2",formula:"DIR9800+DIR9850S"},
+  {kood:"DIR9910",nimi:"Tulumaks",master:"DIR9000",hierarhia:"/30/91/",sort:"91",tase:1,vaartus:"Kontode saldo",kuva:"Kui pole 0",aruanne:"sk2"},
+  {kood:"DIR9920",nimi:"Aruandeaasta kasum (kahjum)",master:"DIR9000",hierarhia:"/30/92/",sort:"92",tase:1,vaartus:"Valem",kuva:"Alati",aruanne:"sk2",formula:"DIR9900−DIR9910"}
 ];
 
 // Build children map
@@ -422,14 +645,45 @@ function getValemFormula(kood) {
 }
 
 let currentView = 'tree';
+let currentTab = 'bilans';
+
+const TAB_LABELS = {
+  bilans: 'Bilansiskeem',
+  sk1: 'Kasumiaruanne — Skeem 1',
+  sk2: 'Kasumiaruanne — Skeem 2',
+  kontokaart: 'Kontokaart (demo)'
+};
+
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.getElementById('reportSub').textContent = TAB_LABELS[tab] || '';
+  const isKontokaart = tab === 'kontokaart';
+  document.getElementById('table-section').style.display = isKontokaart ? 'none' : 'flex';
+  document.getElementById('kontokaart-view').style.display = isKontokaart ? 'block' : 'none';
+  if (!isKontokaart) {
+    // reset collapse for new tab
+    collapsed.clear();
+    tabData().forEach(d => { if (d.tase >= 2) collapsed.add(d.kood); });
+    renderTable();
+  }
+}
+
+function tabData() {
+  return DATA.filter(d => (d.aruanne || 'bilans') === currentTab);
+}
 
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   tbody.innerHTML = '';
   let visCount = 0;
+  const rows = tabData();
+  document.getElementById('statTotal').textContent = rows.length;
 
-  DATA.forEach(d => {
+  rows.forEach(d => {
     const isSummary = d.kood.endsWith('S');
     const vis = currentView === 'flat' ? true : isVisible(d);
     const matchesSearch = !q || d.kood.toLowerCase().includes(q) || d.nimi.toLowerCase().includes(q);
@@ -544,6 +798,131 @@ function setView(v) {
 }
 
 renderTable();
+
+// ===== KONTOKAART DEMO =====
+function kkTyypChanged() {
+  const t = document.getElementById('kkTyyp').value;
+  const isBilans = t === 'aktiva' || t === 'passiva';
+  const isKasumi = t === 'tulu' || t === 'kulu';
+  document.getElementById('kkBilansRow').style.display = isBilans ? 'flex' : 'none';
+  document.getElementById('kkSK1Row').style.display = isKasumi ? 'flex' : 'none';
+  document.getElementById('kkSK2Row').style.display = isKasumi ? 'flex' : 'none';
+}
+
+// Build tree for picker: {kood, nimi, children:[...]}
+function buildPickerTree(aruanne) {
+  const nodes = DATA.filter(d => (d.aruanne || 'bilans') === aruanne);
+  const map = {};
+  nodes.forEach(d => { map[d.kood] = {...d, children: []}; });
+  const roots = [];
+  nodes.forEach(d => {
+    if (d.master && map[d.master]) map[d.master].children.push(map[d.kood]);
+    else if (!d.master || !map[d.master]) roots.push(map[d.kood]);
+  });
+  return roots;
+}
+
+const bcState = {}; // fieldId -> {path:[], currentNodes:[]}
+
+function bcOpen(fieldId) {
+  const drop = document.getElementById(fieldId + '-drop');
+  const isOpen = drop.classList.contains('open');
+  // close all
+  document.querySelectorAll('.bc-dropdown.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.bc-display.open').forEach(d => d.classList.remove('open'));
+  if (isOpen) return;
+  document.getElementById(fieldId + '-display') && document.getElementById(fieldId + '-display').classList.add('open');
+  drop.classList.add('open');
+  if (!bcState[fieldId]) {
+    const aruanne = fieldId === 'bcSK1' ? 'sk1' : fieldId === 'bcSK2' ? 'sk2' : 'bilans';
+    const roots = buildPickerTree(aruanne);
+    // start from tase 1 children of the root
+    const tase1 = roots[0] ? roots[0].children : [];
+    bcState[fieldId] = {path: [], currentNodes: tase1, aruanne};
+  }
+  bcRender(fieldId);
+}
+
+function bcRender(fieldId) {
+  const drop = document.getElementById(fieldId + '-drop');
+  const state = bcState[fieldId];
+  drop.innerHTML = '';
+  if (state.path.length > 0) {
+    const back = document.createElement('div');
+    back.className = 'bc-back';
+    back.innerHTML = '‹ Tagasi';
+    back.onclick = () => bcGoBack(fieldId);
+    drop.appendChild(back);
+    const pathBar = document.createElement('div');
+    pathBar.className = 'bc-path-bar';
+    pathBar.textContent = state.path.map(n => n.nimi).join(' › ');
+    drop.appendChild(pathBar);
+  }
+  state.currentNodes.forEach(node => {
+    const item = document.createElement('div');
+    item.className = 'bc-item' + (node.children && node.children.length ? ' bc-has-children' : '');
+    const hasC = node.children && node.children.length > 0;
+    item.innerHTML = `<span class="bc-kood">${node.kood}</span><span>${node.nimi}</span>${hasC ? '<span class="bc-arrow">›</span>' : ''}`;
+    item.onclick = () => {
+      if (hasC) {
+        state.path.push(node);
+        state.currentNodes = node.children;
+        bcRender(fieldId);
+      } else {
+        bcSelect(fieldId, node);
+      }
+    };
+    drop.appendChild(item);
+  });
+}
+
+function bcGoBack(fieldId) {
+  const state = bcState[fieldId];
+  if (state.path.length === 0) return;
+  state.path.pop();
+  const aruanne = state.aruanne;
+  const roots = buildPickerTree(aruanne);
+  let nodes = roots[0] ? roots[0].children : [];
+  for (const p of state.path) {
+    const found = nodes.find(n => n.kood === p.kood);
+    if (found) nodes = found.children;
+  }
+  state.currentNodes = nodes;
+  bcRender(fieldId);
+}
+
+function bcSelect(fieldId, node) {
+  const state = bcState[fieldId];
+  const allPath = [...state.path, node];
+  const display = document.getElementById(fieldId + '-display') || document.querySelector(`#${fieldId} .bc-display`);
+  const crumbs = allPath.map((n, i) => {
+    const isLast = i === allPath.length - 1;
+    return `<span class="bc-crumb-text">${n.nimi}</span>${isLast ? '' : '<span class="bc-sep">›</span>'}`;
+  }).join('');
+  display.innerHTML = `<span class="bc-crumb">${crumbs}</span><span class="bc-clear" onclick="bcClear('${fieldId}',event)">×</span>`;
+  document.getElementById(fieldId + '-drop').classList.remove('open');
+  display.classList.remove('open');
+  // reset for next open
+  bcState[fieldId] = null;
+}
+
+function bcClear(fieldId, e) {
+  e && e.stopPropagation();
+  const display = document.getElementById(fieldId + '-display') || document.querySelector(`#${fieldId} .bc-display`);
+  display.innerHTML = '<span class="bc-placeholder">otsi...</span>';
+  bcState[fieldId] = null;
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.bc-field')) {
+    document.querySelectorAll('.bc-dropdown.open').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.bc-display.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// init kontokaart (kulu tüüp on vaikimisi valitud)
+kkTyypChanged();
 </script>
 </body>
 </html>
