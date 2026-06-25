@@ -1528,9 +1528,10 @@ function renderBa() {
     badge.className = isAlati ? 'ba-alati-badge' : 'ba-kui-badge';
     badge.textContent = isAlati ? 'A' : '0';
 
+    const showVal = node.vaartus === 'Valem' || node.vaartus === 'Kontode saldo';
     const valEl = document.createElement('span');
     valEl.style.cssText = `font-size:${(isSummary||isGrandTotal)?'12px':'11px'};font-weight:${(isSummary||isGrandTotal)?'700':'400'};color:${val===0?'#9abacc':'#1e3050'};min-width:70px;text-align:right;flex-shrink:0;`;
-    valEl.textContent = val === 0 ? '—' : val.toLocaleString('et-EE');
+    valEl.textContent = !showVal ? '' : val === 0 ? '—' : val.toLocaleString('et-EE');
 
     row.appendChild(nameEl); row.appendChild(badge); row.appendChild(valEl);
 
