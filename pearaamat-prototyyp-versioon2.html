@@ -23,9 +23,13 @@
   .tog-btn { background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; padding: 2px 8px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; white-space: nowrap; height: 24px; }
   .tog-btn:hover { background: #eef3f8; }
   .sidebar-section { border-bottom: 1px solid #c8daea; }
-  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c8e4f8; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: #2d4f72; border-left: 3px solid #5a9fd4; }
+  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c8e4f8; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: #2d4f72; border-left: 3px solid #5a9fd4; position: relative; }
   .sidebar-head:hover { background: #264566; }
   .sidebar-head .arrow { font-size: 10px; opacity: 0.7; }
+  .sidebar-head-wrench { background: none; border: 1px solid transparent; border-radius: 2px; cursor: pointer; padding: 1px 5px; font-size: 12px; color: #8ab8d8; line-height: 1.3; margin-left: 4px; flex-shrink: 0; }
+  .sidebar-head-wrench:hover, .sidebar-head-wrench.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: #fff; }
+  .sidebar-head-efp-panel { display: none; position: absolute; left: 0; right: 0; top: 100%; background: #fff; border: 1px solid #aabccc; border-top: none; border-radius: 0 0 3px 3px; z-index: 1100; box-shadow: 0 4px 12px rgba(0,0,0,0.18); font-family: Arial, sans-serif; }
+  .sidebar-head-efp-panel.open { display: block; }
   .sidebar-body { padding: 8px 8px 14px; display: flex; flex-direction: column; gap: 4px; background: #f4f8fd; }
   .sf { display: flex; flex-direction: column; gap: 1px; }
   .sf label { font-size: 10px; font-weight: 600; color: #2a4a6a; }
@@ -157,6 +161,28 @@
   .drag-handle { color: #c0c8d4; font-size: 11px; cursor: grab; flex-shrink: 0; }
   .col-picker-footer { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-top: 1px solid #dde3ea; font-size: 11px; color: #3a6a9a; cursor: pointer; background: #f5f8fb; }
   .col-picker-footer:hover { background: #e4edf5; }
+
+  /* ── ENTITY FIELD PICKER (Klient / Hankija) ── */
+  .efp-wrap { position: relative; }
+  .efp-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+  .efp-label-row label { font-size: 11px; color: #4a6a8a; font-weight: 600; }
+  .efp-btn { background: none; border: 1px solid transparent; border-radius: 2px; cursor: pointer; padding: 1px 5px; font-size: 12px; color: #6a8ab0; line-height: 1.3; }
+  .efp-btn:hover, .efp-btn.active { background: #e4ecf4; border-color: #b8c4d0; color: #1a3a5a; }
+  .efp-panel { display: none; position: absolute; left: 0; top: 100%; background: #fff; border: 1px solid #aabccc; border-radius: 3px; z-index: 1100; box-shadow: 0 4px 12px rgba(0,0,0,0.18); width: 180px; font-family: Arial, sans-serif; }
+  .efp-panel.open { display: block; }
+  .efp-panel-title { padding: 6px 10px 4px; font-size: 11px; font-weight: 700; color: #4a6a8a; background: #f0f4f8; border-bottom: 1px solid #dde3ea; }
+  .efp-panel-list { max-height: 220px; overflow-y: auto; padding: 2px 0; }
+  .efp-panel-item { display: flex; align-items: center; gap: 7px; padding: 4px 10px; cursor: pointer; font-size: 11px; color: #1a2a3a; user-select: none; }
+  .efp-panel-item:hover { background: #eef4fa; }
+  .efp-panel-item input[type=checkbox] { margin: 0; accent-color: #3a6a9a; flex-shrink: 0; }
+  .efp-panel-footer { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-top: 1px solid #dde3ea; font-size: 11px; color: #3a6a9a; cursor: pointer; background: #f5f8fb; }
+  .efp-panel-footer:hover { background: #e4edf5; }
+  .efp-extra-fields { margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+  .efp-extra-field { display: none; }
+  .efp-extra-field.visible { display: flex; align-items: center; gap: 4px; }
+  .efp-extra-field label { font-size: 10px; color: #6a8ab0; width: 48px; flex-shrink: 0; }
+  .efp-extra-field input { flex: 1; height: 22px; border: 1px solid #b8c4d0; border-radius: 2px; padding: 0 5px; font-size: 11px; font-family: Arial, sans-serif; color: #1a2a3a; }
+  .efp-extra-field input:focus { outline: none; border-color: #5a8ab8; }
 </style>
 <style id="colHideStyles"></style>
 </head>
@@ -216,6 +242,27 @@
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-head">Kontoklass <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf">
+          <div class="mc-wrap" id="mcKlassWrap">
+            <div class="mc-trigger" id="mcKlassTrigger" onclick="toggleMcKlass()" style="background:#d8e8f4;border-color:#8aaac8;color:#1a2a3a;">
+              <span id="mcKlassLabel" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;">&nbsp;</span>
+              <span class="mc-arrow" style="color:#1a2a3a;">▼</span>
+            </div>
+            <div class="mc-dropdown" id="mcKlassDropdown" style="max-height:300px;">
+              <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
+                <input type="text" id="mcKlassSearch" placeholder="Otsi..." oninput="filterMcKlass(this.value)" style="width:100%;height:22px;border:1px solid #b8c4d0;border-radius:2px;padding:0 6px;font-size:11px;font-family:Arial,sans-serif;box-sizing:border-box;">
+              </div>
+              <div class="mc-clear" onclick="clearMcKlass()">Tühjenda</div>
+              <div id="mcKlassList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-head">Kande filtrid <span class="arrow">▾</span></div>
       <div class="sidebar-body">
         <div class="sf"><label title="vanas 'Kanne'">Kande tüüp</label>
@@ -254,9 +301,6 @@
           <option>Pinnad</option>
         </select></div>
         <div class="sf"><label>Objekt</label><select><option value=""></option><option>OBJ001</option><option>OBJ002</option><option>OSAKOND1</option><option>OSAKOND2</option></select></div>
-        <div class="sf"><label>Projekt</label><select><option value=""></option><option>PROJ2025</option><option>PROJ2024</option><option>PROJ2023</option></select></div>
-        <div class="sf"><label>Klient</label><select><option value=""></option><option>Estimaa Kaubandus AS</option><option>CAT Demo</option><option>Lambi OÜ</option></select></div>
-        <div class="sf"><label>Hankija</label><select><option value=""></option><option>IT-Arendus OÜ</option><option>Bank Demo</option></select></div>
         <div class="sf"><label>Selgitus</label><input type="text" placeholder=""></div>
         <div class="sf"><label>Viide</label><input type="text" placeholder=""></div>
         <div class="sf"><label>KM kood</label><select><option>(kõik)</option></select></div>
@@ -268,6 +312,106 @@
           </div>
         </div>
         <div class="sf"><label>Tasemeta</label><input type="text" placeholder=""></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="efpWrapProjekt">
+      <div class="sidebar-head">Projekt
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="arrow">▾</span>
+          <button class="sidebar-head-wrench" id="efpBtnProjekt" title="Vali andmeväljad" onclick="event.stopPropagation();toggleEfp('projekt')">🔧</button>
+        </span>
+        <div class="sidebar-head-efp-panel" id="efpPanelProjekt" onclick="event.stopPropagation()">
+          <div class="efp-panel-title">Projekti andmeväljad</div>
+          <div class="efp-panel-list" id="efpListProjekt"></div>
+          <div class="efp-panel-footer" onclick="resetEfp('projekt')">↺ Taasta algseaded</div>
+        </div>
+      </div>
+      <div class="sidebar-body collapsed">
+        <div class="sf">
+          <select><option value=""></option><option>PROJ2025</option><option>PROJ2024</option><option>PROJ2023</option></select>
+        </div>
+        <div class="efp-extra-fields" id="efpFieldsProjekt"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="efpWrapKlient">
+      <div class="sidebar-head">Klient
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="arrow">▾</span>
+          <button class="sidebar-head-wrench" id="efpBtnKlient" title="Vali andmeväljad" onclick="event.stopPropagation();toggleEfp('klient')">🔧</button>
+        </span>
+        <div class="sidebar-head-efp-panel" id="efpPanelKlient" onclick="event.stopPropagation()">
+          <div class="efp-panel-title">Kliendi andmeväljad</div>
+          <div class="efp-panel-list" id="efpListKlient"></div>
+          <div class="efp-panel-footer" onclick="resetEfp('klient')">↺ Taasta algseaded</div>
+        </div>
+      </div>
+      <div class="sidebar-body collapsed">
+        <div class="sf">
+          <select><option value=""></option><option>Estimaa Kaubandus AS</option><option>CAT Demo</option><option>Lambi OÜ</option></select>
+        </div>
+        <div class="efp-extra-fields" id="efpFieldsKlient"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="efpWrapHankija">
+      <div class="sidebar-head">Hankija
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="arrow">▾</span>
+          <button class="sidebar-head-wrench" id="efpBtnHankija" title="Vali andmeväljad" onclick="event.stopPropagation();toggleEfp('hankija')">🔧</button>
+        </span>
+        <div class="sidebar-head-efp-panel" id="efpPanelHankija" onclick="event.stopPropagation()">
+          <div class="efp-panel-title">Hankija andmeväljad</div>
+          <div class="efp-panel-list" id="efpListHankija"></div>
+          <div class="efp-panel-footer" onclick="resetEfp('hankija')">↺ Taasta algseaded</div>
+        </div>
+      </div>
+      <div class="sidebar-body collapsed">
+        <div class="sf">
+          <select><option value=""></option><option>IT-Arendus OÜ</option><option>Bank Demo</option></select>
+        </div>
+        <div class="efp-extra-fields" id="efpFieldsHankija"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="efpWrapMuugitellimus">
+      <div class="sidebar-head">Müügitellimus
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="arrow">▾</span>
+          <button class="sidebar-head-wrench" id="efpBtnMuugitellimus" title="Vali andmeväljad" onclick="event.stopPropagation();toggleEfp('muugitellimus')">🔧</button>
+        </span>
+        <div class="sidebar-head-efp-panel" id="efpPanelMuugitellimus" onclick="event.stopPropagation()">
+          <div class="efp-panel-title">Müügitellimuse andmeväljad</div>
+          <div class="efp-panel-list" id="efpListMuugitellimus"></div>
+          <div class="efp-panel-footer" onclick="resetEfp('muugitellimus')">↺ Taasta algseaded</div>
+        </div>
+      </div>
+      <div class="sidebar-body collapsed">
+        <div class="sf">
+          <select><option value=""></option><option>MT-2025-001</option><option>MT-2025-002</option><option>MT-2024-018</option></select>
+        </div>
+        <div class="efp-extra-fields" id="efpFieldsMuugitellimus"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="efpWrapOstutellimus">
+      <div class="sidebar-head">Ostutellimus
+        <span style="display:flex;align-items:center;gap:4px">
+          <span class="arrow">▾</span>
+          <button class="sidebar-head-wrench" id="efpBtnOstutellimus" title="Vali andmeväljad" onclick="event.stopPropagation();toggleEfp('ostutellimus')">🔧</button>
+        </span>
+        <div class="sidebar-head-efp-panel" id="efpPanelOstutellimus" onclick="event.stopPropagation()">
+          <div class="efp-panel-title">Ostutellimuse andmeväljad</div>
+          <div class="efp-panel-list" id="efpListOstutellimus"></div>
+          <div class="efp-panel-footer" onclick="resetEfp('ostutellimus')">↺ Taasta algseaded</div>
+        </div>
+      </div>
+      <div class="sidebar-body collapsed">
+        <div class="sf">
+          <select><option value=""></option><option>OT-2025-001</option><option>OT-2025-002</option><option>OT-2024-011</option></select>
+        </div>
+        <div class="efp-extra-fields" id="efpFieldsOstutellimus"></div>
       </div>
     </div>
 
@@ -389,7 +533,7 @@
         <tbody id="mainTbody">
 
           <!-- 111201 group -->
-          <tr class="grp-header" data-group="g1" data-has-change="true" data-has-balance="true" data-algsaldo-dr="5000.00" data-algsaldo-cr="1500.00" onclick="toggleGroup('g1', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g1" data-konto="111201" data-has-change="true" data-has-balance="true" data-algsaldo-dr="5000.00" data-algsaldo-cr="1500.00" onclick="toggleGroup('g1', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111201</td>
             <td colspan="4">Pangakonto EUR</td>
             <td class="dim-span" colspan="8"></td>
@@ -552,7 +696,7 @@
           </tr>
 
           <!-- 111204 group -->
-          <tr class="grp-header" data-group="g2" data-has-change="true" data-has-balance="true" data-algsaldo-dr="3080.00" data-algsaldo-cr="500.00" onclick="toggleGroup('g2', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g2" data-konto="111204" data-has-change="true" data-has-balance="true" data-algsaldo-dr="3080.00" data-algsaldo-cr="500.00" onclick="toggleGroup('g2', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111204</td>
             <td colspan="4">Pangakonto SEK</td>
             <td class="dim-span" colspan="8"></td>
@@ -625,7 +769,7 @@
           </tr>
 
           <!-- 111202 group — no changes, no balance (demo for filtering tabs) -->
-          <tr class="grp-header" data-group="g3" data-has-change="false" data-has-balance="false" onclick="toggleGroup('g3', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g3" data-konto="111202" data-has-change="false" data-has-balance="false" onclick="toggleGroup('g3', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111202</td>
             <td colspan="4">Pangakonto USD</td>
             <td class="dim-span" colspan="8"></td>
@@ -656,7 +800,7 @@
           </tr>
 
           <!-- 10101 group: Kassa EUR -->
-          <tr class="grp-header" data-group="g4" data-has-change="true" data-has-balance="true" data-algsaldo-dr="850.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g4', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g4" data-konto="10101" data-has-change="true" data-has-balance="true" data-algsaldo-dr="850.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g4', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 10101</td>
             <td colspan="4">Kassa EUR</td>
             <td class="dim-span" colspan="8"></td>
@@ -750,7 +894,7 @@
           </tr>
 
           <!-- 211000 group: Ostjate arved -->
-          <tr class="grp-header" data-group="g5" data-has-change="true" data-has-balance="true" data-algsaldo-dr="4200.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g5', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g5" data-konto="211000" data-has-change="true" data-has-balance="true" data-algsaldo-dr="4200.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g5', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 211000</td>
             <td colspan="4">Ostjate arved</td>
             <td class="dim-span" colspan="8"></td>
@@ -844,7 +988,7 @@
           </tr>
 
           <!-- 521000 group: Palgakulu -->
-          <tr class="grp-header" data-group="g6" data-has-change="true" data-has-balance="true" data-algsaldo-dr="0.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g6', this)" style="cursor:pointer;">
+          <tr class="grp-header" data-group="g6" data-konto="521000" data-has-change="true" data-has-balance="true" data-algsaldo-dr="0.00" data-algsaldo-cr="0.00" onclick="toggleGroup('g6', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 521000</td>
             <td colspan="4">Palgakulu</td>
             <td class="dim-span" colspan="8"></td>
@@ -1073,6 +1217,71 @@
 
   const VAHESUMMA_OPTS = ['byObject','byProject','byCustomer','bySupplier','byVatCode','byCurrency','bySpecialDiscount'];
 
+  const KONTOKLASS_DATA = [
+    {kood:'DIR4010',nimi:'Sularaha'},{kood:'DIR4020',nimi:'Arvelduskontod'},{kood:'DIR4030',nimi:'Hoiused'},{kood:'DIR4040',nimi:'Muud'},
+    {kood:'DIR4050',nimi:'Nõuded ostjate vastu'},{kood:'DIR4060',nimi:'Ebatõenäoliselt laekuvad nõuded ostjate vastu'},{kood:'DIR4070',nimi:'Laenunõuded'},
+    {kood:'DIR4080',nimi:'Intressid'},{kood:'DIR4090',nimi:'Dividendid'},{kood:'DIR4100',nimi:'Viitlaekumised'},
+    {kood:'DIR4110',nimi:'Nõuded seotud osapoolte vastu'},{kood:'DIR4120',nimi:'Maksude ettemaksed ja tagasinõuded'},
+    {kood:'DIR4130',nimi:'Muud nõuded'},{kood:'DIR4140',nimi:'Ettemaksed'},{kood:'DIR4150',nimi:'Tooraine ja materjal'},
+    {kood:'DIR4160',nimi:'Lõpetamata toodang'},{kood:'DIR4170',nimi:'Valmistoodang'},{kood:'DIR4180',nimi:'Müügiks ostetud kaubad'},
+    {kood:'DIR4190',nimi:'Ettemaksed varude eest'},{kood:'DIR4200',nimi:'Muud'},{kood:'DIR3040',nimi:'Bioloogilised varad'},
+    {kood:'DIR3050',nimi:'Finantsinvesteeringud'},{kood:'DIR4210',nimi:'Tütarettevõtjate aktsiad ja osad'},
+    {kood:'DIR4220',nimi:'Sidusettevõtjate aktsiad ja osad'},{kood:'DIR3070',nimi:'Finantsinvesteeringud (Põhivara)'},
+    {kood:'DIR4230',nimi:'Nõuded ostjate vastu (Põhivara)'},{kood:'DIR4240',nimi:'Nõuded seotud osapoolte vastu (Põhivara)'},
+    {kood:'DIR4250',nimi:'Ebatõenäoliselt laekuvad nõuded ostjate vastu (Põhivara)'},{kood:'DIR4260',nimi:'Intressid (Põhivara)'},
+    {kood:'DIR4270',nimi:'Dividendid (Põhivara)'},{kood:'DIR4280',nimi:'Viitlaekumised (Põhivara)'},
+    {kood:'DIR4290',nimi:'Laenunõuded (Põhivara)'},{kood:'DIR4300',nimi:'Maksude ettemaksed ja tagasinõuded (Põhivara)'},
+    {kood:'DIR4310',nimi:'Muud nõuded (Põhivara)'},{kood:'DIR4320',nimi:'Ettemaksed (Põhivara)'},
+    {kood:'DIR3090',nimi:'Kinnisvarainvesteeringud'},{kood:'DIR3100',nimi:'Materiaalsed põhivarad'},
+    {kood:'DIR3110',nimi:'Bioloogilised varad (Põhivara)'},{kood:'DIR3120',nimi:'Immateriaalsed põhivarad'},
+    {kood:'DIR3130',nimi:'Laenukohustised'},{kood:'DIR4330',nimi:'Võlad tarnijatele'},
+    {kood:'DIR5010',nimi:'Käibemaks (Maksuvõlad)'},{kood:'DIR5020',nimi:'Ettevõtte tulumaks (Maksuvõlad)'},
+    {kood:'DIR5030',nimi:'Üksikisiku tulumaks (Maksuvõlad)'},{kood:'DIR5040',nimi:'Erisoodustuse tulumaks (Maksuvõlad)'},
+    {kood:'DIR5050',nimi:'Sotsiaalmaks (Maksuvõlad)'},{kood:'DIR5060',nimi:'Töötuskindlustusmaksed (Maksuvõlad)'},
+    {kood:'DIR5070',nimi:'Kohustuslik kogumispension (Maksuvõlad)'},{kood:'DIR5080',nimi:'Maamaks (Maksuvõlad)'},
+    {kood:'DIR5090',nimi:'Aktsiisimaks (Maksuvõlad)'},{kood:'DIR5100',nimi:'Intress (Maksuvõlad)'},
+    {kood:'DIR5110',nimi:'Palgavõlg'},{kood:'DIR5120',nimi:'Puhkusereserv'},{kood:'DIR5130',nimi:'Muu arvestatud tasud koos maksudega'},
+    {kood:'DIR4360',nimi:'Arvelduskrediit'},{kood:'DIR4370',nimi:'Laenud'},{kood:'DIR4380',nimi:'Kapitalirent'},
+    {kood:'DIR4390',nimi:'Võlakirjad'},{kood:'DIR4400',nimi:'Intressid'},{kood:'DIR4410',nimi:'Dividendid'},
+    {kood:'DIR4420',nimi:'Muud võlad'},{kood:'DIR4430',nimi:'Tulevaste perioodide tulu'},{kood:'DIR4440',nimi:'Muud saadud ettemaksed'},
+    {kood:'DIR4450',nimi:'Garantiieraldis'},{kood:'DIR4460',nimi:'Maksueraldis'},{kood:'DIR4470',nimi:'Muud eraldised'},
+    {kood:'DIR4480',nimi:'Tegevuskulud'},{kood:'DIR3170',nimi:'Laenukohustised (pikaajal)'},
+    {kood:'DIR4490',nimi:'Võlad tarnijatele (pikaajal)'},{kood:'DIR5140',nimi:'Käibemaks (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5150',nimi:'Ettevõtte tulumaks (Maksuvõlad, pikaajal)'},{kood:'DIR5160',nimi:'Üksikisiku tulumaks (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5170',nimi:'Erisoodustuse tulumaks (Maksuvõlad, pikaajal)'},{kood:'DIR5180',nimi:'Sotsiaalmaks (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5190',nimi:'Töötuskindlustusmaksed (Maksuvõlad, pikaajal)'},{kood:'DIR5200',nimi:'Kohustuslik kogumispension (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5210',nimi:'Maamaks (Maksuvõlad, pikaajal)'},{kood:'DIR5220',nimi:'Aktsiisimaks (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5230',nimi:'Intress (Maksuvõlad, pikaajal)'},{kood:'DIR5240',nimi:'Muud maksude ettemaksed ja maksuvõlad (Maksuvõlad, pikaajal)'},
+    {kood:'DIR5250',nimi:'Ettemaksukonto jääk (Maksuvõlad, pikaajal)'},{kood:'DIR4510',nimi:'Võlad töövõtjatele (pikaajal)'},
+    {kood:'DIR4520',nimi:'Tarnijad (pikaajal)'},{kood:'DIR4530',nimi:'Laenud (pikaajal)'},{kood:'DIR4540',nimi:'Kapitalirent (pikaajal)'},
+    {kood:'DIR4550',nimi:'Võlakirjad (pikaajal)'},{kood:'DIR4560',nimi:'Muud võlad (pikaajal)'},
+    {kood:'DIR4570',nimi:'Tulevaste perioodide tulud (pikaajal)'},{kood:'DIR4580',nimi:'Muud saadud ettemaksed (pikaajal)'},
+    {kood:'DIR4590',nimi:'Garantiieraldis (pikaajal)'},{kood:'DIR4600',nimi:'Maksueraldis (pikaajal)'},
+    {kood:'DIR4610',nimi:'Muud eraldised (pikaajal)'},{kood:'DIR4620',nimi:'Põhivara (pikaajal)'},
+    {kood:'DIR4630',nimi:'Sihtfinantseerimise amortisatsioon (pikaajal)'},
+    {kood:'DIR3210',nimi:'Aktsiakapital või osakapital nimiväärtuses'},{kood:'DIR3220',nimi:'Registreerimata aktsiakapital või osakapital'},
+    {kood:'DIR3230',nimi:'Sissemaksmata aktsiakapital või osakapital'},{kood:'DIR3240',nimi:'Ülekurss'},
+    {kood:'DIR3250',nimi:'Oma aktsiad või osad'},{kood:'DIR3260',nimi:'Kohustuslik reservkapital'},
+    {kood:'DIR3270',nimi:'Muud reservid'},{kood:'DIR3280',nimi:'Muu omakapital'},
+    {kood:'DIR3290',nimi:'Eelmiste perioodide jaotamata kasum (kahjum)'},{kood:'DIR3300',nimi:'Aruandeaasta kasum (kahjum)'},
+  ];
+
+  const KONTO_KONTOKLASS_MAP = {
+    '10101':  'DIR4010',
+    '111201': 'DIR4020',
+    '111202': 'DIR4020',
+    '111204': 'DIR4020',
+    '211000': 'DIR4050',
+  };
+
+  (function() {
+    const list = document.getElementById('mcKlassList');
+    if (!list) return;
+    list.innerHTML = KONTOKLASS_DATA.map(k =>
+      '<label class="mc-item"><input type="checkbox" value="' + k.kood + '" onchange="mcKlassChange()"> <span style="color:#6a8ab0;font-size:10px;">' + k.kood + '</span>&nbsp;' + k.nimi + '</label>'
+    ).join('');
+  })();
+
   function updateTabModifiers(tabName) {
     _currentTab = tabName;
     const cbV = document.getElementById('cbVaheldumisi');
@@ -1117,17 +1326,45 @@
   function applyDetailFilters() {
     const muutusega = document.getElementById('cbMuutusega');
     const saldoga   = document.getElementById('cbSaldoga');
+    const klassChecked = [...document.querySelectorAll('#mcKlassList input[type=checkbox]:checked')].map(cb => cb.value);
     document.querySelectorAll('tr.grp-header').forEach(hdr => {
       hdr.classList.remove('grp-filter-hidden');
       document.querySelectorAll('[data-grp="' + hdr.dataset.group + '"]').forEach(r => r.classList.remove('grp-filter-hidden'));
     });
     document.querySelectorAll('tr.grp-header').forEach(hdr => {
+      const klass = KONTO_KONTOKLASS_MAP[hdr.dataset.konto] || null;
+      const hideByKlass = klassChecked.length > 0 && (!klass || !klassChecked.includes(klass));
       const hide = (muutusega && muutusega.checked && hdr.dataset.hasChange !== 'true') ||
-                   (saldoga   && saldoga.checked   && hdr.dataset.hasBalance !== 'true');
+                   (saldoga   && saldoga.checked   && hdr.dataset.hasBalance !== 'true') ||
+                   hideByKlass;
       if (hide) {
         hdr.classList.add('grp-filter-hidden');
         document.querySelectorAll('[data-grp="' + hdr.dataset.group + '"]').forEach(r => r.classList.add('grp-filter-hidden'));
       }
+    });
+  }
+
+  function toggleMcKlass() {
+    document.getElementById('mcKlassDropdown').classList.toggle('open');
+  }
+  function clearMcKlass() {
+    document.querySelectorAll('#mcKlassList input[type=checkbox]').forEach(cb => cb.checked = false);
+    document.getElementById('mcKlassLabel').innerHTML = '&nbsp;';
+    document.getElementById('mcKlassSearch').value = '';
+    filterMcKlass('');
+    sidebarFilterChange();
+  }
+  function mcKlassChange() {
+    const checked = [...document.querySelectorAll('#mcKlassList input[type=checkbox]:checked')];
+    const n = checked.length;
+    document.getElementById('mcKlassLabel').textContent = n ? n + ' valitud' : '';
+    if (!n) document.getElementById('mcKlassLabel').innerHTML = '&nbsp;';
+    sidebarFilterChange();
+  }
+  function filterMcKlass(q) {
+    const lq = q.toLowerCase();
+    document.querySelectorAll('#mcKlassList .mc-item').forEach(item => {
+      item.style.display = item.textContent.toLowerCase().includes(lq) ? '' : 'none';
     });
   }
 
@@ -1170,6 +1407,9 @@
     }
     if (!document.getElementById('mcTransWrap').contains(e.target)) {
       document.getElementById('mcTransDropdown').classList.remove('open');
+    }
+    if (!document.getElementById('mcKlassWrap').contains(e.target)) {
+      document.getElementById('mcKlassDropdown').classList.remove('open');
     }
     if (document.getElementById('colPickerWrap') && !document.getElementById('colPickerWrap').contains(e.target)) {
       document.getElementById('colPickerPanel').classList.remove('open');
@@ -1265,6 +1505,143 @@
       filterColItems('');
     }
   }
+
+  // ── ENTITY FIELD PICKER (Klient / Hankija) ──
+  const EFP_FIELDS = {
+    muugitellimus: [
+      { key: 'kood',     label: 'Kood'     },
+      { key: 'nimetus',  label: 'Nimetus'  },
+      { key: 'klient',   label: 'Klient'   },
+      { key: 'kuupaev',  label: 'Kuupäev'  },
+      { key: 'tahtaeg',  label: 'Tähtaeg'  },
+      { key: 'staatus',  label: 'Staatus'  },
+      { key: 'objekt',   label: 'Objekt'   },
+      { key: 'projekt',  label: 'Projekt'  },
+    ],
+    ostutellimus: [
+      { key: 'kood',     label: 'Kood'     },
+      { key: 'nimetus',  label: 'Nimetus'  },
+      { key: 'hankija',  label: 'Hankija'  },
+      { key: 'kuupaev',  label: 'Kuupäev'  },
+      { key: 'tahtaeg',  label: 'Tähtaeg'  },
+      { key: 'staatus',  label: 'Staatus'  },
+      { key: 'ladu',     label: 'Ladu'     },
+      { key: 'projekt',  label: 'Projekt'  },
+    ],
+    projekt: [
+      { key: 'kood',    label: 'Kood'     },
+      { key: 'nimetus', label: 'Nimetus'  },
+      { key: 'juht',    label: 'Juht'     },
+      { key: 'staatus', label: 'Staatus'  },
+      { key: 'algus',   label: 'Algus'    },
+      { key: 'lopp',    label: 'Lõpp'     },
+      { key: 'klass',   label: 'Klass'    },
+      { key: 'objekt',  label: 'Objekt'   },
+    ],
+    klient: [
+      { key: 'kood',    label: 'Kood'    },
+      { key: 'nimi',    label: 'Nimi'    },
+      { key: 'reg_nr',  label: 'Reg nr'  },
+      { key: 'km_nr',   label: 'KM nr'   },
+      { key: 'klass',   label: 'Klass'   },
+      { key: 'haldur',  label: 'Haldur'  },
+      { key: 'aadress', label: 'Aadress' },
+      { key: 'epost',   label: 'E-post'  },
+    ],
+    hankija: [
+      { key: 'kood',    label: 'Kood'    },
+      { key: 'nimi',    label: 'Nimi'    },
+      { key: 'reg_nr',  label: 'Reg nr'  },
+      { key: 'km_nr',   label: 'KM nr'   },
+      { key: 'klass',   label: 'Klass'   },
+      { key: 'haldur',  label: 'Haldur'  },
+      { key: 'aadress', label: 'Aadress' },
+      { key: 'epost',   label: 'E-post'  },
+    ],
+  };
+  const efpState = { muugitellimus: new Set(), ostutellimus: new Set(), projekt: new Set(), klient: new Set(), hankija: new Set() };
+
+  function buildEfpList(entity) {
+    const list = document.getElementById('efpList' + cap(entity));
+    list.innerHTML = '';
+    EFP_FIELDS[entity].forEach(f => {
+      const lbl = document.createElement('label');
+      lbl.className = 'efp-panel-item';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = efpState[entity].has(f.key);
+      cb.addEventListener('change', () => { toggleEfpField(entity, f.key, cb.checked); });
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(f.label));
+      list.appendChild(lbl);
+    });
+  }
+
+  function buildEfpExtraFields(entity) {
+    const wrap = document.getElementById('efpFields' + cap(entity));
+    wrap.innerHTML = '';
+    EFP_FIELDS[entity].forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'efp-extra-field' + (efpState[entity].has(f.key) ? ' visible' : '');
+      row.id = 'efpRow_' + entity + '_' + f.key;
+      const lbl = document.createElement('label');
+      lbl.textContent = f.label;
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.placeholder = f.label;
+      row.appendChild(lbl);
+      row.appendChild(inp);
+      wrap.appendChild(row);
+    });
+  }
+
+  function toggleEfpField(entity, key, on) {
+    if (on) efpState[entity].add(key); else efpState[entity].delete(key);
+    const row = document.getElementById('efpRow_' + entity + '_' + key);
+    if (row) row.classList.toggle('visible', on);
+  }
+
+  function toggleEfp(entity) {
+    const panel = document.getElementById('efpPanel' + cap(entity));
+    const btn   = document.getElementById('efpBtn'   + cap(entity));
+    const isOpen = panel.classList.contains('open');
+    // close others
+    ['muugitellimus','ostutellimus','projekt','klient','hankija'].forEach(e => {
+      document.getElementById('efpPanel' + cap(e)).classList.remove('open');
+      document.getElementById('efpBtn'   + cap(e)).classList.remove('active');
+    });
+    if (!isOpen) {
+      buildEfpList(entity);
+      panel.classList.add('open');
+      btn.classList.add('active');
+    }
+  }
+
+  function resetEfp(entity) {
+    efpState[entity].clear();
+    buildEfpList(entity);
+    buildEfpExtraFields(entity);
+  }
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  // close efp panels on outside click
+  document.addEventListener('click', e => {
+    ['muugitellimus','ostutellimus','projekt','klient','hankija'].forEach(entity => {
+      const wrap = document.getElementById('efpWrap' + cap(entity));
+      if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('efpPanel' + cap(entity)).classList.remove('open');
+        document.getElementById('efpBtn'   + cap(entity)).classList.remove('active');
+      }
+    });
+  });
+
+  // init extra field containers
+  buildEfpExtraFields('muugitellimus');
+  buildEfpExtraFields('ostutellimus');
+  buildEfpExtraFields('projekt');
+  buildEfpExtraFields('klient');
+  buildEfpExtraFields('hankija');
 
   // ── AINULT SUMMA VIEW ──
   const SUMMA_DATA = [

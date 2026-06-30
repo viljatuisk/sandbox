@@ -200,11 +200,66 @@
   .ba-alati-badge { display:inline-block; font-size:9px; background:#fff3cd; color:#856404; border:1px solid #ffc107; padding:0 3px; border-radius:2px; flex-shrink:0; }
   .ba-kui-badge   { display:inline-block; font-size:9px; background:#e8f4f8; color:#1a6080;  border:1px solid #b8d8e8; padding:0 3px; border-radius:2px; flex-shrink:0; }
   /* Demo2 level selector */
-  #kontokaart2-view { display:none; flex:1; overflow:auto; padding:24px; background:#e8ecf0; }
+  #kontokaartsk1-view, #kontokaartsk2-view { display:none; flex:1; overflow:auto; background:#e8ecf0; }
   .lv2-row { display:flex; align-items:center; gap:6px; padding:2px 0; min-height:28px; }
   .lv2-level-label { width:48px; font-size:10px; font-weight:700; color:#8a9aaa; text-transform:uppercase; flex-shrink:0; text-align:right; }
   .lv2-select { height:26px; border:1px solid #b8c8d8; border-radius:2px; font-size:11px; padding:0 4px; color:#2d4a6b; background:#fff; min-width:220px; max-width:300px; }
   .lv2-select:focus { outline:none; border-color:#5a8ab8; }
+  /* === Directo-style kontokaart === */
+  #kontokaartsk1-view, #kontokaartsk2-view { background:#dde5ef; }
+  .dir-page { max-width:680px; padding:20px; }
+  .dir-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .dir-crumb { font-size:11px; color:#8a9aaa; }
+  .dir-actions { display:flex; align-items:center; gap:6px; }
+  .dir-btn { height:24px; padding:0 12px; font-size:11px; border:1px solid #aabbc8; background:#f0f4f8; color:#1a2a3a; cursor:pointer; }
+  .dir-btn-save { background:#2260a8; color:#fff; border-color:#1a5098; font-weight:600; }
+  .dir-olek { font-size:11px; color:#7a8a9a; padding-left:8px; }
+  .dir-h1 { font-size:16px; font-weight:600; color:#1a2a3a; margin:0 0 10px; }
+  .dir-card { background:#fff; border:1px solid #c8d4e0; }
+  .dir-row { display:flex; align-items:center; border-bottom:1px solid #e8ecf0; min-height:27px; }
+  .dir-lbl { width:140px; font-size:10px; font-weight:600; color:#556677; text-transform:uppercase; letter-spacing:0.04em; flex-shrink:0; padding:0 8px; }
+  .dir-val { flex:1; padding:1px 8px 1px 0; }
+  .dir-inp { height:21px; border:1px solid #c0ccd8; font-size:11px; padding:0 4px; background:#fff; color:#1a2a3a; box-sizing:border-box; }
+  .dir-inp:focus { outline:none; border-color:#5a8ab8; }
+  .dir-sel { height:21px; border:1px solid #c0ccd8; font-size:11px; background:#fff; color:#1a2a3a; }
+  .dir-sec { font-size:10px; font-weight:700; color:#334455; text-transform:uppercase; letter-spacing:0.05em; padding:5px 8px 4px; background:#edf2f6; border-bottom:1px solid #ccd8e4; border-top:2px solid #b0c0ce; }
+  /* lv2 inside Directo card */
+  .dir-card .lv2-row { display:flex; align-items:center; border-bottom:1px solid #e8ecf0; min-height:27px; padding:0; gap:0; }
+  .dir-card .lv2-level-label { width:140px; font-size:10px; font-weight:600; color:#556677; text-transform:uppercase; letter-spacing:0.04em; flex-shrink:0; padding:0 8px; text-align:left; }
+  .dir-card .lv2-select { height:21px; border:1px solid #c0ccd8; font-size:11px; background:#fff; color:#1a2a3a; min-width:180px; max-width:none; padding:0 2px; }
+  .dir-card .lv2-select:focus { outline:none; border-color:#5a8ab8; }
+  .dir-card .lv2-locked { font-size:11px; color:#1a2a3a; padding-left:2px; }
+  .dir-card .lv2-lock-icon { font-size:11px; margin-right:3px; }
+  .dir-card .lv2-clear { color:#aabbc8; font-size:13px; margin-left:4px; cursor:pointer; padding:0 2px; }
+  .dir-card .lv2-clear:hover { color:#cc4444; }
+  .dir-card .lv2-saldo-badge { font-size:9px; margin-left:5px; }
+  /* SK2 objekti kaupa */
+  .dir-obj-row { display:block; border-bottom:2px solid #c8d4e0; }
+  .dir-obj-header { display:flex; align-items:center; border-bottom:1px solid #e8ecf0; min-height:27px; }
+  .dir-obj-cell { flex:1; padding:3px 8px; display:flex; align-items:center; }
+  .dir-obj-sel { height:21px; border:1px solid #c0ccd8; font-size:11px; background:#fff; color:#1a2a3a; max-width:260px; }
+  .dir-obj-lv2 { padding-left:12px; }
+  .dir-obj-lv2 .lv2-row { display:flex; align-items:center; border-bottom:1px solid #e8ecf0; min-height:27px; padding:0; gap:0; }
+  .dir-obj-lv2 .lv2-level-label { width:128px; font-size:10px; font-weight:600; color:#556677; text-transform:uppercase; letter-spacing:0.04em; flex-shrink:0; padding:0 8px; text-align:left; }
+  .dir-obj-lv2 .lv2-select { height:21px; border:1px solid #c0ccd8; font-size:11px; background:#fff; color:#1a2a3a; min-width:180px; max-width:none; padding:0 2px; }
+  .dir-obj-del { width:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#cc4444; font-size:16px; min-height:27px; }
+  .dir-obj-del:hover { color:#aa2222; }
+  .dir-add-obj { font-size:11px; color:#2260a8; background:none; border:none; cursor:pointer; padding:5px 8px; }
+  /* Lookup väli */
+  .dir-lookup-wrap { display:flex; align-items:center; gap:3px; }
+  .dir-lookup-btn { height:21px; padding:0 5px; border:1px solid #c0ccd8; background:#f0f4f8; font-size:10px; cursor:pointer; color:#446688; }
+  /* KONTOL ON NÕUTUD toggles */
+  .dir-toggles { display:flex; gap:10px; padding:2px 0; flex-wrap:wrap; align-items:center; }
+  .dir-toggle-lbl { display:flex; align-items:center; gap:4px; font-size:11px; color:#1a2a3a; cursor:pointer; }
+  .dir-toggle-lbl input { margin:0; cursor:pointer; }
+  /* Objekti tasemed */
+  .dir-levels { display:flex; gap:5px; padding:3px 0; flex-wrap:wrap; }
+  .dir-level-lbl { display:flex; align-items:center; gap:3px; font-size:10px; color:#1a2a3a; background:#f4f7fa; border:1px solid #c8d4e0; padding:2px 6px; cursor:pointer; white-space:nowrap; }
+  .dir-level-lbl input { margin:0; cursor:pointer; }
+  /* Lisaväljad tabel */
+  .dir-lv-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .dir-lv-table th { text-align:left; padding:3px 8px; background:#f0f4f8; border-bottom:1px solid #ccd8e4; font-size:10px; font-weight:600; color:#556677; text-transform:uppercase; }
+  .dir-lv-table td { padding:3px 8px; border-bottom:1px solid #e8ecf0; color:#1a2a3a; }
   .lv2-locked { display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 8px; background:#f0f4f8; border:1px solid #d0dce8; border-radius:2px; font-size:11px; color:#4a6a8a; }
   .lv2-lock-icon { font-size:11px; opacity:0.6; }
   .lv2-clear { cursor:pointer; color:#aabbcc; font-size:15px; line-height:1; padding:0 3px; margin-left:2px; }
@@ -231,7 +286,7 @@
   <span class="topbar-sep"></span>
   <span class="topbar-link">Raamatupidamine</span>
   <span class="topbar-sep"></span>
-  <span style="color:#fff">Kontoklasside register — Bilans</span>
+  <span style="color:#fff">Aruannete seadistus</span>
 </div>
 
 <div class="layout">
@@ -274,7 +329,7 @@
 
   <div class="main">
     <div class="report-head">
-      <div class="report-title">Kontoklasside register</div>
+      <div class="report-title">Aruannete seadistus</div>
       <span class="report-sub" id="reportSub">Bilansiskeem</span>
       <div class="report-actions">
         <button class="ra-btn" onclick="window.print()">Prindi</button>
@@ -282,12 +337,12 @@
     </div>
 
     <div class="tab-bar">
-      <button class="tab-btn active" data-tab="bilans" onclick="setTab('bilans')">Bilans</button>
-      <button class="tab-btn" data-tab="sk1" onclick="setTab('sk1')">Kasumiaruanne SK1</button>
-      <button class="tab-btn" data-tab="sk2" onclick="setTab('sk2')">Kasumiaruanne SK2</button>
+      <button class="tab-btn active" data-tab="kontoplaan1" onclick="setTab('kontoplaan1')">Kontoplaan 1</button>
+      <button class="tab-btn" data-tab="kontoplaan2" onclick="setTab('kontoplaan2')">Kontoplaan 2</button>
       <button class="tab-btn" data-tab="bilansiaruanne" onclick="setTab('bilansiaruanne')">Bilansiaruanne</button>
       <button class="tab-btn" data-tab="kontokaart" onclick="setTab('kontokaart')">Kontokaart (demo)</button>
-      <button class="tab-btn" data-tab="kontokaart2" onclick="setTab('kontokaart2')">Kontokaart (demo 2)</button>
+      <button class="tab-btn" data-tab="kontokaartsk1" onclick="setTab('kontokaartsk1')">Kontokaart (sk1)</button>
+      <button class="tab-btn" data-tab="kontokaartsk2" onclick="setTab('kontokaartsk2')">Kontokaart (sk2)</button>
     </div>
 
     <div id="table-section">
@@ -431,103 +486,157 @@
       </div>
     </div>
 
-    <div id="kontokaart2-view">
-      <div class="kk-cols">
-        <div style="display:flex;flex-direction:column;gap:16px;flex-shrink:0;width:640px">
-          <div class="kk-card" style="width:100%">
-            <div class="kk-card-head">Konto <button class="kk-save">Salvesta</button></div>
-            <div class="kk-body">
-              <div class="kk-row">
-                <div class="kk-label req">Kood</div>
-                <input class="kk-input" type="text" placeholder="nt 5001" style="max-width:100px">
-              </div>
-              <div class="kk-row">
-                <div class="kk-label req">Kirjeldus (est)</div>
-                <input class="kk-input" type="text" placeholder="Palgakulu">
-              </div>
-              <div class="kk-row">
-                <div class="kk-label">Kirjeldus (eng)</div>
-                <input class="kk-input" type="text" placeholder="Salary expense">
-              </div>
-              <div class="kk-row">
-                <div class="kk-label req">Konto tüüp</div>
-                <select class="kk-select" id="d2Tyyp" onchange="d2TyypChanged()">
-                  <option value="">— vali —</option>
-                  <option value="aktiva">Aktiva</option>
-                  <option value="passiva">Passiva</option>
-                  <option value="tulu">Tulu</option>
-                  <option value="kulu" selected>Kulu</option>
-                </select>
-              </div>
-              <div class="kk-divider"></div>
-              <div class="kk-section-title">Aruanderead</div>
-              <div id="d2BilansSection" style="display:none">
-                <div class="kk-row" style="align-items:flex-start">
-                  <div class="kk-label" style="padding-top:4px">Bilansi rida</div>
-                  <div style="flex:1">
-                    <div class="lv2-search-wrap">
-                      <input class="lv2-search-input" id="lv2-bilans-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('bilans',this.value)">
-                      <div class="lv2-search-results" id="lv2-bilans-res"></div>
-                    </div>
-                    <div id="lv2-bilans"></div>
-                  </div>
-                </div>
-              </div>
-              <div id="d2KasumiSection" style="display:flex;flex-direction:column;gap:0">
-                <div class="kk-row" style="align-items:flex-start">
-                  <div class="kk-label" style="padding-top:4px">Kasumiaruande rida (SK1)</div>
-                  <div style="flex:1">
-                    <div class="lv2-search-wrap">
-                      <input class="lv2-search-input" id="lv2-sk1-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('sk1',this.value)">
-                      <div class="lv2-search-results" id="lv2-sk1-res"></div>
-                    </div>
-                    <div id="lv2-sk1"></div>
-                  </div>
-                </div>
-                <div class="kk-row" style="align-items:flex-start;margin-top:8px">
-                  <div class="kk-label" style="padding-top:4px">Kasumiaruande rida (SK2) <span style="color:#9aaabb;font-size:10px">vaikimisi</span></div>
-                  <div style="flex:1">
-                    <div class="lv2-search-wrap">
-                      <input class="lv2-search-input" id="lv2-sk2-srch" placeholder="Otsi kontoklassi..." oninput="lv2Search('sk2',this.value)">
-                      <div class="lv2-search-results" id="lv2-sk2-res"></div>
-                    </div>
-                    <div id="lv2-sk2"></div>
-                  </div>
-                </div>
-                <div class="kk-row" id="d2ObjSk2Section" style="align-items:flex-start;margin-top:8px">
-                  <div class="kk-label" style="padding-top:5px">SK2 — objekti kaupa</div>
-                  <div style="flex:1">
-                    <table style="width:100%;border-collapse:collapse"><tbody id="d2ObjSk2Tbody"></tbody></table>
-                    <button class="kk-add-btn" onclick="addObjSk2Row('','','d2ObjSk2Tbody')">+ Lisa objekt</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div id="kontokaartsk1-view">
+      <div class="dir-page">
+        <div class="dir-topbar">
+          <span class="dir-crumb">Raamat › Finantskontod › Lisa uus</span>
+          <div class="dir-actions">
+            <button class="dir-btn">Tagasi</button>
+            <button class="dir-btn dir-btn-save">Salvesta</button>
+            <span class="dir-olek">Olek: Uus</span>
           </div>
         </div>
-        <div class="kk-info">
-          <div class="kk-info-card">
-            <h4>Tasemel valik — kuidas töötab</h4>
-            <p><strong>Ülevalt alla:</strong> vali tase 1 → avaneb tase 2 (ainult selle all olevad); vali tase 2 → avaneb tase 3 jne.</p>
-            <p><strong>Alt üles (otsing):</strong> kirjuta otsingusse mis tahes taseme kirje nimi või kood → kliki → kõik ülemised tasemed täidetakse automaatselt.</p>
-            <p><strong>Lukustus:</strong> kui tase N on valitud, on kõik eelnevad tasemed lukus. Et muuta taset N-1, tuleb esmalt tühjendada tase N (×).</p>
-            <table class="kk-info-table" style="margin-top:10px">
-              <tr><th>Märge</th><th>Tähendus</th></tr>
-              <tr><td><span class="lv2-saldo-badge">kontode saldo</span></td><td>Sellele tasemele seotakse kontod — see peab olema täidetud</td></tr>
-              <tr><td>🔒</td><td>Lukus — sellest madalamal on valik tehtud</td></tr>
-            </table>
+        <div class="dir-h1">Lisa uus</div>
+        <div class="dir-card">
+          <div class="dir-row"><div class="dir-lbl">Kood</div><div class="dir-val"><input class="dir-inp" style="width:80px" placeholder="nt 5001"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Nimi</div><div class="dir-val"><input class="dir-inp" style="width:280px" placeholder="Palgakulu"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Nimi (eng)</div><div class="dir-val"><input class="dir-inp" style="width:280px" placeholder="Salary expense"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kmkood</div><div class="dir-val"><select class="dir-sel"><option value="">Puudub</option><option>20%</option><option>9%</option><option>0%</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Mahakandmiseks</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Suletud</div><div class="dir-val"><select class="dir-sel"><option value="">Ei</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Klass</div><div class="dir-val">
+            <select class="dir-sel" id="kk1Tyyp" onchange="kk1TyypChanged()">
+              <option value="">— vali —</option>
+              <option value="aktiva">Aktiva</option>
+              <option value="passiva">Passiva</option>
+              <option value="tulu">Tulu</option>
+              <option value="kulu" selected>Kulu</option>
+            </select>
+          </div></div>
+          <div class="dir-row"><div class="dir-lbl">Korr. konto</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:80px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Taksonoomia</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kande objektid</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kande projekt</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Erisoodustus</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Statistika</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kehtiv alates</div><div class="dir-val"><input class="dir-inp" type="date" style="width:130px"></div></div>
+
+          <div class="dir-sec">Kontol on nõutud</div>
+          <div class="dir-row"><div class="dir-lbl"></div><div class="dir-val"><div class="dir-toggles">
+            <label class="dir-toggle-lbl"><input type="checkbox"> Projekt</label>
+            <label class="dir-toggle-lbl"><input type="checkbox"> Klient</label>
+            <label class="dir-toggle-lbl"><input type="checkbox"> Hankija</label>
+          </div></div></div>
+
+          <div class="dir-sec">Kohustuslik — objekti tasemed</div>
+          <div class="dir-row"><div class="dir-lbl"></div><div class="dir-val"><div class="dir-levels">
+            <label class="dir-level-lbl"><input type="checkbox"> 0 Pinnad</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 1 Masin</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 2 Isik</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 3 Liin</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 5 Hooned</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 6 Kinnistud</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 7 Meistrid</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 8 Osakond</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 9 Alamosakond</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 10 Auto</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 11 Erikord</label>
+          </div></div></div>
+
+          <div class="dir-sec">Aruanderead</div>
+          <div id="kk1BilansSection" style="display:none">
+            <div id="lv2-kk1-bilans"></div>
           </div>
-          <div class="kk-info-card">
-            <h4>Näide — tasemel valik SK1 jaoks</h4>
-            <p style="margin-bottom:6px">Konto <strong>5001 Palgakulu</strong>, tüüp <em>Kulu</em>:</p>
-            <table class="kk-info-table">
-              <tr><th>Tase</th><th>Valitud väärtus</th><th>Olek</th></tr>
-              <tr><td>Tase 1</td><td>Ärikulud liigi järgi</td><td>🔒 lukus</td></tr>
-              <tr><td>Tase 2</td><td>Tööjõukulud</td><td>🔒 lukus</td></tr>
-              <tr><td>Tase 3</td><td>Palgakulu <span class="lv2-saldo-badge">kontode saldo</span></td><td>✏️ muudetav</td></tr>
-            </table>
-            <p style="margin-top:8px;color:#6a7a8a;font-size:11px">Tase 3 tühjendamisel muutub tase 2 muudetavaks, tase 2 tühjendamisel tase 1.</p>
+          <div id="kk1KasumiSection">
+            <div id="lv2-kk1-sk1"></div>
           </div>
+
+          <div class="dir-sec">Lisaväljad</div>
+          <div class="dir-row" style="align-items:flex-start;padding:0"><div class="dir-lbl"></div><div class="dir-val" style="padding:0 8px 0 0">
+            <table class="dir-lv-table">
+              <tr><th>Tüüp</th><th>Sisu</th><th>Parameeter</th></tr>
+            </table>
+            <button class="dir-add-obj" style="padding-left:0">+ Lisa</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="kontokaartsk2-view">
+      <div class="dir-page">
+        <div class="dir-topbar">
+          <span class="dir-crumb">Raamat › Finantskontod › Lisa uus</span>
+          <div class="dir-actions">
+            <button class="dir-btn">Tagasi</button>
+            <button class="dir-btn dir-btn-save">Salvesta</button>
+            <span class="dir-olek">Olek: Uus</span>
+          </div>
+        </div>
+        <div class="dir-h1">Lisa uus</div>
+        <div class="dir-card">
+          <div class="dir-row"><div class="dir-lbl">Kood</div><div class="dir-val"><input class="dir-inp" style="width:80px" placeholder="nt 5001"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Nimi</div><div class="dir-val"><input class="dir-inp" style="width:280px" placeholder="Palgakulu"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Nimi (eng)</div><div class="dir-val"><input class="dir-inp" style="width:280px" placeholder="Salary expense"></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kmkood</div><div class="dir-val"><select class="dir-sel"><option value="">Puudub</option><option>20%</option><option>9%</option><option>0%</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Mahakandmiseks</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Suletud</div><div class="dir-val"><select class="dir-sel"><option value="">Ei</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Klass</div><div class="dir-val">
+            <select class="dir-sel" id="d2Tyyp" onchange="d2TyypChanged()">
+              <option value="">— vali —</option>
+              <option value="aktiva">Aktiva</option>
+              <option value="passiva">Passiva</option>
+              <option value="tulu">Tulu</option>
+              <option value="kulu" selected>Kulu</option>
+            </select>
+          </div></div>
+          <div class="dir-row"><div class="dir-lbl">Korr. konto</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:80px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Taksonoomia</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kande objektid</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kande projekt</div><div class="dir-val"><div class="dir-lookup-wrap"><input class="dir-inp" style="width:200px"><button class="dir-lookup-btn">⋯</button></div></div></div>
+          <div class="dir-row"><div class="dir-lbl">Erisoodustus</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Statistika</div><div class="dir-val"><select class="dir-sel"><option value="">—</option><option>Jah</option></select></div></div>
+          <div class="dir-row"><div class="dir-lbl">Kehtiv alates</div><div class="dir-val"><input class="dir-inp" type="date" style="width:130px"></div></div>
+
+          <div class="dir-sec">Kontol on nõutud</div>
+          <div class="dir-row"><div class="dir-lbl"></div><div class="dir-val"><div class="dir-toggles">
+            <label class="dir-toggle-lbl"><input type="checkbox"> Projekt</label>
+            <label class="dir-toggle-lbl"><input type="checkbox"> Klient</label>
+            <label class="dir-toggle-lbl"><input type="checkbox"> Hankija</label>
+          </div></div></div>
+
+          <div class="dir-sec">Kohustuslik — objekti tasemed</div>
+          <div class="dir-row"><div class="dir-lbl"></div><div class="dir-val"><div class="dir-levels">
+            <label class="dir-level-lbl"><input type="checkbox"> 0 Pinnad</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 1 Masin</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 2 Isik</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 3 Liin</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 5 Hooned</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 6 Kinnistud</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 7 Meistrid</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 8 Osakond</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 9 Alamosakond</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 10 Auto</label>
+            <label class="dir-level-lbl"><input type="checkbox"> 11 Erikord</label>
+          </div></div></div>
+
+          <div class="dir-sec">Aruanderead</div>
+          <div id="d2BilansSection" style="display:none">
+            <div id="lv2-bilans"></div>
+          </div>
+          <div id="d2KasumiSection">
+            <div id="lv2-d2sk2"></div>
+            <div class="dir-sec">SK2 — objekti kaupa</div>
+            <div id="d2ObjSk2Tbody"></div>
+            <button class="dir-add-obj" onclick="addObjSk2Row('','','d2ObjSk2Tbody')">+ Lisa objekt</button>
+          </div>
+
+          <div class="dir-sec">Lisaväljad</div>
+          <div class="dir-row" style="align-items:flex-start;padding:0"><div class="dir-lbl"></div><div class="dir-val" style="padding:0 8px 0 0">
+            <table class="dir-lv-table">
+              <tr><th>Tüüp</th><th>Sisu</th><th>Parameeter</th></tr>
+            </table>
+            <button class="dir-add-obj" style="padding-left:0">+ Lisa</button>
+          </div></div>
         </div>
       </div>
     </div>
@@ -989,14 +1098,14 @@ function getValemFormula(kood) {
 }
 
 let currentView = 'tree';
-let currentTab = 'bilans';
+let currentTab = 'kontoplaan1';
 
 const TAB_LABELS = {
-  bilans: 'Bilansiskeem',
-  sk1: 'Kasumiaruanne — Skeem 1',
-  sk2: 'Kasumiaruanne — Skeem 2',
+  kontoplaan1: 'Kontoplaan 1 — Bilans + Kasumiaruanne SK1',
+  kontoplaan2: 'Kontoplaan 2 — Bilans + Kasumiaruanne SK2',
   kontokaart: 'Kontokaart (demo)',
-  kontokaart2: 'Kontokaart — tasemel valik',
+  kontokaartsk1: 'Kontokaart — SK1',
+  kontokaartsk2: 'Kontokaart — SK2',
   bilansiaruanne: 'Bilansiaruanne (demo)'
 };
 
@@ -1006,11 +1115,12 @@ function setTab(tab) {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
   document.getElementById('reportSub').textContent = TAB_LABELS[tab] || '';
-  const isKontokaart = tab === 'kontokaart' || tab === 'kontokaart2';
+  const isKontokaart = tab === 'kontokaart' || tab === 'kontokaartsk1' || tab === 'kontokaartsk2';
   const isBa = tab === 'bilansiaruanne';
   document.getElementById('table-section').style.display = (isKontokaart || isBa) ? 'none' : 'flex';
   document.getElementById('kontokaart-view').style.display = tab === 'kontokaart' ? 'block' : 'none';
-  document.getElementById('kontokaart2-view').style.display = tab === 'kontokaart2' ? 'block' : 'none';
+  document.getElementById('kontokaartsk1-view').style.display = tab === 'kontokaartsk1' ? 'block' : 'none';
+  document.getElementById('kontokaartsk2-view').style.display = tab === 'kontokaartsk2' ? 'block' : 'none';
   document.getElementById('bilansiaruanne-view').style.display = isBa ? 'flex' : 'none';
   if (isBa) { renderBa(); return; }
   if (!isKontokaart) {
@@ -1020,6 +1130,8 @@ function setTab(tab) {
 }
 
 function tabData() {
+  if (currentTab === 'kontoplaan1') return DATA.filter(d => (d.aruanne||'bilans')==='bilans' || d.aruanne==='sk1');
+  if (currentTab === 'kontoplaan2') return DATA.filter(d => (d.aruanne||'bilans')==='bilans' || d.aruanne==='sk2');
   return DATA.filter(d => (d.aruanne || 'bilans') === currentTab);
 }
 
@@ -1284,32 +1396,46 @@ const OBJ_DATA = [
 // ===== SK2 OBJEKTI KAUPA (kontokaardil) =====
 let objSk2Cnt = 0;
 
-function addObjSk2Row(objKood='', sk2Label='', tbodyId='objSk2Tbody') {
+function addObjSk2Row(objKood='', sk2Kood='', tbodyId='objSk2Tbody') {
   const id = ++objSk2Cnt;
+  const fg = 'objrow_' + id;
   const objOptions = OBJ_DATA.map(o =>
     `<option value="${o.kood}" ${o.kood === objKood ? 'selected' : ''}>${o.kood} — ${o.nimi}</option>`
   ).join('');
-  const sk2Display = sk2Label
-    ? `<span class="bc-crumb"><span class="bc-crumb-text">${sk2Label}</span></span><span class="bc-clear" onclick="bcClear('bcObjSk2_${id}',event)">×</span>`
-    : '<span class="bc-placeholder">otsi...</span>';
-  const tr = document.createElement('tr');
-  tr.id = 'objSk2Row_' + id;
-  tr.innerHTML = `
-    <td style="padding:2px 6px 2px 0;width:155px;vertical-align:middle">
-      <select class="kk-select-small" id="objSk2Obj_${id}">
-        <option value="">— objekt —</option>${objOptions}
-      </select>
-    </td>
-    <td style="padding:2px 4px;vertical-align:middle">
-      <div class="bc-field" id="bcObjSk2_${id}">
-        <div class="bc-display" id="bcObjSk2_${id}-display" onclick="bcOpen('bcObjSk2_${id}')">${sk2Display}</div>
-        <div class="bc-dropdown" id="bcObjSk2_${id}-drop"></div>
+  const container = document.getElementById(tbodyId);
+  if (container && container.tagName === 'DIV') {
+    const row = document.createElement('div');
+    row.id = 'objSk2Row_' + id;
+    row.className = 'dir-obj-row';
+    row.innerHTML = `
+      <div class="dir-obj-header">
+        <div class="dir-obj-cell">
+          <select class="dir-obj-sel" id="objSk2Obj_${id}">
+            <option value="">— objekt —</option>${objOptions}
+          </select>
+        </div>
+        <div class="dir-obj-del" onclick="removeObjSk2Row(${id})">×</div>
       </div>
-    </td>
-    <td style="padding:2px;width:22px;vertical-align:middle;text-align:center">
-      <span style="cursor:pointer;color:#cc4444;font-size:15px;line-height:1" onclick="removeObjSk2Row(${id})">×</span>
-    </td>`;
-  document.getElementById(tbodyId).appendChild(tr);
+      <div class="dir-obj-lv2" id="lv2-${fg}"></div>`;
+    container.appendChild(row);
+  } else {
+    const tr = document.createElement('tr');
+    tr.id = 'objSk2Row_' + id;
+    tr.innerHTML = `
+      <td style="padding:2px 6px 2px 0;width:155px;vertical-align:top;padding-top:6px">
+        <select class="kk-select-small" id="objSk2Obj_${id}">
+          <option value="">— objekt —</option>${objOptions}
+        </select>
+      </td>
+      <td style="padding:2px 4px;vertical-align:top">
+        <div id="lv2-${fg}"></div>
+      </td>
+      <td style="padding:2px;width:22px;vertical-align:top;padding-top:6px;text-align:center">
+        <span style="cursor:pointer;color:#cc4444;font-size:15px;line-height:1" onclick="removeObjSk2Row(${id})">×</span>
+      </td>`;
+    container.appendChild(tr);
+  }
+  lv2Init(fg, 'sk2', sk2Kood || null);
 }
 
 function removeObjSk2Row(id) {
@@ -1318,16 +1444,12 @@ function removeObjSk2Row(id) {
 }
 
 // eeltäidetud demo
-addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud');
-addObjSk2Row('TURUNDUS', 'Turustuskulud');
-addObjSk2Row('ÜLD',      'Üldhalduskulud');
-
 // ===== DEMO2: TASEMEL VALIK =====
 const lv2State = {}; // fg -> {aruanne, path:[node,...]}
 
 function lv2Nodes(aruanne, parentKood) {
-  if (parentKood) return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.master===parentKood);
-  return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===1);
+  if (parentKood) return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.master===parentKood && d.vaartus!=='Valem');
+  return DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===1 && d.vaartus!=='Valem');
 }
 
 function lv2Ancestors(kood, aruanne) {
@@ -1403,11 +1525,11 @@ function lv2Render(fg) {
       } else if (parentNode) {
         options = lv2Nodes(aruanne, parentNode.kood);
       } else {
-        options = DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===level);
+        options = DATA.filter(d => (d.aruanne||'bilans')===aruanne && d.tase===level && d.vaartus!=='Valem');
       }
       if (options.length === 0) continue;
       const opts = options.map(c=>`<option value="${c.kood}">${c.nimi}</option>`).join('');
-      row.innerHTML = `<span class="lv2-level-label">Tase ${level}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${pathIdx},this.value)"><option value="">— vali —</option>${opts}</select>`;
+      row.innerHTML = `<span class="lv2-level-label">Tase ${level}</span><select class="lv2-select" onchange="lv2ChangeAt('${fg}',${pathIdx},this.value)"><option value="">Otsi aruanderida...</option>${opts}</select>`;
     }
     container.appendChild(row);
   }
@@ -1419,7 +1541,7 @@ function lv2Search(fg, query) {
   if (!query.trim()) { res.style.display='none'; return; }
   const q = query.toLowerCase();
   const hits = DATA.filter(d =>
-    (d.aruanne||'bilans')===aruanne && d.tase>0 &&
+    (d.aruanne||'bilans')===aruanne && d.tase>0 && d.vaartus!=='Valem' &&
     (d.nimi.toLowerCase().includes(q) || d.kood.toLowerCase().includes(q))
   ).slice(0,10);
   res.style.display = hits.length ? 'block' : 'none';
@@ -1440,22 +1562,39 @@ document.addEventListener('click', e => {
   }
 });
 
+function kk1TyypChanged() {
+  const t = document.getElementById('kk1Tyyp').value;
+  const isBilans = t==='aktiva'||t==='passiva';
+  const isKasumi = t==='tulu'||t==='kulu';
+  document.getElementById('kk1BilansSection').style.display = isBilans ? 'block' : 'none';
+  document.getElementById('kk1KasumiSection').style.display = isKasumi ? 'block' : 'none';
+}
+
 function d2TyypChanged() {
   const t = document.getElementById('d2Tyyp').value;
   const isBilans = t==='aktiva'||t==='passiva';
   const isKasumi = t==='tulu'||t==='kulu';
   document.getElementById('d2BilansSection').style.display = isBilans ? 'block' : 'none';
-  document.getElementById('d2KasumiSection').style.display = isKasumi ? 'flex' : 'none';
+  document.getElementById('d2KasumiSection').style.display = isKasumi ? 'block' : 'none';
 }
 
-// init Demo2
+// init Kontokaart (demo) - objekti kaupa
+addObjSk2Row('TOOTMINE', 'DIR9200');
+addObjSk2Row('TURUNDUS', 'DIR9400');
+addObjSk2Row('ÜLD',      'DIR9500');
+
+// init Kontokaart SK1
+lv2Init('kk1-bilans','bilans',null);
+lv2Init('kk1-sk1','sk1',null);
+kk1TyypChanged();
+
+// init Kontokaart SK2
 lv2Init('bilans','bilans',null);
-lv2Init('sk1','sk1','DIR6351');
-lv2Init('sk2','sk2',null);
+lv2Init('d2sk2','sk2',null);
 d2TyypChanged();
-addObjSk2Row('TOOTMINE', 'Müüdud toodete/kaupade/teenuste kulud', 'd2ObjSk2Tbody');
-addObjSk2Row('TURUNDUS', 'Turustuskulud',                         'd2ObjSk2Tbody');
-addObjSk2Row('ÜLD',      'Üldhalduskulud',                        'd2ObjSk2Tbody');
+addObjSk2Row('TOOTMINE', 'DIR9200', 'd2ObjSk2Tbody');
+addObjSk2Row('TURUNDUS', 'DIR9400', 'd2ObjSk2Tbody');
+addObjSk2Row('ÜLD',      'DIR9500', 'd2ObjSk2Tbody');
 
 // === BILANSIARUANNE ===
 const BA_VALS = {
