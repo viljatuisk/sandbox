@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Directo — Tasumiste digiallkirjastamine (prototüüp)</title>
+<style>
+  :root{
+    --blue-toolbar:#dce6f5;
+    --blue-toolbar-border:#b9cbe8;
+    --blue-dark:#1a3869;
+    --blue-link:#2a5aa0;
+    --green:#4c9a4c;
+    --amber:#c98a1f;
+    --red:#c0392b;
+    --blue-mid:#3a6ea5;
+    --border:#c8d4e8;
+    --bg:#eef1f6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:Arial, "Segoe UI", sans-serif;
+    font-size:13px;
+    color:#1a1a1a;
+  }
+  a{color:var(--blue-link);}
+
+  /* ---------- Demo riba ---------- */
+  .demo-bar{
+    background:#3d3d3d;
+    color:#eee;
+    padding:6px 12px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    position:sticky;
+    top:0;
+    z-index:500;
+  }
+  .demo-bar .label{
+    font-weight:bold;
+    color:#bbb;
+    margin-right:4px;
+  }
+  .demo-bar .sep{
+    width:1px;
+    height:18px;
+    background:#666;
+    margin:0 6px;
+  }
+  .demo-btn{
+    background:#555;
+    color:#fff;
+    border:1px solid #777;
+    border-radius:3px;
+    padding:4px 9px;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .demo-btn:hover{ background:#666; }
+  .demo-btn.active{ background:var(--blue-mid); border-color:#5a8fc9; }
+  .demo-btn.view-tab{ background:#2b2b2b; }
+  .demo-btn.view-tab.active{ background:var(--blue-dark); }
+
+  .view{ display:none; padding:14px 16px 60px; }
+  .view.active{ display:block; }
+
+  /* ---------- Directo-stiilis toolbar ---------- */
+  .toolbar{
+    background:var(--blue-toolbar);
+    border:1px solid var(--blue-toolbar-border);
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:4px 6px;
+    flex-wrap:wrap;
+  }
+  .toolbar .tb-btn{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    color:var(--blue-dark);
+    background:transparent;
+    border:1px solid transparent;
+    padding:5px 9px;
+    font-size:13px;
+    cursor:pointer;
+    border-radius:2px;
+    white-space:nowrap;
+  }
+  .toolbar .tb-btn:hover{ background:#c7d7f0; border-color:#a9c1e6; }
+  .toolbar .tb-btn:disabled{ opacity:.4; cursor:default; }
+  .toolbar .tb-btn:disabled:hover{ background:transparent; border-color:transparent; }
+  .toolbar .spacer{ flex:1; }
+  .toolbar .tb-btn.highlight{
+    background:#c7d7f0;
+    border:1px solid #8fb0e0;
+    font-weight:bold;
+  }
+  .toolbar .tb-btn.signbtn{ background:var(--blue-dark); color:#fff; border-color:#0f2242; font-weight:bold; }
+  .toolbar .tb-btn.signbtn:hover{ background:#234a86; }
+
+  .doc-card{ background:#fff; border:1px solid var(--border); border-top:none; }
+
+  .doc-titlebar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px 6px;
+  }
+  .doc-titlebar h1{
+    font-size:21px;
+    font-weight:normal;
+    margin:0;
+  }
+  .badge{
+    display:inline-block;
+    padding:2px 10px;
+    border-radius:11px;
+    color:#fff;
+    font-size:12px;
+    font-weight:bold;
+  }
+  .badge.b-kinnitatud{ background:#6b83a6; }
+  .badge.b-pooleli{ background:var(--amber); }
+  .badge.b-saadetud{ background:var(--blue-mid); }
+  .badge.b-tootlemisel{ background:#5a5aa0; }
+  .badge.b-teostatud{ background:var(--green); }
+  .badge.b-osaliselt{ background:#d97b1f; }
+  .badge.b-tagasi{ background:var(--red); }
+  .badge.b-ebaonnestus{ background:#7a2020; }
+  .doc-meta{
+    margin-left:auto;
+    font-size:12px;
+    color:#666;
+    text-align:right;
+  }
+
+  /* Header field grid */
+  .field-grid{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:8px 14px;
+    padding:6px 14px 12px;
+    border-bottom:1px solid var(--border);
+  }
+  .field-grid .field label{
+    display:block;
+    font-size:11px;
+    color:#555;
+    margin-bottom:2px;
+  }
+  .field-grid .field .val{
+    border:1px solid #d5d5d5;
+    background:#fafafa;
+    padding:4px 6px;
+    font-size:13px;
+    min-height:16px;
+    border-radius:2px;
+  }
+
+  /* ---------- Allkirjastamise plokk ---------- */
+  .sign-block{
+    margin:12px 14px;
+    border:1px solid #d7c98a;
+    background:#fdf9ec;
+    border-radius:3px;
+    padding:10px 14px 12px;
+  }
+  .sign-block.state-teostatud{ border-color:#bfe0bf; background:#f2f9f2; }
+  .sign-block.state-tagasi{ border-color:#e8bcb6; background:#fdf2f1; }
+  .sign-block.state-ebaonnestus{ border-color:#e8bcb6; background:#fbeceb; }
+  .sign-block h3{
+    margin:0 0 8px;
+    font-size:13px;
+    color:#333;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  table.signers{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:8px;
+    background:#fff;
+  }
+  table.signers th, table.signers td{
+    border:1px solid #e2ddc9;
+    padding:5px 8px;
+    font-size:12.5px;
+    text-align:left;
+  }
+  table.signers th{ background:#f3edd8; font-weight:bold; }
+  .sig-ok{ color:var(--green); font-weight:bold; }
+  .sig-wait{ color:#a07a1e; }
+  .mini-btn{
+    background:#fff;
+    border:1px solid #b9a55f;
+    color:#6b5a1f;
+    border-radius:2px;
+    padding:2px 8px;
+    font-size:11.5px;
+    cursor:pointer;
+  }
+  .mini-btn:hover{ background:#f6efd8; }
+  .bank-feedback{
+    font-size:12.5px;
+    padding:6px 8px;
+    background:#fff;
+    border:1px dashed #ccc;
+    border-radius:2px;
+  }
+  .bank-feedback.ok{ border-color:#9dcf9d; color:#2c6b2c; }
+  .bank-feedback.err{ border-color:#e0a49c; color:#a3372a; }
+  .reject-reason{
+    font-size:12.5px;
+    background:#fff;
+    border:1px solid #e0a49c;
+    color:#a3372a;
+    padding:6px 8px;
+    border-radius:2px;
+    margin-bottom:8px;
+  }
+  .sign-actions{ margin-top:8px; display:flex; gap:8px; }
+  .demo-tag{
+    font-size:10px;
+    background:#666;
+    color:#fff;
+    border-radius:2px;
+    padding:1px 5px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+
+  /* ---------- Ridade tabel ---------- */
+  .lines-wrap{ overflow-x:auto; padding:0 14px 16px; }
+  table.lines{
+    border-collapse:collapse;
+    width:100%;
+    min-width:1500px;
+    font-size:12px;
+  }
+  table.lines th{
+    background:#eef2fa;
+    border:1px solid var(--border);
+    padding:4px 6px;
+    text-align:left;
+    white-space:nowrap;
+    font-weight:bold;
+    color:#2a3a55;
+  }
+  table.lines td{
+    border:1px solid #e6e6e6;
+    padding:4px 6px;
+    white-space:nowrap;
+  }
+  table.lines .filter-row input{
+    width:100%;
+    font-size:11px;
+    border:1px solid #ddd;
+    padding:2px 4px;
+    color:#999;
+  }
+  .num{ text-align:right; }
+  .status-ok{ color:var(--green); font-weight:bold; }
+  .status-fail{ color:var(--red); font-weight:bold; cursor:help; border-bottom:1px dotted var(--red); }
+  .status-empty{ color:#bbb; }
+
+  /* ---------- Modaalid ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(20,25,35,.45);
+    display:flex; align-items:center; justify-content:center;
+    z-index:1000;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .modal{
+    background:#fff; width:460px; max-width:92vw;
+    border-radius:4px; box-shadow:0 8px 30px rgba(0,0,0,.3);
+    overflow:hidden;
+  }
+  .modal-head{
+    background:var(--blue-dark); color:#fff; padding:10px 16px;
+    font-size:15px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .modal-head .x{ cursor:pointer; font-size:16px; }
+  .modal-body{ padding:16px; }
+  .modal.err .modal-head{ background:var(--red); }
+
+  .tabs-row{ display:flex; border-bottom:1px solid var(--border); margin-bottom:14px; }
+  .tabs-row .tabbtn{
+    flex:1; text-align:center; padding:8px 4px; cursor:pointer;
+    font-size:12.5px; color:#555; border-bottom:3px solid transparent;
+  }
+  .tabs-row .tabbtn.active{ color:var(--blue-dark); font-weight:bold; border-color:var(--blue-dark); }
+
+  .code-box{
+    text-align:center; margin:10px 0 14px;
+  }
+  .code-box .code{
+    font-size:34px; font-weight:bold; letter-spacing:4px; color:var(--blue-dark);
+    background:#eef2fa; display:inline-block; padding:8px 22px; border-radius:4px;
+  }
+  .code-box p{ font-size:12px; color:#555; margin:8px 20px 0; }
+
+  .pin-input-row{ display:flex; gap:8px; align-items:center; margin:10px 0 14px; }
+  .pin-input-row input{ flex:1; padding:7px 8px; font-size:15px; letter-spacing:3px; }
+
+  .summary-box{
+    background:#f6f7f9; border:1px solid #e0e0e0; border-radius:3px;
+    padding:10px 12px; font-size:12.5px; margin-top:6px;
+  }
+  .summary-box div{ display:flex; justify-content:space-between; padding:2px 0; }
+  .summary-box div span:first-child{ color:#666; }
+
+  .spinner{
+    width:16px; height:16px; border:2px solid #cfd8e8; border-top-color:var(--blue-dark);
+    border-radius:50%; display:inline-block; animation:spin 0.8s linear infinite; vertical-align:-3px; margin-right:6px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+
+  .btn-primary{
+    background:var(--blue-dark); color:#fff; border:1px solid #0f2242;
+    padding:8px 16px; font-size:13px; border-radius:2px; cursor:pointer; font-weight:bold;
+  }
+  .btn-primary:hover{ background:#234a86; }
+  .btn-primary:disabled{ opacity:.5; cursor:default; }
+  .btn-secondary{
+    background:#fff; color:#444; border:1px solid #ccc;
+    padding:8px 16px; font-size:13px; border-radius:2px; cursor:pointer;
+  }
+  .btn-secondary:hover{ background:#f2f2f2; }
+  .modal-foot{ display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+
+  /* ---------- Tasumisviisi seadistus ---------- */
+  .settings-card{
+    background:#fff; border:1px solid var(--border); max-width:760px;
+    padding:16px 20px 24px;
+  }
+  .settings-card h2{ font-size:18px; font-weight:normal; margin:0 0 14px; }
+  .settings-row{
+    display:grid; grid-template-columns:230px 1fr; gap:10px; align-items:center;
+    padding:5px 0;
+  }
+  .settings-row label{ font-size:12px; color:#333; font-weight:bold; }
+  .settings-row input[type=text], .settings-row select{
+    width:100%; max-width:420px; padding:5px 7px; font-size:13px; border:1px solid #c7c7c7;
+  }
+  .section-title{
+    margin:22px 0 10px; font-size:14px; font-weight:bold; color:var(--blue-dark);
+    border-bottom:2px solid var(--blue-dark); padding-bottom:4px;
+  }
+  .helptext{ font-size:11.5px; color:#777; margin-top:3px; }
+
+  .switch{ position:relative; display:inline-block; width:40px; height:20px; vertical-align:-5px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{ position:absolute; cursor:pointer; inset:0; background:#ccc; border-radius:20px; transition:.2s; }
+  .slider:before{ content:""; position:absolute; height:14px; width:14px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; }
+  .switch input:checked + .slider{ background:var(--green); }
+  .switch input:checked + .slider:before{ transform:translateX(20px); }
+
+  table.signer-cfg{ width:100%; border-collapse:collapse; margin-top:4px; }
+  table.signer-cfg th, table.signer-cfg td{ border:1px solid #ddd; padding:5px 7px; font-size:12px; }
+  table.signer-cfg th{ background:#f3f5f9; }
+  table.signer-cfg input{ width:100%; border:1px solid #ccc; padding:3px 5px; font-size:12px; }
+  .cfg-actions{ margin-top:8px; display:flex; gap:8px; }
+  .cfg-actions button{
+    background:#fff; border:1px solid #bbb; padding:5px 10px; font-size:12px; cursor:pointer; border-radius:2px;
+  }
+  .del-row{ color:var(--red); cursor:pointer; text-align:center; }
+
+  /* ---------- Register ---------- */
+  .register-card{ background:#fff; border:1px solid var(--border); }
+  .register-filters{ display:flex; gap:6px; padding:10px 14px; border-bottom:1px solid var(--border); }
+  .filter-chip{
+    background:#eef2fa; border:1px solid var(--border); padding:5px 12px; border-radius:14px;
+    font-size:12px; cursor:pointer; color:#33507a;
+  }
+  .filter-chip.active{ background:var(--blue-dark); color:#fff; border-color:var(--blue-dark); }
+  table.register{ width:100%; border-collapse:collapse; }
+  table.register th{ background:#eef2fa; border:1px solid var(--border); padding:6px 8px; font-size:12px; text-align:left; }
+  table.register td{ border:1px solid #e6e6e6; padding:6px 8px; font-size:12.5px; }
+  table.register tr.rrow{ cursor:pointer; }
+  table.register tr.rrow:hover{ background:#f4f8ff; }
+
+  /* ---------- Email preview ---------- */
+  .email-frame{
+    max-width:640px; background:#fff; border:1px solid var(--border); margin:0 auto;
+  }
+  .email-meta{ padding:12px 18px; border-bottom:1px solid #eee; font-size:12.5px; color:#555; }
+  .email-meta div{ padding:2px 0; }
+  .email-meta b{ color:#222; }
+  .email-body{ padding:20px 18px; font-size:13px; line-height:1.6; }
+  .email-body h2{ font-size:16px; margin-top:0; }
+  .email-cta{
+    display:inline-block; background:var(--blue-dark); color:#fff !important; text-decoration:none;
+    padding:9px 18px; border-radius:3px; margin-top:14px; font-weight:bold;
+  }
+  .email-signers{ margin:12px 0; padding-left:18px; }
+
+  /* ---------- Toast ---------- */
+  #toast-container{ position:fixed; bottom:18px; right:18px; z-index:2000; display:flex; flex-direction:column; gap:8px; }
+  .toast{
+    background:#2b2b2b; color:#fff; padding:10px 16px; border-radius:4px; font-size:12.5px;
+    box-shadow:0 4px 14px rgba(0,0,0,.3); max-width:340px; animation:toastin .2s ease-out;
+  }
+  @keyframes toastin{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none; } }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <span class="label">VAADE:</span>
+  <button class="demo-btn view-tab active" data-view="document">Tasumise dokument</button>
+  <button class="demo-btn view-tab" data-view="settings">Tasumisviisi seadistus</button>
+  <button class="demo-btn view-tab" data-view="register">Register</button>
+  <button class="demo-btn view-tab" data-view="email">E-kirja eelvaade</button>
+  <div class="sep"></div>
+  <span class="label">STSENAARIUM:</span>
+  <button class="demo-btn scenario-btn" data-scenario="happy">1. Õnnelik tee</button>
+  <button class="demo-btn scenario-btn" data-scenario="partial">2. Osaline tagasilükkamine</button>
+  <button class="demo-btn scenario-btn" data-scenario="valuedate">3. Väärtuspäevade viga</button>
+  <button class="demo-btn scenario-btn" data-scenario="rejected">4. Täielik tagasilükkamine</button>
+  <button class="demo-btn scenario-btn" data-scenario="failed">5. Tehniline tõrge</button>
+  <div class="sep"></div>
+  <button class="demo-btn" id="btn-reset">↺ Lähtesta stsenaarium</button>
+</div>
+
+<!-- ======================= VAADE: TASUMISE DOKUMENT ======================= -->
+<div class="view active" id="view-document">
+  <div class="toolbar" id="doc-toolbar">
+    <button class="tb-btn">📄 Uus</button>
+    <button class="tb-btn">💾 Salvesta</button>
+    <button class="tb-btn">✔ Kinnita</button>
+    <button class="tb-btn">📋 Kopeeri</button>
+    <button class="tb-btn">✖ Jäta</button>
+    <button class="tb-btn">🗑 Kustuta</button>
+    <button class="tb-btn">✉ Meili</button>
+    <button class="tb-btn">🖨 Trüki</button>
+    <button class="tb-btn">📎 Manused</button>
+    <button class="tb-btn">Ava ostureskontro</button>
+    <div class="spacer"></div>
+    <button class="tb-btn signbtn" id="btn-sign-send">✍️📤 Allkirjasta ja saada panka (SEB)</button>
+    <button class="tb-btn highlight" id="btn-resend" hidden>🔁 Saada uuesti</button>
+    <button class="tb-btn highlight" id="btn-newpay" hidden>➕ Loo uus tasumine ebaõnnestunud ridadest</button>
+    <button class="tb-btn" id="btn-open-confirm" hidden>📂 Ava kinnitusest</button>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-titlebar">
+      <h1>Tasumine <span id="doc-nr">100840</span></h1>
+      <span class="badge" id="doc-badge">Kinnitatud</span>
+      <div class="doc-meta">Viimati muutis <b>VILJA</b> (<span id="doc-modtime">02.07.2026 kell 14:56</span>)</div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field"><label>Aeg</label><div class="val">02.07.2026 08:38:47</div></div>
+      <div class="field"><label>Kasutaja</label><div class="val">VILJA</div></div>
+      <div class="field"><label>Objekt</label><div class="val">&nbsp;</div></div>
+      <div class="field"><label>Projekt</label><div class="val">&nbsp;</div></div>
+      <div class="field"><label>Ostuarved</label><div class="val" id="f-ostuarved">4</div></div>
+      <div class="field"><label>Tasutud</label><div class="val" id="f-tasutud">0.00</div></div>
+
+      <div class="field"><label>Vahe</label><div class="val">0.00</div></div>
+      <div class="field"><label>Tasutud valuutas</label><div class="val">0.00</div></div>
+      <div class="field"><label>Tasumisviis</label><div class="val">SEB Baltic Gateway (kinnitatud tasumised)</div></div>
+      <div class="field"><label>Kommentaar</label><div class="val">&nbsp;</div></div>
+      <div class="field"><label>Viide</label><div class="val">&nbsp;</div></div>
+      <div class="field"><label>Koht</label><div class="val">213.219.123.51</div></div>
+    </div>
+
+    <!-- Allkirjastamise plokk -->
+    <div class="sign-block" id="sign-block" hidden>
+      <h3>Digiallkirjastamine <span class="badge" id="sign-badge-inline">—</span></h3>
+      <div id="reject-reason-box"></div>
+      <table class="signers">
+        <thead><tr><th style="width:220px;">Nimi</th><th>Staatus</th><th style="width:170px;"></th></tr></thead>
+        <tbody id="signers-tbody"></tbody>
+      </table>
+      <div class="bank-feedback" id="bank-feedback">Panga tagasisidet veel pole.</div>
+      <div class="sign-actions" id="sign-actions"></div>
+    </div>
+
+    <div class="lines-wrap">
+      <table class="lines">
+        <thead>
+          <tr>
+            <th>Nr</th><th>Ostuarve nr</th><th>EtteID</th><th>Hankija</th><th>Nimi pangas</th>
+            <th>Hankija arve</th><th>Viitenumber</th><th>Pangakonto/IBAN</th><th>Selgitus</th>
+            <th>Väärtuspäev</th><th>Val. P</th><th>Summa P</th><th>Kurss P</th><th>Hankija summa</th>
+            <th>Makse NR</th><th>Staatus</th>
+          </tr>
+          <tr class="filter-row">
+            <td></td><td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td>
+            <td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td>
+            <td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td><td><input placeholder="Otsi"></td>
+            <td></td><td></td><td></td><td></td><td><input placeholder="Otsi"></td><td></td>
+          </tr>
+        </thead>
+        <tbody id="lines-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= VAADE: TASUMISVIISI SEADISTUS ======================= -->
+<div class="view" id="view-settings">
+  <div class="settings-card">
+    <h2>SEB Baltic Gateway <span class="badge b-kinnitatud" style="font-size:11px;">Tasumisviis</span></h2>
+
+    <div class="settings-row"><label>KOOD</label><input type="text" value="P" disabled></div>
+    <div class="settings-row"><label>NIMI</label><input type="text" value="SEB Arvelduskonto" disabled></div>
+    <div class="settings-row"><label>KONTO</label><input type="text" value="111203" disabled></div>
+    <div class="settings-row"><label>PANGAKONTO/IBAN</label><input type="text" value="EE471000001020145685" disabled></div>
+    <div class="settings-row"><label>PANGAKONTO VALUUTA</label><input type="text" value="EUR" disabled></div>
+    <div class="settings-row"><label>EKSPORDI TÜÜP</label><input type="text" value="18 (SEPA EST)" disabled></div>
+    <div class="settings-row"><label>EKSPORDI KANAL</label><input type="text" value="SEB Baltic GW" disabled></div>
+
+    <div class="section-title">Pangaliides ja digiallkirjastamine</div>
+
+    <div class="settings-row">
+      <label>Liidese kanal</label>
+      <select id="cfg-channel">
+        <option>SEB Baltic Gateway</option>
+        <option>Swedbank Gateway</option>
+        <option>LHV Connect</option>
+        <option>Coop Pank</option>
+      </select>
+    </div>
+
+    <div class="settings-row">
+      <label>Kinnitatud tasumised</label>
+      <div>
+        <label class="switch"><input type="checkbox" id="cfg-confirmed" checked><span class="slider"></span></label>
+        <div class="helptext">Tasumised allkirjastatakse Directos ja liiguvad panka ilma internetipangas kinnitamata.</div>
+      </div>
+    </div>
+
+    <div class="settings-row" style="align-items:flex-start;">
+      <label>Nõutud allkirjastajad</label>
+      <div>
+        <table class="signer-cfg">
+          <thead><tr><th>Kasutaja</th><th>Nimi</th><th>Isikukood</th><th>E-post</th><th style="width:36px;"></th></tr></thead>
+          <tbody id="signer-cfg-tbody">
+            <tr>
+              <td><input value="VILJA"></td>
+              <td><input value="Vilja Tamm"></td>
+              <td><input value="49001010001" placeholder="näidis"></td>
+              <td><input value="vilja.tamm@naidis.ee"></td>
+              <td class="del-row" onclick="this.closest('tr').remove()">✖</td>
+            </tr>
+            <tr>
+              <td><input value="TOOMAS"></td>
+              <td><input value="Toomas Kask"></td>
+              <td><input value="38001010002" placeholder="näidis"></td>
+              <td><input value="toomas.kask@naidis.ee"></td>
+              <td class="del-row" onclick="this.closest('tr').remove()">✖</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="helptext">Kõik nimekirjas olevad kasutajad peavad tasumise allkirjastama, enne kui fail panka saadetakse. (Isikukoodid on näidisandmed.)</div>
+        <div class="cfg-actions">
+          <button id="cfg-add-row">+ Lisa rida</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-actions" style="margin-top:20px;">
+      <button class="btn-primary" style="border-radius:2px;" onclick="showToast('Seadistus salvestatud (demo)')">Salvesta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= VAADE: REGISTER ======================= -->
+<div class="view" id="view-register">
+  <div class="register-card">
+    <div class="register-filters">
+      <button class="filter-chip active" data-filter="all">Kõik</button>
+      <button class="filter-chip" data-filter="pooleli">Allkirjastamine pooleli</button>
+      <button class="filter-chip" data-filter="saadetud">Saadetud</button>
+      <button class="filter-chip" data-filter="tagasi">Tagasi lükatud</button>
+    </div>
+    <table class="register">
+      <thead>
+        <tr>
+          <th>Tasumine nr</th><th>Tasumisviis / pank</th><th>Ridu</th><th>Summa</th><th>Väärtuspäev</th>
+          <th>Allkirjastamise staatus</th><th>Allkirju</th><th>Panga staatus</th><th>Aeg</th>
+        </tr>
+      </thead>
+      <tbody id="register-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ======================= VAADE: E-KIRJA EELVAADE ======================= -->
+<div class="view" id="view-email">
+  <div class="email-frame">
+    <div class="email-meta">
+      <div><b>Saaja:</b> toomas.kask@naidis.ee</div>
+      <div><b>Saatja:</b> Directo &lt;no-reply@directo.ee&gt;</div>
+      <div><b>Teema:</b> Directo: tasumine 100840 ootab sinu allkirja (SEB, 12 450.00 EUR)</div>
+    </div>
+    <div class="email-body">
+      <h2>Tasumine 100840 ootab sinu digiallkirja</h2>
+      <p>Tere Toomas,</p>
+      <p>Directos on kinnitatud tasumine, mis vajab enne panka saatmist Sinu digiallkirja.</p>
+      <div class="summary-box">
+        <div><span>Dokument</span><span>Tasumine 100840</span></div>
+        <div><span>Ridade arv</span><span>4</span></div>
+        <div><span>Kogusumma</span><span>12 450.00 EUR</span></div>
+        <div><span>Väärtuspäev</span><span>03.07.2026</span></div>
+        <div><span>Pank</span><span>SEB Baltic Gateway</span></div>
+      </div>
+      <p style="margin-top:14px;">Juba allkirjastanud:</p>
+      <ul class="email-signers">
+        <li>Vilja Tamm — ✓ allkirjastatud 02.07.2026 14:32</li>
+        <li>Toomas Kask — ⏳ ootel</li>
+      </ul>
+      <a class="email-cta" href="#" onclick="return false;">Ava ja allkirjasta Directos</a>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= MODAAL: PIN2 ALLKIRJASTAMINE ======================= -->
+<div class="modal-overlay" id="pin2-modal" hidden>
+  <div class="modal">
+    <div class="modal-head"><span>Digiallkirjastamine</span><span class="x" id="pin2-close">✖</span></div>
+    <div class="modal-body">
+      <div class="tabs-row">
+        <div class="tabbtn active" data-tab="smartid">Smart-ID</div>
+        <div class="tabbtn" data-tab="mobiilid">Mobiil-ID</div>
+        <div class="tabbtn" data-tab="idkaart">ID-kaart</div>
+      </div>
+
+      <div id="pin2-tab-smartid">
+        <div class="code-box">
+          <div class="code">4829</div>
+          <p>Kontrolli, et kood kattub sinu seadmes kuvatavaga, ja sisesta PIN2 rakenduses.</p>
+        </div>
+      </div>
+      <div id="pin2-tab-mobiilid" hidden>
+        <div class="code-box">
+          <div class="code">7154</div>
+          <p>Kontrolli, et kood kattub sinu telefonis kuvatavaga, ja sisesta PIN2.</p>
+        </div>
+      </div>
+      <div id="pin2-tab-idkaart" hidden>
+        <div class="pin-input-row">
+          <input type="password" placeholder="Sisesta PIN2" maxlength="12">
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div><span>Fail</span><span id="pin2-filename">tasumine_100840.xml</span></div>
+        <div><span>Ridade arv</span><span id="pin2-rows">4</span></div>
+        <div><span>Kogusumma</span><span id="pin2-total">12 450.00 EUR</span></div>
+        <div><span>Väärtuspäev</span><span id="pin2-valuedate">03.07.2026</span></div>
+      </div>
+
+      <div id="pin2-status" style="margin-top:12px; font-size:12.5px; color:#555;"></div>
+
+      <div class="modal-foot">
+        <button class="btn-secondary" id="pin2-cancel">Katkesta</button>
+        <button class="btn-primary" id="pin2-submit">Allkirjasta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= MODAAL: VÄÄRTUSPÄEVA VIGA ======================= -->
+<div class="modal-overlay" id="valuedate-modal" hidden>
+  <div class="modal err">
+    <div class="modal-head"><span>Allkirjastamine pole võimalik</span><span class="x" id="vd-close">✖</span></div>
+    <div class="modal-body">
+      <p style="font-size:13px; line-height:1.5;">
+        SEB ei luba kinnitatud maksefailis erinevaid väärtuspäevi. Ridadel on kuupäevad
+        <b>03.07.2026</b> ja <b>04.07.2026</b>. Jaga tasumine eraldi dokumentideks.
+      </p>
+      <div class="modal-foot">
+        <button class="btn-primary" id="vd-ok">OK, sulge</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+/* ============================================================
+   ANDMED — kõik näidisandmed, midagi ei saadeta kuhugi päriselt
+   ============================================================ */
+const BANK_ERRORS = {
+  AM04:  {msg:"Kontol pole piisavalt vahendeid", fix:"Suurenda kontojääki või vähenda makse summat"},
+  LIMIT: {msg:"Päevane makselimiit on ületatud", fix:"Tõsta limiiti pangas või jaga makse mitmele päevale"},
+  SIGN:  {msg:"Allkiri ei vasta panga nõuetele", fix:"Kontrolli allkirjastaja volitusi pangas; allkirjasta uuesti"},
+  DUP:   {msg:"Sama maksefail on juba esitatud", fix:"Ära esita faili uuesti; kontrolli registrist olekut"},
+  AC01:  {msg:"Saaja IBAN ei ole kehtiv", fix:"Kontrolli ja paranda hankija kontonumber"},
+  TECH:  {msg:"Ajutine tehniline tõrge pangas", fix:"Proovi mõne minuti pärast uuesti"}
+};
+
+function makeLines(dates, statuses){
+  const base = [
+    {ostuarveNr:"OA-2246", etteId:"", hankija:"Metsatuka OÜ",      nimiPangas:"METSATUKA OU",      hankijaArve:"2026-118", viitenumber:"270003311", iban:"EE382200221034567891", selgitus:"Arve 2026-118", valP:"EUR", summaP:"3 120.00", kurssP:"1.00000", hankijaSumma:"3 120.00", makseNr:"1"},
+    {ostuarveNr:"OA-2251", etteId:"", hankija:"Ehituse Abimees OÜ", nimiPangas:"EHITUSE ABIMEES OU", hankijaArve:"4471",     viitenumber:"270004482", iban:"EE862200221078965432", selgitus:"Arve 4471",     valP:"EUR", summaP:"6 480.50", kurssP:"1.00000", hankijaSumma:"6 480.50", makseNr:"2"},
+    {ostuarveNr:"OA-2255", etteId:"", hankija:"Homework OÜ",        nimiPangas:"HOMEWORK OU",        hankijaArve:"HW-990",   viitenumber:"270005521", iban:"EE99XXXXXXXXXXXXXXXX",   selgitus:"Arve HW-990",   valP:"EUR", summaP:"850.00",   kurssP:"1.00000", hankijaSumma:"850.00",   makseNr:"3"},
+    {ostuarveNr:"OA-2260", etteId:"", hankija:"Nordic Puit AS",     nimiPangas:"NORDIC PUIT AS",     hankijaArve:"NP-3301",  viitenumber:"270006654", iban:"EE471000001020145699", selgitus:"Arve NP-3301",  valP:"EUR", summaP:"1 999.50", kurssP:"1.00000", hankijaSumma:"1 999.50", makseNr:"4"}
+  ];
+  return base.map((l,i)=>({...l, nr:i+1, vaartuspaev:dates[i], staatus:statuses[i].staatus, reason:statuses[i].reason||null}));
+}
+
+function sum(lines){
+  return lines.reduce((s,l)=>s+parseFloat(l.summaP.replace(/[^0-9.]/g,"")),0)
+    .toLocaleString('et-EE',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+const SCENARIOS = {
+  happy: {
+    docNr:"100840", docStatus:"Kinnitatud", channel:"SEB",
+    signers:[
+      {user:"VILJA", name:"Vilja Tamm", status:"ootel", time:null, isMe:true},
+      {user:"TOOMAS", name:"Toomas Kask", status:"ootel", time:null, isMe:false}
+    ],
+    lines: makeLines(["03.07.2026","03.07.2026","03.07.2026","03.07.2026"], [{staatus:""},{staatus:""},{staatus:""},{staatus:""}]),
+    bankFeedback: {type:"none", time:null, text:"Panga tagasisidet veel pole."},
+    rejectReason:null
+  },
+  partial: {
+    docNr:"100835", docStatus:"Osaliselt teostatud", channel:"SEB",
+    signers:[
+      {user:"VILJA", name:"Vilja Tamm", status:"allkirjastatud", time:"30.06.2026 15:10", isMe:true},
+      {user:"TOOMAS", name:"Toomas Kask", status:"allkirjastatud", time:"30.06.2026 15:22", isMe:false}
+    ],
+    lines: makeLines(["30.06.2026","30.06.2026","30.06.2026","30.06.2026"],
+      [{staatus:"Teostatud"},{staatus:"Teostatud"},{staatus:"Tagasi lükatud", reason:"AC01"},{staatus:"Teostatud"}]),
+    bankFeedback: {type:"err", time:"30.06.2026 16:40", text:"Pank: 3/4 rida teostatud, 1 rida tagasi lükatud (AC01 — Saaja IBAN ei ole kehtiv)."},
+    rejectReason:null
+  },
+  valuedate: {
+    docNr:"100844", docStatus:"Kinnitatud", channel:"SEB",
+    signers:[
+      {user:"VILJA", name:"Vilja Tamm", status:"ootel", time:null, isMe:true},
+      {user:"TOOMAS", name:"Toomas Kask", status:"ootel", time:null, isMe:false}
+    ],
+    lines: makeLines(["03.07.2026","03.07.2026","04.07.2026","04.07.2026"], [{staatus:""},{staatus:""},{staatus:""},{staatus:""}]),
+    bankFeedback: {type:"none", time:null, text:"Panga tagasisidet veel pole."},
+    rejectReason:null
+  },
+  rejected: {
+    docNr:"100832", docStatus:"Tagasi lükatud", channel:"LHV",
+    signers:[
+      {user:"VILJA", name:"Vilja Tamm", status:"allkirjastatud", time:"29.06.2026 10:50", isMe:true}
+    ],
+    lines: makeLines(["29.06.2026","29.06.2026","29.06.2026","29.06.2026"],
+      [{staatus:"Tagasi lükatud", reason:"DUP"},{staatus:"Tagasi lükatud", reason:"DUP"},{staatus:"Tagasi lükatud", reason:"DUP"},{staatus:"Tagasi lükatud", reason:"DUP"}]),
+    bankFeedback: {type:"err", time:"29.06.2026 11:05", text:"Pank: kogu maksefail tagasi lükatud (Duplikaat)."},
+    rejectReason:"DUP"
+  },
+  failed: {
+    docNr:"100841", docStatus:"Saatmine ebaõnnestus", channel:"SEB",
+    signers:[
+      {user:"VILJA", name:"Vilja Tamm", status:"allkirjastatud", time:"02.07.2026 09:02", isMe:true},
+      {user:"TOOMAS", name:"Toomas Kask", status:"allkirjastatud", time:"02.07.2026 09:14", isMe:false}
+    ],
+    lines: makeLines(["02.07.2026","02.07.2026","02.07.2026","02.07.2026"], [{staatus:""},{staatus:""},{staatus:""},{staatus:""}]),
+    bankFeedback: {type:"err", time:"02.07.2026 09:15", text:"Tehniline: ajutine tehniline tõrge pangas — fail ei jõudnud kohale."},
+    rejectReason:null
+  }
+};
+
+let state = null;
+let currentScenarioKey = "happy";
+
+function loadScenario(key){
+  currentScenarioKey = key;
+  state = JSON.parse(JSON.stringify(SCENARIOS[key]));
+  renderDocument();
+  document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.toggle('active', b.dataset.scenario===key));
+}
+
+/* ============================================================
+   RENDER: Tasumise dokument
+   ============================================================ */
+const BADGE_CLASS = {
+  "Kinnitatud":"b-kinnitatud",
+  "Allkirjastamine pooleli":"b-pooleli",
+  "Allkirjastatud, saadetud panka":"b-saadetud",
+  "Pank võttis vastu, töötlemisel":"b-tootlemisel",
+  "Teostatud":"b-teostatud",
+  "Osaliselt teostatud":"b-osaliselt",
+  "Tagasi lükatud":"b-tagasi",
+  "Saatmine ebaõnnestus":"b-ebaonnestus"
+};
+
+function badgeHtml(status){
+  return `<span class="badge ${BADGE_CLASS[status]||''}">${status}</span>`;
+}
+
+function renderDocument(){
+  document.getElementById('doc-nr').textContent = state.docNr;
+  const docBadge = document.getElementById('doc-badge');
+  docBadge.textContent = state.docStatus;
+  docBadge.className = 'badge ' + (BADGE_CLASS[state.docStatus]||'');
+
+  const total = sum(state.lines);
+  document.getElementById('pin2-total').textContent = total + " EUR";
+  document.getElementById('pin2-rows').textContent = state.lines.length;
+  document.getElementById('pin2-filename').textContent = "tasumine_" + state.docNr + ".xml";
+  document.getElementById('pin2-valuedate').textContent = state.lines[0].vaartuspaev;
+
+  // Toolbar nupud vastavalt olekule
+  const signBtn = document.getElementById('btn-sign-send');
+  const resendBtn = document.getElementById('btn-resend');
+  const newPayBtn = document.getElementById('btn-newpay');
+  const openConfirmBtn = document.getElementById('btn-open-confirm');
+  signBtn.hidden = true; resendBtn.hidden = true; newPayBtn.hidden = true; openConfirmBtn.hidden = true;
+
+  if(state.docStatus === "Kinnitatud"){
+    signBtn.hidden = false;
+    signBtn.textContent = "✍️📤 Allkirjasta ja saada panka (" + state.channel + ")";
+    signBtn.disabled = false;
+  } else if(state.docStatus === "Saatmine ebaõnnestus"){
+    resendBtn.hidden = false;
+  } else if(state.docStatus === "Osaliselt teostatud"){
+    newPayBtn.hidden = false;
+  } else if(state.docStatus === "Tagasi lükatud"){
+    openConfirmBtn.hidden = false;
+  }
+
+  renderSignBlock();
+  renderLines();
+}
+
+function renderSignBlock(){
+  const block = document.getElementById('sign-block');
+  if(state.docStatus === "Kinnitatud"){
+    block.hidden = true;
+    return;
+  }
+  block.hidden = false;
+  block.className = 'sign-block ' +
+    (state.docStatus==="Teostatud" ? 'state-teostatud' :
+     state.docStatus==="Tagasi lükatud" ? 'state-tagasi' :
+     state.docStatus==="Saatmine ebaõnnestus" ? 'state-ebaonnestus' : '');
+
+  document.querySelector('#sign-block h3').innerHTML = 'Digiallkirjastamine ' + badgeHtml(state.docStatus);
+
+  // reject reason
+  const rrBox = document.getElementById('reject-reason-box');
+  if(state.docStatus === "Tagasi lükatud" && state.rejectReason){
+    const e = BANK_ERRORS[state.rejectReason];
+    rrBox.innerHTML = `<div class="reject-reason"><b>Põhjus:</b> ${e.msg}. <i>${e.fix}.</i></div>`;
+  } else {
+    rrBox.innerHTML = '';
+  }
+
+  // signers table
+  const tbody = document.getElementById('signers-tbody');
+  tbody.innerHTML = state.signers.map(s=>{
+    const statusHtml = s.status==="allkirjastatud"
+      ? `<span class="sig-ok">✓ Allkirjastatud ${s.time}</span>`
+      : `<span class="sig-wait">⏳ Ootel</span>`;
+    const action = s.status==="ootel"
+      ? `<button class="mini-btn" onclick="resendNotification('${s.user}')">Saada teavitus uuesti</button>`
+      : '';
+    return `<tr><td>${s.name}${s.isMe?' <i style="color:#999;">(mina)</i>':''}</td><td>${statusHtml}</td><td>${action}</td></tr>`;
+  }).join('');
+
+  // bank feedback
+  const fb = document.getElementById('bank-feedback');
+  fb.className = 'bank-feedback' + (state.bankFeedback.type==='ok' ? ' ok' : state.bankFeedback.type==='err' ? ' err' : '');
+  fb.textContent = (state.bankFeedback.time ? state.bankFeedback.time + " — " : "") + state.bankFeedback.text;
+
+  // sign actions (demo helper)
+  const actions = document.getElementById('sign-actions');
+  actions.innerHTML = '';
+  if(state.docStatus === "Allkirjastamine pooleli"){
+    const btn = document.createElement('button');
+    btn.className = 'mini-btn';
+    btn.style.background = '#eef2fa';
+    btn.innerHTML = '▶ Simuleeri teise allkirja andmist <span class="demo-tag">DEMO</span>';
+    btn.onclick = simulateOtherSignature;
+    actions.appendChild(btn);
+  }
+  if(state.docStatus === "Saatmine ebaõnnestus"){
+    const btn = document.createElement('button');
+    btn.className = 'mini-btn';
+    btn.textContent = 'Saada uuesti';
+    btn.onclick = resendAfterFailure;
+    actions.appendChild(btn);
+  }
+}
+
+function renderLines(){
+  const tbody = document.getElementById('lines-tbody');
+  tbody.innerHTML = state.lines.map(l=>{
+    let statusCell = '<span class="status-empty">—</span>';
+    if(l.staatus === "Teostatud"){
+      statusCell = '<span class="status-ok">✓ Teostatud</span>';
+    } else if(l.staatus === "Tagasi lükatud"){
+      const e = BANK_ERRORS[l.reason] || {msg:"Tundmatu viga", fix:""};
+      statusCell = `<span class="status-fail" title="${e.msg}. ${e.fix}.">✗ Tagasi lükatud</span>`;
+    }
+    return `<tr>
+      <td>${l.nr}</td><td>${l.ostuarveNr}</td><td>${l.etteId}</td><td>${l.hankija}</td><td>${l.nimiPangas}</td>
+      <td>${l.hankijaArve}</td><td>${l.viitenumber}</td><td>${l.iban}</td><td>${l.selgitus}</td>
+      <td>${l.vaartuspaev}</td><td>${l.valP}</td><td class="num">${l.summaP}</td><td class="num">${l.kurssP}</td>
+      <td class="num">${l.hankijaSumma}</td><td>${l.makseNr}</td><td>${statusCell}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   TEGEVUSED: allkirjastamine, valideerimine, olekumasin
+   ============================================================ */
+function hasMixedValueDates(){
+  const dates = new Set(state.lines.map(l=>l.vaartuspaev));
+  return dates.size > 1;
+}
+
+document.getElementById('btn-sign-send').addEventListener('click', ()=>{
+  if(hasMixedValueDates()){
+    document.getElementById('valuedate-modal').hidden = false;
+    return;
+  }
+  openPin2Modal();
+});
+
+function openPin2Modal(){
+  document.getElementById('pin2-status').textContent = '';
+  document.getElementById('pin2-submit').disabled = false;
+  document.getElementById('pin2-submit').textContent = 'Allkirjasta';
+  document.getElementById('pin2-modal').hidden = false;
+}
+
+document.getElementById('pin2-close').onclick = ()=> document.getElementById('pin2-modal').hidden = true;
+document.getElementById('pin2-cancel').onclick = ()=> document.getElementById('pin2-modal').hidden = true;
+
+document.querySelectorAll('#pin2-modal .tabbtn').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('#pin2-modal .tabbtn').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    ['smartid','mobiilid','idkaart'].forEach(k=>{
+      document.getElementById('pin2-tab-'+k).hidden = (k !== t.dataset.tab);
+    });
+  });
+});
+
+document.getElementById('pin2-submit').addEventListener('click', ()=>{
+  const btn = document.getElementById('pin2-submit');
+  const statusEl = document.getElementById('pin2-status');
+  btn.disabled = true;
+  document.getElementById('pin2-cancel').disabled = true;
+  statusEl.innerHTML = '<span class="spinner"></span> Ootan allkirjastamist...';
+  setTimeout(()=>{
+    document.getElementById('pin2-modal').hidden = true;
+    document.getElementById('pin2-cancel').disabled = false;
+    signAsMe();
+  }, 3000);
+});
+
+function signAsMe(){
+  const me = state.signers.find(s=>s.isMe);
+  if(me){ me.status = 'allkirjastatud'; me.time = nowStamp(); }
+  const allSigned = state.signers.every(s=>s.status==='allkirjastatud');
+  state.docStatus = allSigned ? "Allkirjastamine pooleli" : "Allkirjastamine pooleli";
+  // kui ainult mina olin nõutud allkirjastaja
+  if(allSigned){
+    showToast('Kõik allkirjad koos — fail saadetakse automaatselt panka.');
+    renderDocument();
+    runAutoSendPipeline();
+    return;
+  }
+  showToast('Allkiri antud. Ootel allkirjastajatele on saadetud e-mail.');
+  renderDocument();
+}
+
+function resendNotification(user){
+  showToast('Teavitus saadetud uuesti kasutajale ' + user + '.');
+}
+
+function simulateOtherSignature(){
+  const pending = state.signers.find(s=>s.status==='ootel');
+  if(!pending) return;
+  pending.status = 'allkirjastatud';
+  pending.time = nowStamp();
+  renderDocument();
+  runAutoSendPipeline();
+}
+
+function runAutoSendPipeline(){
+  document.getElementById('btn-sign-send').disabled = true;
+  state.docStatus = "Allkirjastatud, saadetud panka";
+  state.bankFeedback = {type:'none', time: nowStamp(), text:'Fail edastatud panka, ootan kinnitust.'};
+  renderDocument();
+  setTimeout(()=>{
+    state.docStatus = "Pank võttis vastu, töötlemisel";
+    state.bankFeedback = {type:'none', time: nowStamp(), text:'Pank võttis maksefaili vastu, töötlemisel.'};
+    renderDocument();
+  }, 1300);
+  setTimeout(()=>{
+    state.docStatus = "Teostatud";
+    state.lines.forEach(l=>l.staatus='Teostatud');
+    state.bankFeedback = {type:'ok', time: nowStamp(), text:'Pank kinnitas: kõik read teostatud.'};
+    renderDocument();
+    showToast('Tasumine ' + state.docNr + ' on teostatud.');
+  }, 2600);
+}
+
+function resendAfterFailure(){
+  showToast('Fail saadetud uuesti panka.');
+  state.docStatus = "Allkirjastatud, saadetud panka";
+  state.bankFeedback = {type:'none', time: nowStamp(), text:'Fail uuesti edastatud panka, ootan kinnitust.'};
+  renderDocument();
+  setTimeout(()=>{
+    state.docStatus = "Pank võttis vastu, töötlemisel";
+    state.bankFeedback = {type:'none', time: nowStamp(), text:'Pank võttis maksefaili vastu, töötlemisel.'};
+    renderDocument();
+  }, 1200);
+  setTimeout(()=>{
+    state.docStatus = "Teostatud";
+    state.lines.forEach(l=>l.staatus='Teostatud');
+    state.bankFeedback = {type:'ok', time: nowStamp(), text:'Pank kinnitas: kõik read teostatud.'};
+    renderDocument();
+    showToast('Tasumine ' + state.docNr + ' on teostatud.');
+  }, 2400);
+}
+
+document.getElementById('btn-newpay').addEventListener('click', ()=>{
+  const failedCount = state.lines.filter(l=>l.staatus==='Tagasi lükatud').length;
+  showToast('Loodud uus Tasumine 100' + (parseInt(state.docNr.slice(-3))+6) + ' ' + failedCount + ' ebaõnnestunud reaga.');
+});
+
+document.getElementById('btn-open-confirm').addEventListener('click', ()=>{
+  showToast('Dokument avatud kinnitusest (demo) — allkirju ei küsita uuesti.');
+});
+
+document.getElementById('vd-close').onclick = ()=> document.getElementById('valuedate-modal').hidden = true;
+document.getElementById('vd-ok').onclick = ()=> document.getElementById('valuedate-modal').hidden = true;
+
+function nowStamp(){
+  // Fikseeritud demo-kellaaeg, et prototüüp oleks korratav
+  const d = new Date(2026,6,2,14,32 + Math.floor(Math.random()*20));
+  const pad = n=>String(n).padStart(2,'0');
+  return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+function showToast(text){
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = text;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 4200);
+}
+
+/* ============================================================
+   REGISTER
+   ============================================================ */
+const REGISTER_ROWS = [
+  {nr:"100840", pank:"SEB Baltic GW", ridu:4, summa:"12 450.00", vp:"03.07.2026", allk:"Allkirjastamine pooleli", allkArv:"1/2", panga:"—", aeg:"02.07.2026 14:56", filter:"pooleli", scenario:"happy"},
+  {nr:"100838", pank:"Swedbank Gateway", ridu:6, summa:"8 320.50", vp:"01.07.2026", allk:"Allkirjastatud, saadetud panka", allkArv:"2/2", panga:"Teostatud", aeg:"01.07.2026 09:12", filter:"saadetud", scenario:null},
+  {nr:"100835", pank:"SEB Baltic GW", ridu:4, summa:"12 449.50", vp:"30.06.2026", allk:"Allkirjastatud, saadetud panka", allkArv:"2/2", panga:"Osaliselt teostatud", aeg:"30.06.2026 16:40", filter:"saadetud", scenario:"partial"},
+  {nr:"100832", pank:"LHV Connect", ridu:4, summa:"12 449.50", vp:"29.06.2026", allk:"Allkirjastatud, saadetud panka", allkArv:"1/1", panga:"Tagasi lükatud", aeg:"29.06.2026 11:05", filter:"tagasi", scenario:"rejected"},
+  {nr:"100829", pank:"Coop Pank", ridu:7, summa:"21 000.00", vp:"28.06.2026 ", allk:"Allkirjastatud, saadetud panka", allkArv:"2/2", panga:"Teostatud", aeg:"28.06.2026 08:47", filter:"saadetud", scenario:null}
+];
+
+function renderRegister(activeFilter){
+  const tbody = document.getElementById('register-tbody');
+  const rows = REGISTER_ROWS.filter(r=> activeFilter==='all' || r.filter===activeFilter);
+  tbody.innerHTML = rows.map(r=>`
+    <tr class="rrow" data-scenario="${r.scenario||''}">
+      <td>${r.nr}</td><td>${r.pank}</td><td>${r.ridu}</td><td>${r.summa}</td><td>${r.vp}</td>
+      <td>${badgeHtml(r.allk)}</td><td>${r.allkArv}</td>
+      <td>${r.panga==='—' ? '—' : badgeHtml(r.panga)}</td><td>${r.aeg}</td>
+    </tr>`).join('');
+  tbody.querySelectorAll('tr.rrow').forEach(tr=>{
+    tr.addEventListener('click', ()=>{
+      const sc = tr.dataset.scenario;
+      if(sc){
+        loadScenario(sc);
+        switchView('document');
+      } else {
+        showToast('Selle tasumise täisandmed pole selles prototüübis avatavad (demo piirang).');
+      }
+    });
+  });
+}
+
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderRegister(chip.dataset.filter);
+  });
+});
+
+/* ============================================================
+   TASUMISVIISI SEADISTUS — lisa rida
+   ============================================================ */
+document.getElementById('cfg-add-row').addEventListener('click', ()=>{
+  const tbody = document.getElementById('signer-cfg-tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input value=""></td><td><input value=""></td><td><input value="" placeholder="näidis"></td><td><input value=""></td><td class="del-row" onclick="this.closest('tr').remove()">✖</td>`;
+  tbody.appendChild(tr);
+});
+
+/* ============================================================
+   VAADETE / STSENAARIUMIDE NAVIGATSIOON
+   ============================================================ */
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id === 'view-'+name));
+  document.querySelectorAll('.view-tab').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+}
+document.querySelectorAll('.view-tab').forEach(b=>{
+  b.addEventListener('click', ()=> switchView(b.dataset.view));
+});
+
+document.querySelectorAll('.scenario-btn').forEach(b=>{
+  b.addEventListener('click', ()=> loadScenario(b.dataset.scenario));
+});
+
+document.getElementById('btn-reset').addEventListener('click', ()=> loadScenario(currentScenarioKey));
+
+/* ============================================================
+   ALGSEISUND
+   ============================================================ */
+loadScenario('happy');
+renderRegister('all');
+</script>
+</body>
+</html>
