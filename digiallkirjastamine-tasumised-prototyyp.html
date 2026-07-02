@@ -67,6 +67,24 @@
   .demo-btn.active{ background:var(--blue-mid); border-color:#5a8fc9; }
   .demo-btn.view-tab{ background:#2b2b2b; }
   .demo-btn.view-tab.active{ background:var(--blue-dark); }
+  #btn-reset{ background:var(--amber); border-color:#a8730f; }
+  #btn-reset:hover{ background:#b37b1b; }
+
+  .scenario-legend{
+    background:#fffbe8;
+    border:1px dashed #d9c46a;
+    padding:8px 14px;
+    margin-bottom:6px;
+    font-size:12.5px;
+    color:#5a4d1e;
+  }
+  .scenario-legend .legend-title{
+    font-weight:bold;
+    margin-bottom:4px;
+  }
+  .scenario-legend .demo-tag{ background:#8a7a2e; }
+  .scenario-legend ol{ margin:0; padding-left:18px; }
+  .scenario-legend li{ margin-bottom:2px; }
 
   .view{ display:none; padding:14px 16px 60px; }
   .view.active{ display:block; }
@@ -426,18 +444,18 @@
   <button class="demo-btn view-tab" data-view="register">Register</button>
   <button class="demo-btn view-tab" data-view="email">E-kirja eelvaade</button>
   <div class="sep"></div>
-  <span class="label">STSENAARIUM:</span>
-  <button class="demo-btn scenario-btn" data-scenario="happy">1. Õnnelik tee</button>
+  <span class="label">STSENAARIUM <span class="demo-tag">Testimise jaoks</span>:</span>
+  <button class="demo-btn" id="btn-reset">↺ Lähtesta</button>
+  <button class="demo-btn scenario-btn" data-scenario="happy">1. Õnnestumine</button>
   <button class="demo-btn scenario-btn" data-scenario="partial">2. Osaline tagasilükkamine</button>
   <button class="demo-btn scenario-btn" data-scenario="valuedate">3. Väärtuspäevade viga</button>
   <button class="demo-btn scenario-btn" data-scenario="rejected">4. Täielik tagasilükkamine</button>
   <button class="demo-btn scenario-btn" data-scenario="failed">5. Tehniline tõrge</button>
-  <div class="sep"></div>
-  <button class="demo-btn" id="btn-reset">↺ Lähtesta stsenaarium</button>
 </div>
 
 <!-- ======================= VAADE: TASUMISE DOKUMENT ======================= -->
 <div class="view active" id="view-document">
+  <div class="scenario-legend" id="scenario-legend"></div>
   <div class="toolbar" id="doc-toolbar">
     <button class="tb-btn">📄 Uus</button>
     <button class="tb-btn">💾 Salvesta</button>
@@ -459,7 +477,8 @@
   <div class="doc-card">
     <div class="doc-titlebar">
       <h1>Tasumine <span id="doc-nr">100840</span></h1>
-      <span class="badge" id="doc-badge">Kinnitatud</span>
+      <span class="badge b-kinnitatud">Kinnitatud</span>
+      <span class="badge" id="doc-badge" hidden></span>
       <div class="doc-meta">Viimati muutis <b>VILJA</b> (<span id="doc-modtime">02.07.2026 kell 14:56</span>)</div>
     </div>
 
@@ -481,7 +500,7 @@
 
     <!-- Allkirjastamise plokk -->
     <div class="sign-block" id="sign-block" hidden>
-      <h3>Dokumendi olek <span class="badge" id="sign-badge-inline">—</span></h3>
+      <h3>Digiallkirjastamine</h3>
       <div class="signing-progress" id="signing-progress"></div>
       <div id="reject-reason-box"></div>
       <table class="signers">
@@ -778,6 +797,59 @@ const SCENARIOS = {
   }
 };
 
+const SCENARIO_LEGEND = {
+  happy: {
+    title: "1. Õnnestumine",
+    steps: [
+      'Klõpsa tööriistaribal "Allkirjasta ja saada panka (SEB)"',
+      'PIN2 aknas klõpsa "Allkirjasta" ja oota ~3 sek (Vilja allkirjastab)',
+      'Klõpsa allkirjastamise plokis "▶ Simuleeri teise allkirja andmist" (Toomas allkirjastab)',
+      'Klõpsa "▶ Simuleeri panga vastuvõttu (töötlemisel)"',
+      'Klõpsa "▶ Simuleeri panga lõpptulemust (Teostatud)"'
+    ]
+  },
+  partial: {
+    title: "2. Osaline tagasilükkamine",
+    steps: [
+      'Vaata: allkirjastamine on juba lõpetatud (2/2), aga dokumendi olek on "Osaliselt teostatud"',
+      'Vaata ridade tabelis rida "Homework OÜ" — ✗ Tagasi lükatud (AC01, vale IBAN)',
+      'Klõpsa tööriistaribal "Loo uus tasumine ebaõnnestunud ridadest"'
+    ]
+  },
+  valuedate: {
+    title: "3. Väärtuspäevade viga",
+    steps: [
+      'Vaata ridade tabelis Väärtuspäev veergu — read on 03.07.2026 ja 04.07.2026',
+      'Klõpsa tööriistaribal "Allkirjasta ja saada panka (SEB)"',
+      'Näed blokeerivat veateadet — allkirjastamist (PIN2) ei alustatagi'
+    ]
+  },
+  rejected: {
+    title: "4. Täielik tagasilükkamine",
+    steps: [
+      'Vaata olekut "Tagasi lükatud" ja punast põhjenduse rida (Duplikaat)',
+      'Klõpsa tööriistaribal "Ava kinnitusest"'
+    ]
+  },
+  failed: {
+    title: "5. Tehniline tõrge",
+    steps: [
+      'Vaata olekut "Saatmine ebaõnnestus" — allkirjad on juba antud, aga saatmine ei õnnestunud',
+      'Klõpsa "Saada uuesti" (tööriistaribal või allkirjastamise plokis)',
+      'Klõpsa "▶ Simuleeri panga vastuvõttu (töötlemisel)"',
+      'Klõpsa "▶ Simuleeri panga lõpptulemust (Teostatud)"'
+    ]
+  }
+};
+
+function renderScenarioLegend(key){
+  const legend = SCENARIO_LEGEND[key];
+  const box = document.getElementById('scenario-legend');
+  if(!legend){ box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="legend-title">${legend.title} <span class="demo-tag">Demo sammud</span></div>` +
+    '<ol>' + legend.steps.map(s=>`<li>${s}</li>`).join('') + '</ol>';
+}
+
 let state = null;
 let currentScenarioKey = "happy";
 
@@ -785,6 +857,7 @@ function loadScenario(key){
   currentScenarioKey = key;
   state = JSON.parse(JSON.stringify(SCENARIOS[key]));
   renderDocument();
+  renderScenarioLegend(key);
   document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.toggle('active', b.dataset.scenario===key));
 }
 
@@ -809,8 +882,13 @@ function badgeHtml(status){
 function renderDocument(){
   document.getElementById('doc-nr').textContent = state.docNr;
   const docBadge = document.getElementById('doc-badge');
-  docBadge.textContent = state.docStatus;
-  docBadge.className = 'badge ' + (BADGE_CLASS[state.docStatus]||'');
+  if(state.docStatus === "Kinnitatud"){
+    docBadge.hidden = true;
+  } else {
+    docBadge.hidden = false;
+    docBadge.textContent = state.docStatus;
+    docBadge.className = 'badge ' + (BADGE_CLASS[state.docStatus]||'');
+  }
 
   const total = sum(state.lines);
   document.getElementById('pin2-total').textContent = total + " EUR";
@@ -853,13 +931,11 @@ function renderSignBlock(){
      state.docStatus==="Tagasi lükatud" ? 'state-tagasi' :
      state.docStatus==="Saatmine ebaõnnestus" ? 'state-ebaonnestus' : '');
 
-  document.querySelector('#sign-block h3').innerHTML = 'Dokumendi olek ' + badgeHtml(state.docStatus);
-
   const signedCount = state.signers.filter(s=>s.status==='allkirjastatud').length;
   const totalSigners = state.signers.length;
   const allSigned = signedCount === totalSigners;
   document.getElementById('signing-progress').innerHTML =
-    `Digiallkirjastamine: <b>${allSigned ? '<span class="sig-ok">✓' : ''} ${signedCount}/${totalSigners} allkirja antud${allSigned ? '</span>' : ''}</b>`;
+    `<b>${allSigned ? '<span class="sig-ok">✓' : ''} ${signedCount}/${totalSigners} allkirja antud${allSigned ? '</span>' : ''}</b>`;
 
   // reject reason
   const rrBox = document.getElementById('reject-reason-box');
@@ -896,6 +972,22 @@ function renderSignBlock(){
     btn.style.background = '#eef2fa';
     btn.innerHTML = '▶ Simuleeri teise allkirja andmist <span class="demo-tag">DEMO</span>';
     btn.onclick = simulateOtherSignature;
+    actions.appendChild(btn);
+  }
+  if(state.docStatus === "Allkirjastatud, saadetud panka"){
+    const btn = document.createElement('button');
+    btn.className = 'mini-btn';
+    btn.style.background = '#eef2fa';
+    btn.innerHTML = '▶ Simuleeri panga vastuvõttu (töötlemisel) <span class="demo-tag">DEMO</span>';
+    btn.onclick = advanceToProcessing;
+    actions.appendChild(btn);
+  }
+  if(state.docStatus === "Pank võttis vastu, töötlemisel"){
+    const btn = document.createElement('button');
+    btn.className = 'mini-btn';
+    btn.style.background = '#eef2fa';
+    btn.innerHTML = '▶ Simuleeri panga lõpptulemust (Teostatud) <span class="demo-tag">DEMO</span>';
+    btn.onclick = advanceToCompleted;
     actions.appendChild(btn);
   }
   if(state.docStatus === "Saatmine ebaõnnestus"){
@@ -1009,18 +1101,6 @@ function runAutoSendPipeline(){
   state.docStatus = "Allkirjastatud, saadetud panka";
   state.bankFeedback = {type:'none', time: nowStamp(), text:'Fail edastatud panka, ootan kinnitust.'};
   renderDocument();
-  setTimeout(()=>{
-    state.docStatus = "Pank võttis vastu, töötlemisel";
-    state.bankFeedback = {type:'none', time: nowStamp(), text:'Pank võttis maksefaili vastu, töötlemisel.'};
-    renderDocument();
-  }, 1300);
-  setTimeout(()=>{
-    state.docStatus = "Teostatud";
-    state.lines.forEach(l=>l.staatus='Teostatud');
-    state.bankFeedback = {type:'ok', time: nowStamp(), text:'Pank kinnitas: kõik read teostatud.'};
-    renderDocument();
-    showToast('Tasumine ' + state.docNr + ' on teostatud.');
-  }, 2600);
 }
 
 function resendAfterFailure(){
@@ -1028,18 +1108,20 @@ function resendAfterFailure(){
   state.docStatus = "Allkirjastatud, saadetud panka";
   state.bankFeedback = {type:'none', time: nowStamp(), text:'Fail uuesti edastatud panka, ootan kinnitust.'};
   renderDocument();
-  setTimeout(()=>{
-    state.docStatus = "Pank võttis vastu, töötlemisel";
-    state.bankFeedback = {type:'none', time: nowStamp(), text:'Pank võttis maksefaili vastu, töötlemisel.'};
-    renderDocument();
-  }, 1200);
-  setTimeout(()=>{
-    state.docStatus = "Teostatud";
-    state.lines.forEach(l=>l.staatus='Teostatud');
-    state.bankFeedback = {type:'ok', time: nowStamp(), text:'Pank kinnitas: kõik read teostatud.'};
-    renderDocument();
-    showToast('Tasumine ' + state.docNr + ' on teostatud.');
-  }, 2400);
+}
+
+function advanceToProcessing(){
+  state.docStatus = "Pank võttis vastu, töötlemisel";
+  state.bankFeedback = {type:'none', time: nowStamp(), text:'Pank võttis maksefaili vastu, töötlemisel.'};
+  renderDocument();
+}
+
+function advanceToCompleted(){
+  state.docStatus = "Teostatud";
+  state.lines.forEach(l=>l.staatus='Teostatud');
+  state.bankFeedback = {type:'ok', time: nowStamp(), text:'Pank kinnitas: kõik read teostatud.'};
+  renderDocument();
+  showToast('Tasumine ' + state.docNr + ' on teostatud.');
 }
 
 document.getElementById('btn-newpay').addEventListener('click', ()=>{
