@@ -83,6 +83,11 @@
     margin-bottom:4px;
   }
   .scenario-legend .demo-tag{ background:#8a7a2e; }
+  .scenario-legend .legend-warning{
+    color:#a3372a;
+    font-weight:bold;
+    margin-bottom:6px;
+  }
   .scenario-legend ol{ margin:0; padding-left:18px; }
   .scenario-legend li{ margin-bottom:2px; }
 
@@ -438,10 +443,9 @@
 <body>
 
 <div class="demo-bar">
-  <span class="label">VAADE:</span>
   <button class="demo-btn view-tab active" data-view="document">Tasumise dokument</button>
   <button class="demo-btn view-tab" data-view="settings">Tasumisviisi seadistus</button>
-  <button class="demo-btn view-tab" data-view="register">Register</button>
+  <button class="demo-btn view-tab" data-view="register">Tasumiste register</button>
   <button class="demo-btn view-tab" data-view="email">E-kirja eelvaade</button>
   <div class="sep"></div>
   <span class="label">STSENAARIUM <span class="demo-tag">Testimise jaoks</span>:</span>
@@ -466,12 +470,12 @@
     <button class="tb-btn">✉ Meili</button>
     <button class="tb-btn">🖨 Trüki</button>
     <button class="tb-btn">📎 Manused</button>
+    <button class="tb-btn" id="btn-open-confirm" hidden>📂 Ava kinnitusest</button>
     <button class="tb-btn">Ava ostureskontro</button>
     <div class="spacer"></div>
     <button class="tb-btn signbtn" id="btn-sign-send">✍️📤 Allkirjasta ja saada panka (SEB)</button>
     <button class="tb-btn highlight" id="btn-resend" hidden title="Saadab juba allkirjastatud faili pangale uuesti pärast tehnilist tõrget. Allkirju uuesti ei küsita.">🔁 Saada uuesti</button>
     <button class="tb-btn highlight" id="btn-newpay" hidden>➕ Loo uus tasumine ebaõnnestunud ridadest</button>
-    <button class="tb-btn" id="btn-open-confirm" hidden>📂 Ava kinnitusest</button>
   </div>
 
   <div class="doc-card">
@@ -847,6 +851,7 @@ function renderScenarioLegend(key){
   const box = document.getElementById('scenario-legend');
   if(!legend){ box.innerHTML = ''; return; }
   box.innerHTML = `<div class="legend-title">${legend.title} <span class="demo-tag">Demo sammud</span></div>` +
+    `<div class="legend-warning">⚠️ Kui oled seda stsenaariumi juba testinud, vajuta enne uuesti alustamist "↺ Lähtesta".</div>` +
     '<ol>' + legend.steps.map(s=>`<li>${s}</li>`).join('') + '</ol>';
 }
 
