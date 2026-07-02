@@ -177,12 +177,17 @@
   .sign-block.state-tagasi{ border-color:#e8bcb6; background:#fdf2f1; }
   .sign-block.state-ebaonnestus{ border-color:#e8bcb6; background:#fbeceb; }
   .sign-block h3{
-    margin:0 0 8px;
+    margin:0 0 4px;
     font-size:13px;
     color:#333;
     display:flex;
     align-items:center;
     gap:8px;
+  }
+  .signing-progress{
+    font-size:12px;
+    color:#555;
+    margin-bottom:8px;
   }
   table.signers{
     width:100%;
@@ -446,7 +451,7 @@
     <button class="tb-btn">Ava ostureskontro</button>
     <div class="spacer"></div>
     <button class="tb-btn signbtn" id="btn-sign-send">✍️📤 Allkirjasta ja saada panka (SEB)</button>
-    <button class="tb-btn highlight" id="btn-resend" hidden>🔁 Saada uuesti</button>
+    <button class="tb-btn highlight" id="btn-resend" hidden title="Saadab juba allkirjastatud faili pangale uuesti pärast tehnilist tõrget. Allkirju uuesti ei küsita.">🔁 Saada uuesti</button>
     <button class="tb-btn highlight" id="btn-newpay" hidden>➕ Loo uus tasumine ebaõnnestunud ridadest</button>
     <button class="tb-btn" id="btn-open-confirm" hidden>📂 Ava kinnitusest</button>
   </div>
@@ -476,7 +481,8 @@
 
     <!-- Allkirjastamise plokk -->
     <div class="sign-block" id="sign-block" hidden>
-      <h3>Digiallkirjastamine <span class="badge" id="sign-badge-inline">—</span></h3>
+      <h3>Dokumendi olek <span class="badge" id="sign-badge-inline">—</span></h3>
+      <div class="signing-progress" id="signing-progress"></div>
       <div id="reject-reason-box"></div>
       <table class="signers">
         <thead><tr><th style="width:220px;">Nimi</th><th>Staatus</th><th style="width:170px;"></th></tr></thead>
@@ -847,7 +853,13 @@ function renderSignBlock(){
      state.docStatus==="Tagasi lükatud" ? 'state-tagasi' :
      state.docStatus==="Saatmine ebaõnnestus" ? 'state-ebaonnestus' : '');
 
-  document.querySelector('#sign-block h3').innerHTML = 'Digiallkirjastamine ' + badgeHtml(state.docStatus);
+  document.querySelector('#sign-block h3').innerHTML = 'Dokumendi olek ' + badgeHtml(state.docStatus);
+
+  const signedCount = state.signers.filter(s=>s.status==='allkirjastatud').length;
+  const totalSigners = state.signers.length;
+  const allSigned = signedCount === totalSigners;
+  document.getElementById('signing-progress').innerHTML =
+    `Digiallkirjastamine: <b>${allSigned ? '<span class="sig-ok">✓' : ''} ${signedCount}/${totalSigners} allkirja antud${allSigned ? '</span>' : ''}</b>`;
 
   // reject reason
   const rrBox = document.getElementById('reject-reason-box');
