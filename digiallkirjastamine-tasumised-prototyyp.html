@@ -69,6 +69,17 @@
   .demo-btn.view-tab.active{ background:var(--blue-dark); }
   #btn-reset{ background:var(--amber); border-color:#a8730f; }
   #btn-reset:hover{ background:#b37b1b; }
+  .scenario-group{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px;
+    background:var(--amber);
+    padding:5px 10px;
+    border-radius:4px;
+  }
+  .scenario-group .label{ color:#3d2c0a; }
+  .scenario-group .demo-tag{ background:#3d2c0a; }
 
   .scenario-legend{
     background:#fffbe8;
@@ -448,13 +459,15 @@
   <button class="demo-btn view-tab" data-view="register">Tasumiste register</button>
   <button class="demo-btn view-tab" data-view="email">E-kirja eelvaade</button>
   <div class="sep"></div>
-  <span class="label">STSENAARIUM <span class="demo-tag">Testimise jaoks</span>:</span>
-  <button class="demo-btn" id="btn-reset">↺ Lähtesta</button>
-  <button class="demo-btn scenario-btn" data-scenario="happy">1. Õnnestumine</button>
-  <button class="demo-btn scenario-btn" data-scenario="partial">2. Osaline tagasilükkamine</button>
-  <button class="demo-btn scenario-btn" data-scenario="valuedate">3. Väärtuspäevade viga</button>
-  <button class="demo-btn scenario-btn" data-scenario="rejected">4. Täielik tagasilükkamine</button>
-  <button class="demo-btn scenario-btn" data-scenario="failed">5. Tehniline tõrge</button>
+  <div class="scenario-group">
+    <span class="label">STSENAARIUM <span class="demo-tag">Testimise jaoks</span>:</span>
+    <button class="demo-btn" id="btn-reset">↺ Lähtesta</button>
+    <button class="demo-btn scenario-btn" data-scenario="happy">1. Õnnestumine</button>
+    <button class="demo-btn scenario-btn" data-scenario="partial">2. Osaline tagasilükkamine</button>
+    <button class="demo-btn scenario-btn" data-scenario="valuedate">3. Väärtuspäevade viga</button>
+    <button class="demo-btn scenario-btn" data-scenario="rejected">4. Täielik tagasilükkamine</button>
+    <button class="demo-btn scenario-btn" data-scenario="failed">5. Tehniline tõrge</button>
+  </div>
 </div>
 
 <!-- ======================= VAADE: TASUMISE DOKUMENT ======================= -->
@@ -1128,6 +1141,8 @@ function advanceToCompleted(){
   renderDocument();
   showToast('Tasumine ' + state.docNr + ' on teostatud.');
 }
+
+document.getElementById('btn-resend').addEventListener('click', resendAfterFailure);
 
 document.getElementById('btn-newpay').addEventListener('click', ()=>{
   const failedCount = state.lines.filter(l=>l.staatus==='Tagasi lükatud').length;
