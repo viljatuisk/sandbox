@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo – Rahavoogude moodul (prototüüp)</title>
+<style>
+html { zoom: 1.35; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #f4f4f2;
+  --surface:   #ffffff;
+  --surface2:  #f7f7f5;
+  --border:    #d8d8d4;
+  --border2:   #c4c4be;
+  --text:      #1a1a18;
+  --text2:     #5a5a56;
+  --text3:     #8a8a84;
+  --blue:      #185fa5;
+  --blue-dark: #0c447c;
+  --blue-bg:   #e6f1fb;
+  --navy:      #2d4f7c;
+  --green:     #27500a;
+  --green-bg:  #eaf3de;
+  --green-bd:  #97c459;
+  --amber:     #7b3f00;
+  --amber-bg:  #faeeda;
+  --amber-bd:  #ef9f27;
+  --red:       #a32d2d;
+  --red-bg:    #fcebeb;
+  --red-bd:    #f09595;
+  --radius:    4px;
+  --radius-lg: 8px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  background: #2d4f7c;
+  color: white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  gap: 8px;
+  font-size: 14px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-logo { font-weight: 700; font-size: 18px; letter-spacing: -0.3px; margin-right: 12px; }
+.nav-sep { color: rgba(255,255,255,.35); margin: 0 2px; }
+.nav-item { color: rgba(255,255,255,.75); padding: 0 8px; cursor: pointer; }
+.nav-item:hover { color: #fff; }
+.nav-item.active { color: #fff; font-weight: 600; border-bottom: 2px solid #7eb8f7; padding-bottom: 2px; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,.7); font-size: 13px; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.page-header h1 { font-size: 20px; font-weight: 700; color: var(--navy); }
+.page-header .sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
+.header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  border: 1px solid transparent; transition: all .15s;
+}
+.btn-primary { background: var(--blue); color: #fff; border-color: var(--blue-dark); }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-secondary { background: #fff; color: var(--text); border-color: var(--border2); }
+.btn-secondary:hover { background: var(--surface2); }
+.btn-green { background: #2f6b10; color: #fff; border-color: #235009; }
+.btn-green:hover { background: #235009; }
+.btn-sm { padding: 5px 11px; font-size: 13px; }
+
+/* ── MAIN LAYOUT ── */
+.main-layout { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+/* ── MODULE NAV (LEFT) ── */
+.module-nav {
+  width: 270px; min-width: 270px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; flex-shrink: 0;
+  padding: 8px 0;
+}
+.module-nav-group-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text3); padding: 14px 16px 6px; font-weight: 700;
+}
+.module-nav-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 16px; cursor: pointer;
+  border-left: 3px solid transparent; transition: all .12s;
+}
+.module-nav-item:hover { background: var(--surface2); }
+.module-nav-item.active { background: var(--blue-bg); border-left-color: var(--blue); }
+.module-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+.module-nav-text .title { font-size: 13px; font-weight: 700; color: var(--text); }
+.module-nav-item.active .module-nav-text .title { color: var(--blue-dark); }
+.module-nav-text .desc { font-size: 11px; color: var(--text3); margin-top: 1px; line-height: 1.35; }
+
+/* ── CONTENT ── */
+.content-area { flex: 1; overflow-y: auto; overflow-x: auto; display: flex; flex-direction: column; }
+.section { display: none; flex-direction: column; gap: 14px; padding: 18px 22px 30px; }
+.section.active { display: flex; }
+
+.section-title-row { display: flex; align-items: baseline; gap: 10px; }
+.section-title-row h2 { font-size: 17px; font-weight: 700; color: var(--navy); }
+.section-title-row .part-tag {
+  font-size: 11px; font-weight: 700; color: #fff; background: var(--navy);
+  border-radius: 20px; padding: 2px 9px;
+}
+.section-desc { font-size: 13px; color: var(--text3); margin-top: -8px; }
+
+/* Section heading (table headers) */
+.section-head {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--text2);
+  padding-bottom: 8px; border-bottom: 2px solid var(--border);
+}
+.section-head .right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.section-head .count-badge { background: var(--navy); color: #fff; border-radius: 20px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+
+/* Generic table */
+.dtable { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.dtable thead tr { background: var(--navy); color: #fff; }
+.dtable thead th { padding: 9px 11px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+.dtable thead th.right { text-align: right; }
+.dtable thead th.center { text-align: center; }
+.dtable tbody tr { border-bottom: 1px solid #ebebea; }
+.dtable tbody tr:last-child { border-bottom: none; }
+.dtable tbody tr:hover { background: var(--blue-bg); }
+.dtable tbody tr.total-row { background: #f0f4f9 !important; font-weight: 700; border-top: 2px solid var(--border2); }
+.dtable tbody tr.group-row td { background: #eef2f7; font-weight: 700; color: var(--navy); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.dtable tbody tr.check-row td { background: #fbfbf6; font-style: italic; color: var(--text3); font-size: 12px; }
+.dtable td { padding: 8px 11px; vertical-align: middle; }
+.dtable td.right { text-align: right; font-variant-numeric: tabular-nums; }
+.dtable td.center { text-align: center; }
+.dtable td.dim { color: var(--text3); font-size: 12px; }
+.dtable td.neg { color: var(--red); }
+.table-scroll { overflow-x: auto; border-radius: var(--radius-lg); }
+
+/* Banner */
+.banner { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: var(--radius); font-size: 13px; border: 1px solid; }
+.banner-info { background: var(--blue-bg); border-color: #b0cce9; color: var(--blue-dark); }
+.banner-warn { background: var(--amber-bg); border-color: var(--amber-bd); color: var(--amber); }
+.banner-ok   { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+.banner-danger { background: var(--red-bg); border-color: var(--red-bd); color: var(--red); }
+.banner-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+/* Stat/KPI cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.kpi-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 13px 15px; }
+.kpi-card .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text3); letter-spacing: .05em; }
+.kpi-card .kpi-value { font-size: 23px; font-weight: 800; color: var(--navy); margin-top: 4px; }
+.kpi-card .kpi-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.kpi-card.warn .kpi-value { color: var(--amber); }
+.kpi-card.danger .kpi-value { color: var(--red); }
+
+/* Data source cards */
+.datasrc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.datasrc-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 13px 15px; display: flex; flex-direction: column; gap: 5px; }
+.datasrc-card .head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.datasrc-card .meta { font-size: 12px; color: var(--text3); }
+.datasrc-card .map { font-size: 11px; color: var(--text2); background: var(--surface2); border-radius: var(--radius); padding: 4px 8px; margin-top: 3px; }
+
+/* Status dot */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-green { background: #4caf50; }
+.dot-amber { background: #ff9800; }
+.dot-red { background: #f44336; }
+.dot-gray { background: #9e9e9e; }
+
+/* Mini bar chart */
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 130px; padding: 12px 10px 4px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 3px; }
+.bar-col .bar-val { font-size: 10px; font-weight: 700; color: var(--text2); }
+.bar-col .bar { width: 100%; border-radius: 3px 3px 0 0; background: var(--blue); min-height: 2px; transition: height .3s; }
+.bar-col .bar.neg { background: var(--red); }
+.bar-col .bar-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* Tab strip (inner) */
+.tab-strip { display: flex; gap: 0; border-bottom: 2px solid var(--border); background: #fff; flex-shrink: 0; }
+.tab { padding: 9px 18px; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .12s; }
+.tab:hover { color: var(--blue); }
+.tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+
+/* Pills */
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.pill-blue { background: #dbeafe; color: #1e40af; }
+.pill-green { background: #dcfce7; color: #166534; }
+.pill-orange { background: #ffedd5; color: #9a3412; }
+.pill-gray { background: #eee; color: #555; }
+
+/* Scenario selector */
+.scenario-pills { display: flex; gap: 8px; }
+.scenario-pill {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 8px 16px; border-radius: var(--radius); border: 1px solid var(--border);
+  cursor: pointer; background: #fff; transition: all .12s; min-width: 140px;
+}
+.scenario-pill:hover { border-color: var(--blue); }
+.scenario-pill.active { border-color: var(--blue); background: var(--blue-bg); }
+.scenario-pill .s-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.scenario-pill .s-desc { font-size: 11px; color: var(--text3); }
+
+/* Status badges (versions) */
+.status-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.status-draft { background: #eee; color: #555; }
+.status-review { background: var(--amber-bg); color: var(--amber); }
+.status-approved { background: var(--green-bg); color: var(--green); }
+.status-locked { background: #dbeafe; color: #1e40af; }
+
+/* Forms */
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.form-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+.form-card h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.form-row { margin-bottom: 10px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; display: block; font-weight: 500; }
+.form-input, .form-select {
+  width: 100%; padding: 6px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 13px; color: var(--text);
+  background: var(--surface); outline: none; font-family: inherit;
+}
+.form-input:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(24,95,165,.12); }
+.form-input-group { display: flex; align-items: center; gap: 6px; }
+.form-input-group .unit { font-size: 12px; color: var(--text3); }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+
+/* Grid 2 cols for A/H etc */
+.two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; align-items: start; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <span class="nav-logo">Directo</span>
+  <span class="nav-sep">›</span>
+  <span class="nav-item">Finants</span>
+  <span class="nav-sep">›</span>
+  <span class="nav-item active">Rahavoogude moodul</span>
+  <div class="nav-right">
+    <span>Hotell OÜ</span>
+    <span>|</span>
+    <span>Juuli 2026</span>
+    <span>|</span>
+    <span>Mari Mägi</span>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div>
+    <h1>💧 Rahavoogude eelarvestamine ja prognoos</h1>
+    <div class="sub">Otsene lühiajaline prognoos + kaudne aastaeelarve (kolme aruande mudel) + stsenaariumid ja jälgimine — üks moodul</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-secondary btn-sm" onclick="toast('ℹ️ Juhend: vali vasakult mooduli osa. A = andmed, B = lühiajaline prognoos, C = aastaeelarve, D = eeldused, E = stsenaariumid, F = aruandlus, G = versioonid, H = jälgimine.','blue',6000)">📖 Juhend</button>
+    <button class="btn btn-secondary btn-sm" onclick="toast('📤 Eksport Excelisse alustatud (prototüübis simuleeritud)','blue')">📤 Ekspordi</button>
+    <button class="btn btn-primary btn-sm" onclick="goSection('g')">🗂 + Uus versioon</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+  <!-- LEFT: MODULE NAV -->
+  <aside class="module-nav">
+    <div class="module-nav-group-label">Andmed ja seadistus</div>
+    <div class="module-nav-item active" data-sec="a" onclick="goSection('a')">
+      <div class="module-nav-icon">🔌</div>
+      <div class="module-nav-text"><div class="title">A · Andmeallikad</div><div class="desc">Müügi-/ostuarved, pank, palk, laenud, põhivara</div></div>
+    </div>
+    <div class="module-nav-item" data-sec="d" onclick="goSection('d')">
+      <div class="module-nav-icon">⚙️</div>
+      <div class="module-nav-text"><div class="title">D · Eeldused ja draiverid</div><div class="desc">Kasvumäärad, suhtarvud, korduvad kulud</div></div>
+    </div>
+    <div class="module-nav-group-label">Prognoosimine ja eelarvestamine</div>
+    <div class="module-nav-item" data-sec="b" onclick="goSection('b')">
+      <div class="module-nav-icon">📅</div>
+      <div class="module-nav-text"><div class="title">B · Lühiajaline prognoos</div><div class="desc">Otsene meetod, 13-nädalane rulluv vaade</div></div>
+    </div>
+    <div class="module-nav-item" data-sec="c" onclick="goSection('c')">
+      <div class="module-nav-icon">📊</div>
+      <div class="module-nav-text"><div class="title">C · Aastaeelarve</div><div class="desc">Kaudne meetod — kolme aruande mudel</div></div>
+    </div>
+    <div class="module-nav-item" data-sec="e" onclick="goSection('e')">
+      <div class="module-nav-icon">🔀</div>
+      <div class="module-nav-text"><div class="title">E · Stsenaariumid</div><div class="desc">Optimistlik / baas / pessimistlik</div></div>
+    </div>
+    <div class="module-nav-group-label">Jälgimine</div>
+    <div class="module-nav-item" data-sec="f" onclick="goSection('f')">
+      <div class="module-nav-icon">📈</div>
+      <div class="module-nav-text"><div class="title">F · Aruandlus ja võrdlus</div><div class="desc">Tegelik vs eelarve vs prognoos</div></div>
+    </div>
+    <div class="module-nav-item" data-sec="g" onclick="goSection('g')">
+      <div class="module-nav-icon">🗂</div>
+      <div class="module-nav-text"><div class="title">G · Versioonid ja töövoog</div><div class="desc">Mustand → kinnitamine → lukustamine</div></div>
+    </div>
+    <div class="module-nav-item" data-sec="h" onclick="goSection('h')">
+      <div class="module-nav-icon">🚨</div>
+      <div class="module-nav-text"><div class="title">H · Jälgimine ja hoiatused</div><div class="desc">Likviidsuse dashboard, piirmäärad</div></div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: CONTENT -->
+  <main class="content-area">
+
+    <!-- ══════════════ A · ANDMEALLIKAD ══════════════ -->
+    <section class="section active" id="sec-a">
+      <div class="section-title-row"><span class="part-tag">A</span><h2>Andmeallikad</h2></div>
+      <div class="section-desc">Moodul ei küsi andmeid käsitsi topelt — kõik B ja C osa arvutused toidetakse siit. Roheline täpp = andmed ühendatud ja värsked.</div>
+
+      <div class="datasrc-grid">
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Müügiarved (AR)</div>
+          <div class="meta">342 avatud arvet · viimane sync 2 min tagasi</div>
+          <div class="map">Kasutab: maksetähtaeg, kliendi maksekäitumise ajalugu → B-osa</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Ostuarved (AP)</div>
+          <div class="meta">128 avatud arvet · viimane sync 2 min tagasi</div>
+          <div class="map">Kasutab: maksetähtaeg, hankija tingimused → B-osa</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Müügi-/ostutellimused</div>
+          <div class="meta">61 tellimust, veel arveldamata · sync OK</div>
+          <div class="map">Kasutab: eeldatav arvelduskuupäev → B-osa</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-amber"></span> Pangakonto (SEB EE...4471)</div>
+          <div class="meta">Viimane import 14.06.2026 · käsitsi CSV</div>
+          <div class="map">Kasutab: alguse rahasaldo → B-osa. Soovitus: ühenda panga API otse.</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Palgaarvestus</div>
+          <div class="meta">2 aktiivset palgaperioodi mallile seotud</div>
+          <div class="map">Kasutab: korduv kuukulu → B ja D-osa</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Laenu-/liisingugraafikud</div>
+          <div class="meta">2 aktiivset lepingut, tagasimaksegraafik laetud</div>
+          <div class="map">Kasutab: põhiosa + intress kuude kaupa → B, C ja D-osa</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-green"></span> Põhivara register</div>
+          <div class="meta">18 vara, plaanitud investeeringud märgitud</div>
+          <div class="map">Kasutab: plaanitav CAPEX → C-osa investeerimistegevus</div>
+        </div>
+        <div class="datasrc-card">
+          <div class="head"><span class="status-dot dot-gray"></span> Pearaamat (ajalugu)</div>
+          <div class="meta">Kasumiaruanne ja bilanss 2023–2025 saadaval</div>
+          <div class="map">Kasutab: baastasemed ja kasvumäärade arvutus → C-osa</div>
+        </div>
+      </div>
+
+      <div class="banner banner-warn">
+        <span class="banner-icon">⚠</span>
+        <div><strong>Pangakonto import on käsitsi.</strong> Otsese meetodi (B-osa) täpsus sõltub sellest, kui värske on alguse rahasaldo — soovitame ühendada pangaliides automaatseks impordiks.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════ D · EELDUSED ══════════════ -->
+    <section class="section" id="sec-d">
+      <div class="section-title-row"><span class="part-tag">D</span><h2>Eeldused ja draiverid</h2></div>
+      <div class="section-desc">Kesksed parameetrid, mida kasutavad nii C-osa (aastaeelarve) kui B-osa (korduvad kulud). Muudatus siin uuendab kõiki neid vaateid.</div>
+
+      <div class="form-grid">
+        <div class="form-card">
+          <h3>📈 Kasvu- ja marginaalieeldused</h3>
+          <div class="form-row"><label class="form-label">Müügitulu kasv (baasstsenaarium)</label>
+            <div class="form-input-group"><input class="form-input" value="8,0" id="d-growth"><span class="unit">%/a</span></div></div>
+          <div class="form-row"><label class="form-label">Brutomarginaal</label>
+            <div class="form-input-group"><input class="form-input" value="38,0" id="d-margin"><span class="unit">%</span></div></div>
+          <div class="form-row"><label class="form-label">Tegevus- ja üldhalduskulude kasv</label>
+            <div class="form-input-group"><input class="form-input" value="5,0"><span class="unit">%/a</span></div></div>
+        </div>
+        <div class="form-card">
+          <h3>⏱ Käibekapitali suhtarvud</h3>
+          <div class="form-row"><label class="form-label">Nõuded ostjate vastu (DSO)</label>
+            <div class="form-input-group"><input class="form-input" value="32"><span class="unit">päeva</span></div></div>
+          <div class="form-row"><label class="form-label">Hankijatele võlgnevus (DPO)</label>
+            <div class="form-input-group"><input class="form-input" value="28"><span class="unit">päeva</span></div></div>
+          <div class="form-row"><label class="form-label">Varude käibepäevad</label>
+            <div class="form-input-group"><input class="form-input" value="14"><span class="unit">päeva</span></div></div>
+        </div>
+        <div class="form-card">
+          <h3>🎲 Otsese meetodi hilinemistõenäosus</h3>
+          <div class="form-row"><label class="form-label">Kindlus tähtaja nädalal</label>
+            <div class="form-input-group"><input class="form-input" value="100"><span class="unit">%</span></div></div>
+          <div class="form-row"><label class="form-label">Kindluse kahanemine nädalas</label>
+            <div class="form-input-group"><input class="form-input" value="5" id="d-decay" onchange="renderB()"><span class="unit">%-punkti/näd</span></div></div>
+          <div class="form-row"><label class="form-label">Kliendi maksekäitumise ajalugu</label>
+            <select class="form-select"><option>Kasuta 12 kuu keskmist hilinemist</option><option>Kasuta lepingujärgset tähtaega</option></select></div>
+        </div>
+      </div>
+
+      <div class="section-head">Korduvad kulud ja tulud (dokumenteerimata, aga teadaolevad)</div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Kirje</th><th>Allikas</th><th class="right">Summa kuus</th><th>Sagedus</th><th>Kehtib alates</th><th>Kehtib kuni</th><th class="center">Kasutusel</th></tr></thead>
+          <tbody>
+            <tr><td>Palgafond koos maksudega</td><td class="dim">Palgaarvestuse moodul</td><td class="right">18 400 €</td><td>Kuine</td><td class="dim">01.01.2026</td><td class="dim">—</td><td class="center">✅ B, C</td></tr>
+            <tr><td>Kontori- ja hoonete rent</td><td class="dim">Käsitsi sisestatud</td><td class="right">3 200 €</td><td>Kuine</td><td class="dim">01.01.2026</td><td class="dim">31.12.2027</td><td class="center">✅ B, C</td></tr>
+            <tr><td>Laenu põhiosa + intress (SEB)</td><td class="dim">Laenukalkulaator</td><td class="right">2 650 €</td><td>Kuine</td><td class="dim">01.03.2024</td><td class="dim">01.03.2029</td><td class="center">✅ B, C</td></tr>
+            <tr><td>Liisingumakse (sõidukid)</td><td class="dim">Liisingukalkulaator</td><td class="right">890 €</td><td>Kuine</td><td class="dim">01.06.2025</td><td class="dim">01.06.2028</td><td class="center">✅ B, C</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-head" style="margin-top:4px">
+        Stsenaariumide alusparameetrid
+        <span class="right"><button class="btn btn-secondary btn-sm" onclick="goSection('e')">🔀 Ava stsenaariumid →</button></span>
+      </div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Stsenaarium</th><th class="right">Müügitulu kasv</th><th class="right">Brutomarginaal</th><th class="right">Kulude kasv</th></tr></thead>
+          <tbody>
+            <tr><td>🟢 Optimistlik</td><td class="right">15,0 %</td><td class="right">42,0 %</td><td class="right">4,0 %</td></tr>
+            <tr><td>🔵 Baas</td><td class="right">8,0 %</td><td class="right">38,0 %</td><td class="right">5,0 %</td></tr>
+            <tr><td>🔴 Pessimistlik</td><td class="right">2,0 %</td><td class="right">34,0 %</td><td class="right">6,5 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="action-row" style="display:flex;gap:10px;">
+        <button class="btn btn-primary" onclick="toast('✅ Eeldused salvestatud. C ja B osa uuendatud.','green')">💾 Salvesta eeldused</button>
+        <span style="font-size:12px;color:var(--text3);align-self:center;">Muudatus siin mõjutab automaatselt C-osa prognoosi ja B-osa korduvaid kululiine.</span>
+      </div>
+    </section>
+
+    <!-- ══════════════ B · LÜHIAJALINE PROGNOOS ══════════════ -->
+    <section class="section" id="sec-b">
+      <div class="section-title-row"><span class="part-tag">B</span><h2>Lühiajaline rahavooprognoos — otsene meetod</h2></div>
+      <div class="section-desc">Dokumendipõhine, 13-nädalane rulluv vaade (allikas: A-osa likviidsusandmed). Andmed värskenevad automaatselt, kui laekub uus arve/makse.</div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Praegune pangasaldo</div><div class="kpi-value">84 320 €</div><div class="kpi-sub">Seisuga 05.07.2026</div></div>
+        <div class="kpi-card"><div class="kpi-label">Sissetulevad 13 nädalaga</div><div class="kpi-value" id="b-in">—</div><div class="kpi-sub">Arved + tellimused + muu</div></div>
+        <div class="kpi-card"><div class="kpi-label">Väljaminevad 13 nädalaga</div><div class="kpi-value" id="b-out">—</div><div class="kpi-sub">Ostuarved + korduvad kulud</div></div>
+        <div class="kpi-card" id="b-end-card"><div class="kpi-label">Lõppsaldo 13. nädalal</div><div class="kpi-value" id="b-end">—</div><div class="kpi-sub">Kumulatiivne</div></div>
+      </div>
+
+      <div class="toggle-row">
+        <input type="checkbox" id="b-weighted" checked onchange="renderB()">
+        <label for="b-weighted">Kaalu laekumisi hilinemistõenäosusega (kaugemad nädalad ebakindlamad, vt D-osa)</label>
+      </div>
+
+      <div class="section-head">Kumulatiivne rahasaldo 13 nädala jooksul</div>
+      <div class="bar-chart" id="b-chart"></div>
+
+      <div class="section-head">Nädalapõhine rahavooprognoos <span class="right"><span class="pill pill-blue">🔁 Rulluv — uuendub iga nädal</span></span></div>
+      <div class="table-scroll">
+        <table class="dtable" id="b-table">
+          <thead><tr id="b-thead"></tr></thead>
+          <tbody id="b-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════ C · AASTAEELARVE (KOLME ARUANDE MUDEL) ══════════════ -->
+    <section class="section" id="sec-c">
+      <div class="section-title-row"><span class="part-tag">C</span><h2>Aastaeelarve — kolme aruande mudel</h2></div>
+      <div class="section-desc">Kaudne meetod: kasumiaruanne → bilanss → rahavoog on valemitega lingitud (nagu sinu olemasolevas Excel-mudelis), koos automaatsete tasakaalukontrollidega.</div>
+
+      <div class="tab-strip">
+        <div class="tab active" onclick="showCTab('pl')">Kasumiaruanne</div>
+        <div class="tab" onclick="showCTab('bs')">Bilanss</div>
+        <div class="tab" onclick="showCTab('cf')">Rahavoog (kaudne)</div>
+      </div>
+
+      <div id="c-pl">
+        <div class="table-scroll">
+          <table class="dtable">
+            <thead><tr><th>Kasumiaruanne</th><th class="right">2024 (tegelik)</th><th class="right">2025 (tegelik)</th><th class="right">2026 (prognoos)</th><th class="right">2027 (prognoos)</th><th class="right">2028 (prognoos)</th></tr></thead>
+            <tbody>
+              <tr><td>Müügitulu</td><td class="right">1 850 000 €</td><td class="right">1 998 000 €</td><td class="right">2 157 840 €</td><td class="right">2 330 467 €</td><td class="right">2 516 904 €</td></tr>
+              <tr><td class="dim">Müügitulu kasv</td><td class="right dim">—</td><td class="right dim">8,0 %</td><td class="right dim">8,0 %</td><td class="right dim">8,0 %</td><td class="right dim">8,0 %</td></tr>
+              <tr><td>Kaubad, toore, materjal ja teenused</td><td class="right">−1 147 000 €</td><td class="right">−1 238 760 €</td><td class="right">−1 337 861 €</td><td class="right">−1 444 890 €</td><td class="right">−1 560 481 €</td></tr>
+              <tr class="total-row"><td>Brutokasum</td><td class="right">703 000 €</td><td class="right">759 240 €</td><td class="right">819 979 €</td><td class="right">885 577 €</td><td class="right">956 423 €</td></tr>
+              <tr><td>Turustus- ja üldhalduskulud</td><td class="right">−412 000 €</td><td class="right">−432 600 €</td><td class="right">−454 230 €</td><td class="right">−476 942 €</td><td class="right">−500 789 €</td></tr>
+              <tr><td>Tööjõukulud</td><td class="right">−198 000 €</td><td class="right">−207 900 €</td><td class="right">−218 295 €</td><td class="right">−229 210 €</td><td class="right">−240 670 €</td></tr>
+              <tr><td>Põhivara kulum</td><td class="right">−41 000 €</td><td class="right">−43 500 €</td><td class="right">−46 000 €</td><td class="right">−48 500 €</td><td class="right">−51 000 €</td></tr>
+              <tr class="total-row"><td>Ärikasum (EBIT)</td><td class="right">52 000 €</td><td class="right">75 240 €</td><td class="right">101 454 €</td><td class="right">130 925 €</td><td class="right">163 964 €</td></tr>
+              <tr><td>Intressikulud</td><td class="right">−9 800 €</td><td class="right">−10 200 €</td><td class="right">−10 100 €</td><td class="right">−9 400 €</td><td class="right">−8 600 €</td></tr>
+              <tr class="total-row"><td>Kasum enne maksustamist</td><td class="right">42 200 €</td><td class="right">65 040 €</td><td class="right">91 354 €</td><td class="right">121 525 €</td><td class="right">155 364 €</td></tr>
+              <tr><td>Tulumaks</td><td class="right">0 €</td><td class="right">−4 200 €</td><td class="right">−9 100 €</td><td class="right">−15 100 €</td><td class="right">−21 600 €</td></tr>
+              <tr class="total-row"><td><strong>Aruandeaasta puhaskasum</strong></td><td class="right"><strong>42 200 €</strong></td><td class="right"><strong>60 840 €</strong></td><td class="right"><strong>82 254 €</strong></td><td class="right"><strong>106 425 €</strong></td><td class="right"><strong>133 764 €</strong></td></tr>
+              <tr><td class="dim">EBITDA rentaablus</td><td class="right dim">5,0 %</td><td class="right dim">5,9 %</td><td class="right dim">6,8 %</td><td class="right dim">7,7 %</td><td class="right dim">8,5 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="c-bs" style="display:none;">
+        <div class="table-scroll">
+          <table class="dtable">
+            <thead><tr><th>Bilanss</th><th class="right">2024</th><th class="right">2025</th><th class="right">2026p</th><th class="right">2027p</th><th class="right">2028p</th></tr></thead>
+            <tbody>
+              <tr class="group-row"><td colspan="6">AKTIVA</td></tr>
+              <tr><td>Raha ja pangakontod</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td><td class="right">159 880 €</td></tr>
+              <tr><td>Nõuded ostjate vastu (DSO 32p)</td><td class="right">168 000 €</td><td class="right">177 500 €</td><td class="right">191 900 €</td><td class="right">207 300 €</td><td class="right">223 950 €</td></tr>
+              <tr><td>Varud (14p)</td><td class="right">44 600 €</td><td class="right">47 900 €</td><td class="right">51 300 €</td><td class="right">55 400 €</td><td class="right">59 800 €</td></tr>
+              <tr class="total-row"><td>Käibevara kokku</td><td class="right">273 800 €</td><td class="right">309 720 €</td><td class="right">345 840 €</td><td class="right">391 010 €</td><td class="right">443 630 €</td></tr>
+              <tr><td>Materiaalne põhivara (jääkm.)</td><td class="right">612 000 €</td><td class="right">648 500 €</td><td class="right">672 500 €</td><td class="right">694 000 €</td><td class="right">713 000 €</td></tr>
+              <tr class="total-row"><td><strong>AKTIVA KOKKU</strong></td><td class="right"><strong>885 800 €</strong></td><td class="right"><strong>958 220 €</strong></td><td class="right"><strong>1 018 340 €</strong></td><td class="right"><strong>1 085 010 €</strong></td><td class="right"><strong>1 156 630 €</strong></td></tr>
+              <tr class="group-row"><td colspan="6">PASSIVA</td></tr>
+              <tr><td>Laenukohustused kokku</td><td class="right">198 000 €</td><td class="right">176 400 €</td><td class="right">154 800 €</td><td class="right">133 200 €</td><td class="right">111 600 €</td></tr>
+              <tr><td>Hankijatele võlgnevus (DPO 28p)</td><td class="right">86 900 €</td><td class="right">93 800 €</td><td class="right">102 700 €</td><td class="right">110 900 €</td><td class="right">119 800 €</td></tr>
+              <tr class="total-row"><td>Kohustused kokku</td><td class="right">284 900 €</td><td class="right">270 200 €</td><td class="right">257 500 €</td><td class="right">244 100 €</td><td class="right">231 400 €</td></tr>
+              <tr><td>Omakapital kokku</td><td class="right">600 900 €</td><td class="right">688 020 €</td><td class="right">760 840 €</td><td class="right">840 910 €</td><td class="right">925 230 €</td></tr>
+              <tr class="total-row"><td><strong>PASSIVA KOKKU</strong></td><td class="right"><strong>885 800 €</strong></td><td class="right"><strong>958 220 €</strong></td><td class="right"><strong>1 018 340 €</strong></td><td class="right"><strong>1 085 010 €</strong></td><td class="right"><strong>1 156 630 €</strong></td></tr>
+              <tr class="check-row"><td>✓ Veakontroll (AKTIVA − PASSIVA)</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="c-cf" style="display:none;">
+        <div class="table-scroll">
+          <table class="dtable">
+            <thead><tr><th>Rahavoog (kaudne meetod)</th><th class="right">2024</th><th class="right">2025</th><th class="right">2026p</th><th class="right">2027p</th><th class="right">2028p</th></tr></thead>
+            <tbody>
+              <tr><td>Ärikasum</td><td class="right">52 000 €</td><td class="right">75 240 €</td><td class="right">101 454 €</td><td class="right">130 925 €</td><td class="right">163 964 €</td></tr>
+              <tr><td>+ Põhivara kulum (korrigeerimine)</td><td class="right">41 000 €</td><td class="right">43 500 €</td><td class="right">46 000 €</td><td class="right">48 500 €</td><td class="right">51 000 €</td></tr>
+              <tr><td>± Nõuete muutus (bilansist)</td><td class="right">−12 400 €</td><td class="right">−9 500 €</td><td class="right">−14 400 €</td><td class="right">−15 400 €</td><td class="right">−16 650 €</td></tr>
+              <tr><td>± Varude muutus (bilansist)</td><td class="right">−3 100 €</td><td class="right">−3 300 €</td><td class="right">−3 400 €</td><td class="right">−4 100 €</td><td class="right">−4 400 €</td></tr>
+              <tr><td>± Kohustuste muutus (bilansist)</td><td class="right">6 800 €</td><td class="right">6 900 €</td><td class="right">8 900 €</td><td class="right">8 200 €</td><td class="right">8 900 €</td></tr>
+              <tr><td>− Makstud intressid ja maksud</td><td class="right">−9 800 €</td><td class="right">−14 400 €</td><td class="right">−19 200 €</td><td class="right">−24 500 €</td><td class="right">−30 200 €</td></tr>
+              <tr class="total-row"><td>Rahavood äritegevusest</td><td class="right">74 500 €</td><td class="right">98 440 €</td><td class="right">119 354 €</td><td class="right">143 625 €</td><td class="right">172 614 €</td></tr>
+              <tr><td>Rahavood investeerimistegevusest (CAPEX)</td><td class="right">−58 000 €</td><td class="right">−80 000 €</td><td class="right">−70 000 €</td><td class="right">−70 000 €</td><td class="right">−70 000 €</td></tr>
+              <tr><td>Rahavood finantseerimistegevusest (laenud, dividendid)</td><td class="right">−12 300 €</td><td class="right">4 680 €</td><td class="right">−31 034 €</td><td class="right">−47 955 €</td><td class="right">−71 044 €</td></tr>
+              <tr class="total-row"><td><strong>Rahavood kokku</strong></td><td class="right"><strong>4 200 €</strong></td><td class="right"><strong>23 120 €</strong></td><td class="right"><strong>18 320 €</strong></td><td class="right"><strong>25 670 €</strong></td><td class="right"><strong>31 570 €</strong></td></tr>
+              <tr><td>Raha perioodi alguses</td><td class="right">57 000 €</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td></tr>
+              <tr class="total-row"><td>Raha perioodi lõpus</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td><td class="right">159 880 €</td></tr>
+              <tr class="check-row"><td>✓ Veakontroll (rahavoog vs bilansi muutus)</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="banner banner-ok" style="margin-top:10px;">
+          <span class="banner-icon">✓</span>
+          <div>Kõik kolm aruannet tasakaalus kõigil perioodidel. Prognoos põhineb D-osa eeldustel (kasv 8,0 %, marginaal 38,0 %, DSO 32p, DPO 28p).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ E · STSENAARIUMID ══════════════ -->
+    <section class="section" id="sec-e">
+      <div class="section-title-row"><span class="part-tag">E</span><h2>Stsenaariumiplaneerimine</h2></div>
+      <div class="section-desc">Sama C-osa mudel, kolm eelduskomplekti D-osast. Vaata, kuidas tulemus 2028. aastaks muutub.</div>
+
+      <div class="scenario-pills">
+        <div class="scenario-pill" data-sc="opt" onclick="setScenario('opt')"><span class="s-name">🟢 Optimistlik</span><span class="s-desc">Kasv 15,0 % · marginaal 42,0 %</span></div>
+        <div class="scenario-pill active" data-sc="base" onclick="setScenario('base')"><span class="s-name">🔵 Baas</span><span class="s-desc">Kasv 8,0 % · marginaal 38,0 %</span></div>
+        <div class="scenario-pill" data-sc="pes" onclick="setScenario('pes')"><span class="s-name">🔴 Pessimistlik</span><span class="s-desc">Kasv 2,0 % · marginaal 34,0 %</span></div>
+      </div>
+
+      <div class="section-head">Võrdlus 2028. aasta lõikes <span class="right"><span class="pill pill-gray" id="e-active-label">Aktiivne: Baas</span></span></div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Näitaja</th><th class="right">🟢 Optimistlik</th><th class="right">🔵 Baas</th><th class="right">🔴 Pessimistlik</th></tr></thead>
+          <tbody>
+            <tr><td>Müügitulu 2028</td><td class="right">2 960 100 €</td><td class="right">2 516 904 €</td><td class="right">2 006 060 €</td></tr>
+            <tr><td>EBITDA 2028</td><td class="right">312 400 €</td><td class="right">214 964 €</td><td class="right">128 700 €</td></tr>
+            <tr><td>Rahavood äritegevusest 2028</td><td class="right">248 900 €</td><td class="right">172 614 €</td><td class="right">96 200 €</td></tr>
+            <tr class="total-row"><td><strong>Rahasaldo 2028. a lõpus</strong></td><td class="right"><strong>241 300 €</strong></td><td class="right"><strong>159 880 €</strong></td><td class="right"><strong>68 900 €</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-head">Rahasaldo 2028. a lõpus, stsenaariumide kaupa</div>
+      <div class="bar-chart">
+        <div class="bar-col"><span class="bar-val">241 300 €</span><div class="bar" style="height:100%;background:#4caf50;"></div><span class="bar-label">Optimistlik</span></div>
+        <div class="bar-col"><span class="bar-val">159 880 €</span><div class="bar" style="height:66%;"></div><span class="bar-label">Baas</span></div>
+        <div class="bar-col"><span class="bar-val">68 900 €</span><div class="bar" style="height:29%;background:var(--red);"></div><span class="bar-label">Pessimistlik</span></div>
+      </div>
+
+      <div class="banner banner-info">
+        <span class="banner-icon">ℹ️</span>
+        <div>Stsenaariumi vahetamine ei muuda D-osa "ametlikke" eeldusi — see on ajutine "mis-oleks-kui" vaade C-osa mudeli peal.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════ F · ARUANDLUS JA VÕRDLUS ══════════════ -->
+    <section class="section" id="sec-f">
+      <div class="section-title-row"><span class="part-tag">F</span><h2>Aruandlus ja võrdlus</h2></div>
+      <div class="section-desc">Tegelik vs eelarve (C-osa) vs jooksev prognoos, koos hälbeanalüüsiga. Aluseks pearaamatu tegelikud kanded.</div>
+
+      <div class="section-head">2026, seisuga 30.06 (YTD) <span class="right"><span class="pill pill-blue">Versioon: 2026 Baaseelarve v2</span></span></div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Näitaja</th><th class="right">Eelarve (YTD)</th><th class="right">Prognoos (aasta lõpp)</th><th class="right">Tegelik (YTD)</th><th class="right">Hälve €</th><th class="right">Hälve %</th></tr></thead>
+          <tbody>
+            <tr><td>Müügitulu</td><td class="right">1 048 000 €</td><td class="right">2 157 840 €</td><td class="right">1 021 400 €</td><td class="right neg">−26 600 €</td><td class="right neg">−2,5 %</td></tr>
+            <tr><td>EBITDA</td><td class="right">73 200 €</td><td class="right">147 454 €</td><td class="right">69 900 €</td><td class="right neg">−3 300 €</td><td class="right neg">−4,5 %</td></tr>
+            <tr><td>Rahavood äritegevusest</td><td class="right">58 100 €</td><td class="right">119 354 €</td><td class="right">61 800 €</td><td class="right" style="color:var(--green)">+3 700 €</td><td class="right" style="color:var(--green)">+6,4 %</td></tr>
+            <tr class="total-row"><td><strong>Rahasaldo (seisuga 30.06)</strong></td><td class="right"><strong>96 400 €</strong></td><td class="right"><strong>102 640 €</strong></td><td class="right"><strong>91 200 €</strong></td><td class="right neg"><strong>−5 200 €</strong></td><td class="right neg"><strong>−5,4 %</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="banner banner-warn">
+        <span class="banner-icon">⚠</span>
+        <div>Müügitulu jääb eelarvest 2,5 % maha. Kui trend jätkub, langeb aasta lõpu rahasaldo prognoosist madalamaks — vaata H-osa hoiatusi.</div>
+      </div>
+
+      <div class="section-head">Hälbe trend kuude kaupa (rahasaldo, tegelik vs eelarve)</div>
+      <div class="bar-chart">
+        <div class="bar-col"><span class="bar-val">+1,1%</span><div class="bar" style="height:55%"></div><span class="bar-label">Jaan</span></div>
+        <div class="bar-col"><span class="bar-val">+0,4%</span><div class="bar" style="height:52%"></div><span class="bar-label">Veebr</span></div>
+        <div class="bar-col"><span class="bar-val">−1,2%</span><div class="bar neg" style="height:48%"></div><span class="bar-label">Märts</span></div>
+        <div class="bar-col"><span class="bar-val">−2,0%</span><div class="bar neg" style="height:45%"></div><span class="bar-label">Aprill</span></div>
+        <div class="bar-col"><span class="bar-val">−3,8%</span><div class="bar neg" style="height:40%"></div><span class="bar-label">Mai</span></div>
+        <div class="bar-col"><span class="bar-val">−5,4%</span><div class="bar neg" style="height:35%"></div><span class="bar-label">Juuni</span></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ G · VERSIOONID JA TÖÖVOOG ══════════════ -->
+    <section class="section" id="sec-g">
+      <div class="section-title-row"><span class="part-tag">G</span><h2>Versioonid ja töövoog</h2></div>
+      <div class="section-desc">Eelarve versioneerimine, kinnitamine ja lukustamine. Kinnitatud versioonid on F-osa võrdluse alus.</div>
+
+      <div class="section-head">Eelarveversioonid <span class="right"><button class="btn btn-primary btn-sm" onclick="addVersion()">+ Uus versioon</button></span></div>
+      <div class="table-scroll">
+        <table class="dtable" id="g-table">
+          <thead><tr><th>Versioon</th><th>Tüüp</th><th>Loodud</th><th>Autor</th><th>Staatus</th><th class="right">Tegevused</th></tr></thead>
+          <tbody id="g-tbody">
+            <tr><td>2026 Baaseelarve v2</td><td class="dim">Aastaeelarve (C-osa)</td><td class="dim">02.06.2026</td><td class="dim">Mari Mägi</td><td><span class="status-badge status-approved">✓ Kinnitatud</span></td>
+              <td class="right"><button class="btn btn-secondary btn-sm">Vaata</button></td></tr>
+            <tr><td>2026 Baaseelarve v1</td><td class="dim">Aastaeelarve (C-osa)</td><td class="dim">15.01.2026</td><td class="dim">Mari Mägi</td><td><span class="status-badge status-locked">🔒 Lukustatud</span></td>
+              <td class="right"><button class="btn btn-secondary btn-sm">Vaata</button></td></tr>
+            <tr><td>2026 Optimistlik v1</td><td class="dim">Stsenaarium (E-osa)</td><td class="dim">03.02.2026</td><td class="dim">Jaan Tamm</td><td><span class="status-badge status-draft">✎ Mustand</span></td>
+              <td class="right"><button class="btn btn-secondary btn-sm">Vaata</button> <button class="btn btn-green btn-sm">Kinnita</button></td></tr>
+            <tr><td>13-nädalane prognoos — nädal 27</td><td class="dim">Lühiajaline (B-osa)</td><td class="dim">05.07.2026 09:14</td><td class="dim">Süsteem (auto)</td><td><span class="status-badge status-review">🔁 Aktiivne rulluv</span></td>
+              <td class="right"><button class="btn btn-secondary btn-sm">Vaata</button></td></tr>
+            <tr><td>2025 Baaseelarve (arhiiv)</td><td class="dim">Aastaeelarve (C-osa)</td><td class="dim">10.01.2025</td><td class="dim">Mari Mägi</td><td><span class="status-badge status-locked">🔒 Lukustatud</span></td>
+              <td class="right"><button class="btn btn-secondary btn-sm">Vaata</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="banner banner-info">
+        <span class="banner-icon">ℹ️</span>
+        <div>Kinnitatud/lukustatud versioone ei saa muuta — uue mustandi loomine kloonib viimase kinnitatud versiooni eeldused (D-osa) alguspunktiks.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════ H · JÄLGIMINE JA HOIATUSED ══════════════ -->
+    <section class="section" id="sec-h">
+      <div class="section-title-row"><span class="part-tag">H</span><h2>Jälgimine ja hoiatused</h2></div>
+      <div class="section-desc">Likviidsuse dashboard B-osa 13-nädalase prognoosi peal, koos automaatsete piirmäära hoiatustega.</div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Praegune rahasaldo</div><div class="kpi-value">84 320 €</div><div class="kpi-sub">05.07.2026</div></div>
+        <div class="kpi-card warn"><div class="kpi-label">Prognoositud miinimum (13 näd)</div><div class="kpi-value">12 480 €</div><div class="kpi-sub">Nädalal 6 (13.08.2026)</div></div>
+        <div class="kpi-card"><div class="kpi-label">Likviidsuse alampiir (seadistatud)</div><div class="kpi-value">15 000 €</div><div class="kpi-sub">D-osa seadistus</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Laenukonvenandi kattekordaja</div><div class="kpi-value">1,12x</div><div class="kpi-sub">Min. lubatud: 1,20x</div></div>
+      </div>
+
+      <div class="banner banner-danger">
+        <span class="banner-icon">🚨</span>
+        <div><strong>Nädalal 6 (13.08.2026) langeb prognoositud rahasaldo (12 480 €) alla seadistatud alampiiri (15 000 €).</strong> Soovitus: lükata edasi mittekriitiline ostuarve tasumine või kiirendada laekumiste sissenõudmist.</div>
+      </div>
+      <div class="banner banner-warn">
+        <span class="banner-icon">⚠</span>
+        <div>Laenukonvenandi kattekordaja (1,12x) on alla lepingujärgse miinimumi (1,20x) — teavita finantsjuhti enne kvartaliaruande esitamist.</div>
+      </div>
+
+      <div class="section-head">Prognoositud rahasaldo 13 nädala jooksul, koos alampiiriga</div>
+      <div class="bar-chart" id="h-chart"></div>
+
+      <div class="section-head">Aktiivsed hoiatusreeglid</div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Reegel</th><th>Tingimus</th><th class="center">Staatus</th><th>Teavitus</th></tr></thead>
+          <tbody>
+            <tr><td>Likviidsuse alampiir</td><td class="dim">Prognoositud saldo &lt; 15 000 €</td><td class="center"><span class="pill pill-orange">🔴 Rakendunud</span></td><td class="dim">E-kiri + dashboard</td></tr>
+            <tr><td>Laenukonvenant</td><td class="dim">Kattekordaja &lt; 1,20x</td><td class="center"><span class="pill pill-orange">🔴 Rakendunud</span></td><td class="dim">E-kiri finantsjuhile</td></tr>
+            <tr><td>Suur üksikväljaminek</td><td class="dim">Ühekordne makse &gt; 20 000 €</td><td class="center"><span class="pill pill-green">🟢 OK</span></td><td class="dim">Dashboard</td></tr>
+            <tr><td>Eelarvest kõrvalekalle</td><td class="dim">|Hälve| &gt; 10 % (F-osa)</td><td class="center"><span class="pill pill-green">🟢 OK</span></td><td class="dim">Kuuaruanne</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── NAVIGATION ──────────────────────────────────────────────────────────────
+function goSection(sec) {
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'sec-' + sec));
+  document.querySelectorAll('.module-nav-item').forEach(el => el.classList.toggle('active', el.dataset.sec === sec));
+  if (sec === 'b' && !window.__bRendered) { renderB(); window.__bRendered = true; }
+  if (sec === 'h' && !window.__hRendered) { renderH(); window.__hRendered = true; }
+}
+
+// ── C: INNER TABS ─────────────────────────────────────────────────────────────
+function showCTab(tab) {
+  ['pl','bs','cf'].forEach(t => document.getElementById('c-' + t).style.display = t === tab ? 'block' : 'none');
+  document.querySelectorAll('#sec-c .tab').forEach((el, i) => el.classList.toggle('active', ['pl','bs','cf'][i] === tab));
+}
+
+// ── B: ROLLING 13-WEEK FORECAST ────────────────────────────────────────────────
+const B_WEEKS = [
+  { label: 'N1 (06.07)', inv: 42000, ord: 8000, other: 500,  ap: -31000, payroll: -18400, loans: -3540, other_out: -1200 },
+  { label: 'N2 (13.07)', inv: 38500, ord: 4200, other: 0,    ap: -22000, payroll: 0,       loans: 0,     other_out: -800  },
+  { label: 'N3 (20.07)', inv: 35000, ord: 6100, other: 0,    ap: -18500, payroll: 0,       loans: 0,     other_out: -600  },
+  { label: 'N4 (27.07)', inv: 41200, ord: 3000, other: 1200, ap: -26000, payroll: -18400, loans: -3540, other_out: -900  },
+  { label: 'N5 (03.08)', inv: 33800, ord: 5500, other: 0,    ap: -19800, payroll: 0,       loans: 0,     other_out: -700  },
+  { label: 'N6 (10.08)', inv: 21000, ord: 2400, other: 0,    ap: -34200, payroll: -18400, loans: -3540, other_out: -1500 },
+  { label: 'N7 (17.08)', inv: 36500, ord: 4800, other: 0,    ap: -21000, payroll: 0,       loans: 0,     other_out: -600  },
+  { label: 'N8 (24.08)', inv: 39200, ord: 3900, other: 0,    ap: -23500, payroll: 0,       loans: 0,     other_out: -800  },
+];
+const OPENING_BALANCE = 84320;
+
+function renderB() {
+  const weighted = document.getElementById('b-weighted').checked;
+  const decay = parseFloat(document.getElementById('d-decay')?.value || 5) / 100;
+
+  const thead = document.getElementById('b-thead');
+  thead.innerHTML = '<th>Kategooria</th>' + B_WEEKS.map(w => `<th class="right">${w.label}</th>`).join('');
+
+  let running = OPENING_BALANCE;
+  const rows = { open: [], in_inv: [], in_ord: [], in_other: [], in_tot: [], out_ap: [], out_payroll: [], out_loans: [], out_other: [], out_tot: [], net: [], close: [] };
+
+  B_WEEKS.forEach((w, i) => {
+    const conf = weighted ? Math.max(0.5, 1 - decay * i) : 1;
+    const inv = w.inv * conf, ord = w.ord * conf, other = w.other;
+    const inTotal = inv + ord + other;
+    const outTotal = w.ap + w.payroll + w.loans + w.other_out;
+    const net = inTotal + outTotal;
+    const open = running;
+    running = running + net;
+
+    rows.open.push(open);
+    rows.in_inv.push(inv); rows.in_ord.push(ord); rows.in_other.push(other); rows.in_tot.push(inTotal);
+    rows.out_ap.push(w.ap); rows.out_payroll.push(w.payroll); rows.out_loans.push(w.loans); rows.out_other.push(w.other_out); rows.out_tot.push(outTotal);
+    rows.net.push(net); rows.close.push(running);
+  });
+
+  const tbody = document.getElementById('b-tbody');
+  function rowHtml(label, arr, cls) {
+    return `<tr class="${cls||''}"><td>${label}</td>${arr.map(v => `<td class="right${v<0?' neg':''}">${fmt(v)} €</td>`).join('')}</tr>`;
+  }
+  tbody.innerHTML =
+    rowHtml('Algsaldo', rows.open, 'group-row') +
+    rowHtml('+ Laekumised müügiarvetelt' + (weighted ? ' (kaalutud)' : ''), rows.in_inv) +
+    rowHtml('+ Laekumised tellimustelt', rows.in_ord) +
+    rowHtml('+ Muud laekumised', rows.in_other) +
+    rowHtml('Sissetulevad kokku', rows.in_tot, 'total-row') +
+    rowHtml('− Tasumised ostuarvetelt', rows.out_ap) +
+    rowHtml('− Palgad ja maksud', rows.out_payroll) +
+    rowHtml('− Laenu-/liisingumaksed', rows.out_loans) +
+    rowHtml('− Muud kulud', rows.out_other) +
+    rowHtml('Väljaminevad kokku', rows.out_tot, 'total-row') +
+    rowHtml('Perioodi netomuutus', rows.net) +
+    rowHtml('Lõppsaldo (kumulatiivne)', rows.close, 'total-row');
+
+  document.getElementById('b-in').textContent = fmt(rows.in_tot.reduce((a,b)=>a+b,0)) + ' €';
+  document.getElementById('b-out').textContent = fmt(Math.abs(rows.out_tot.reduce((a,b)=>a+b,0))) + ' €';
+  document.getElementById('b-end').textContent = fmt(rows.close[rows.close.length-1]) + ' €';
+  document.getElementById('b-end-card').className = 'kpi-card' + (rows.close[rows.close.length-1] < 15000 ? ' warn' : '');
+
+  const max = Math.max(...rows.close, OPENING_BALANCE);
+  const chart = document.getElementById('b-chart');
+  chart.innerHTML = rows.close.map((v, i) => {
+    const h = Math.max(2, Math.round(v / max * 100));
+    return `<div class="bar-col"><span class="bar-val">${fmt(v)}</span><div class="bar${v<15000?' neg':''}" style="height:${h}%"></div><span class="bar-label">${B_WEEKS[i].label.split(' ')[0]}</span></div>`;
+  }).join('');
+}
+
+// ── H: 13-WEEK LIQUIDITY CHART (uses same base data + threshold) ──────────────
+function renderH() {
+  const chart = document.getElementById('h-chart');
+  const balances = [84320, 71400, 55200, 39800, 21600, 12480, 24900, 38700, 45200, 52100, 58900, 66700, 74300];
+  const threshold = 15000;
+  const max = Math.max(...balances);
+  chart.innerHTML = balances.map((v, i) => {
+    const h = Math.max(2, Math.round(v / max * 100));
+    return `<div class="bar-col"><span class="bar-val">${fmt(v)}</span><div class="bar${v<threshold?' neg':''}" style="height:${h}%"></div><span class="bar-label">N${i+1}</span></div>`;
+  }).join('');
+}
+
+// ── E: SCENARIOS ────────────────────────────────────────────────────────────
+function setScenario(sc) {
+  document.querySelectorAll('.scenario-pill').forEach(el => el.classList.toggle('active', el.dataset.sc === sc));
+  const labels = { opt: 'Optimistlik', base: 'Baas', pes: 'Pessimistlik' };
+  document.getElementById('e-active-label').textContent = 'Aktiivne: ' + labels[sc];
+  toast('🔀 Stsenaarium "' + labels[sc] + '" rakendatud C-osa mudelile (prototüübis visuaalne indikaator).', 'blue');
+}
+
+// ── G: VERSIONS ─────────────────────────────────────────────────────────────
+let gCounter = 3;
+function addVersion() {
+  gCounter++;
+  const tbody = document.getElementById('g-tbody');
+  const tr = document.createElement('tr');
+  const today = '05.07.2026';
+  tr.innerHTML = `<td>2026 Baaseelarve v${gCounter}</td><td class="dim">Aastaeelarve (C-osa)</td><td class="dim">${today}</td><td class="dim">Mari Mägi</td><td><span class="status-badge status-draft">✎ Mustand</span></td><td class="right"><button class="btn btn-secondary btn-sm">Vaata</button> <button class="btn btn-green btn-sm">Kinnita</button></td>`;
+  tbody.insertBefore(tr, tbody.firstChild);
+  toast('🗂 Uus versioon "2026 Baaseelarve v' + gCounter + '" loodud viimase kinnitatud versiooni põhjal.', 'green');
+}
+
+// ── UTILS ───────────────────────────────────────────────────────────────────
+function fmt(n) {
+  if (typeof n !== 'number') return n;
+  return n.toLocaleString('et-EE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function toast(msg, type = 'green', duration = 3000) {
+  const colors = { green: '#2f6b10', blue: '#185fa5', amber: '#7b3f00', red: '#a32d2d' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:32px;right:32px;z-index:9999;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:420px;line-height:1.4;transition:opacity .3s`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+renderB();
+window.__bRendered = true;
+</script>
+</body>
+</html>
