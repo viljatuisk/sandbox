@@ -180,7 +180,6 @@
 <div class="loo-row">
   <span class="lbl" data-i18n="looLbl"></span>
   <button disabled data-i18n="looStock"></button>
-  <button id="btnPay" class="primary" disabled></button>
   <button data-i18n="looCashOut"></button>
   <button disabled data-i18n="looCredit"></button>
 </div>
@@ -233,7 +232,6 @@
     <label data-i18n="fTermType"></label>
     <input id="fTingTyyp" readonly>
   </div>
-  <div class="f dis new num"><label data-i18n="fExpenderBal"></label><input id="fKulutajaSaldo" readonly value="0.00"></div>
 
   <div class="f"><label data-i18n="fInvDate"></label><input value="06.07.2026 10:43:28"></div>
   <div class="f new"><label data-i18n="fRepNo"></label><input id="fKuluaruanne"><span class="hint" data-i18n="hintRepNo"></span></div>
@@ -523,13 +521,6 @@
 
     $("kulutusBadge").className = "badge-kulutus" + (tKul ? " show" : "");
     $("badgeNote").className = "badge-note" + (tKul ? " show" : "");
-    var pay = $("btnPay");
-    if (tKul){
-      pay.innerHTML = t("looPayout") + " <span style='font-size:9px;font-weight:700;background:var(--badge);border-radius:2px;padding:1px 4px;margin-left:3px;vertical-align:1px'>" + t("newTag") + "</span>";
-    } else {
-      pay.textContent = t("looPay");
-    }
-    pay.disabled = !confirmed;
 
     $("fTingTyyp").value =
       kind()==="hyvitatav" ? t("ttHyv") :
@@ -558,13 +549,6 @@
     if (tKul) { saldo = confirmed ? 0 : TASUDA; $("saldoHint").textContent = confirmed ? t("hintSaldo") : ""; }
     else      { saldo = TASUDA - vmTotal;       $("saldoHint").textContent = ""; }
     $("fSaldo").value = fmt(saldo);
-
-    // Kulutaja saldo = Tasuda − väljamaksed (firma vahendite puhul saldot üles ei jää)
-    var ks = 0;
-    if (tKul && fKulutaja.value) {
-      ks = (kind()==="firma") ? 0 : (TASUDA - vmTotal);
-    }
-    $("fKulutajaSaldo").value = fmt(ks);
   }
 
   fTing.addEventListener("change", function(){ clearMsg(); recalc(); });
@@ -639,35 +623,6 @@
     $("btnKanne").style.display = "none";
     $("kannePanel").className = "panel";
     showMsg("ok", "okOpened");
-    recalc();
-  });
-
-  // ============ VÄLJAMAKS ============
-  $("btnPay").addEventListener("click", function(){
-    if (!confirmed) return;
-    clearMsg();
-    var jaak = TASUDA - vmTotal;
-    var docWord = typeIsKulutus() ? t("looPayout") : t("looPay");
-    if (jaak <= 0){ showMsg("ok", "okAllPaid"); return; }
-    vmTotal += jaak;
-    var tr = document.createElement("tr");
-    var nr = 100200 + document.querySelectorAll("#vmBody tr").length;
-    tr.setAttribute("data-summa", jaak);
-    tr.innerHTML = "<td><a href='#' onclick='return false'>" + nr + "</a></td>" +
-                   "<td>06.07.2026</td><td>" + (fKulutaja.value || "—") + "</td>" +
-                   "<td class='num'>" + fmt(jaak) + "</td><td class='vm-status'>" + t("vmStatus") + "</td>" +
-                   "<td style='width:36px;text-align:center'><button class='vm-del' title='" + t("vmDelTitle") + "'>🗑</button></td>";
-    tr.querySelector(".vm-del").addEventListener("click", function(){
-      vmTotal -= parseFloat(tr.getAttribute("data-summa"));
-      if (vmTotal < 0.005) vmTotal = 0;
-      tr.remove();
-      if (!document.querySelectorAll("#vmBody tr").length) $("vmPanel").className = "panel";
-      showMsg("ok", "okVmDeleted", (typeIsKulutus() ? t("looPayout") : t("looPay")), nr);
-      recalc();
-    });
-    $("vmBody").appendChild(tr);
-    $("vmPanel").className = "panel show";
-    showMsg("ok", "okVmCreated", docWord, nr, fmt(jaak));
     recalc();
   });
 
