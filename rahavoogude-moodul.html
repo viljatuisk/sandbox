@@ -397,6 +397,56 @@ body {
       <div class="section-title-row"><span class="part-tag">D</span><h2>Eeldused ja draiverid</h2></div>
       <div class="section-desc">Kesksed parameetrid, mida kasutavad nii C-osa (aastaeelarve) kui B-osa (korduvad kulud). Muudatus siin uuendab kõiki neid vaateid.</div>
 
+      <div class="section-head">Aruande kirjeldused (kolme aruande mudeli alus)</div>
+      <div class="banner banner-info">
+        <span class="banner-icon">ℹ️</span>
+        <div>C-osa kasumiaruanne ja bilanss ehitatakse <strong>samal aruande kirjeldusel</strong>, mida ettevõte juba tegelike aruannete jaoks kasutab — eelarve ei loo paralleelset struktuuri. Nii jäävad tegelik ja eelarve F-osas alati võrreldavaks samadel ridadel. Rahavoog (kaudne meetod) genereeritakse automaatselt nende kahe pealt — seda ei pea eraldi kirjeldama.</div>
+      </div>
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="form-card">
+          <h3>📈 Kasumiaruande kirjeldus</h3>
+          <div class="form-row"><label class="form-label">Aluseks võetav kirjeldus</label>
+            <select class="form-select" id="rd-pl" onchange="toast('📋 Kasumiaruande kirjeldus vahetatud — C-osa read ja allolev sidumistabel uuenevad vastavalt.','blue')">
+              <option selected>Kasumiaruanne (ametlik, kontoklassid 3–7)</option>
+              <option>Juhtkonna lühivaade (agregeeritud)</option>
+              <option>+ Loo uus aruande kirjeldus…</option>
+            </select>
+          </div>
+          <div style="font-size:12px;color:var(--text3);">18 rida · viimati muudetud 12.03.2026 · Aruanded → Kasumiaruanne</div>
+        </div>
+        <div class="form-card">
+          <h3>📊 Bilansi kirjeldus</h3>
+          <div class="form-row"><label class="form-label">Aluseks võetav kirjeldus</label>
+            <select class="form-select" id="rd-bs" onchange="toast('📋 Bilansi kirjeldus vahetatud — C-osa read ja allolev sidumistabel uuenevad vastavalt.','blue')">
+              <option selected>Bilanss (ametlik, lühendatud)</option>
+              <option>+ Loo uus aruande kirjeldus…</option>
+            </select>
+          </div>
+          <div class="banner banner-warn" style="margin-top:8px;padding:6px 10px;font-size:12px;">
+            <span class="banner-icon">⚠</span>
+            <div>Käibekapitali read (nõuded, varud, hankijad) peavad kirjelduses olema eraldi ridadena — muidu ei saa neile DSO/DPO suhtarve rakendada.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head">Aruande ridade sidumine draiveritega</div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Aruande rida</th><th>Aruanne</th><th>Draiveri tüüp</th><th class="right">Väärtus</th><th class="center">Kasutusel</th></tr></thead>
+          <tbody>
+            <tr><td>Müügitulu</td><td class="dim">Kasumiaruanne</td><td class="dim">Kasvumäär aastas</td><td class="right">8,0 %</td><td class="center">✅ C</td></tr>
+            <tr><td>Kaubad, toore, materjal ja teenused</td><td class="dim">Kasumiaruanne</td><td class="dim">% müügitulust</td><td class="right">62,0 %</td><td class="center">✅ C</td></tr>
+            <tr><td>Turustus- ja üldhalduskulud</td><td class="dim">Kasumiaruanne</td><td class="dim">Kasvumäär aastas</td><td class="right">5,0 %</td><td class="center">✅ C</td></tr>
+            <tr><td>Nõuded ostjate vastu</td><td class="dim">Bilanss</td><td class="dim">DSO (päeva)</td><td class="right">32</td><td class="center">✅ C</td></tr>
+            <tr><td>Varud</td><td class="dim">Bilanss</td><td class="dim">Käibepäevad</td><td class="right">14</td><td class="center">✅ C</td></tr>
+            <tr><td>Hankijatele võlgnevus</td><td class="dim">Bilanss</td><td class="dim">DPO (päeva)</td><td class="right">28</td><td class="center">✅ C</td></tr>
+            <tr><td>Materiaalne põhivara</td><td class="dim">Bilanss</td><td class="dim">CAPEX-tabel + kulum (allpool)</td><td class="right dim">—</td><td class="center">✅ C</td></tr>
+            <tr><td>Omakapital</td><td class="dim">Bilanss</td><td class="dim">Tuletatud: puhaskasum (P&L) − dividendid</td><td class="right dim">—</td><td class="center">✅ C</td></tr>
+            <tr class="check-row"><td colspan="5">↳ Rahavoog (kaudne meetod) ei vaja oma rida siin — see arvutatakse automaatselt bilansi ridade muutusest + kasumiaruande mitterahalistest kirjetest.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="form-grid">
         <div class="form-card">
           <h3>📈 Kasvu- ja marginaalieeldused</h3>
@@ -516,6 +566,7 @@ body {
     <section class="section" id="sec-c">
       <div class="section-title-row"><span class="part-tag">C</span><h2>Aastaeelarve — kolme aruande mudel</h2></div>
       <div class="section-desc">Kaudne meetod: kasumiaruanne → bilanss → rahavoog on valemitega lingitud (nagu sinu olemasolevas Excel-mudelis), koos automaatsete tasakaalukontrollidega.</div>
+      <div style="font-size:12px;color:var(--text3);">📋 Read ehitatud D-osas valitud aruande kirjeldustelt (<span class="pill pill-blue" style="font-size:11px;padding:1px 8px;">Kasumiaruanne (ametlik)</span> <span class="pill pill-blue" style="font-size:11px;padding:1px 8px;">Bilanss (ametlik)</span>) — <a href="#" onclick="goSection('d');return false;" style="color:var(--blue);">muuda D-osas →</a></div>
 
       <div class="tab-strip">
         <div class="tab active" onclick="showCTab('pl')">Kasumiaruanne</div>
