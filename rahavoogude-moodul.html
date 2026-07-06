@@ -123,7 +123,7 @@ body {
 .module-nav-text .desc { font-size: 11px; color: var(--text3); margin-top: 1px; line-height: 1.35; }
 
 /* ── CONTENT ── */
-.content-area { flex: 1; overflow-y: auto; overflow-x: auto; display: flex; flex-direction: column; }
+.content-area { flex: 1; min-height: 0; overflow-y: scroll; overflow-x: auto; display: flex; flex-direction: column; }
 .section { display: none; flex-direction: column; gap: 14px; padding: 18px 22px 30px; }
 .section.active { display: flex; }
 
@@ -523,7 +523,16 @@ body {
         <div class="tab" onclick="showCTab('cf')">Rahavoog (kaudne)</div>
       </div>
 
+      <div class="toggle-row" id="c-view-toggle" style="margin-top:4px;">
+        <span style="font-size:12px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Vaade:</span>
+        <div class="scenario-pills">
+          <div class="scenario-pill active" data-view="years" onclick="setCView('years')" style="min-width:auto;padding:6px 14px;"><span class="s-name" style="font-size:12px;">📅 Aastate lõikes (2024–2028)</span></div>
+          <div class="scenario-pill" data-view="months" onclick="setCView('months')" style="min-width:auto;padding:6px 14px;"><span class="s-name" style="font-size:12px;">🗓 2026 eelarve kuude lõikes</span></div>
+        </div>
+      </div>
+
       <div id="c-pl">
+        <div id="c-pl-years">
         <div class="table-scroll">
           <table class="dtable">
             <thead><tr><th>Kasumiaruanne</th><th class="right">2024 (tegelik)</th><th class="right">2025 (tegelik)</th><th class="right">2026 (prognoos)</th><th class="right">2027 (prognoos)</th><th class="right">2028 (prognoos)</th></tr></thead>
@@ -544,19 +553,33 @@ body {
             </tbody>
           </table>
         </div>
+        </div>
+        <div id="c-pl-months" style="display:none;">
+          <div class="banner banner-info" style="margin-bottom:10px;">
+            <span class="banner-icon">ℹ️</span>
+            <div>2026 eelarveaasta jaotatud kuudesse D-osa hooajalisuse eelduste alusel (müügitulu hooajaline jaotus, kulud ühtlaselt). "Kokku" veerg peab võrduma aastavaates näidatud 2026 prognoosiga.</div>
+          </div>
+          <div class="table-scroll">
+            <table class="dtable" id="pl-months-table">
+              <thead><tr id="pl-months-thead"></tr></thead>
+              <tbody id="pl-months-tbody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div id="c-bs" style="display:none;">
+        <div id="c-bs-years">
         <div class="table-scroll">
           <table class="dtable">
             <thead><tr><th>Bilanss</th><th class="right">2024</th><th class="right">2025</th><th class="right">2026p</th><th class="right">2027p</th><th class="right">2028p</th></tr></thead>
             <tbody>
               <tr class="group-row"><td colspan="6">AKTIVA</td></tr>
-              <tr><td>Raha ja pangakontod</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td><td class="right">159 880 €</td></tr>
+              <tr><td>Raha ja pangakontod</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">89 640 €</td><td class="right">115 310 €</td><td class="right">146 880 €</td></tr>
               <tr><td>Nõuded ostjate vastu (DSO 32p)</td><td class="right">168 000 €</td><td class="right">177 500 €</td><td class="right">191 900 €</td><td class="right">207 300 €</td><td class="right">223 950 €</td></tr>
               <tr><td>Varud (14p)</td><td class="right">44 600 €</td><td class="right">47 900 €</td><td class="right">51 300 €</td><td class="right">55 400 €</td><td class="right">59 800 €</td></tr>
-              <tr class="total-row"><td>Käibevara kokku</td><td class="right">273 800 €</td><td class="right">309 720 €</td><td class="right">345 840 €</td><td class="right">391 010 €</td><td class="right">443 630 €</td></tr>
-              <tr><td>Materiaalne põhivara (jääkm.)</td><td class="right">612 000 €</td><td class="right">648 500 €</td><td class="right">672 500 €</td><td class="right">694 000 €</td><td class="right">713 000 €</td></tr>
+              <tr class="total-row"><td>Käibevara kokku</td><td class="right">273 800 €</td><td class="right">309 720 €</td><td class="right">332 840 €</td><td class="right">378 010 €</td><td class="right">430 630 €</td></tr>
+              <tr><td>Materiaalne põhivara (jääkm.)</td><td class="right">612 000 €</td><td class="right">648 500 €</td><td class="right">685 500 €</td><td class="right">707 000 €</td><td class="right">726 000 €</td></tr>
               <tr class="total-row"><td><strong>AKTIVA KOKKU</strong></td><td class="right"><strong>885 800 €</strong></td><td class="right"><strong>958 220 €</strong></td><td class="right"><strong>1 018 340 €</strong></td><td class="right"><strong>1 085 010 €</strong></td><td class="right"><strong>1 156 630 €</strong></td></tr>
               <tr class="group-row"><td colspan="6">PASSIVA</td></tr>
               <tr><td>Laenukohustused kokku</td><td class="right">198 000 €</td><td class="right">176 400 €</td><td class="right">154 800 €</td><td class="right">133 200 €</td><td class="right">111 600 €</td></tr>
@@ -568,9 +591,23 @@ body {
             </tbody>
           </table>
         </div>
+        </div>
+        <div id="c-bs-months" style="display:none;">
+          <div class="banner banner-warn" style="margin-bottom:10px;">
+            <span class="banner-icon">⚠</span>
+            <div>Kuupõhine bilanss on lihtsustatud: raha real kasutatakse rahavoo kuuprognoosi, ülejäänud kirjed on lineaarselt jaotatud 2025 ja 2026 aastalõpu väärtuste vahel. Reaalses süsteemis arvutataks iga rida eraldi draiveriga (nt DSO/DPO kuupõhiselt).</div>
+          </div>
+          <div class="table-scroll">
+            <table class="dtable" id="bs-months-table">
+              <thead><tr id="bs-months-thead"></tr></thead>
+              <tbody id="bs-months-tbody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div id="c-cf" style="display:none;">
+        <div id="c-cf-years">
         <div class="table-scroll">
           <table class="dtable">
             <thead><tr><th>Rahavoog (kaudne meetod)</th><th class="right">2024</th><th class="right">2025</th><th class="right">2026p</th><th class="right">2027p</th><th class="right">2028p</th></tr></thead>
@@ -582,11 +619,11 @@ body {
               <tr><td>± Kohustuste muutus (bilansist)</td><td class="right">6 800 €</td><td class="right">6 900 €</td><td class="right">8 900 €</td><td class="right">8 200 €</td><td class="right">8 900 €</td></tr>
               <tr><td>− Makstud intressid ja maksud</td><td class="right">−9 800 €</td><td class="right">−14 400 €</td><td class="right">−19 200 €</td><td class="right">−24 500 €</td><td class="right">−30 200 €</td></tr>
               <tr class="total-row"><td>Rahavood äritegevusest</td><td class="right">74 500 €</td><td class="right">98 440 €</td><td class="right">119 354 €</td><td class="right">143 625 €</td><td class="right">172 614 €</td></tr>
-              <tr><td>Rahavood investeerimistegevusest (CAPEX)</td><td class="right">−58 000 €</td><td class="right">−80 000 €</td><td class="right">−70 000 €</td><td class="right">−70 000 €</td><td class="right">−70 000 €</td></tr>
+              <tr><td>Rahavood investeerimistegevusest (CAPEX)</td><td class="right">−58 000 €</td><td class="right">−80 000 €</td><td class="right">−83 000 €</td><td class="right">−70 000 €</td><td class="right">−70 000 €</td></tr>
               <tr><td>Rahavood finantseerimistegevusest (laenud, dividendid)</td><td class="right">−12 300 €</td><td class="right">4 680 €</td><td class="right">−31 034 €</td><td class="right">−47 955 €</td><td class="right">−71 044 €</td></tr>
-              <tr class="total-row"><td><strong>Rahavood kokku</strong></td><td class="right"><strong>4 200 €</strong></td><td class="right"><strong>23 120 €</strong></td><td class="right"><strong>18 320 €</strong></td><td class="right"><strong>25 670 €</strong></td><td class="right"><strong>31 570 €</strong></td></tr>
-              <tr><td>Raha perioodi alguses</td><td class="right">57 000 €</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td></tr>
-              <tr class="total-row"><td>Raha perioodi lõpus</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">102 640 €</td><td class="right">128 310 €</td><td class="right">159 880 €</td></tr>
+              <tr class="total-row"><td><strong>Rahavood kokku</strong></td><td class="right"><strong>4 200 €</strong></td><td class="right"><strong>23 120 €</strong></td><td class="right"><strong>5 320 €</strong></td><td class="right"><strong>25 670 €</strong></td><td class="right"><strong>31 570 €</strong></td></tr>
+              <tr><td>Raha perioodi alguses</td><td class="right">57 000 €</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">89 640 €</td><td class="right">115 310 €</td></tr>
+              <tr class="total-row"><td>Raha perioodi lõpus</td><td class="right">61 200 €</td><td class="right">84 320 €</td><td class="right">89 640 €</td><td class="right">115 310 €</td><td class="right">146 880 €</td></tr>
               <tr class="check-row"><td>✓ Veakontroll (rahavoog vs bilansi muutus)</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td><td class="right">0 €</td></tr>
             </tbody>
           </table>
@@ -594,6 +631,19 @@ body {
         <div class="banner banner-ok" style="margin-top:10px;">
           <span class="banner-icon">✓</span>
           <div>Kõik kolm aruannet tasakaalus kõigil perioodidel. Prognoos põhineb D-osa eeldustel (kasv 8,0 %, marginaal 38,0 %, DSO 32p, DPO 28p).</div>
+        </div>
+        </div>
+        <div id="c-cf-months" style="display:none;">
+          <div class="banner banner-info" style="margin-bottom:10px;">
+            <span class="banner-icon">ℹ️</span>
+            <div>Investeerimistegevuse read (CAPEX) tulevad otse D-osa "Plaanitavad investeeringud" tabelist, paigutatuna nende planeeritud kvartalisse.</div>
+          </div>
+          <div class="table-scroll">
+            <table class="dtable" id="cf-months-table">
+              <thead><tr id="cf-months-thead"></tr></thead>
+              <tbody id="cf-months-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -617,7 +667,7 @@ body {
             <tr><td>Müügitulu 2028</td><td class="right">2 960 100 €</td><td class="right">2 516 904 €</td><td class="right">2 006 060 €</td></tr>
             <tr><td>EBITDA 2028</td><td class="right">312 400 €</td><td class="right">214 964 €</td><td class="right">128 700 €</td></tr>
             <tr><td>Rahavood äritegevusest 2028</td><td class="right">248 900 €</td><td class="right">172 614 €</td><td class="right">96 200 €</td></tr>
-            <tr class="total-row"><td><strong>Rahasaldo 2028. a lõpus</strong></td><td class="right"><strong>241 300 €</strong></td><td class="right"><strong>159 880 €</strong></td><td class="right"><strong>68 900 €</strong></td></tr>
+            <tr class="total-row"><td><strong>Rahasaldo 2028. a lõpus</strong></td><td class="right"><strong>241 300 €</strong></td><td class="right"><strong>146 880 €</strong></td><td class="right"><strong>68 900 €</strong></td></tr>
           </tbody>
         </table>
       </div>
@@ -625,7 +675,7 @@ body {
       <div class="section-head">Rahasaldo 2028. a lõpus, stsenaariumide kaupa</div>
       <div class="bar-chart">
         <div class="bar-col"><span class="bar-val">241 300 €</span><div class="bar" style="height:100%;background:#4caf50;"></div><span class="bar-label">Optimistlik</span></div>
-        <div class="bar-col"><span class="bar-val">159 880 €</span><div class="bar" style="height:66%;"></div><span class="bar-label">Baas</span></div>
+        <div class="bar-col"><span class="bar-val">146 880 €</span><div class="bar" style="height:61%;"></div><span class="bar-label">Baas</span></div>
         <div class="bar-col"><span class="bar-val">68 900 €</span><div class="bar" style="height:29%;background:var(--red);"></div><span class="bar-label">Pessimistlik</span></div>
       </div>
 
@@ -666,6 +716,18 @@ body {
         <div class="bar-col"><span class="bar-val">−2,0%</span><div class="bar neg" style="height:45%"></div><span class="bar-label">Aprill</span></div>
         <div class="bar-col"><span class="bar-val">−3,8%</span><div class="bar neg" style="height:40%"></div><span class="bar-label">Mai</span></div>
         <div class="bar-col"><span class="bar-val">−5,4%</span><div class="bar neg" style="height:35%"></div><span class="bar-label">Juuni</span></div>
+      </div>
+
+      <div class="section-head">Kuupõhine võrdlus — rahasaldo (kuu lõpus) <span class="right"><span class="pill pill-blue">Allikas: C-osa 2026 kuude lõikes</span></span></div>
+      <div class="banner banner-info">
+        <span class="banner-icon">ℹ️</span>
+        <div>Jaan–Juuni on tegelikud pearaamatu andmed, Juuli–Detsember on veel prognoos (tegelik selgub jooksvalt kuu sulgemisel).</div>
+      </div>
+      <div class="table-scroll">
+        <table class="dtable">
+          <thead><tr><th>Kuu</th><th class="right">Eelarve</th><th class="right">Tegelik / prognoos</th><th class="right">Hälve €</th><th class="right">Hälve %</th></tr></thead>
+          <tbody id="f-months-tbody"></tbody>
+        </table>
       </div>
     </section>
 
@@ -747,12 +809,161 @@ function goSection(sec) {
   document.querySelectorAll('.module-nav-item').forEach(el => el.classList.toggle('active', el.dataset.sec === sec));
   if (sec === 'b' && !window.__bRendered) { renderB(); window.__bRendered = true; }
   if (sec === 'h' && !window.__hRendered) { renderH(); window.__hRendered = true; }
+  if (sec === 'f' && !window.__fRendered) { renderFMonths(); window.__fRendered = true; }
 }
 
-// ── C: INNER TABS ─────────────────────────────────────────────────────────────
+// ── C: INNER TABS + AASTATE/KUUDE VAADE ────────────────────────────────────────
+let currentCTab = 'pl';
+let cView = 'years';
+const MONTHS = ['Jaan','Veebr','Märts','Apr','Mai','Juuni','Juuli','Aug','Sept','Okt','Nov','Dets'];
+const SEASON_REVENUE = [0.060,0.060,0.070,0.080,0.090,0.110,0.130,0.120,0.090,0.070,0.060,0.060];
+const EVEN12 = Array(12).fill(1/12);
+
+function distribute(total, weights) {
+  let running = 0; const out = [];
+  weights.forEach((w, i) => {
+    if (i < weights.length - 1) { const v = Math.round(total * w); out.push(v); running += v; }
+    else { out.push(Math.round(total - running)); }
+  });
+  return out;
+}
+
 function showCTab(tab) {
+  currentCTab = tab;
   ['pl','bs','cf'].forEach(t => document.getElementById('c-' + t).style.display = t === tab ? 'block' : 'none');
   document.querySelectorAll('#sec-c .tab').forEach((el, i) => el.classList.toggle('active', ['pl','bs','cf'][i] === tab));
+}
+
+function setCView(view) {
+  cView = view;
+  document.querySelectorAll('#c-view-toggle .scenario-pill').forEach(el => el.classList.toggle('active', el.dataset.view === view));
+  if (view === 'months' && !window.__cMonthsRendered) { renderCMonths(); window.__cMonthsRendered = true; }
+  ['pl','bs','cf'].forEach(t => {
+    document.getElementById('c-' + t + '-years').style.display = (view === 'years') ? 'block' : 'none';
+    document.getElementById('c-' + t + '-months').style.display = (view === 'months') ? 'block' : 'none';
+  });
+}
+
+function monthsHeaderRow(label) {
+  return '<th>' + label + '</th>' + MONTHS.map(m => '<th class="right">' + m + '</th>').join('') + '<th class="right">2026</th>';
+}
+// Flow rows (revenue, costs, cash movement in a month) — last column sums the 12 months.
+function rowCells(arr) {
+  const total = arr.reduce((a, b) => a + b, 0);
+  return arr.map(v => '<td class="right' + (v < 0 ? ' neg' : '') + '">' + fmt(v) + ' €</td>').join('') + '<td class="right' + (total < 0 ? ' neg' : '') + '"><strong>' + fmt(total) + ' €</strong></td>';
+}
+// Stock rows (balance-sheet snapshots, cumulative cash) — last column shows the given point-in-time value, not a sum.
+function rowCellsStock(arr, endValue) {
+  if (endValue === undefined) endValue = arr[arr.length - 1];
+  return arr.map(v => '<td class="right' + (v < 0 ? ' neg' : '') + '">' + fmt(v) + ' €</td>').join('') + '<td class="right' + (endValue < 0 ? ' neg' : '') + '"><strong>' + fmt(endValue) + ' €</strong></td>';
+}
+
+function renderCMonths() {
+  // ── P&L monthly ──
+  const rev = distribute(2157840, SEASON_REVENUE);
+  const cogs = rev.map(v => -Math.round(v * 0.62));
+  const gross = rev.map((v, i) => v + cogs[i]);
+  const sell = distribute(-454230, EVEN12);
+  const labor = distribute(-218295, EVEN12);
+  const deprec = distribute(-46000, EVEN12);
+  const ebit = gross.map((v, i) => v + sell[i] + labor[i] + deprec[i]);
+  const interest = distribute(-10100, EVEN12);
+  const pretax = ebit.map((v, i) => v + interest[i]);
+  const tax = distribute(-9100, EVEN12);
+  const net = pretax.map((v, i) => v + tax[i]);
+
+  document.getElementById('pl-months-thead').innerHTML = monthsHeaderRow('Kasumiaruanne — 2026');
+  document.getElementById('pl-months-tbody').innerHTML =
+    '<tr><td>Müügitulu</td>' + rowCells(rev) + '</tr>' +
+    '<tr><td>Kaubad, toore, materjal ja teenused</td>' + rowCells(cogs) + '</tr>' +
+    '<tr class="total-row"><td>Brutokasum</td>' + rowCells(gross) + '</tr>' +
+    '<tr><td>Turustus- ja üldhalduskulud</td>' + rowCells(sell) + '</tr>' +
+    '<tr><td>Tööjõukulud</td>' + rowCells(labor) + '</tr>' +
+    '<tr><td>Põhivara kulum</td>' + rowCells(deprec) + '</tr>' +
+    '<tr class="total-row"><td>Ärikasum (EBIT)</td>' + rowCells(ebit) + '</tr>' +
+    '<tr><td>Intressikulud</td>' + rowCells(interest) + '</tr>' +
+    '<tr class="total-row"><td>Kasum enne maksustamist</td>' + rowCells(pretax) + '</tr>' +
+    '<tr><td>Tulumaks</td>' + rowCells(tax) + '</tr>' +
+    '<tr class="total-row"><td><strong>Aruandeaasta puhaskasum</strong></td>' + rowCells(net) + '</tr>';
+
+  // ── Rahavoog monthly (reuses P&L monthly + D-osa CAPEX kvartalid) ──
+  const deprecAdd = deprec.map(v => -v);
+  const wc = distribute(-8900, EVEN12);
+  const taxint = distribute(-19200, EVEN12);
+  const opCF = ebit.map((v, i) => v + deprecAdd[i] + wc[i] + taxint[i]);
+
+  const capex = Array(12).fill(0);
+  [6, 7, 8].forEach(i => capex[i] = -15000); // Uus tootmisseade, 2026 Q3, D-osa
+  const carsPerMonth = distribute(-38000, [1/3, 1/3, 1/3]);
+  [9, 10, 11].forEach((i, k) => capex[i] = carsPerMonth[k]); // Sõidukite park, 2026 Q4, D-osa
+
+  const finCF = distribute(-31034, EVEN12);
+  const netCF = opCF.map((v, i) => v + capex[i] + finCF[i]);
+
+  let running = 84320;
+  const openArr = [], closeArr = [];
+  netCF.forEach(v => { openArr.push(running); running += v; closeArr.push(running); });
+  window.CF_MONTHS_CLOSE = closeArr;
+
+  document.getElementById('cf-months-thead').innerHTML = monthsHeaderRow('Rahavoog — 2026');
+  document.getElementById('cf-months-tbody').innerHTML =
+    '<tr><td>Ärikasum</td>' + rowCells(ebit) + '</tr>' +
+    '<tr><td>+ Põhivara kulum (korrigeerimine)</td>' + rowCells(deprecAdd) + '</tr>' +
+    '<tr><td>± Käibekapitali muutus (bilansist)</td>' + rowCells(wc) + '</tr>' +
+    '<tr><td>− Makstud intressid ja maksud</td>' + rowCells(taxint) + '</tr>' +
+    '<tr class="total-row"><td>Rahavood äritegevusest</td>' + rowCells(opCF) + '</tr>' +
+    '<tr><td>Rahavood investeerimistegevusest (D-osa CAPEX)</td>' + rowCells(capex) + '</tr>' +
+    '<tr><td>Rahavood finantseerimistegevusest</td>' + rowCells(finCF) + '</tr>' +
+    '<tr class="total-row"><td><strong>Rahavood kokku</strong></td>' + rowCells(netCF) + '</tr>' +
+    '<tr><td>Raha perioodi alguses</td>' + rowCellsStock(openArr, openArr[0]) + '</tr>' +
+    '<tr class="total-row"><td>Raha perioodi lõpus</td>' + rowCellsStock(closeArr, closeArr[11]) + '</tr>';
+
+  // ── Bilanss monthly: iga rida tuleneb SAMADEST kuu-draiveritest, mida kasutab rahavoog, ──
+  // ── mitte sõltumatust interpolatsioonist — nii jääb AKTIVA = PASSIVA igal kuul, ei ainult aasta lõpus. ──
+  function cumulativeFromDeltas(start, totalDelta, weights) {
+    const deltas = distribute(totalDelta, weights);
+    let running = start; const out = [];
+    deltas.forEach(d => { running += d; out.push(running); });
+    return out;
+  }
+  function cumulativeScaled(start, flowArray, endTarget) {
+    const totalFlow = flowArray.reduce((a, b) => a + b, 0);
+    const scale = totalFlow !== 0 ? (endTarget - start) / totalFlow : 0;
+    let running = start; const out = [];
+    flowArray.forEach(v => { running += v * scale; out.push(Math.round(running)); });
+    out[out.length - 1] = endTarget;
+    return out;
+  }
+
+  const nouded = cumulativeFromDeltas(177500, 14400, EVEN12);      // samad DSO-põhised aastadeltad, mis CF käibekapitali real
+  const varud = cumulativeFromDeltas(47900, 3400, EVEN12);
+  const hankijad = cumulativeFromDeltas(93800, 8900, EVEN12);
+  const laenud = cumulativeFromDeltas(176400, -21600, EVEN12);     // ühtlane igakuine laenu põhiosa tagasimakse
+  let pRunning = 648500; const pohivara = capex.map((c, i) => { pRunning += (-c) + deprec[i]; return pRunning; }); // otse CF CAPEX + kulum realt
+  const omakapital = cumulativeScaled(688020, net, 760840);        // kasvab kuu puhaskasumiga (P&L-st), skaleeritud dividendide/muu efektiga aastalõpuni
+
+  const kaibevara = closeArr.map((v, i) => v + nouded[i] + varud[i]);
+  const aktiva = kaibevara.map((v, i) => v + pohivara[i]);
+  const kohustused = laenud.map((v, i) => v + hankijad[i]);
+  const passiva = kohustused.map((v, i) => v + omakapital[i]);
+  const check = aktiva.map((v, i) => v - passiva[i]);
+
+  document.getElementById('bs-months-thead').innerHTML = monthsHeaderRow('Bilanss — 2026 (kuu lõpu seis)').replace('>2026<', '>31.12.2026<');
+  document.getElementById('bs-months-tbody').innerHTML =
+    '<tr class="group-row"><td colspan="14">AKTIVA</td></tr>' +
+    '<tr><td>Raha ja pangakontod</td>' + rowCellsStock(closeArr) + '</tr>' +
+    '<tr><td>Nõuded ostjate vastu</td>' + rowCellsStock(nouded) + '</tr>' +
+    '<tr><td>Varud</td>' + rowCellsStock(varud) + '</tr>' +
+    '<tr class="total-row"><td>Käibevara kokku</td>' + rowCellsStock(kaibevara) + '</tr>' +
+    '<tr><td>Materiaalne põhivara (jääkm.)</td>' + rowCellsStock(pohivara) + '</tr>' +
+    '<tr class="total-row"><td><strong>AKTIVA KOKKU</strong></td>' + rowCellsStock(aktiva) + '</tr>' +
+    '<tr class="group-row"><td colspan="14">PASSIVA</td></tr>' +
+    '<tr><td>Laenukohustused kokku</td>' + rowCellsStock(laenud) + '</tr>' +
+    '<tr><td>Hankijatele võlgnevus</td>' + rowCellsStock(hankijad) + '</tr>' +
+    '<tr class="total-row"><td>Kohustused kokku</td>' + rowCellsStock(kohustused) + '</tr>' +
+    '<tr><td>Omakapital kokku</td>' + rowCellsStock(omakapital) + '</tr>' +
+    '<tr class="total-row"><td><strong>PASSIVA KOKKU</strong></td>' + rowCellsStock(passiva) + '</tr>' +
+    '<tr class="check-row"><td>✓ Veakontroll (AKTIVA − PASSIVA)</td>' + rowCellsStock(check) + '</tr>';
 }
 
 // ── B: ROLLING 13-WEEK FORECAST ────────────────────────────────────────────────
@@ -834,6 +1045,25 @@ function renderH() {
     const h = Math.max(2, Math.round(v / max * 100));
     return `<div class="bar-col"><span class="bar-val">${fmt(v)}</span><div class="bar${v<threshold?' neg':''}" style="height:${h}%"></div><span class="bar-label">N${i+1}</span></div>`;
   }).join('');
+}
+
+// ── F: MONTHLY BUDGET VS ACTUAL (uses C-osa monthly cash balance) ──────────────
+function renderFMonths() {
+  if (!window.__cMonthsRendered) { renderCMonths(); window.__cMonthsRendered = true; }
+  const budget = window.CF_MONTHS_CLOSE;
+  const haldePct = [1.1, 0.4, -1.2, -2.0, -3.8, -5.4, null, null, null, null, null, null];
+  const rows = MONTHS.map((m, i) => {
+    const b = budget[i];
+    if (haldePct[i] === null) {
+      return `<tr><td>${m}</td><td class="right">${fmt(b)} €</td><td class="right dim">— (prognoos)</td><td class="right dim">—</td><td class="right dim">—</td></tr>`;
+    }
+    const actual = Math.round(b * (1 + haldePct[i] / 100));
+    const diff = actual - b;
+    const cls = diff < 0 ? 'neg' : '';
+    const sign = diff >= 0 ? '+' : '';
+    return `<tr><td>${m}</td><td class="right">${fmt(b)} €</td><td class="right">${fmt(actual)} €</td><td class="right ${cls}">${sign}${fmt(diff)} €</td><td class="right ${cls}">${sign}${haldePct[i].toFixed(1)} %</td></tr>`;
+  }).join('');
+  document.getElementById('f-months-tbody').innerHTML = rows;
 }
 
 // ── E: SCENARIOS ────────────────────────────────────────────────────────────

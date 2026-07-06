@@ -33,6 +33,9 @@
     --saved-bg: #f1efe8;
     --sel-bg:   #eaf3de;
     --grp-bg:   #e6f1fb;
+    --violet:   #4a1d8f;
+    --violet-bg:#f0eafb;
+    --violet-bd:#9b72d8;
     --radius:   4px;
     --radius-lg:8px;
   }
@@ -220,7 +223,7 @@
   .inv-table tr.grp td   { background: var(--grp-bg); }
   .inv-table tr.saved td { background: var(--saved-bg); }
 
-  /* ── GROUP HEADER ROW ── */
+  /* ── GROUP HEADER ROW (GroupEntry) ── */
   .inv-table tr.grp-hdr > td {
     background: var(--amber-bg);
     border-bottom: 1px solid var(--amber-bd);
@@ -235,17 +238,35 @@
   .grp-hdr.sel .grp-desc-text { color: var(--green); }
   .grp-hdr.saved .grp-desc-text { color: #5a5a56; }
 
+  /* ── KM HEADER ROW (KM määr) ── */
+  .inv-table tr.km-hdr > td {
+    background: var(--violet-bg);
+    border-bottom: 1px solid var(--violet-bd);
+  }
+  .inv-table tr.km-hdr:hover > td { background: #e8dff8; }
+  .inv-table tr.km-hdr.sel > td   { background: #e8f3dd; border-bottom-color: var(--green-bd); }
+  .inv-table tr.km-hdr.saved > td { background: var(--saved-bg); border-bottom-color: var(--gray-bd); }
+  .km-hdr-marker { border-left: 3px solid var(--violet-bd) !important; }
+  .km-hdr.sel .km-hdr-marker { border-left-color: var(--green-bd) !important; }
+  .km-hdr.saved .km-hdr-marker { border-left-color: var(--gray-bd) !important; }
+  .badge-km { background: var(--violet-bg); color: var(--violet); border: 1px solid var(--violet-bd); border-radius: 3px; font-size: 11px; padding: 1px 7px; font-weight: 600; }
+  .s-chip.violet-chip { background: var(--violet-bg); color: var(--violet); border-color: var(--violet-bd); }
+  .s-chip.violet-chip:hover { background: #e0d4f5; }
+  .sisaldus-box.km-mode { background: #f7f3fd; border-color: var(--violet-bd); }
+
   /* ── TASE TOGGLE ── */
   .tase-grp { display: flex; gap: 0; }
   .tase-btn {
     padding: 2px 9px; font-size: 11px; cursor: pointer;
     border: 1px solid var(--border2);
     background: var(--surface); color: var(--text2);
-    white-space: nowrap;
+    white-space: nowrap; border-radius: 0;
   }
   .tase-btn:first-child { border-radius: 3px 0 0 3px; }
-  .tase-btn:last-child  { border-radius: 0 3px 3px 0; border-left: none; }
+  .tase-btn:last-child  { border-radius: 0 3px 3px 0; }
+  .tase-btn + .tase-btn { border-left: none; }
   .tase-btn.on { background: var(--blue-bg); color: var(--blue-t); font-weight: 500; }
+  .tase-btn.on-km { background: var(--violet-bg); color: var(--violet); font-weight: 500; border-color: var(--violet-bd); }
   .tase-label {
     font-size: 10px; color: var(--text3); font-weight: 500;
     text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;
@@ -610,6 +631,7 @@
         <div class="tase-grp">
           <button class="tase-btn on" id="tase-item" onclick="setTase('item')">ItemEntry</button>
           <button class="tase-btn" id="tase-group" onclick="setTase('group')">GroupEntry</button>
+          <button class="tase-btn" id="tase-km" onclick="setTase('km')">KM määr</button>
         </div>
         <div class="filter-sep"></div>
         <svg class="icon" style="stroke:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -769,32 +791,32 @@
 /* ── DATA ── */
 const GROUPS = [
   { id:'G1', desc:'Lääneringtee 39, Tartu linn, Tartu linn', rows:[
-    { id:1,  sisu:'Konteineri rent – 16 m³ · Komprimaator · B01602',   summa:115.42 },
-    { id:2,  sisu:'Konteineri rent – 20 m³ · Komprimaator · B02007',   summa:199.00 },
-    { id:3,  sisu:'Konteineri rent – 16 m³ · Komprimaator · B02008',   summa:29.25  },
-    { id:4,  sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E602',   summa:121.39 },
-    { id:5,  sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E7602',  summa:161.19 },
-    { id:6,  sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
-    { id:7,  sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+    { id:1,  kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B01602',   summa:115.42 },
+    { id:2,  kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02007',   summa:199.00 },
+    { id:3,  kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B02008',   summa:29.25  },
+    { id:4,  kmMaar:24, sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E602',   summa:121.39 },
+    { id:5,  kmMaar:24, sisu:'Konteineri rent – 18 m³ · Komprimaator · B1E7602',  summa:161.19 },
+    { id:6,  kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
+    { id:7,  kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
   ]},
   { id:'G2', desc:'Riia tn 179a, Tartu linn, Tartu linn', rows:[
-    { id:8,  sisu:'Konteineri rent – 20 m³ · Laddustamine · 200301',   summa:249.00 },
-    { id:9,  sisu:'Segaolmejäätmete äraveos · 200301',                  summa:390.37 },
-    { id:10, sisu:'Paber- ja kartongipakend · 150101',                  summa:280.00 },
-    { id:11, sisu:'Plast- ja pakend · 150101',                          summa:68.00  },
+    { id:8,  kmMaar:24, sisu:'Konteineri rent – 20 m³ · Laddustamine · 200301',   summa:249.00 },
+    { id:9,  kmMaar:24, sisu:'Segaolmejäätmete äraveos · 200301',                  summa:390.37 },
+    { id:10, kmMaar:0,  sisu:'Paber- ja kartongipakend · 150101',                  summa:280.00 },
+    { id:11, kmMaar:0,  sisu:'Plast- ja pakend · 150101',                          summa:68.00  },
   ]},
   { id:'G3', desc:'Lääneringtee 35-F, Tartu linn, Tartu linn', rows:[
-    { id:12, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02010',   summa:161.19 },
-    { id:13, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
-    { id:14, sisu:'Konteineri rent – 16 m³ · Komprimaator · B1E602',   summa:121.39 },
-    { id:15, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+    { id:12, kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02010',   summa:161.19 },
+    { id:13, kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02011',   summa:115.42 },
+    { id:14, kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B1E602',   summa:121.39 },
+    { id:15, kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
   ]},
   { id:'G4', desc:'Optika tn 24, Räni alevik, Kambja vald', rows:[
-    { id:16, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
+    { id:16, kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator',            summa:75.00  },
   ]},
   { id:'G5', desc:'Ränilaste tee 21, Tartu linn, Tartu linn', rows:[
-    { id:17, sisu:'Konteineri rent – 20 m³ · Komprimaator',            summa:199.00 },
-    { id:18, sisu:'Konteineri rent – 16 m³ · Komprimaator · B01701',   summa:121.39 },
+    { id:17, kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator',            summa:199.00 },
+    { id:18, kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B01701',   summa:121.39 },
   ]},
 ];
 
@@ -811,8 +833,27 @@ ROWS.forEach(r => {
 let selected    = new Set();
 let koond       = 'no';
 let groupCounter= 0;
-let sisuTase    = 'item'; // 'item' | 'group'
+let sisuTase    = 'item'; // 'item' | 'group' | 'km'
 const savedRules= [];
+
+/* ── KM group helpers ── */
+function getKMGroups(){
+  const map = new Map();
+  ROWS.forEach(r => {
+    if (!map.has(r.kmMaar)) map.set(r.kmMaar, []);
+    map.get(r.kmMaar).push(r);
+  });
+  return [...map.entries()].sort((a,b)=>b[0]-a[0]).map(([km,rows])=>({km, rows}));
+}
+function kmSelState(g){
+  const n = g.rows.filter(r=>selected.has(r.id)).length;
+  return n===0?'none':n===g.rows.length?'all':'some';
+}
+function kmMappedState(g){
+  if (g.rows.every(r=>state[r.id].saved))  return 'saved';
+  if (g.rows.some(r=>state[r.id].mapped||state[r.id].saved)) return 'mapped';
+  return 'none';
+}
 
 /* ── helpers ── */
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -827,17 +868,23 @@ function toast(msg, ok){
 /* ── tase toggle ── */
 function setTase(v){
   sisuTase = v;
-  document.getElementById('tase-item').classList.toggle('on', v==='item');
-  document.getElementById('tase-group').classList.toggle('on', v==='group');
-  document.getElementById('th-sisu').textContent = v==='group' ? 'GroupEntry kirjeldus (aadress)' : 'Sisu (e-arve)';
-  document.getElementById('sisaldus-src-label').textContent = v==='group'
-    ? 'Sisaldus (GroupEntry – aadress/kirjeldus)'
-    : 'Sisaldus (automaatika filter)';
-  document.getElementById('apply-btn-label').textContent = v==='group'
-    ? 'Rakenda valitud gruppidele'
-    : 'Rakenda valitud ridadele';
+  document.getElementById('tase-item').className  = 'tase-btn' + (v==='item'  ? ' on' : '');
+  document.getElementById('tase-group').className = 'tase-btn' + (v==='group' ? ' on' : '');
+  document.getElementById('tase-km').className    = 'tase-btn' + (v==='km'    ? ' on-km' : '');
+  document.getElementById('th-sisu').textContent =
+    v==='group' ? 'GroupEntry kirjeldus (aadress)' :
+    v==='km'    ? 'Sisu (e-arve) · KM määr' : 'Sisu (e-arve)';
+  document.getElementById('sisaldus-src-label').textContent =
+    v==='group' ? 'Sisaldus (GroupEntry – aadress/kirjeldus)' :
+    v==='km'    ? 'Sisaldus (KM määr – käibemaksumäär)' :
+                  'Sisaldus (automaatika filter)';
+  document.getElementById('apply-btn-label').textContent =
+    v==='group' ? 'Rakenda valitud gruppidele' :
+    v==='km'    ? 'Rakenda valitud KM grupile' :
+                  'Rakenda valitud ridadele';
   const box = document.getElementById('sisaldus-box');
-  v==='group' ? box.classList.add('group-mode') : box.classList.remove('group-mode');
+  box.classList.toggle('group-mode', v==='group');
+  box.classList.toggle('km-mode',    v==='km');
   selected.clear();
   updateSisaldus();
   renderTable();
@@ -864,6 +911,7 @@ function renderTable(){
   tbody.innerHTML = '';
 
   if (sisuTase === 'group') renderTableGroup(tbody, q, unm);
+  else if (sisuTase === 'km') renderTableKM(tbody, q, unm);
   else                      renderTableItem(tbody, q, unm);
 
   updateSelCount();
@@ -957,6 +1005,58 @@ function renderTableGroup(tbody, q, unm){
   });
 }
 
+function renderTableKM(tbody, q, unm){
+  getKMGroups().forEach(g => {
+    const filtRows = g.rows.filter(r =>
+      !q || r.sisu.toLowerCase().includes(q) || ('km'+g.km+'%').includes(q.toLowerCase())
+    );
+    if (!filtRows.length) return;
+    const gState   = kmMappedState(g);
+    if (unm && gState!=='none') return;
+    const selState = kmSelState(g);
+    const groupSumma = filtRows.reduce((a,r)=>a+r.summa,0);
+
+    let hCls = 'km-hdr';
+    if (gState==='saved')       hCls+=' saved';
+    else if (selState!=='none') hCls+=' sel';
+
+    const statusHtml = gState==='saved'
+      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      : gState==='mapped' ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
+
+    const htr = document.createElement('tr');
+    htr.className = hCls;
+    htr.innerHTML = `
+      <td class="km-hdr-marker"><input type="checkbox" class="row-check" ${selState==='all'?'checked':''} onchange="toggleKMGroup(${g.km},this)"></td>
+      <td class="row-num" style="color:var(--violet-bd);font-size:14px;line-height:1">▸</td>
+      <td class="sisu-cell" colspan="2">
+        <div class="sisu-text">
+          <span class="badge-km">KM ${g.km}%</span>
+          <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:6px">${filtRows.length} rida</span>
+        </div>
+      </td>
+      <td class="summa-val" style="color:var(--violet)">${groupSumma.toFixed(2)} €</td>
+      <td>${statusHtml}</td>`;
+    tbody.appendChild(htr);
+    if (selState==='some'){ const cb=htr.querySelector('input[type=checkbox]'); if(cb) cb.indeterminate=true; }
+
+    filtRows.forEach(r => {
+      const s = state[r.id];
+      const cls = s.saved?'saved':s.mapped?'grp':'';
+      const tr = document.createElement('tr');
+      if (cls) tr.className = cls;
+      tr.innerHTML = `
+        <td></td>
+        <td class="row-num" style="padding-left:10px;color:var(--text3)">${r.id}</td>
+        <td class="sisu-cell" style="padding-left:18px"><div class="sisu-text">${sisuChips(r.sisu)}</div></td>
+        <td class="summa-val" style="color:var(--text2)">${r.summa.toFixed(2)} €</td>
+        <td><input type="text" class="konto-in" value="${esc(s.konto)}" placeholder="–" onchange="updateKonto(${r.id},this.value)"></td>
+        <td></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
 /* ── render preview table ── */
 function renderPreview(){
   const tbody = document.getElementById('preview-body');
@@ -1010,9 +1110,14 @@ function toggleGroup(gid, cb){
   g.rows.forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
   updateSisaldus(); renderTable();
 }
+function toggleKMGroup(km, cb){
+  ROWS.filter(r=>r.kmMaar===km).forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
+  updateSisaldus(); renderTable();
+}
 function toggleAll(cb){
-  (sisuTase==='group' ? GROUPS.flatMap(g=>g.rows) : ROWS).forEach(r =>
-    cb.checked ? selected.add(r.id) : selected.delete(r.id));
+  const allRows = sisuTase==='group' ? GROUPS.flatMap(g=>g.rows) :
+                  sisuTase==='km'    ? getKMGroups().flatMap(g=>g.rows) : ROWS;
+  allRows.forEach(r => cb.checked ? selected.add(r.id) : selected.delete(r.id));
   updateSisaldus(); renderTable();
 }
 function selectFiltered(){
@@ -1022,6 +1127,13 @@ function selectFiltered(){
     GROUPS.forEach(g => {
       if (!(!q || g.desc.toLowerCase().includes(q) || g.rows.some(r=>r.sisu.toLowerCase().includes(q)))) return;
       if (unm && groupMappedState(g)!=='none') return;
+      g.rows.forEach(r => selected.add(r.id));
+    });
+  } else if (sisuTase==='km'){
+    getKMGroups().forEach(g => {
+      const match = !q || ('km'+g.km+'%').includes(q) || g.rows.some(r=>r.sisu.toLowerCase().includes(q));
+      if (!match) return;
+      if (unm && kmMappedState(g)!=='none') return;
       g.rows.forEach(r => selected.add(r.id));
     });
   } else {
@@ -1036,9 +1148,16 @@ function selectFiltered(){
 function updateSelCount(){
   const el = document.getElementById('sel-count');
   if (selected.size===0){ el.style.display='none'; return; }
-  const label = sisuTase==='group'
-    ? (()=>{ const n=GROUPS.filter(g=>groupSelState(g)==='all').length; return n+' grupp'+(n===1?'':'i')+' ('+selected.size+' rida)'; })()
-    : selected.size + ' valitud';
+  let label;
+  if (sisuTase==='group'){
+    const n=GROUPS.filter(g=>groupSelState(g)==='all').length;
+    label = n+' grupp'+(n===1?'':'i')+' ('+selected.size+' rida)';
+  } else if (sisuTase==='km'){
+    const full=getKMGroups().filter(g=>kmSelState(g)==='all');
+    label = full.length ? full.map(g=>'KM '+g.km+'%').join(', ')+' ('+selected.size+' rida)' : selected.size+' rida';
+  } else {
+    label = selected.size + ' valitud';
+  }
   el.style.display='inline-flex'; el.textContent=label;
 }
 
@@ -1047,13 +1166,22 @@ function updateSisaldus(){
   const box = document.getElementById('sisaldus-box');
   if (selected.size===0){
     box.innerHTML = `<span style="color:var(--text3);font-size:11px">${
-      sisuTase==='group'
-        ? 'Vali grupid vasakult → GroupEntry kirjeldus ilmub siia'
-        : 'Vali read vasakult → ühised sisu tükid ilmuvad siia'
+      sisuTase==='group' ? 'Vali grupid vasakult → GroupEntry kirjeldus ilmub siia'
+      : sisuTase==='km'  ? 'Vali KM grupp vasakult → käibemaksumäär ilmub siia'
+      :                    'Vali read vasakult → ühised sisu tükid ilmuvad siia'
     }</span>`;
     return;
   }
-  if (sisuTase==='group'){
+  if (sisuTase==='km'){
+    const full = getKMGroups().filter(g=>kmSelState(g)==='all');
+    if (full.length===0){
+      box.innerHTML='<span style="color:var(--text3);font-size:11px">Vali KM grupp vasakult → määr ilmub siia</span>';
+      return;
+    }
+    box.innerHTML = full.map((g,i)=>
+      `<span class="s-chip violet-chip" onclick="this.nextElementSibling&&this.nextElementSibling.remove();this.remove()">KM${g.km}% <span style="font-size:9px;opacity:.6">✕</span></span>${i<full.length-1?'<span class="s-sep">|</span>':''}`
+    ).join('');
+  } else if (sisuTase==='group'){
     const full = GROUPS.filter(g=>groupSelState(g)==='all');
     if (full.length===0){
       box.innerHTML='<span style="color:var(--text3);font-size:11px">Vali terve grupp (kõik read)</span>';
@@ -1137,7 +1265,7 @@ function saveAutomaatika(){
   const chips   = [...document.getElementById('sisaldus-box').querySelectorAll('.s-chip')];
   const sisaldus= chips.map(c=>c.textContent.replace('✕','').trim()).join('%') || '%';
   savedRules.push({
-    tase:     sisuTase==='group' ? 'GroupEntry' : 'ItemEntry',
+    tase:     sisuTase==='group' ? 'GroupEntry' : sisuTase==='km' ? 'KM määr' : 'ItemEntry',
     sisaldus,
     konto:    document.getElementById('r-konto').value.trim(),
     km:       document.getElementById('r-km').value.trim(),
@@ -1164,6 +1292,8 @@ function renderRulesTable(){
     const tr = document.createElement('tr');
     const taseBadge = r.tase==='GroupEntry'
       ? `<span class="badge-group">${esc(r.tase)}</span>`
+      : r.tase==='KM määr'
+      ? `<span style="background:var(--violet-bg);color:var(--violet);border:1px solid var(--violet-bd);border-radius:3px;font-size:10px;padding:1px 5px;font-weight:500">${esc(r.tase)}</span>`
       : `<span style="font-size:10px;color:var(--text3)">${esc(r.tase)}</span>`;
     tr.innerHTML = `<td>${i+1}</td><td>${taseBadge}</td>
       <td><code style="font-size:10px">${esc(r.sisaldus)}</code></td>
