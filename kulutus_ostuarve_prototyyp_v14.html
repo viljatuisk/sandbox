@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ostuarve – Kulutus-Ostuarve prototüüp</title>
+<style>
+  :root{
+    --blue:#1226aa;
+    --blue-dark:#0d1b7e;
+    --toolbar-bg:#f2f3f7;
+    --section-bg:#e9ebf4;
+    --border:#c7cad6;
+    --input-border:#b8bcc9;
+    --disabled-border:#c9ccd6;
+    --yellow-bg:#fdf6e3;
+    --yellow-border:#e0a63f;
+    --text:#1c1e26;
+    --muted:#6a6f80;
+    --green:#1b7d3e;
+    --red:#c02424;
+    --badge:#b3540f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#fff; color:var(--text);
+    font-family:"Segoe UI", Roboto, Arial, sans-serif; font-size:13px;
+  }
+  .toolbar{
+    display:flex; align-items:center; gap:2px;
+    background:var(--toolbar-bg); border-bottom:1px solid var(--border);
+    padding:4px 10px; flex-wrap:wrap;
+  }
+  .toolbar button{
+    background:none; border:none; color:var(--blue); font-size:13px;
+    padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:6px;
+    border-radius:3px; font-family:inherit;
+  }
+  .toolbar button:hover{background:#e2e4ee;}
+  .toolbar button:disabled{color:#9aa0b5; cursor:default;}
+  .toolbar .plain{color:var(--text);}
+  .toolbar .spacer{flex:1;}
+  .lang-switch{display:flex; gap:2px; margin-right:6px;}
+  .lang-switch button{
+    padding:4px 9px; font-size:12px; font-weight:700; border:1px solid var(--input-border);
+    color:var(--muted); border-radius:3px;
+  }
+  .lang-switch button.active{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .icon{width:15px; height:15px; fill:currentColor; flex:0 0 auto;}
+
+  .titlebar{display:flex; align-items:center; gap:10px; padding:10px 10px 2px; flex-wrap:wrap;}
+  .titlebar h1{font-size:24px; font-weight:700; margin:0;}
+  .doknr{
+    border:1px solid var(--input-border); border-radius:3px; padding:3px 8px;
+    font-size:16px; font-weight:600; display:flex; align-items:center; gap:6px; background:#fff;
+  }
+  .pill{border-radius:12px; padding:3px 12px; font-size:12px; font-weight:600; color:#fff; background:var(--blue);}
+  .pill.confirmed{background:var(--green);}
+  #btnKanne{
+    display:none; background:none; border:1px solid var(--blue); color:var(--blue);
+    border-radius:3px; padding:3px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .badge-kulutus{
+    display:none; border-radius:3px; padding:3px 10px; font-size:11px; font-weight:700;
+    letter-spacing:.5px; color:#fff; background:var(--badge);
+  }
+  .badge-kulutus.show{display:inline-block;}
+  .badge-note{display:none; font-size:11px; color:var(--muted); font-style:italic;}
+  .badge-note.show{display:inline;}
+
+  .loo-row{display:flex; align-items:center; gap:6px; padding:6px 10px 10px;}
+  .loo-row .lbl{font-weight:600;}
+  .loo-row button{
+    background:#8d93a8; color:#fff; border:none; border-radius:3px; padding:4px 12px;
+    font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  .loo-row button.primary{background:var(--blue-dark);}
+  .loo-row button:disabled{opacity:.45; cursor:default;}
+
+  .msg{display:none; margin:0 10px 8px; padding:8px 12px; border-radius:3px; font-size:13px;}
+  .msg.err{display:block; background:#fbe9e9; border:1px solid #e3a3a3; color:var(--red);}
+  .msg.ok{display:block; background:#e8f5ec; border:1px solid #9fd0af; color:var(--green);}
+
+  .fields{display:grid; grid-template-columns:repeat(6, 1fr); gap:8px 14px; padding:4px 10px 12px;}
+  .f{display:flex; flex-direction:column; gap:3px; min-width:0;}
+  .f label{font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:5px;}
+  .f label .link-ic{width:12px;height:12px;fill:var(--muted);}
+  .f input, .f select{
+    border:1px solid var(--input-border); border-radius:3px; padding:5px 7px;
+    font-size:13px; font-family:inherit; background:#fff; width:100%;
+  }
+  .f input:focus, .f select:focus{outline:2px solid #9db1ff; outline-offset:0;}
+  .f input[readonly]{background:#fff;}
+  .f.req input{background:var(--yellow-bg); border-color:var(--yellow-border);}
+  .f.dis input{border-style:dashed; border-color:var(--disabled-border); background:#fff; color:var(--muted);}
+  .f.num input{text-align:right;}
+  .f .hint{font-size:11px; color:var(--muted);}
+  .f.new label::after{
+    content:attr(data-newtag); font-size:9px; font-weight:700; color:#fff; background:var(--badge);
+    border-radius:2px; padding:1px 4px; margin-left:2px;
+  }
+
+  .section{
+    background:var(--section-bg); font-weight:700; font-size:13px; letter-spacing:.4px;
+    padding:6px 12px; margin:2px 10px; border-radius:2px; display:flex; align-items:center; gap:8px;
+  }
+  .section .chev{font-size:11px; color:var(--blue);}
+
+  .rows-toolbar{display:flex; align-items:center; gap:6px; padding:10px 10px 6px;}
+  .rows-toolbar button{
+    background:#8d93a8; color:#fff; border:none; border-radius:3px; padding:4px 10px;
+    font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  table.rows{border-collapse:collapse; margin:0 10px 14px; width:calc(100% - 20px);}
+  table.rows th{
+    background:var(--section-bg); border:1px solid var(--border); font-size:12px;
+    padding:5px 8px; text-align:left; white-space:nowrap;
+  }
+  table.rows th.num, table.rows td.num{text-align:right;}
+  table.rows td{border:1px solid var(--border); padding:5px 8px; font-size:13px;}
+  table.rows td.rownr{color:var(--muted); width:34px; text-align:right;}
+
+  .panel{display:none; margin:0 10px 14px; border:1px solid var(--border); border-radius:3px;}
+  .panel.show{display:block;}
+  .panel .hd{background:var(--section-bg); font-weight:700; padding:6px 10px; font-size:12.5px;}
+  .panel table{border-collapse:collapse; width:100%;}
+  .panel td, .panel th{padding:5px 10px; font-size:12.5px; border-top:1px solid var(--border); text-align:left;}
+  .panel td.num, .panel th.num{text-align:right;}
+  .panel a{color:var(--blue);}
+  #kannePanel{max-width:760px;}
+  #kanneSub{font-weight:400; color:var(--muted);}
+  .vm-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:2px 6px;}
+
+  .proto-notes{
+    margin:20px 10px 30px; border:1px dashed var(--badge); border-radius:4px; padding:12px 16px;
+    background:#fdf8f3; font-size:12.5px; max-width:900px;
+  }
+  .proto-notes h2{font-size:13px; margin:0 0 8px; color:var(--badge);}
+  .proto-notes ol{margin:0; padding-left:18px;}
+  .proto-notes li{margin-bottom:5px;}
+  @media (max-width:1100px){ .fields{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:640px){ .fields{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+
+<!-- ===================== TOOLBAR ===================== -->
+<div class="toolbar">
+  <button><svg class="icon" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" fill="none"/></svg><span data-i18n="tbNew"></span></button>
+  <button id="btnSave"><svg class="icon" viewBox="0 0 16 16"><path d="M3 2h8l3 3v9H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 2v4h5V2M5 10h6v4H5z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span data-i18n="tbSave"></span></button>
+  <button id="btnConfirm"><svg class="icon" viewBox="0 0 16 16"><path d="M2 9l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-i18n="tbConfirm"></span></button>
+  <button id="btnOpen" disabled><svg class="icon" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 7V5a3 3 0 015.8-1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span data-i18n="tbOpen"></span></button>
+  <button data-i18n="tbCopy"></button>
+  <button data-i18n="tbDiscard"></button>
+  <button data-i18n="tbDelete"></button>
+  <button data-i18n="tbMail"></button>
+  <button data-i18n="tbPrint"></button>
+  <button data-i18n="tbAttach"></button>
+  <button class="plain" data-i18n="tbEinvoice"></button>
+  <button class="plain">SMS</button>
+  <div class="spacer"></div>
+  <div class="lang-switch">
+    <button id="langEt" class="active">ET</button>
+    <button id="langEn">EN</button>
+  </div>
+  <button title="Seaded"><svg class="icon" viewBox="0 0 16 16"><path d="M6.5 1h3l.4 2 1.8.8 1.8-1 1.5 2.6-1.4 1.4v2.4l1.4 1.4-1.5 2.6-1.8-1-1.8.8-.4 2h-3l-.4-2-1.8-.8-1.8 1L1 10.6l1.4-1.4V6.8L1 5.4 2.5 2.8l1.8 1 1.8-.8z" fill="none" stroke="currentColor"/></svg></button>
+</div>
+
+<!-- ===================== TITLE ===================== -->
+<div class="titlebar">
+  <h1 data-i18n="title"></h1>
+  <span class="doknr">DOK <svg class="icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5"/></svg></span>
+  <span class="pill" id="statusPill"></span>
+  <button id="btnKanne" data-i18n="btnKanne"></button>
+  <span class="badge-kulutus" id="kulutusBadge" data-i18n="badge"></span>
+  <span class="badge-note" id="badgeNote" data-i18n="badgeNote"></span>
+</div>
+
+<!-- ===================== LOO ROW ===================== -->
+<div class="loo-row">
+  <span class="lbl" data-i18n="looLbl"></span>
+  <button disabled data-i18n="looStock"></button>
+  <button id="btnPay" class="primary" disabled></button>
+  <button data-i18n="looCashOut"></button>
+  <button disabled data-i18n="looCredit"></button>
+</div>
+
+<div class="msg" id="msgBox"></div>
+
+<!-- ===================== TOP FIELDS ===================== -->
+<div class="fields">
+  <div class="f req"><label data-i18n="fSupplier"></label><input value="1044"></div>
+  <div class="f"><label data-i18n="fSupplierName"></label><input value="AS Alexela"></div>
+  <div class="f dis"><label data-i18n="fVatReg"></label><input value="EE100393017" readonly></div>
+  <div class="f req"><label data-i18n="fSupplierInv"></label><input value="239251401-28021"></div>
+  <div class="f"><label data-i18n="fPayee"></label><input></div>
+  <div class="f"><label data-i18n="fSurvey"></label><input></div>
+</div>
+
+<!-- ===================== PÕHIANDMED ===================== -->
+<div class="section"><span class="chev">▼</span> <span data-i18n="secMain"></span></div>
+<div class="fields">
+  <div class="f">
+    <label data-i18n="fType"></label>
+    <select id="fTyyp">
+      <option value=""></option>
+      <option value="Kulutus" selected data-i18n-opt="optExpense"></option>
+      <option value="Tavaline" data-i18n-opt="optRegular"></option>
+    </select>
+    <span class="hint" data-i18n="hintType"></span>
+  </div>
+  <div class="f"><label data-i18n="fInvDate"></label><input value="06.07.2026 10:43:28"></div>
+  <div class="f">
+    <label><span data-i18n="fTerm"></span> <svg class="link-ic" viewBox="0 0 16 16"><path d="M6 10l4-4M5 7l-2 2a3 3 0 104 4l2-2M11 9l2-2a3 3 0 10-4-4L7 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></label>
+    <select id="fTing">
+      <option value="14" data-kind="normal" data-i18n-opt="opt14"></option>
+      <option value="ISIK_SULA" data-kind="hyvitatav" selected data-i18n-opt="optIsik"></option>
+      <option value="FIRMA_DK" data-kind="firma" data-i18n-opt="optFirma"></option>
+    </select>
+  </div>
+  <div class="f dis new">
+    <label data-i18n="fTermType"></label>
+    <input id="fTingTyyp" readonly>
+  </div>
+  <div class="f"><label data-i18n="fDueDate"></label><input id="fTasAeg" value="06.07.2026"></div>
+  <div class="f"><label data-i18n="fOpDate"></label><input value="06.07.2026 10:43:28"></div>
+  <div class="f"><label data-i18n="fObject"></label><input></div>
+
+  <div class="f"><label data-i18n="fBankCode"></label><input></div>
+  <div class="f req"><label data-i18n="fIban"></label><input id="fIBAN"><span class="hint" id="ibanHint"></span></div>
+  <div class="f"><label data-i18n="fRefNo"></label><input></div>
+  <div class="f">
+    <label><span data-i18n="fKredKonto"></span> <svg class="link-ic" viewBox="0 0 16 16"><path d="M6 10l4-4M5 7l-2 2a3 3 0 104 4l2-2M11 9l2-2a3 3 0 10-4-4L7 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></label>
+    <input id="fKredKonto" value="212211">
+    <span class="hint" id="kredHint"></span>
+  </div>
+  <div class="f"><label data-i18n="fKredOst"></label><input></div>
+  <div class="f"><label data-i18n="fUser"></label><input value="VILJA"></div>
+
+  <!-- ===== TICKET: uued väljad ===== -->
+  <div class="f new">
+    <label data-i18n="fExpender"></label>
+    <select id="fKulutaja">
+      <option value=""></option>
+      <option value="VILJA">VILJA</option>
+      <option value="SAARA">SAARA</option>
+      <option value="KRISTO">KRISTO</option>
+    </select>
+  </div>
+  <div class="f new"><label data-i18n="fExpenderName"></label><input id="fKulutajaNimi" readonly></div>
+  <div class="f new num"><label data-i18n="fExpenderBal"></label><input id="fKulutajaSaldo" readonly value="0.00"></div>
+  <div class="f new"><label data-i18n="fRepNo"></label><input id="fKuluaruanne"><span class="hint" data-i18n="hintRepNo"></span></div>
+
+  <div class="f"><label data-i18n="fComment"></label><input></div>
+  <div class="f"><label data-i18n="fIntComment"></label><input></div>
+</div>
+
+<!-- ===================== KOKKU ===================== -->
+<div class="section"><span class="chev">▼</span> <span data-i18n="secTotal"></span></div>
+<div class="fields">
+  <div class="f"><label data-i18n="fCurrency"></label><input value="EUR"></div>
+  <div class="f num"><label data-i18n="fVatTotal"></label><input id="fKM" value="8.07" readonly></div>
+  <div class="f num"><label data-i18n="fSum"></label><input id="fSumma" value="36.66" readonly></div>
+  <div class="f num"><label data-i18n="fToPay"></label><input id="fTasuda" value="44.73" readonly></div>
+  <div class="f num"><label data-i18n="fBalance"></label><input id="fSaldo" value="44.73" readonly><span class="hint" id="saldoHint"></span></div>
+  <div class="f num"><label data-i18n="fRate"></label><input value="1.000000000" readonly></div>
+</div>
+
+<!-- ===================== READ ===================== -->
+<div class="rows-toolbar">
+  <button data-i18n="rtBulk"></button>
+  <button data-i18n="rtRecipe"></button>
+</div>
+<table class="rows">
+  <thead>
+    <tr><th data-i18n="thNr"></th><th data-i18n="thAccount"></th><th data-i18n="fObject"></th><th data-i18n="thProject"></th><th data-i18n="thContent"></th><th class="num" data-i18n="fSum"></th><th data-i18n="thVatCode"></th><th class="num" data-i18n="thVat"></th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="rownr">1</td><td>523301</td><td></td><td></td><td data-i18n="rowFuel"></td><td class="num">36.66</td><td>1</td><td class="num">8.07</td></tr>
+    <tr><td class="rownr">2</td><td></td><td></td><td></td><td></td><td class="num"></td><td></td><td class="num"></td></tr>
+    <tr><td class="rownr">3</td><td></td><td></td><td></td><td></td><td class="num"></td><td></td><td class="num"></td></tr>
+  </tbody>
+</table>
+
+<!-- ===================== KANNE ===================== -->
+<div id="kannePanel" class="panel">
+  <div class="hd"><span data-i18n="kanneTitle"></span> OST.100490 <span id="kanneSub"></span></div>
+  <table>
+    <thead>
+      <tr>
+        <th data-i18n="thAccount"></th>
+        <th data-i18n="thName"></th>
+        <th class="num" data-i18n="thDebit"></th>
+        <th class="num" data-i18n="thCredit"></th>
+      </tr>
+    </thead>
+    <tbody id="kanneBody"></tbody>
+  </table>
+</div>
+
+<!-- ===================== SEOTUD VÄLJAMAKSED ===================== -->
+<div id="vmPanel" class="panel">
+  <div class="hd" data-i18n="vmTitle"></div>
+  <table>
+    <thead><tr><th data-i18n="thNumber"></th><th data-i18n="thDate"></th><th data-i18n="fExpender"></th><th class="num" data-i18n="fSum"></th><th data-i18n="thStatus"></th><th></th></tr></thead>
+    <tbody id="vmBody"></tbody>
+  </table>
+</div>
+
+<!-- ===================== PROTOTÜÜBI MÄRKUSED ===================== -->
+<div class="proto-notes" id="protoNotes"></div>
+
+<script>
+(function(){
+  // ============ TÕLKED ============
+  var I18N = {
+    et: {
+      tbNew:"Uus ▾", tbSave:"Salvesta", tbConfirm:"Kinnita", tbOpen:"Ava", tbCopy:"Kopeeri ▾",
+      tbDiscard:"Jäta", tbDelete:"Kustuta", tbMail:"Meil ▾", tbPrint:"Trüki ▾", tbAttach:"Manused",
+      tbEinvoice:"Andmed e-arvelt",
+      title:"Ostuarve", btnKanne:"Kanne",
+      badge:"KULUTUS-OSTUARVE", badgeNote:"visuaalne märge – disain kokku leppida (Sven)",
+      pillNew:"Uus", pillConfirmed:"Kinnitatud",
+      looLbl:"Loo:", looStock:"Laosissetulek", looPay:"Tasumine", looPayout:"Väljamaks",
+      looCashOut:"Kassa välja", looCredit:"Kreeditarve",
+      fSupplier:"Hankija", fSupplierName:"Hankija nimi", fVatReg:"KM reg nr", fSupplierInv:"Hankija arve",
+      fPayee:"Makse saaja", fSurvey:"Uuring",
+      secMain:"PÕHIANDMED", secTotal:"KOKKU",
+      fType:"Tüüp", optExpense:"Kulutus", optRegular:"Tavaline",
+      hintType:"dok. transpordist loomisel täitub automaatselt",
+      fInvDate:"Arve aeg", fTerm:"Tas. ting.",
+      opt14:"14 (Tavaline, 14 päeva)", optIsik:"ISIK_SULA (Kulutus – hüvitatav)",
+      optFirma:"FIRMA_DK (Kulutus – ettevõtte maksevahend)",
+      fTermType:"Tas. ting tüüp",
+      ttNormal:"Tavaline", ttHyv:"Kulutus – hüvitatav", ttFirma:"Kulutus – ettevõtte maksevahend",
+      fDueDate:"Tas. aeg", fOpDate:"Op. aeg", fObject:"Objekt",
+      fBankCode:"Pangakood", fIban:"Pangakonto/IBAN", fRefNo:"Viitenumber",
+      fKredKonto:"Kred. konto", fKredOst:"Kred. ost", fUser:"Kasutaja",
+      fExpender:"Kulutaja", fExpenderName:"Kulutaja nimi", fExpenderBal:"Kulutaja saldo",
+      fRepNo:"Kuluaruande nr", hintRepNo:"väliste süsteemide aruande nr (nt CostPocket)",
+      phRepNo:"nt CP-2026-0713",
+      fComment:"Kommentaar", fIntComment:"Sisekommentaar",
+      fCurrency:"Valuuta", fVatTotal:"KM kokku", fSum:"Summa", fToPay:"Tasuda", fBalance:"Saldo", fRate:"Kurss",
+      rtBulk:"Massasetaja...", rtRecipe:"Aseta retsept...",
+      thNr:"Nr", thAccount:"Konto", thProject:"Projekt", thContent:"Sisu", thVatCode:"KMK", thVat:"KM",
+      thName:"Nimi", thDebit:"Deebet", thCredit:"Kreedit",
+      thNumber:"Number", thDate:"Aeg", thStatus:"Staatus",
+      rowFuel:"Kütus", rowVat:"Sisendkäibemaks", rowTotal:"Kokku",
+      kanneTitle:"Kanne", kanneSub:"· D/Kulu K/{0} ({1})",
+      vmTitle:"Seotud väljamaksed", vmStatus:"Kinnitatud", vmDelTitle:"Kustuta väljamaks",
+      newTag:"UUS",
+      acc212211:"Hankijatele tasumata arved",
+      acc212641:"Võlad aruandvatele isikutele kulutuste eest",
+      acc212311:"Krediitkaardivõlg",
+      hintIbanHyv:"kulutaja töötajakaardi pangakonto",
+      hintIbanFirma:"ettevõtte maksevahend – töötajale väljamakset ei tehta",
+      hintSaldo:"tüüp Kulutus → saldo 0.00",
+      hintKredDefault:"212211 – Hankijatele tasumata arved",
+      hintKredEmp:"töötajakaardi kulutaja konto",
+      hintKredSys:"süsteemiseadistus 'Kulutaja konto' – Võlad aruandvatele isikutele kulutuste eest",
+      errTermType:"Kinnitamine ebaõnnestus: tüübiga 'Kulutus' ostuarvel peab tasumistingimus olema kulutuse tüüpi (hüvitatav või ettevõtte maksevahend).",
+      errNoExpender:"Kinnitamine ebaõnnestus: tüübiga 'Kulutus' ostuarvel peab olema täidetud väli Kulutaja.",
+      errMismatch:"Kinnitamine ebaõnnestus: kulutuse tüüpi tasumistingimus on tavalisel ostuarvel. Muuda dokumendi tüübiks 'Kulutus' või vali tavaline tasumistingimus.",
+      okConfirmKul:"Dokument kinnitatud. Kanne D/Kulu K/{0} ({1}) – ostuarve saldo 0.00.",
+      okConfirm:"Dokument kinnitatud. Kanne D/Kulu K/{0} ({1}).",
+      errOpenVm:"Avamine ebaõnnestus: ostuarvega on seotud väljamaks. Kustuta enne seotud väljamaksed.",
+      okOpened:"Dokument avatud. Kanne kustutatud.",
+      okAllPaid:"Kõik on välja makstud.",
+      okVmCreated:"{0} {1} loodud summas {2} €.",
+      okVmDeleted:"{0} {1} kustutatud. Kulutaja saldo taastus.",
+      notes:"<h2>Prototüüp – katseta neid stsenaariume</h2>" +
+        "<p style='margin:0 0 8px'><b>Mudel: Tüüp määrab, T-ting täpsustab.</b> Tüüp = dokumendi identiteet (märge, Väljamaksu nupp, saldo 0.00). T-ting = käitumine (IBAN, kulutaja saldo, kassakonto). Dok. transpordist loomisel pannakse Tüüp = Kulutus automaatselt.</p><ol>" +
+        "<li><b>Tüüp juhib identiteeti:</b> vaheta Tüüp Kulutus ↔ Tavaline → märge KULUTUS-OSTUARVE ja Loo-rea nupp Väljamaks/Tasumine käivad Tüübiga kaasas, mitte T-tingiga.</li>" +
+        "<li><b>Kulutaja asetamine:</b> alguses on Kred. konto 212211 \"Hankijatele tasumata arved\". Vali Kulutaja → täitub nimi ja Kred. konto asendub kulutaja kontoga (töötajakaardi \"kulutaja konto\" kui täidetud, muidu süsteemiseadistuse \"Kulutaja konto\" = 212641 \"Võlad aruandvatele isikutele kulutuste eest\"; SAARA-l on isiklik konto 212642).</li>" +
+        "<li><b>Pangakonto/IBAN (T-ting järgi):</b> kui Tas. ting tüüp on <i>hüvitatav</i> ja Kulutaja valitud, täitub IBAN kulutaja töötajakaardi pangakontoga. Tüübi <i>ettevõtte maksevahend</i> korral IBAN ei täitu – töötajale pole vaja välja maksta.</li>" +
+        "<li><b>Kinnitaja kooskõla kontrollid:</b> (a) Tüüp = Kulutus + tavaline T-ting → viga \"T-ting peab olema kulutuse tüüpi\"; (b) Tüüp = Kulutus + Kulutaja tühi → viga \"täida Kulutaja\"; (c) Tüüp = Tavaline + kulutuse tüüpi T-ting → viga \"muuda tüüp või vali tavaline T-ting\". Nii ei saa kaks välja vastuollu jääda.</li>" +
+        "<li><b>Saldo:</b> Tüüp = Kulutus → ostuarve saldo pärast kinnitamist 0.00. Kulutaja saldo = Tasuda − seotud väljamaksed; ettevõtte maksevahendi T-tingi korral kulutajale saldot üles ei jää.</li>" +
+        "<li><b>Kanne (T-ting kassakonto järgi):</b> kinnitamisel tekib kanne ja staatuse kõrvale <b>Kanne</b> nupp. T-ting <i>hüvitatav</i> → K/212641 \"Võlad aruandvatele isikutele kulutuste eest\"; <i>ettevõtte maksevahend</i> (krediitkaart) → K/212311 \"Krediitkaardivõlg\"; tavaline → K/212211 \"Hankijatele tasumata arved\". Deebetis kulukonto ja sisendkäibemaks.</li>" +
+        "<li><b>Väljamaks:</b> pärast kinnitamist vajuta Loo-real <b>Väljamaks</b> → luuakse väljamakse ja Kulutaja saldo nullub. Väljamakse rea saab prügikastist kustutada – saldo taastub. <b>Ava</b> nupp avab kinnitatud dokumendi (kanne kustub), aga mitte siis, kui väljamaks on juba seotud.</li></ol>"
+    },
+    en: {
+      tbNew:"New ▾", tbSave:"Save", tbConfirm:"Confirm", tbOpen:"Open", tbCopy:"Copy ▾",
+      tbDiscard:"Discard", tbDelete:"Delete", tbMail:"Mail ▾", tbPrint:"Print ▾", tbAttach:"Attachments",
+      tbEinvoice:"Data from e-invoice",
+      title:"Purchase Invoice", btnKanne:"Transaction",
+      badge:"EXPENSE PURCHASE INVOICE", badgeNote:"visual indicator – design to be agreed (Sven)",
+      pillNew:"New", pillConfirmed:"Confirmed",
+      looLbl:"Create:", looStock:"Stock receipt", looPay:"Payment", looPayout:"Payout",
+      looCashOut:"Cash out", looCredit:"Credit invoice",
+      fSupplier:"Supplier", fSupplierName:"Supplier name", fVatReg:"VAT reg no", fSupplierInv:"Supplier invoice",
+      fPayee:"Payment receiver", fSurvey:"Survey",
+      secMain:"MAIN DATA", secTotal:"TOTAL",
+      fType:"Type", optExpense:"Expense", optRegular:"Regular",
+      hintType:"filled automatically when created from document transport",
+      fInvDate:"Invoice date", fTerm:"Payment term",
+      opt14:"14 (Regular, 14 days)", optIsik:"ISIK_SULA (Expense – reimbursable)",
+      optFirma:"FIRMA_DK (Expense – company payment instrument)",
+      fTermType:"Payment term type",
+      ttNormal:"Regular", ttHyv:"Expense – reimbursable", ttFirma:"Expense – company payment instrument",
+      fDueDate:"Due date", fOpDate:"Op. time", fObject:"Object",
+      fBankCode:"Bank code", fIban:"Bank account/IBAN", fRefNo:"Reference number",
+      fKredKonto:"Credit account", fKredOst:"Credited invoice", fUser:"User",
+      fExpender:"Expender", fExpenderName:"Expender name", fExpenderBal:"Expender balance",
+      fRepNo:"Expense report no", hintRepNo:"external system report no (e.g. CostPocket)",
+      phRepNo:"e.g. CP-2026-0713",
+      fComment:"Comment", fIntComment:"Internal comment",
+      fCurrency:"Currency", fVatTotal:"VAT total", fSum:"Sum", fToPay:"To pay", fBalance:"Balance", fRate:"Rate",
+      rtBulk:"Bulk insert...", rtRecipe:"Place recipe...",
+      thNr:"No", thAccount:"Account", thProject:"Project", thContent:"Description", thVatCode:"VAT code", thVat:"VAT",
+      thName:"Name", thDebit:"Debit", thCredit:"Credit",
+      thNumber:"Number", thDate:"Date", thStatus:"Status",
+      rowFuel:"Fuel", rowVat:"Input VAT", rowTotal:"Total",
+      kanneTitle:"Transaction", kanneSub:"· D/Expense C/{0} ({1})",
+      vmTitle:"Related payouts", vmStatus:"Confirmed", vmDelTitle:"Delete payout",
+      newTag:"NEW",
+      acc212211:"Accounts payable to suppliers",
+      acc212641:"Payables to accountable persons for expenses",
+      acc212311:"Credit card debt",
+      hintIbanHyv:"expender's bank account from the employee card",
+      hintIbanFirma:"company payment instrument – no payout to the employee",
+      hintSaldo:"type Expense → balance 0.00",
+      hintKredDefault:"212211 – Accounts payable to suppliers",
+      hintKredEmp:"expender account from the employee card",
+      hintKredSys:"system setting 'Expender account' – Payables to accountable persons for expenses",
+      errTermType:"Confirmation failed: a purchase invoice with type 'Expense' requires an expense-type payment term (reimbursable or company payment instrument).",
+      errNoExpender:"Confirmation failed: a purchase invoice with type 'Expense' requires the Expender field to be filled.",
+      errMismatch:"Confirmation failed: an expense-type payment term is used on a regular purchase invoice. Change the document type to 'Expense' or select a regular payment term.",
+      okConfirmKul:"Document confirmed. Transaction D/Expense C/{0} ({1}) – invoice balance 0.00.",
+      okConfirm:"Document confirmed. Transaction D/Expense C/{0} ({1}).",
+      errOpenVm:"Opening failed: a payout is linked to this invoice. Delete the related payouts first.",
+      okOpened:"Document opened. Transaction deleted.",
+      okAllPaid:"Everything has been paid out.",
+      okVmCreated:"{0} {1} created for {2} €.",
+      okVmDeleted:"{0} {1} deleted. Expender balance restored.",
+      notes:"<h2>Prototype – try these scenarios</h2>" +
+        "<p style='margin:0 0 8px'><b>Model: Type decides, payment term refines.</b> Type = document identity (badge, Payout button, balance 0.00). Payment term = behaviour (IBAN, expender balance, cash account). When created from document transport, Type = Expense is set automatically.</p><ol>" +
+        "<li><b>Type drives identity:</b> switch Type Expense ↔ Regular → the EXPENSE PURCHASE INVOICE badge and the Payout/Payment button on the Create row follow Type, not the payment term.</li>" +
+        "<li><b>Placing the Expender:</b> initially Credit account is 212211 \"Accounts payable to suppliers\". Select an Expender → name fills and Credit account is replaced with the expender account (employee card \"expender account\" if filled, otherwise system setting \"Expender account\" = 212641 \"Payables to accountable persons for expenses\"; SAARA has a personal account 212642).</li>" +
+        "<li><b>Bank account/IBAN (by payment term):</b> if the payment term type is <i>reimbursable</i> and an Expender is selected, the IBAN fills from the expender's employee card. With <i>company payment instrument</i> the IBAN stays empty – no payout to the employee is needed.</li>" +
+        "<li><b>Confirmation consistency checks:</b> (a) Type = Expense + regular term → error \"payment term must be expense type\"; (b) Type = Expense + Expender empty → error \"fill in Expender\"; (c) Type = Regular + expense-type term → error \"change type or select a regular term\". The two fields can never contradict each other.</li>" +
+        "<li><b>Balance:</b> Type = Expense → invoice balance 0.00 after confirmation. Expender balance = To pay − related payouts; with a company payment instrument term, no expender balance remains.</li>" +
+        "<li><b>Transaction (by payment term cash account):</b> confirming creates the transaction and a <b>Transaction</b> button next to the status. Term <i>reimbursable</i> → C/212641 \"Payables to accountable persons for expenses\"; <i>company payment instrument</i> (credit card) → C/212311 \"Credit card debt\"; regular → C/212211 \"Accounts payable to suppliers\". Debit side: expense account and input VAT.</li>" +
+        "<li><b>Payout:</b> after confirming, press <b>Payout</b> on the Create row → a payout is created and the Expender balance goes to zero. A payout row can be deleted with the trash icon – the balance is restored. The <b>Open</b> button reopens a confirmed document (the transaction is deleted), but not while a payout is linked.</li></ol>"
+    }
+  };
+
+  var lang = "et";
+  function t(key){
+    var s = I18N[lang][key] != null ? I18N[lang][key] : key;
+    for (var i = 1; i < arguments.length; i++) s = s.replace("{" + (i-1) + "}", arguments[i]);
+    return s;
+  }
+
+  // ============ ANDMED ============
+  var KULUTAJAD = {
+    VILJA:  {nimi:"Vilja",  konto:null,     iban:"EE382200221034112233"},
+    SAARA:  {nimi:"Saara",  konto:"212642", iban:"EE711010052233445566"},
+    KRISTO: {nimi:"Kristo", konto:null,     iban:"EE967700771000123456"}
+  };
+  var SYS_KULUTAJA_KONTO = "212641";
+  var TASUDA = 44.73;
+  var SUMMA = 36.66, KM = 8.07;
+
+  // T-ting kaardid: kassakonto määrab kande kreeditpoole; nimi tõlgitakse accKey kaudu
+  var TINGID = {
+    "14":        {kassa:"212211", accKey:"acc212211"},
+    "ISIK_SULA": {kassa:"212641", accKey:"acc212641"},
+    "FIRMA_DK":  {kassa:"212311", accKey:"acc212311"}
+  };
+
+  var confirmed = false;
+  var vmTotal = 0;
+  var kredSource = "default"; // default | emp | sys
+  var lastMsg = null;         // {type, key, args[]}
+
+  var $ = function(id){ return document.getElementById(id); };
+  var fTing = $("fTing"), fKulutaja = $("fKulutaja");
+
+  function kind(){
+    var o = fTing.options[fTing.selectedIndex];
+    return o ? o.getAttribute("data-kind") : "normal";
+  }
+  function tingIsKulutus(){ var k = kind(); return k === "hyvitatav" || k === "firma"; }
+  function typeIsKulutus(){ return $("fTyyp").value === "Kulutus"; }
+  function fmt(n){ return n.toFixed(2); }
+
+  function showMsg(type, key){
+    lastMsg = {type:type, key:key, args:Array.prototype.slice.call(arguments, 2)};
+    renderMsg();
+  }
+  function renderMsg(){
+    var m = $("msgBox");
+    if (!lastMsg){ m.className = "msg"; return; }
+    m.className = "msg " + lastMsg.type;
+    m.textContent = t.apply(null, [lastMsg.key].concat(lastMsg.args));
+  }
+  function clearMsg(){ lastMsg = null; renderMsg(); }
+
+  // ============ KEELE RAKENDAMINE ============
+  function applyLang(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-opt]").forEach(function(el){ el.textContent = t(el.getAttribute("data-i18n-opt")); });
+    document.querySelectorAll(".f.new label").forEach(function(el){ el.setAttribute("data-newtag", t("newTag")); });
+    $("fKuluaruanne").placeholder = t("phRepNo");
+    $("statusPill").textContent = confirmed ? t("pillConfirmed") : t("pillNew");
+    $("statusPill").className = "pill" + (confirmed ? " confirmed" : "");
+    $("protoNotes").innerHTML = t("notes");
+    document.querySelectorAll(".vm-status").forEach(function(el){ el.textContent = t("vmStatus"); });
+    document.querySelectorAll(".vm-del").forEach(function(el){ el.title = t("vmDelTitle"); });
+    if (confirmed) buildKanne();
+    renderMsg();
+    recalc();
+    $("langEt").className = lang === "et" ? "active" : "";
+    $("langEn").className = lang === "en" ? "active" : "";
+  }
+  $("langEt").addEventListener("click", function(){ lang = "et"; applyLang(); });
+  $("langEn").addEventListener("click", function(){ lang = "en"; applyLang(); });
+
+  // ============ ARVUTUS ============
+  function recalc(){
+    var tKul = typeIsKulutus();   // Tüüp = identiteet; T-ting = käitumine
+
+    $("kulutusBadge").className = "badge-kulutus" + (tKul ? " show" : "");
+    $("badgeNote").className = "badge-note" + (tKul ? " show" : "");
+    var pay = $("btnPay");
+    if (tKul){
+      pay.innerHTML = t("looPayout") + " <span style='font-size:9px;font-weight:700;background:var(--badge);border-radius:2px;padding:1px 4px;margin-left:3px;vertical-align:1px'>" + t("newTag") + "</span>";
+    } else {
+      pay.textContent = t("looPay");
+    }
+    pay.disabled = !confirmed;
+
+    $("fTingTyyp").value =
+      kind()==="hyvitatav" ? t("ttHyv") :
+      kind()==="firma"     ? t("ttFirma") : t("ttNormal");
+
+    // Pangakonto/IBAN — T-ting tüübi järgi
+    var kul_k = KULUTAJAD[fKulutaja.value];
+    if (kind()==="hyvitatav" && kul_k){
+      $("fIBAN").value = kul_k.iban;
+      $("ibanHint").textContent = t("hintIbanHyv");
+    } else if (kind()==="firma"){
+      $("fIBAN").value = "";
+      $("ibanHint").textContent = t("hintIbanFirma");
+    } else {
+      $("fIBAN").value = "";
+      $("ibanHint").textContent = "";
+    }
+
+    // Kred. konto vihje
+    $("kredHint").textContent =
+      kredSource==="emp" ? t("hintKredEmp") :
+      kredSource==="sys" ? t("hintKredSys") : t("hintKredDefault");
+
+    // Ostuarve saldo — Tüübi järgi
+    var saldo;
+    if (tKul) { saldo = confirmed ? 0 : TASUDA; $("saldoHint").textContent = confirmed ? t("hintSaldo") : ""; }
+    else      { saldo = TASUDA - vmTotal;       $("saldoHint").textContent = ""; }
+    $("fSaldo").value = fmt(saldo);
+
+    // Kulutaja saldo = Tasuda − väljamaksed (firma vahendite puhul saldot üles ei jää)
+    var ks = 0;
+    if (tKul && fKulutaja.value) {
+      ks = (kind()==="firma") ? 0 : (TASUDA - vmTotal);
+    }
+    $("fKulutajaSaldo").value = fmt(ks);
+  }
+
+  fTing.addEventListener("change", function(){ clearMsg(); recalc(); });
+  $("fTyyp").addEventListener("change", function(){ clearMsg(); recalc(); });
+
+  var DEFAULT_KRED_KONTO = "212211";
+
+  fKulutaja.addEventListener("change", function(){
+    clearMsg();
+    var k = KULUTAJAD[this.value];
+    if (!k){
+      $("fKulutajaNimi").value = "";
+      $("fKredKonto").value = DEFAULT_KRED_KONTO;
+      kredSource = "default";
+      recalc(); return;
+    }
+    $("fKulutajaNimi").value = k.nimi;
+    if (k.konto){ $("fKredKonto").value = k.konto; kredSource = "emp"; }
+    else        { $("fKredKonto").value = SYS_KULUTAJA_KONTO; kredSource = "sys"; }
+    recalc();
+  });
+
+  // ============ KANNE ============
+  function td(txt, num, bold){
+    return "<td style='padding:5px 10px;border-top:1px solid var(--border);" +
+      (num ? "text-align:right;" : "") + (bold ? "font-weight:700;" : "") + "'>" + txt + "</td>";
+  }
+  function buildKanne(){
+    var tt = TINGID[fTing.value] || TINGID["14"];
+    $("kanneBody").innerHTML =
+      "<tr>" + td("523301") + td(t("rowFuel")) + td(fmt(SUMMA), true) + td("", true) + "</tr>" +
+      "<tr>" + td("113101") + td(t("rowVat")) + td(fmt(KM), true) + td("", true) + "</tr>" +
+      "<tr>" + td(tt.kassa) + td(t(tt.accKey)) + td("", true) + td(fmt(TASUDA), true) + "</tr>" +
+      "<tr>" + td("", false, true) + td(t("rowTotal"), false, true) + td(fmt(TASUDA), true, true) + td(fmt(TASUDA), true, true) + "</tr>";
+    $("kanneSub").textContent = t("kanneSub", tt.kassa, t(tt.accKey));
+  }
+
+  $("btnKanne").addEventListener("click", function(){
+    var p = $("kannePanel");
+    p.className = p.className.indexOf("show") >= 0 ? "panel" : "panel show";
+    if (p.className.indexOf("show") >= 0) p.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+
+  // ============ KINNITAMINE / AVAMINE ============
+  $("btnConfirm").addEventListener("click", function(){
+    if (confirmed) return;
+    if (typeIsKulutus() && !tingIsKulutus()){ showMsg("err", "errTermType"); return; }
+    if (typeIsKulutus() && !fKulutaja.value){ showMsg("err", "errNoExpender"); return; }
+    if (!typeIsKulutus() && tingIsKulutus()){ showMsg("err", "errMismatch"); return; }
+    confirmed = true;
+    $("statusPill").textContent = t("pillConfirmed");
+    $("statusPill").className = "pill confirmed";
+    $("btnConfirm").disabled = true;
+    $("btnSave").disabled = true;
+    $("btnOpen").disabled = false;
+    buildKanne();
+    $("btnKanne").style.display = "inline-block";
+    var tt = TINGID[fTing.value] || TINGID["14"];
+    showMsg("ok", typeIsKulutus() ? "okConfirmKul" : "okConfirm", tt.kassa, t(tt.accKey));
+    recalc();
+  });
+
+  $("btnOpen").addEventListener("click", function(){
+    if (!confirmed) return;
+    if (vmTotal > 0){ showMsg("err", "errOpenVm"); return; }
+    confirmed = false;
+    $("statusPill").textContent = t("pillNew");
+    $("statusPill").className = "pill";
+    $("btnConfirm").disabled = false;
+    $("btnSave").disabled = false;
+    $("btnOpen").disabled = true;
+    $("btnKanne").style.display = "none";
+    $("kannePanel").className = "panel";
+    showMsg("ok", "okOpened");
+    recalc();
+  });
+
+  // ============ VÄLJAMAKS ============
+  $("btnPay").addEventListener("click", function(){
+    if (!confirmed) return;
+    clearMsg();
+    var jaak = TASUDA - vmTotal;
+    var docWord = typeIsKulutus() ? t("looPayout") : t("looPay");
+    if (jaak <= 0){ showMsg("ok", "okAllPaid"); return; }
+    vmTotal += jaak;
+    var tr = document.createElement("tr");
+    var nr = 100200 + document.querySelectorAll("#vmBody tr").length;
+    tr.setAttribute("data-summa", jaak);
+    tr.innerHTML = "<td><a href='#' onclick='return false'>" + nr + "</a></td>" +
+                   "<td>06.07.2026</td><td>" + (fKulutaja.value || "—") + "</td>" +
+                   "<td class='num'>" + fmt(jaak) + "</td><td class='vm-status'>" + t("vmStatus") + "</td>" +
+                   "<td style='width:36px;text-align:center'><button class='vm-del' title='" + t("vmDelTitle") + "'>🗑</button></td>";
+    tr.querySelector(".vm-del").addEventListener("click", function(){
+      vmTotal -= parseFloat(tr.getAttribute("data-summa"));
+      if (vmTotal < 0.005) vmTotal = 0;
+      tr.remove();
+      if (!document.querySelectorAll("#vmBody tr").length) $("vmPanel").className = "panel";
+      showMsg("ok", "okVmDeleted", (typeIsKulutus() ? t("looPayout") : t("looPay")), nr);
+      recalc();
+    });
+    $("vmBody").appendChild(tr);
+    $("vmPanel").className = "panel show";
+    showMsg("ok", "okVmCreated", docWord, nr, fmt(jaak));
+    recalc();
+  });
+
+  // ============ START ============
+  applyLang();
+})();
+</script>
+</body>
+</html>
