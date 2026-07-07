@@ -158,6 +158,84 @@
   <div class="c">Aitäh! Tule jälle!</div>
 </div>
 
+<!-- ============ TSEKK 4: sularaha ============ -->
+<div class="receipt">
+  <div class="c big">NÄIDISKOHVIK OÜ</div>
+  <div class="c">Kohvik Päike</div>
+  <div class="c">Lille tn 8, 10614 Tallinn</div>
+  <div class="c">Reg nr 55667788</div>
+  <div class="c">KMKR EE556677889</div>
+  <hr>
+  <div class="row"><span>Kviitung nr 45120</span><span>Kassa 2</span></div>
+  <div class="row"><span>07.07.2026</span><span>13:11</span></div>
+  <div>Teenindaja: LIISA</div>
+  <hr>
+  <div class="row"><span>Päevapraad</span><span class="n">8.50 A</span></div>
+  <div class="row"><span>Päevasupp</span><span class="n">4.90 A</span></div>
+  <div class="row"><span>Kohv latte 300ml</span><span class="n">3.80 A</span></div>
+  <div class="row"><span>Koogitükk</span><span class="n">4.20 A</span></div>
+  <hr>
+  <div class="row total"><span>KOKKU EUR</span><span>21.40</span></div>
+  <hr>
+  <table class="km">
+    <tr><th>KM määr</th><th>Neto</th><th>KM</th><th>Kokku</th></tr>
+    <tr><td>A 24%</td><td>17.26</td><td>4.14</td><td>21.40</td></tr>
+  </table>
+  <hr>
+  <div class="row"><span>SULARAHA</span><span>25.00</span></div>
+  <div class="row"><span>Tagasi</span><span>3.60</span></div>
+  <hr>
+  <div class="c">Head isu ja kena päeva!</div>
+  <div class="c small">www.naidiskohvik.ee</div>
 </div>
+
+<!-- ============ TSEKK 5: krediitkaart ...1808 ============ -->
+<div class="receipt">
+  <div class="c big">NÄIDISTANKLA OÜ</div>
+  <div class="c">Tankla Tartu mnt</div>
+  <div class="c">Tartu mnt 150, 11317 Tallinn</div>
+  <div class="c">Reg nr 99887766</div>
+  <div class="c">KMKR EE998877665</div>
+  <hr>
+  <div class="row"><span>Kviitung nr 902317</span><span>Kassa 1</span></div>
+  <div class="row"><span>07.07.2026</span><span>17:48</span></div>
+  <div>Automaat 4</div>
+  <hr>
+  <div class="row"><span>Diislikütus</span><span class="n">64.75 A</span></div>
+  <div class="sub small">42.35 L x 1.529 EUR/L</div>
+  <div class="row"><span>Klaasipesuvedelik 3L</span><span class="n">6.99 A</span></div>
+  <hr>
+  <div class="row total"><span>KOKKU EUR</span><span>71.74</span></div>
+  <hr>
+  <table class="km">
+    <tr><th>KM määr</th><th>Neto</th><th>KM</th><th>Kokku</th></tr>
+    <tr><td>A 24%</td><td>57.85</td><td>13.89</td><td>71.74</td></tr>
+  </table>
+  <hr>
+  <div class="row"><span>KREDIITKAART</span><span>71.74</span></div>
+  <div class="small">Mastercard Credit **** **** **** 1808</div>
+  <div class="small">Terminal: NT009944 · Autoris. 208513</div>
+  <div class="small">Kontaktivaba makse</div>
+  <hr>
+  <div class="c">Head teed!</div>
+  <div class="c small">www.naidistankla.ee</div>
+</div>
+
+</div>
+
+<script>
+// ?tsekk=1|2|3 kuvab ainult ühe tseki (kasutusel PNG-failide genereerimisel)
+(function(){
+  var m = location.search.match(/[?&]tsekk=(\d)/);
+  if (!m) return;
+  var n = parseInt(m[1], 10);
+  document.querySelector(".info").style.display = "none";
+  document.body.style.padding = "20px";
+  var r = document.querySelectorAll(".receipt");
+  for (var i = 0; i < r.length; i++){
+    if (i !== n - 1) r[i].style.display = "none";
+  }
+})();
+</script>
 </body>
 </html>
