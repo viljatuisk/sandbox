@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Näidistsekid – MyDirecto kulutšekkide testimiseks</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:30px 20px 50px;
+    background:#3d4148;
+    font-family:"Segoe UI", Arial, sans-serif;
+  }
+  .info{
+    color:#cfd3da; text-align:center; font-size:13px; margin:0 auto 24px; max-width:760px;
+  }
+  .info b{color:#fff;}
+  .wrap{
+    display:flex; gap:40px; justify-content:center; align-items:flex-start; flex-wrap:wrap;
+  }
+  .receipt{
+    width:340px; background:#fdfdfa; color:#111;
+    font-family:"Courier New", Courier, monospace; font-size:13px; line-height:1.45;
+    padding:18px 16px 26px;
+    box-shadow:0 6px 18px rgba(0,0,0,.45);
+  }
+  .receipt .c{text-align:center;}
+  .receipt .b{font-weight:700;}
+  .receipt .big{font-size:15px; font-weight:700;}
+  .receipt hr{border:none; border-top:1px dashed #555; margin:8px 0;}
+  .row{display:flex; justify-content:space-between; gap:8px;}
+  .row .n{white-space:nowrap;}
+  .sub{padding-left:12px; color:#222;}
+  table.km{width:100%; border-collapse:collapse; font-size:12px; margin:4px 0;}
+  table.km th, table.km td{padding:1px 0; text-align:right; font-weight:400;}
+  table.km th:first-child, table.km td:first-child{text-align:left;}
+  .total{font-size:16px; font-weight:700;}
+  .small{font-size:11px;}
+  @media print{
+    body{background:#fff; padding:0;}
+    .info{display:none;}
+    .wrap{display:block;}
+    .receipt{margin:0 auto; box-shadow:none; page-break-after:always;}
+  }
+</style>
+</head>
+<body>
+
+<div class="info">
+  <b>Näidistsekid MyDirecto kulutšekkide pildistamise testimiseks.</b><br>
+  Pildista iga tsekki eraldi telefoniga otse ekraanilt või prindi välja (Ctrl+P – iga tsekk tuleb eraldi lehele).<br>
+  Kõik firmad ja rekvisiidid on väljamõeldud näidisandmed.
+</div>
+
+<div class="wrap">
+
+<!-- ============ TSEKK 1: kõik 24% ============ -->
+<div class="receipt">
+  <div class="c big">NÄIDISPOOD OÜ</div>
+  <div class="c">Kauplus Kesklinn</div>
+  <div class="c">Näidise tn 1, 10111 Tallinn</div>
+  <div class="c">Reg nr 12345678</div>
+  <div class="c">KMKR EE123456789</div>
+  <hr>
+  <div class="row"><span>Kviitung nr 384712</span><span>Kassa 3</span></div>
+  <div class="row"><span>07.07.2026</span><span>09:42</span></div>
+  <div>Teenindaja: MARI</div>
+  <hr>
+  <div class="row"><span>Piim 2,5% 1L</span><span class="n">1.19 A</span></div>
+  <div class="row"><span>Röstsai 500g</span><span class="n">1.85 A</span></div>
+  <div class="row"><span>Juust Eesti 300g</span><span class="n">3.49 A</span></div>
+  <div class="row"><span>Kohvioad 500g</span><span class="n">8.99 A</span></div>
+  <div class="row"><span>Banaan</span><span class="n">1.31 A</span></div>
+  <div class="sub small">0.734 kg x 1.79 EUR/kg</div>
+  <div class="row"><span>Šokolaad 100g</span><span class="n">2.15 A</span></div>
+  <hr>
+  <div class="row total"><span>KOKKU EUR</span><span>18.98</span></div>
+  <hr>
+  <table class="km">
+    <tr><th>KM määr</th><th>Neto</th><th>KM</th><th>Kokku</th></tr>
+    <tr><td>A 24%</td><td>15.31</td><td>3.67</td><td>18.98</td></tr>
+  </table>
+  <hr>
+  <div class="row"><span>PANGAKAART</span><span>18.98</span></div>
+  <div class="small">Mastercard **** **** **** 1234</div>
+  <div class="small">Terminal: NP001234 · Autoris. 025871</div>
+  <hr>
+  <div class="c">Täname ostu eest!</div>
+  <div class="c small">www.naidispood.ee</div>
+</div>
+
+<!-- ============ TSEKK 2: 13% + 24% ============ -->
+<div class="receipt">
+  <div class="c big">NÄIDISHOTELL OÜ</div>
+  <div class="c">Hotell Meretuul</div>
+  <div class="c">Ranna pst 22, 80010 Pärnu</div>
+  <div class="c">Reg nr 87654321</div>
+  <div class="c">KMKR EE987654321</div>
+  <hr>
+  <div class="row"><span>Arve-kviitung nr 20264401</span></div>
+  <div class="row"><span>07.07.2026</span><span>12:05</span></div>
+  <div>Administraator: KERTU</div>
+  <div>Tuba 214 · 06.07–07.07.2026</div>
+  <hr>
+  <div class="row"><span>Majutus, standardtuba 1 öö</span><span class="n">89.00 B</span></div>
+  <div class="row"><span>Hommikusöök 2 x 12.00</span><span class="n">24.00 A</span></div>
+  <div class="row"><span>Parkimine 1 ööpäev</span><span class="n">15.00 A</span></div>
+  <hr>
+  <div class="row total"><span>KOKKU EUR</span><span>128.00</span></div>
+  <hr>
+  <table class="km">
+    <tr><th>KM määr</th><th>Neto</th><th>KM</th><th>Kokku</th></tr>
+    <tr><td>B 13%</td><td>78.76</td><td>10.24</td><td>89.00</td></tr>
+    <tr><td>A 24%</td><td>31.45</td><td>7.55</td><td>39.00</td></tr>
+    <tr><td class="b">KM kokku</td><td></td><td class="b">17.79</td><td></td></tr>
+  </table>
+  <hr>
+  <div class="row"><span>PANGAKAART</span><span>128.00</span></div>
+  <div class="small">Visa **** **** **** 5678</div>
+  <div class="small">Terminal: NH005522 · Autoris. 114209</div>
+  <hr>
+  <div class="c">Meeldivat teekonda!</div>
+  <div class="c small">www.naidishotell.ee · +372 555 0000</div>
+</div>
+
+<!-- ============ TSEKK 3: 9% + 24% + 0% ============ -->
+<div class="receipt">
+  <div class="c big">NÄIDISKIOSK OÜ</div>
+  <div class="c">Kiosk Jaama</div>
+  <div class="c">Vaksali tn 5, 51014 Tartu</div>
+  <div class="c">Reg nr 11223344</div>
+  <div class="c">KMKR EE112233445</div>
+  <hr>
+  <div class="row"><span>Kviitung nr 77105</span><span>Kassa 1</span></div>
+  <div class="row"><span>07.07.2026</span><span>16:27</span></div>
+  <div>Teenindaja: PRIIT</div>
+  <hr>
+  <div class="row"><span>Ajaleht</span><span class="n">3.50 C</span></div>
+  <div class="row"><span>Raamat, taskuformaat</span><span class="n">12.90 C</span></div>
+  <div class="row"><span>Kohv kaasa 250ml</span><span class="n">2.80 A</span></div>
+  <div class="row"><span>Croissant või</span><span class="n">2.20 A</span></div>
+  <div class="row"><span>Postmark siseriiklik 2 tk</span><span class="n">3.80 D</span></div>
+  <div class="sub small">2 tk x 1.90</div>
+  <hr>
+  <div class="row total"><span>KOKKU EUR</span><span>25.20</span></div>
+  <hr>
+  <table class="km">
+    <tr><th>KM määr</th><th>Neto</th><th>KM</th><th>Kokku</th></tr>
+    <tr><td>C 9%</td><td>15.05</td><td>1.35</td><td>16.40</td></tr>
+    <tr><td>A 24%</td><td>4.03</td><td>0.97</td><td>5.00</td></tr>
+    <tr><td>D 0%</td><td>3.80</td><td>0.00</td><td>3.80</td></tr>
+    <tr><td class="b">KM kokku</td><td></td><td class="b">2.32</td><td></td></tr>
+  </table>
+  <hr>
+  <div class="row"><span>SULARAHA</span><span>30.00</span></div>
+  <div class="row"><span>Tagasi</span><span>4.80</span></div>
+  <hr>
+  <div class="c">Aitäh! Tule jälle!</div>
+</div>
+
+</div>
+</body>
+</html>
