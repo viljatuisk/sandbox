@@ -466,6 +466,26 @@
   }
   .rules-tbl td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
   .rules-tbl tr:hover td { background: var(--surface2); }
+  .rule-act-btn {
+    font-size: 10px; padding: 2px 7px; cursor: pointer;
+    border: 1px solid var(--border2); border-radius: 3px;
+    background: var(--surface); color: var(--blue-t);
+  }
+  .rule-act-btn:hover { background: var(--blue-bg); border-color: #85b7eb; }
+  .rule-act-btn.del { color: var(--red); }
+  .rule-act-btn.del:hover { background: var(--red-bg); border-color: var(--red-bd); }
+  .badge-saved.clickable { cursor: pointer; }
+  .badge-saved.clickable:hover { background: #e6e2d4; border-color: #8a8878; }
+
+  /* ── DEMO SWITCH (top nav) ── */
+  .demo-btn {
+    font-size: 11px; padding: 2px 10px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 3px;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+    white-space: nowrap;
+  }
+  .demo-btn:hover { background: rgba(255,255,255,0.18); }
+  .demo-btn.on { background: #ef9f27; border-color: #ef9f27; color: #2d1a00; font-weight: 600; }
 
   /* ── FOOTER NOTE ── */
   .footer-note {
@@ -489,6 +509,11 @@
   <span>Ostuarved</span>
   <span class="nav-sep"></span>
   <span style="opacity:.6; font-size:11px">Prototüüp – Hankija automaatika seadistamine ostuarvelt</span>
+  <span style="margin-left:auto;display:flex;gap:5px;align-items:center">
+    <span style="opacity:.6;font-size:11px">Demo:</span>
+    <button class="demo-btn on" id="demo-1" onclick="setDemoInvoice(1)">1. arve (mai) – automaatikat pole</button>
+    <button class="demo-btn" id="demo-2" onclick="setDemoInvoice(2)">2. arve (juuni) – reeglid olemas + uued read</button>
+  </span>
 </div>
 
 <!-- DOCUMENT -->
@@ -529,9 +554,9 @@
   <!-- DOC HEADER -->
   <div class="doc-header">
     <span class="doc-title">Ostuarve</span>
-    <span class="doc-code">OA-2026-05-2718</span>
+    <span class="doc-code" id="doc-code">OA-2026-05-2718</span>
     <span class="badge-new">Uus</span>
-    <span style="margin-left:auto; font-size:11px; color:var(--text3)">Eesti Keskkonnateenused AS · 31.05.2026 · 3 650,94 €</span>
+    <span style="margin-left:auto; font-size:11px; color:var(--text3)" id="doc-meta">Eesti Keskkonnateenused AS · 31.05.2026 · 3 650,94 €</span>
   </div>
 
   <!-- SUBTABS -->
@@ -666,6 +691,11 @@
         Reegli seadistamine
       </div>
 
+      <div id="edit-banner" style="display:none;background:var(--amber-bg);border-bottom:1px solid var(--amber-bd);padding:6px 12px;font-size:11px;color:var(--amber)">
+        &#9998; Muudad reeglit <b id="edit-rule-num"></b> — muudatus salvestub sama reegli peale.
+        <a href="#" onclick="cancelEdit();return false" style="color:var(--amber);font-weight:600">Tühista</a>
+      </div>
+
       <div class="rp-section">
         <div class="rp-label" id="sisaldus-src-label">Sisaldus (automaatika filter)</div>
         <div class="sisaldus-box" id="sisaldus-box">
@@ -747,7 +777,7 @@
         </button>
         <button class="btn-full btn-save" onclick="saveAutomaatika()">
           <svg class="icon" style="stroke:white"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21" style="stroke:white"/><polyline points="7 3 7 8 15 8" style="stroke:white"/></svg>
-          Salvesta hankija automaatika
+          <span id="save-btn-label">Salvesta hankija automaatika</span>
         </button>
         <button class="btn-full btn-reset" onclick="resetAll()">
           <svg class="icon" style="stroke:var(--red)"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
@@ -769,7 +799,7 @@
         <tr>
           <th>#</th><th>Tase</th><th>Sisaldus</th><th>Konto</th><th>KM kood</th>
           <th>Objekt</th><th>Projekt</th><th>Kasutaja</th><th>Sisu</th>
-          <th>Koond</th><th>Kinnita</th>
+          <th>Koond</th><th>Kinnita</th><th style="text-align:center">Read</th><th>Tegevused</th>
         </tr>
       </thead>
       <tbody id="rules-body"></tbody>
@@ -789,7 +819,7 @@
 
 <script>
 /* ── DATA ── */
-const GROUPS = [
+const INVOICE1_GROUPS = [
   { id:'G1', desc:'Lääneringtee 39, Tartu linn, Tartu linn', rows:[
     { id:1,  kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B01602',   summa:115.42 },
     { id:2,  kmMaar:24, sisu:'Konteineri rent – 20 m³ · Komprimaator · B02007',   summa:199.00 },
@@ -820,21 +850,110 @@ const GROUPS = [
   ]},
 ];
 
-const ROWS = GROUPS.flatMap(g => g.rows.map(r => ({...r, groupId: g.id})));
-const rowGroupMap = {};
-GROUPS.forEach(g => g.rows.forEach(r => { rowGroupMap[r.id] = g; }));
+/* Järgmise arve (juuni) lisaread – uued teenused, mida varasemad reeglid ei kata */
+function buildInvoice2Groups(){
+  const g = INVOICE1_GROUPS.map(x => ({ ...x, rows: x.rows.map(r => ({...r})) }));
+  g[1].rows.push(
+    { id:19, kmMaar:24, sisu:'Suurjäätmete äravedu · 200307',                    summa:145.00 },
+    { id:20, kmMaar:24, sisu:'Biolagunevate köögijäätmete äravedu · 200108',     summa:96.50  },
+  );
+  g.push({ id:'G6', desc:'Vabaduse pst 12, Tartu linn, Tartu linn', rows:[
+    { id:21, kmMaar:24, sisu:'Ohtlike jäätmete käitlus · 200121',                summa:210.00 },
+    { id:22, kmMaar:24, sisu:'Konteineri rent – 16 m³ · Komprimaator · B09912',  summa:75.00  },
+  ]});
+  return g;
+}
 
-const state = {};
-ROWS.forEach(r => {
-  state[r.id] = { konto:'', km:'', obj:'', proj:'', kasutaja:'', sisu:'',
-                  mapped:false, saved:false, group:null, koond:'no' };
-});
+/* Reeglid, mis salvestati "eelmise" (mai) arve pealt – demo stsenaarium 2 */
+const SEED_RULES = [
+  { tase:'ItemEntry', sisaldus:'Konteineri rent',          konto:'5320', km:'KM24', obj:'', proj:'', kasutaja:'', sisu:'Konteineri rent',        koond:'', kinnita:'' },
+  { tase:'ItemEntry', sisaldus:'Segaolmejäätmete',         konto:'5321', km:'KM24', obj:'', proj:'', kasutaja:'', sisu:'Olmejäätmete vedu',      koond:'', kinnita:'' },
+  { tase:'ItemEntry', sisaldus:'pakend%150101',            konto:'5322', km:'KM0',  obj:'', proj:'', kasutaja:'', sisu:'Pakendite käitlus',      koond:'', kinnita:'' },
+];
+
+let GROUPS = INVOICE1_GROUPS;
+let ROWS, rowGroupMap, state;
+
+function buildData(){
+  ROWS = GROUPS.flatMap(g => g.rows.map(r => ({...r, groupId: g.id})));
+  rowGroupMap = {};
+  GROUPS.forEach(g => g.rows.forEach(r => { rowGroupMap[r.id] = g; }));
+  state = {};
+  ROWS.forEach(r => {
+    state[r.id] = { konto:'', km:'', obj:'', proj:'', kasutaja:'', sisu:'',
+                    mapped:false, saved:false, group:null, koond:'no', ruleIdx:null };
+  });
+}
+buildData();
 
 let selected    = new Set();
 let koond       = 'no';
 let groupCounter= 0;
 let sisuTase    = 'item'; // 'item' | 'group' | 'km'
+let editingRule = null;   // savedRules'i indeks, kui muudetakse olemasolevat reeglit
+let demoInvoice = 1;
 const savedRules= [];
+
+/* ── olemasolevate reeglite rakendamine (simuleerib automaatika mootorit) ── */
+function ruleMatchesRow(rule, row){
+  const frags = rule.sisaldus.split('%').map(f=>f.trim()).filter(Boolean);
+  if (rule.tase==='KM määr'){
+    const m = rule.sisaldus.match(/KM\s*(\d+)/i);
+    return !!m && row.kmMaar === parseInt(m[1],10);
+  }
+  if (rule.tase==='GroupEntry'){
+    const g = rowGroupMap[row.id];
+    return frags.length>0 && frags.every(f=>g.desc.toLowerCase().includes(f.toLowerCase()));
+  }
+  return frags.length>0 && frags.every(f=>row.sisu.toLowerCase().includes(f.toLowerCase()));
+}
+function applyExistingRules(){
+  ROWS.forEach(r => {
+    const s = state[r.id];
+    for (let i=0; i<savedRules.length; i++){
+      if (s.saved) break;
+      if (ruleMatchesRow(savedRules[i], r)){
+        const rule = savedRules[i];
+        s.saved=true; s.ruleIdx=i;
+        s.konto=rule.konto; s.km=rule.km; s.obj=rule.obj;
+        s.proj=rule.proj; s.kasutaja=rule.kasutaja; s.sisu=rule.sisu;
+      }
+    }
+  });
+}
+
+/* ── demo stsenaariumi lülitus: 1. arve (tühi) / 2. arve (reeglid olemas + uued read) ── */
+function setDemoInvoice(n){
+  demoInvoice = n;
+  savedRules.length = 0;
+  selected.clear();
+  editingRule = null;
+  document.getElementById('edit-banner').style.display = 'none';
+  document.getElementById('save-btn-label').textContent = 'Salvesta hankija automaatika';
+  ['r-konto','r-km','r-obj','r-proj','r-kasutaja','r-sisu'].forEach(id=>document.getElementById(id).value='');
+  GROUPS = n===2 ? buildInvoice2Groups() : INVOICE1_GROUPS;
+  buildData();
+  if (n===2){
+    savedRules.push(...SEED_RULES.map(r=>({...r})));
+    applyExistingRules();
+  }
+  document.getElementById('demo-1').classList.toggle('on', n===1);
+  document.getElementById('demo-2').classList.toggle('on', n===2);
+  document.getElementById('doc-code').textContent = n===2 ? 'OA-2026-06-3054' : 'OA-2026-05-2718';
+  document.getElementById('doc-meta').textContent = n===2
+    ? 'Eesti Keskkonnateenused AS · 30.06.2026 · 4 177,44 €'
+    : 'Eesti Keskkonnateenused AS · 31.05.2026 · 3 650,94 €';
+  renderRulesTable();
+  document.getElementById('rules-panel').classList.toggle('open', savedRules.length>0);
+  if (n===2 && !panelOpen) toggleAutoPanel();
+  renderTable();
+  if (n===2){
+    const uncovered = ROWS.filter(r=>!state[r.id].saved).length;
+    toast(`Järgmine arve: automaatika kattis ${ROWS.length-uncovered} rida, ${uncovered} uut rida vajab seadistamist`, true);
+  } else {
+    toast('Esimene arve: automaatikat pole veel seadistatud', true);
+  }
+}
 
 /* ── KM group helpers ── */
 function getKMGroups(){
@@ -916,6 +1035,13 @@ function renderTable(){
 
   updateSelCount();
   renderPreview();
+  updateAutoBtn();
+}
+
+function savedBadge(ruleIdx){
+  return ruleIdx!==null && ruleIdx!==undefined
+    ? `<span class="badge badge-saved clickable" onclick="editRule(${ruleIdx})" title="Klõpsa reegli muutmiseks">&#128274; Reegel #${ruleIdx+1}</span>`
+    : `<span class="badge badge-saved">&#128274; Salvestatud</span>`;
 }
 
 function sisuChips(s){
@@ -936,7 +1062,7 @@ function renderTableItem(tbody, q, unm){
     const tr = document.createElement('tr');
     if (cls) tr.className = cls;
     const statusHtml = s.saved
-      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      ? savedBadge(s.ruleIdx)
       : s.mapped ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" ${selected.has(r.id)?'checked':''} onchange="toggleRow(${r.id},this)"></td>
@@ -964,7 +1090,7 @@ function renderTableGroup(tbody, q, unm){
     else if (selState!=='none') hCls += ' sel';
 
     const statusHtml = gState==='saved'
-      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      ? savedBadge(state[g.rows[0].id].ruleIdx)
       : gState==='mapped' ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
 
     const htr = document.createElement('tr');
@@ -1021,7 +1147,7 @@ function renderTableKM(tbody, q, unm){
     else if (selState!=='none') hCls+=' sel';
 
     const statusHtml = gState==='saved'
-      ? `<span class="badge badge-saved">&#128274; Salvestatud</span>`
+      ? savedBadge(state[g.rows[0].id].ruleIdx)
       : gState==='mapped' ? `<span class="badge badge-set">&#10003; Määratud</span>` : `<span class="badge-none">–</span>`;
 
     const htr = document.createElement('tr');
@@ -1258,13 +1384,13 @@ function applyRule(){
   renderTable();
 }
 
-/* ── save automaatika ── */
+/* ── save automaatika (uus reegel VÕI olemasoleva uuendus) ── */
 function saveAutomaatika(){
   const mapped = ROWS.filter(r=>state[r.id].mapped);
   if (mapped.length===0){ toast('Kõigepealt rakenda reeglid ridadele', false); return; }
   const chips   = [...document.getElementById('sisaldus-box').querySelectorAll('.s-chip')];
   const sisaldus= chips.map(c=>c.textContent.replace('✕','').trim()).join('%') || '%';
-  savedRules.push({
+  const ruleObj = {
     tase:     sisuTase==='group' ? 'GroupEntry' : sisuTase==='km' ? 'KM määr' : 'ItemEntry',
     sisaldus,
     konto:    document.getElementById('r-konto').value.trim(),
@@ -1275,13 +1401,105 @@ function saveAutomaatika(){
     sisu:     document.getElementById('r-sisu').value.trim(),
     koond:    koond==='no'?'':koond==='rida'?'Rida':'Dokument',
     kinnita:  document.getElementById('r-kinnita').checked?'Jah':'',
-  });
-  mapped.forEach(r=>{ state[r.id].saved=true; state[r.id].mapped=false; state[r.id].group=null; });
+  };
+  let idx, msg;
+  if (editingRule!==null){
+    savedRules[editingRule] = ruleObj;
+    idx = editingRule;
+    msg = `Reegel #${idx+1} uuendatud! ${mapped.length} rida uuendatud.`;
+  } else {
+    savedRules.push(ruleObj);
+    idx = savedRules.length-1;
+    msg = 'Hankija automaatika salvestatud! ' + mapped.length + ' rida uuendatud.';
+  }
+  mapped.forEach(r=>{ const s=state[r.id]; s.saved=true; s.mapped=false; s.group=null; s.ruleIdx=idx; });
   selected.clear();
+  cancelEditMode();
   renderRulesTable();
   document.getElementById('rules-panel').classList.add('open');
-  toast('Hankija automaatika salvestatud! ' + mapped.length + ' rida uuendatud.', true);
+  toast(msg, true);
   renderTable();
+}
+
+/* ── olemasoleva reegli muutmine ── */
+function editRule(i){
+  if (i==null || !savedRules[i]) return;
+  const rule = savedRules[i];
+  setTase(rule.tase==='GroupEntry' ? 'group' : rule.tase==='KM määr' ? 'km' : 'item');
+  editingRule = i;
+  // lukusta lahti selle reegli read ja vali need
+  selected.clear();
+  ROWS.forEach(r=>{
+    const s=state[r.id];
+    if (s.ruleIdx===i && s.saved){ s.saved=false; s.mapped=true; selected.add(r.id); }
+  });
+  // täida parem paneel reegli väärtustega
+  document.getElementById('r-konto').value    = rule.konto;
+  document.getElementById('r-km').value       = rule.km;
+  document.getElementById('r-obj').value      = rule.obj;
+  document.getElementById('r-proj').value     = rule.proj;
+  document.getElementById('r-kasutaja').value = rule.kasutaja;
+  document.getElementById('r-sisu').value     = rule.sisu;
+  setKoond(rule.koond==='Rida'?'rida':rule.koond==='Dokument'?'dok':'no');
+  document.getElementById('r-kinnita').checked = rule.kinnita==='Jah';
+  toggleKinnita();
+  // näita reegli sisaldust chipidena
+  const box = document.getElementById('sisaldus-box');
+  const chipCls = rule.tase==='GroupEntry' ? 's-chip amber-chip' : rule.tase==='KM määr' ? 's-chip violet-chip' : 's-chip';
+  box.innerHTML = rule.sisaldus.split('%').map(f=>f.trim()).filter(Boolean).map((w,j,arr)=>
+    `<span class="${chipCls}" onclick="this.nextElementSibling&&this.nextElementSibling.remove();this.remove()">${esc(w)} <span style="font-size:9px;opacity:.6">✕</span></span>${j<arr.length-1?'<span class="s-sep">%</span>':''}`
+  ).join('');
+  // muutmisrežiimi UI
+  document.getElementById('edit-banner').style.display = 'block';
+  document.getElementById('edit-rule-num').textContent = '#'+(i+1);
+  document.getElementById('save-btn-label').textContent = 'Uuenda reeglit #'+(i+1);
+  if (!panelOpen) toggleAutoPanel();
+  renderTable();
+  toast(`Reegel #${i+1} avatud muutmiseks – read lukustati lahti`, true);
+}
+
+function cancelEditMode(){
+  editingRule = null;
+  document.getElementById('edit-banner').style.display = 'none';
+  document.getElementById('save-btn-label').textContent = 'Salvesta hankija automaatika';
+}
+
+function cancelEdit(){
+  if (editingRule===null) return;
+  const i = editingRule;
+  // taasta read lukku vana reegli järgi
+  ROWS.forEach(r=>{
+    const s=state[r.id];
+    if (s.ruleIdx===i && s.mapped){ s.saved=true; s.mapped=false; }
+  });
+  selected.clear();
+  cancelEditMode();
+  ['r-konto','r-km','r-obj','r-proj','r-kasutaja','r-sisu'].forEach(id=>document.getElementById(id).value='');
+  updateSisaldus();
+  renderTable();
+  toast('Muutmine tühistatud', true);
+}
+
+/* ── reegli kustutamine ── */
+function deleteRule(i){
+  if (editingRule===i) cancelEditMode();
+  else if (editingRule!==null && editingRule>i) editingRule--;
+  savedRules.splice(i,1);
+  let freed = 0;
+  ROWS.forEach(r=>{
+    const s=state[r.id];
+    if (s.ruleIdx===i){
+      s.saved=false; s.mapped=false; s.ruleIdx=null;
+      s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';
+      freed++;
+    } else if (s.ruleIdx!==null && s.ruleIdx>i){
+      s.ruleIdx--;
+    }
+  });
+  renderRulesTable();
+  if (savedRules.length===0) document.getElementById('rules-panel').classList.remove('open');
+  renderTable();
+  toast(`Reegel kustutatud – ${freed} rida vabastatud`, true);
 }
 
 /* ── render saved rules ── */
@@ -1290,16 +1508,23 @@ function renderRulesTable(){
   tbody.innerHTML = '';
   savedRules.forEach((r,i)=>{
     const tr = document.createElement('tr');
+    if (editingRule===i) tr.style.background = 'var(--amber-bg)';
     const taseBadge = r.tase==='GroupEntry'
       ? `<span class="badge-group">${esc(r.tase)}</span>`
       : r.tase==='KM määr'
       ? `<span style="background:var(--violet-bg);color:var(--violet);border:1px solid var(--violet-bd);border-radius:3px;font-size:10px;padding:1px 5px;font-weight:500">${esc(r.tase)}</span>`
       : `<span style="font-size:10px;color:var(--text3)">${esc(r.tase)}</span>`;
+    const covered = ROWS.filter(x=>state[x.id].ruleIdx===i && (state[x.id].saved||state[x.id].mapped)).length;
     tr.innerHTML = `<td>${i+1}</td><td>${taseBadge}</td>
       <td><code style="font-size:10px">${esc(r.sisaldus)}</code></td>
       <td>${esc(r.konto)}</td><td>${esc(r.km)}</td><td>${esc(r.obj)}</td>
       <td>${esc(r.proj)}</td><td>${esc(r.kasutaja)}</td><td>${esc(r.sisu)}</td>
-      <td>${esc(r.koond)}</td><td>${esc(r.kinnita)}</td>`;
+      <td>${esc(r.koond)}</td><td>${esc(r.kinnita)}</td>
+      <td style="text-align:center;color:var(--text2)">${covered}</td>
+      <td style="white-space:nowrap">
+        <button class="rule-act-btn" onclick="editRule(${i})" title="Muuda reeglit">&#9998; Muuda</button>
+        <button class="rule-act-btn del" onclick="deleteRule(${i})" title="Kustuta reegel">&#10005;</button>
+      </td>`;
     tbody.appendChild(tr);
   });
   document.getElementById('rules-count').textContent = savedRules.length + ' reeglit';
@@ -1307,22 +1532,34 @@ function renderRulesTable(){
 
 /* ── reset ── */
 function resetAll(){
-  ROWS.forEach(r=>{ const s=state[r.id]; s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';s.mapped=false;s.saved=false;s.group=null; });
+  ROWS.forEach(r=>{ const s=state[r.id]; s.konto='';s.km='';s.obj='';s.proj='';s.kasutaja='';s.sisu='';s.mapped=false;s.saved=false;s.group=null;s.ruleIdx=null; });
   selected.clear();
+  cancelEditMode();
   ['r-konto','r-km','r-obj','r-proj','r-kasutaja','r-sisu'].forEach(id=>document.getElementById(id).value='');
+  applyExistingRules();   // salvestatud reeglid jäävad kehtima – taastatakse ainult salvestamata muudatused
   updateSisaldus();
-  toast('Originaal e-arve read taastatud', true);
+  toast('Originaal e-arve read taastatud (salvestatud reeglid jäid kehtima)', true);
   renderTable();
+  renderRulesTable();
 }
 
 /* ── panel toggle ── */
 let panelOpen = false;
+function autoBtnLabel(){
+  if (savedRules.length===0) return '⚡ Seadista hankija automaatika';
+  const uncovered = ROWS.filter(r=>!state[r.id].saved).length;
+  return uncovered>0 ? `⚡ Automaatika: ${uncovered} rida katmata` : '✓ Automaatika seadistatud';
+}
+function updateAutoBtn(){
+  const btn = document.getElementById('btn-auto');
+  btn.textContent = panelOpen ? '✕ Sulge automaatika' : autoBtnLabel();
+}
 function toggleAutoPanel(){
   panelOpen = !panelOpen;
   document.getElementById('auto-panel').classList.toggle('open', panelOpen);
   const btn = document.getElementById('btn-auto');
   btn.classList.toggle('active', panelOpen);
-  btn.textContent = panelOpen ? '✕ Sulge automaatika' : '⚡ Seadista hankija automaatika';
+  updateAutoBtn();
   if (panelOpen) renderTable();
 }
 function togglePanel(){ toggleAutoPanel(); }
