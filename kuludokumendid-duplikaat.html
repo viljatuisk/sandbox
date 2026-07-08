@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kuludokumendid — duplikaadi kontroll (prototüüp)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a237e;
+    --blue-light: #eef1fb;
+    --blue-border: #b0bce8;
+    --red: #c62828;
+    --red-bg: #ffebee;
+    --warn: #9a6700;
+    --warn-bg: #fff8e1;
+    --warn-border: #e2c04c;
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --text-tertiary: #999;
+    --border: #e0e0e0;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #e8eaf0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+  }
+
+  .phone-frame { transform-origin: top center; transform: scale(1.3); margin-bottom: 260px; }
+
+  .phone-frame {
+    width: 480px;
+    min-height: 800px;
+    background: var(--bg);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Topbar */
+  .topbar {
+    background: var(--blue);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+  .topbar-logo {
+    font-size: 17px; font-weight: 700; letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  .topbar-logo span { font-weight: 300; }
+  .topbar-company {
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85);
+    flex: 1; text-align: center;
+  }
+  .topbar-logout {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 13px; color: rgba(255,255,255,0.85);
+    cursor: pointer; white-space: nowrap;
+  }
+  .topbar-logout i { font-size: 18px; }
+
+  /* Scrollable content */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .section { padding: 16px 16px 0; }
+  .section h2 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .upload-hint {
+    color: var(--blue); font-size: 14px; text-align: center;
+    margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .upload-btn {
+    border: 1.5px solid var(--blue-border);
+    border-radius: var(--radius-lg);
+    background: var(--blue-light);
+    padding: 22px 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; font-size: 14px; color: var(--blue); font-weight: 500;
+    transition: background .15s;
+  }
+  .upload-btn:hover { background: #dce3f8; }
+  .upload-btn i { font-size: 30px; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 4px; }
+
+  .list-title {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    padding: 0 16px 8px;
+  }
+
+  /* Doc list */
+  .doc-list { padding: 0 16px; }
+  .doc-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    min-height: 64px;
+  }
+  .doc-item:last-child { border-bottom: none; }
+  .doc-item.dup {
+    background: var(--warn-bg);
+    margin: 0 -16px; padding: 11px 16px;
+    border-bottom: 1px solid var(--warn-border);
+    cursor: pointer;
+  }
+
+  /* Thumbnail */
+  .thumb {
+    width: 56px; height: 64px; border-radius: 6px;
+    flex-shrink: 0; overflow: hidden;
+    background: #ddd;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb.deleted {
+    background: var(--bg-secondary);
+    border: 1.5px dashed var(--border);
+  }
+  .thumb.deleted i { font-size: 24px; color: var(--text-tertiary); }
+
+  /* Meta */
+  .doc-meta { flex: 1; min-width: 0; }
+
+  .meta-vendor {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 1px;
+  }
+  .meta-amount-date {
+    font-size: 13px; color: var(--text-secondary);
+    margin-bottom: 1px;
+  }
+  .meta-inline-wrap {
+    position: relative; display: inline-flex; align-items: flex-start;
+    gap: 4px; margin-top: 3px;
+  }
+  .meta-inline {
+    font-size: 12px; color: var(--text);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 7px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 195px;
+  }
+  .meta-inline.has-comment {
+    white-space: normal; max-width: 195px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .meta-sep { color: var(--text-tertiary); margin: 0 2px; }
+  .meta-payment { color: var(--blue); }
+  .meta-comment { color: var(--text-secondary); font-style: italic; }
+
+  /* Uploading state */
+  .meta-uploading {
+    font-size: 13px; color: var(--text-tertiary);
+    font-style: italic; margin-bottom: 3px;
+  }
+  .meta-desc {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* Error state */
+  .meta-error {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--red); font-weight: 500;
+  }
+  .meta-error i { font-size: 16px; flex-shrink: 0; }
+
+  /* Duplicate state */
+  .meta-warn {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--warn); font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .meta-warn i { font-size: 16px; flex-shrink: 0; }
+
+  /* Duplicate flag chip (pärast "Saada ikkagi") */
+  .dup-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--warn); font-weight: 600;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 6px;
+    padding: 2px 7px; margin-top: 4px;
+  }
+  .dup-chip i { font-size: 13px; }
+
+  /* Deleted state */
+  .meta-deleted {
+    font-size: 13px; color: var(--text-tertiary); font-style: italic;
+  }
+
+  /* Action buttons */
+  .action-btn {
+    width: 34px; height: 34px;
+    border: 1.5px solid var(--blue-border); border-radius: 8px;
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background .15s;
+  }
+  .action-btn:hover { background: var(--blue-light); }
+  .action-btn i { font-size: 16px; color: var(--blue); }
+  .action-btn.undo i { color: var(--text-secondary); }
+  .action-btn.undo { border-color: var(--border); }
+  .action-btn.undo:hover { background: var(--bg-secondary); }
+  .action-btn.warn { border-color: var(--warn-border); background: #fff; }
+  .action-btn.warn i { color: var(--warn); }
+  .action-btn.warn:hover { background: #fdf3d0; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: flex-end; justify-content: center;
+    z-index: 10;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border-radius: 14px 14px 0 0;
+    padding: 20px 16px 28px;
+    width: 100%;
+  }
+  .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 12px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .modal h3 i { color: var(--warn); font-size: 22px; }
+  .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .btn-cancel {
+    padding: 11px; border: 1.5px solid var(--blue-border);
+    border-radius: var(--radius); background: transparent;
+    font-size: 14px; color: var(--text); cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-cancel:hover { background: var(--bg-secondary); }
+  .btn-save {
+    padding: 11px; border: none; border-radius: var(--radius);
+    background: var(--blue); font-size: 14px; color: #fff;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-save:hover { background: #283593; }
+  .btn-delete {
+    padding: 11px; border: 1.5px solid #e3a3a3;
+    border-radius: var(--radius); background: transparent;
+    font-size: 14px; color: var(--red); font-weight: 500; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-delete:hover { background: var(--red-bg); }
+  .btn-warn {
+    padding: 11px; border: none; border-radius: var(--radius);
+    background: var(--warn); font-size: 14px; color: #fff;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .btn-warn:hover { background: #7d5400; }
+  .btn-later {
+    width: 100%; margin-top: 10px; padding: 9px;
+    border: none; background: none; font-family: inherit;
+    font-size: 13px; color: var(--text-secondary); cursor: pointer;
+  }
+  .btn-later:hover { color: var(--text); }
+
+  /* Duplicate modal specifics */
+  .dup-note { font-size: 13px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 14px; }
+  .dup-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dup-card {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .dup-card.new { border-color: var(--warn-border); background: var(--warn-bg); }
+  .dup-card-title {
+    font-size: 11px; font-weight: 700; letter-spacing: .4px;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .dup-card.new .dup-card-title { color: var(--warn); }
+  .dup-card .thumb { width: 100%; height: 74px; border-radius: 5px; }
+  .dup-card-vendor { font-size: 13px; font-weight: 600; color: var(--text); }
+  .dup-card-info { font-size: 12px; color: var(--text-secondary); }
+  .dup-card-status { font-size: 11px; color: var(--blue); display: flex; align-items: center; gap: 4px; }
+  .dup-card-status i { font-size: 13px; }
+  .dup-match {
+    margin-top: 12px; font-size: 12px; color: var(--text-secondary);
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 10px; line-height: 1.5;
+  }
+  .dup-match b { color: var(--text); }
+
+  /* Proto note */
+  .proto-note {
+    max-width: 480px; margin: 14px auto 0; font-size: 12px; color: #555;
+    background: #fdf8f3; border: 1px dashed #b3540f; border-radius: 6px; padding: 10px 12px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div style="display:flex; flex-direction:column; align-items:center;">
+<div class="phone-frame">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">My<span>Directo</span></div>
+    <div class="topbar-company">DEMOBAAS</div>
+    <div class="topbar-logout">
+      Välju <i class="ti ti-logout"></i>
+    </div>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="content">
+    <div class="section">
+      <h2>Kuludokumendid</h2>
+      <p class="upload-hint">Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.</p>
+      <div class="btn-grid">
+        <div class="upload-btn"><i class="ti ti-camera"></i>Pildista</div>
+        <div class="upload-btn"><i class="ti ti-photo-up"></i>Laadi üles</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="list-title">Üles laaditud dokumendid</div>
+
+    <div class="doc-list" id="docList"></div>
+  </div>
+
+  <!-- Duplicate modal -->
+  <div class="modal-overlay" id="dupModal">
+    <div class="modal">
+      <h3><i class="ti ti-alert-triangle"></i>Võimalik duplikaat</h3>
+      <p class="dup-note">See tšekk paistab olevat juba üles laaditud. Kontrolli, kas tegemist on sama tšekiga.</p>
+      <div class="dup-compare">
+        <div class="dup-card new">
+          <div class="dup-card-title">Uus pilt</div>
+          <div class="thumb" style="background:#c3b89a"></div>
+          <div class="dup-card-vendor">NÄIDISTANKLA OÜ</div>
+          <div class="dup-card-info">73,24€ | 08.07.2026</div>
+          <div class="dup-card-status"><i class="ti ti-clock"></i>Üles laaditud täna 17:08</div>
+        </div>
+        <div class="dup-card">
+          <div class="dup-card-title">Olemasolev</div>
+          <div class="thumb" style="background:#c8bfa4"></div>
+          <div class="dup-card-vendor">NÄIDISTANKLA OÜ</div>
+          <div class="dup-card-info">73,24€ | 08.07.2026</div>
+          <div class="dup-card-status"><i class="ti ti-check"></i>Saadetud Directosse</div>
+        </div>
+      </div>
+      <div class="dup-match">
+        Kattuvad: <b>müüja</b> (Näidistankla OÜ), <b>kviitungi nr</b> 903112, <b>summa</b> 73,24€, <b>kuupäev</b> 08.07.2026
+      </div>
+      <div class="modal-btns">
+        <button class="btn-delete" onclick="dupDelete()"><i class="ti ti-trash"></i> Kustuta topelt</button>
+        <button class="btn-warn" onclick="dupSend()">Saada ikkagi</button>
+      </div>
+      <button class="btn-later" onclick="closeDup()">Otsustan hiljem</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-note">
+  <b>Prototüüp – duplikaadi kontroll töötlemise faasis.</b> Ülemine kirje on "Töötlemisel..." ja muutub ~3 sek pärast
+  staatuseks <b>Võimalik duplikaat</b> (server tuvastas OCR-i järel kattuvuse: müüja + kviitungi nr + summa + kuupäev).
+  Vajuta kirjel → avaneb võrdlus. <b>Kustuta topelt</b> eemaldab pildi (tagasivõetav), <b>Saada ikkagi</b> saadab
+  dokumendi Dok. Transporti koos kollase duplikaadikahtluse märkega, mida näeb ka raamatupidaja Directos.
+  <b>Otsustan hiljem</b> jätab kirje kollasena ootele – Directosse see enne otsust ei liigu.
+</div>
+</div>
+
+<script>
+// status: 'uploading' | 'processing' | 'duplicate' | 'error' | 'deleted' | 'ok' | 'locked'
+// dupFlag: true → saadetud duplikaadikahtluse märkega
+const docs = [
+  {id:1, status:'processing', vendor:'', amount:'', date:'', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#c3b89a'},
+  {id:2, status:'locked', vendor:'NÄIDISTANKLA OÜ', amount:'73,24€', date:'08.07.2026', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#c8bfa4'},
+  {id:3, status:'locked', vendor:'NÄIDISTANKLA OÜ', amount:'71,74€', date:'07.07.2026', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#cfc6ad'},
+  {id:4, status:'locked', vendor:'NÄIDISKIOSK OÜ', amount:'25,2€', date:'07.07.2026', label:'Muu', payment:'Isiklik sularaha', comment:'', color:'#b8b8c4'},
+  {id:5, status:'locked', vendor:'NÄIDISHOTELL OÜ', amount:'128€', date:'07.07.2026', label:'Majutus', payment:'Firma deebetkaart', comment:'', color:'#a9b6c9'},
+  {id:6, status:'locked', vendor:'NÄIDISPOOD OÜ', amount:'18,98€', date:'07.07.2026', label:'Kontor', payment:'Firma deebetkaart', comment:'Tuba 123', color:'#c9b1b1'},
+];
+
+function thumbHtml(d) {
+  if (d.status === 'deleted') {
+    return `<div class="thumb deleted"><i class="ti ti-photo-off"></i></div>`;
+  }
+  return `<div class="thumb" style="background:${d.color}"></div>`;
+}
+
+function metaHtml(d) {
+  if (d.status === 'uploading' || d.status === 'processing') {
+    return `
+      <div class="meta-uploading">Töötlemisel...</div>
+      ${d.comment ? `<div class="meta-desc">${d.comment}</div>` : ''}`;
+  }
+  if (d.status === 'duplicate') {
+    return `
+      <div class="meta-warn"><i class="ti ti-alert-triangle"></i>Võimalik duplikaat</div>
+      <div class="meta-vendor">NÄIDISTANKLA OÜ</div>
+      <div class="meta-amount-date">73,24€ | 08.07.2026</div>`;
+  }
+  if (d.status === 'error') {
+    return `<div class="meta-error"><i class="ti ti-circle-x"></i>Viga üleslaadimisel!</div>`;
+  }
+  if (d.status === 'deleted') {
+    return `<div class="meta-deleted">Pilt kustutatud!</div>`;
+  }
+  // ok või locked
+  return `
+    <div class="meta-vendor">${d.vendor || d.label}</div>
+    <div class="meta-amount-date">${d.amount}${d.amount && d.date ? ' | ' : ''}${d.date}</div>
+    <div class="meta-inline-wrap">
+      <div class="meta-inline${d.comment ? ' has-comment' : ''}">
+        <span>${d.label}</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-payment">${d.payment}</span>
+        ${d.comment ? `<span class="meta-sep">·</span><span class="meta-comment">${d.comment}</span>` : ''}
+      </div>
+    </div>
+    ${d.dupFlag ? `<div class="dup-chip"><i class="ti ti-alert-triangle"></i>Duplikaadikahtlus – märge saadeti Directosse kaasa</div>` : ''}`;
+}
+
+function actionHtml(d) {
+  if (d.status === 'deleted') {
+    return `<button class="action-btn undo" onclick="undoDelete(${d.id})" aria-label="Võta tagasi"><i class="ti ti-arrow-back-up"></i></button>`;
+  }
+  if (d.status === 'duplicate') {
+    return `<button class="action-btn warn" onclick="openDup(${d.id})" aria-label="Lahenda duplikaat"><i class="ti ti-alert-triangle"></i></button>`;
+  }
+  if (d.status === 'locked' || d.status === 'processing' || d.status === 'uploading') return '';
+  return `<button class="action-btn" aria-label="Muuda"><i class="ti ti-pencil"></i></button>`;
+}
+
+function render() {
+  document.getElementById('docList').innerHTML = docs.map(d => `
+    <div class="doc-item${d.status === 'duplicate' ? ' dup' : ''}"
+         ${d.status === 'duplicate' ? `onclick="openDup(${d.id})"` : ''}>
+      ${thumbHtml(d)}
+      <div class="doc-meta">${metaHtml(d)}</div>
+      ${actionHtml(d)}
+    </div>`).join('');
+}
+
+function undoDelete(id) {
+  const d = docs.find(x => x.id === id);
+  if (d) { d.status = 'duplicate'; render(); }
+}
+
+let dupId = null;
+
+function openDup(id) {
+  dupId = id;
+  document.getElementById('dupModal').classList.add('open');
+}
+function closeDup() {
+  document.getElementById('dupModal').classList.remove('open');
+}
+function dupDelete() {
+  const d = docs.find(x => x.id === dupId);
+  if (d) d.status = 'deleted';
+  closeDup(); render();
+}
+function dupSend() {
+  const d = docs.find(x => x.id === dupId);
+  if (d) {
+    d.status = 'ok';
+    d.dupFlag = true;
+    d.vendor = 'NÄIDISTANKLA OÜ';
+    d.amount = '73,24€';
+    d.date = '08.07.2026';
+  }
+  closeDup(); render();
+}
+
+// Demo: töötlemine lõpeb ~3 sek pärast ja server tagastab duplikaadikahtluse
+setTimeout(() => {
+  const d = docs.find(x => x.id === 1);
+  if (d && d.status === 'processing') { d.status = 'duplicate'; render(); }
+}, 3000);
+
+render();
+</script>
+</body>
+</html>
