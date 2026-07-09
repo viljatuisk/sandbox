@@ -108,6 +108,51 @@
     padding: 0 16px 8px;
   }
 
+  /* Filter bar */
+  .filter-bar { padding: 0 16px 10px; }
+  .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filter-field { display: flex; flex-direction: column; gap: 3px; }
+  .filter-field.full { grid-column: 1 / -1; }
+  .filter-field label {
+    font-size: 11px; color: var(--text-secondary); font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .filter-field label i { font-size: 13px; color: var(--blue); }
+  .filter-field select {
+    width: 100%; font-size: 13px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 8px 9px;
+    background: var(--bg); color: var(--text);
+    outline: none; transition: border-color .15s;
+    font-family: inherit; cursor: pointer;
+  }
+  .filter-field select:focus { border-color: var(--blue); }
+
+  /* Filtered sum summary */
+  .filter-summary {
+    margin-top: 10px;
+    background: var(--blue-light);
+    border: 1px solid var(--blue-border);
+    border-radius: var(--radius-lg);
+    padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .filter-summary-text { min-width: 0; }
+  .filter-summary-label {
+    font-size: 12px; color: var(--blue); font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .filter-summary-count { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .filter-summary-total {
+    font-size: 22px; font-weight: 700; color: var(--blue);
+    white-space: nowrap;
+  }
+  .filter-empty {
+    padding: 24px 16px; text-align: center;
+    color: var(--text-tertiary); font-size: 13px;
+  }
+
   /* Doc list */
   .doc-list { padding: 0 16px; }
   .doc-item {
@@ -277,6 +322,37 @@
     <hr class="divider">
     <div class="list-title">Üles laaditud dokumendid</div>
 
+    <!-- Filtrid -->
+    <div class="filter-bar">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label><i class="ti ti-calendar-month"></i>Periood</label>
+          <select id="filterPeriod" onchange="applyFilters()"></select>
+        </div>
+        <div class="filter-field">
+          <label><i class="ti ti-wallet"></i>Makseviis</label>
+          <select id="filterPayment" onchange="applyFilters()">
+            <option value="all">Kõik makseviisid</option>
+            <option value="personal">Isiklik raha</option>
+            <option value="company">Ettevõtte maksevahend</option>
+          </select>
+        </div>
+        <div class="filter-field full">
+          <label><i class="ti ti-building-store"></i>Hankija</label>
+          <select id="filterVendor" onchange="applyFilters()"></select>
+        </div>
+      </div>
+
+      <!-- Filtreeritud summa kokku -->
+      <div class="filter-summary">
+        <div class="filter-summary-text">
+          <div class="filter-summary-label"><i class="ti ti-sigma"></i><span id="sumLabel">Filtreeritud tšekkide summa</span></div>
+          <div class="filter-summary-count" id="sumCount"></div>
+        </div>
+        <div class="filter-summary-total" id="sumTotal">0,00 €</div>
+      </div>
+    </div>
+
     <div class="doc-list" id="docList"></div>
   </div>
 
@@ -311,13 +387,36 @@
 
 <script>
 // status: 'uploading' | 'error' | 'deleted' | 'ok' | 'locked' (dokument loodud Directos)
+// reg = hankija registrikood; amountNum = summa arvuna (filtreerimiseks/liitmiseks)
 const docs = [
-  {id:1, status:'uploading', vendor:'', amount:'', date:'', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#c8d4e8'},
-  {id:2, status:'error',    vendor:'', amount:'', date:'', label:'Kontor',    payment:'Isiklik sularaha',  comment:'', color:'#d0d0d0'},
-  {id:3, status:'deleted',  vendor:'', amount:'', date:'', label:'Muu',       payment:'Isiklik kaart',     comment:'', color:'#e0e0e0'},
-  {id:4, status:'ok',       vendor:'OÜ Statoil', amount:'66,6€', date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#b0c4d8'},
-  {id:5, status:'locked',   vendor:'OÜ Statoil', amount:'66,6€', date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#b0c4d8'},
+  {id:1, status:'uploading', vendor:'', reg:'', amount:'', amountNum:0, date:'', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#c8d4e8'},
+  {id:2, status:'error',    vendor:'', reg:'', amount:'', amountNum:0, date:'', label:'Kontor',    payment:'Isiklik sularaha',  comment:'', color:'#d0d0d0'},
+  {id:3, status:'deleted',  vendor:'', reg:'', amount:'', amountNum:0, date:'', label:'Muu',       payment:'Isiklik kaart',     comment:'', color:'#e0e0e0'},
+  {id:4, status:'ok',       vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#b0c4d8'},
+  {id:5, status:'locked',   vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#b0c4d8'},
+  {id:6, status:'ok',       vendor:'Selver AS', reg:'10379733', amount:'24,90 €', amountNum:24.90, date:'12.06.2025', label:'Kontor', payment:'Isiklik kaart', comment:'Kohvikapslid kontorisse', color:'#d8c4b0'},
+  {id:7, status:'ok',       vendor:'Bolt Operations OÜ', reg:'14532901', amount:'8,45 €', amountNum:8.45, date:'18.06.2025', label:'Transport', payment:'Isiklik kaart', comment:'Sõit kliendikohtumisele', color:'#b0d8c4'},
+  {id:8, status:'ok',       vendor:'Hotell Palace', reg:'10056731', amount:'120,00 €', amountNum:120.00, date:'27.05.2025', label:'Majutus', payment:'Isiklik sularaha', comment:'Komandeering Tallinn', color:'#c4b0d8'},
+  {id:9, status:'locked',   vendor:'Rimi Eesti Food AS', reg:'10263574', amount:'15,30 €', amountNum:15.30, date:'21.05.2025', label:'Kohvik', payment:'Isiklik kaart', comment:'', color:'#d8d0b0'},
+  {id:10, status:'ok',      vendor:'Selver AS', reg:'10379733', amount:'42,10 €', amountNum:42.10, date:'05.05.2025', label:'Kontor', payment:'Firma deebetkaart', comment:'Kontoritarbed', color:'#d8c4b0'},
 ];
+
+// Makseviisi liigitus: isiklik raha vs ettevõtte maksevahend
+function isPersonal(payment) { return /^Isiklik/i.test(payment || ''); }
+
+// Perioodi (kuu) arvutamine kuupäevast "DD.MM.YYYY"
+const MONTHS = ['Jaanuar','Veebruar','Märts','Aprill','Mai','Juuni','Juuli','August','September','Oktoober','November','Detsember'];
+function periodKey(date) {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date || '');
+  return m ? `${m[3]}-${m[2]}` : '';        // nt "2025-06" — sorteerimiseks
+}
+function periodLabel(key) {
+  const [y, mm] = key.split('-');
+  return `${MONTHS[parseInt(mm,10)-1]} ${y}`;
+}
+function formatEur(n) {
+  return n.toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
 
 let editingId = null;
 
@@ -362,14 +461,61 @@ function actionHtml(d) {
   return `<button class="action-btn" onclick="openEdit(${d.id})" aria-label="Muuda"><i class="ti ti-pencil"></i></button>`;
 }
 
-function render() {
-  document.getElementById('docList').innerHTML = docs.map(d => `
-    <div class="doc-item">
-      ${thumbHtml(d)}
-      <div class="doc-meta">${metaHtml(d)}</div>
-      ${actionHtml(d)}
-    </div>`).join('');
+function matchesFilters(d) {
+  const period  = document.getElementById('filterPeriod').value;
+  const payment = document.getElementById('filterPayment').value;
+  const vendor  = document.getElementById('filterVendor').value;
+  if (period  !== 'all' && periodKey(d.date) !== period) return false;
+  if (vendor  !== 'all' && d.vendor !== vendor) return false;
+  if (payment === 'personal' && !isPersonal(d.payment)) return false;
+  if (payment === 'company'  &&  isPersonal(d.payment)) return false;
+  return true;
 }
+
+// Täidab Periood ja Hankija rippmenüüd olemasolevate tšekkide põhjal
+function populateFilters() {
+  const periods = [...new Set(docs.map(d => periodKey(d.date)).filter(Boolean))].sort().reverse();
+  const periodSel = document.getElementById('filterPeriod');
+  periodSel.innerHTML = `<option value="all">Kõik perioodid</option>` +
+    periods.map(k => `<option value="${k}">${periodLabel(k)}</option>`).join('');
+
+  const vendors = [...new Map(docs.filter(d => d.vendor).map(d => [d.vendor, d.reg])).entries()]
+    .sort((a,b) => a[0].localeCompare(b[0], 'et'));
+  const vendorSel = document.getElementById('filterVendor');
+  vendorSel.innerHTML = `<option value="all">Kõik hankijad</option>` +
+    vendors.map(([name, reg]) => `<option value="${name}">${name}${reg ? ` (${reg})` : ''}</option>`).join('');
+}
+
+function render() {
+  const visible = docs.filter(matchesFilters);
+
+  document.getElementById('docList').innerHTML = visible.length
+    ? visible.map(d => `
+      <div class="doc-item">
+        ${thumbHtml(d)}
+        <div class="doc-meta">${metaHtml(d)}</div>
+        ${actionHtml(d)}
+      </div>`).join('')
+    : `<div class="filter-empty">Valitud filtritele vastavaid tšekke ei leitud.</div>`;
+
+  updateSum(visible);
+}
+
+// Liidab kokku filtreeritud tšekkide summad
+function updateSum(visible) {
+  const withAmount = visible.filter(d => d.amountNum > 0);
+  const total = withAmount.reduce((s, d) => s + d.amountNum, 0);
+  document.getElementById('sumTotal').textContent = formatEur(total);
+  document.getElementById('sumCount').textContent =
+    `${withAmount.length} ${withAmount.length === 1 ? 'tšekk' : 'tšekki'}`;
+
+  // Kui filtreeritud ainult isiklikust rahast tasutud tšekid → näita hüvitatavat summat
+  const onlyPersonal = document.getElementById('filterPayment').value === 'personal';
+  document.getElementById('sumLabel').textContent =
+    onlyPersonal ? 'Hüvitamisele kuuluv summa' : 'Filtreeritud tšekkide summa';
+}
+
+function applyFilters() { render(); }
 
 function undoDelete(id) {
   const d = docs.find(x => x.id === id);
@@ -397,6 +543,7 @@ function saveEdit() {
   closeEdit(); render();
 }
 
+populateFilters();
 render();
 </script>
 </body>
