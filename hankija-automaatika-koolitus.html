@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hankija Automaatika – koolitus</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1d3a5f; --navy2:#152c48; --navy3:#0f2138;
+    --amber:#e8a13a; --amber-d:#c47f18; --amber-bg:#fbf1dd;
+    --ink:#1b2733; --ink2:#4a5b6b; --ink3:#8494a3;
+    --line:#dbe2e9; --line2:#c3ced8;
+    --bg:#eef1f5; --card:#ffffff; --soft:#f5f7fa;
+    --green:#2f6b34; --green-bg:#e7f2e4; --green-bd:#9cc793;
+    --red:#b23b3b; --red-bg:#fbe9e9; --red-bd:#e2a3a3;
+    --blue:#1f6bb5; --blue-bg:#e7f0fa; --blue-bd:#9cc2e8;
+    --violet:#5a3b96; --violet-bg:#efe9fb;
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:#0b1826; color:var(--ink);
+    overflow:hidden; display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ── SCALE-TO-FIT STAGE ── */
+  #viewport{position:fixed; inset:0; display:flex; align-items:center; justify-content:center}
+  #stage{
+    width:1280px; height:720px; position:relative;
+    background:var(--bg); overflow:hidden; transform-origin:center center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+
+  .slide{position:absolute; inset:0; display:none; flex-direction:column; padding:52px 64px 60px}
+  .slide.active{display:flex}
+  .slide.pad-0{padding:0}
+
+  /* ── HEADINGS ── */
+  .kicker{font-size:14px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--amber-d); margin-bottom:10px}
+  h1.slide-title{font-size:38px; font-weight:800; line-height:1.12; color:var(--navy); letter-spacing:-.4px}
+  h1.slide-title .sub{display:block; font-size:19px; font-weight:600; color:var(--ink2); margin-top:8px; letter-spacing:0}
+  .title-rule{width:60px; height:5px; background:var(--amber); border-radius:3px; margin:16px 0 22px}
+  h2.section-h{font-size:26px; font-weight:800; color:var(--navy); letter-spacing:-.3px; margin-bottom:4px}
+
+  /* ── TITLE SLIDE ── */
+  .cover{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%); color:#fff; justify-content:center; padding:0 90px}
+  .cover .badge{display:inline-flex; align-items:center; gap:9px; background:rgba(232,161,58,.16); border:1px solid rgba(232,161,58,.5); color:var(--amber); font-size:14px; font-weight:600; padding:7px 16px; border-radius:30px; margin-bottom:26px; width:fit-content; letter-spacing:.5px}
+  .cover h1{font-size:66px; font-weight:800; line-height:1.03; letter-spacing:-1.5px}
+  .cover .lead{font-size:24px; color:#c7d6e6; margin-top:20px; font-weight:500; max-width:820px; line-height:1.4}
+  .cover .meta{margin-top:44px; font-size:15px; color:#8fa6bd; display:flex; gap:14px; align-items:center}
+  .cover .meta .dot{width:5px; height:5px; border-radius:50%; background:#5a7089}
+  .cover .gear{position:absolute; right:-90px; top:-90px; width:520px; height:520px; opacity:.06}
+  .cover .gear2{position:absolute; right:150px; bottom:-140px; width:300px; height:300px; opacity:.05}
+
+  /* ── SECTION DIVIDER ── */
+  .divider{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%); color:#fff; justify-content:center; padding:0 90px}
+  .divider .num{font-size:120px; font-weight:800; color:rgba(232,161,58,.22); line-height:1; letter-spacing:-4px}
+  .divider h2{font-size:48px; font-weight:800; margin-top:6px; letter-spacing:-1px}
+  .divider p{font-size:20px; color:#c7d6e6; margin-top:14px; max-width:760px; line-height:1.45}
+
+  /* ── AGENDA ── */
+  .agenda-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 26px; margin-top:8px}
+  .agenda-item{display:flex; gap:16px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+  .agenda-item .n{flex-shrink:0; width:38px; height:38px; border-radius:10px; background:var(--navy); color:#fff; font-weight:800; font-size:17px; display:flex; align-items:center; justify-content:center}
+  .agenda-item h3{font-size:17px; font-weight:700; color:var(--navy)}
+  .agenda-item p{font-size:13.5px; color:var(--ink2); margin-top:3px; line-height:1.4}
+
+  /* ── GENERIC CARDS / COLUMNS ── */
+  .cols{display:flex; gap:20px; flex:1; min-height:0}
+  .col{flex:1; display:flex; flex-direction:column}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px}
+  .card.fill{flex:1}
+  .card h3{font-size:17px; font-weight:700; color:var(--navy); margin-bottom:10px; display:flex; align-items:center; gap:9px}
+  .card.good{background:var(--green-bg); border-color:var(--green-bd)}
+  .card.good h3{color:var(--green)}
+  .card.bad{background:var(--red-bg); border-color:var(--red-bd)}
+  .card.bad h3{color:var(--red)}
+  .card ul{list-style:none; display:flex; flex-direction:column; gap:9px}
+  .card li{font-size:15px; color:var(--ink); line-height:1.4; padding-left:22px; position:relative}
+  .card li::before{content:''; position:absolute; left:3px; top:8px; width:7px; height:7px; border-radius:2px; background:var(--amber)}
+  .card.good li::before{background:var(--green)}
+  .card.bad li::before{content:'✕'; background:none; left:0; top:0; color:var(--red); font-weight:700; font-size:13px}
+
+  .icon-badge{width:34px; height:34px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0}
+
+  /* ── TIP CALLOUT ── */
+  .tip{margin-top:auto; background:var(--amber-bg); border:1px solid var(--amber); border-left:5px solid var(--amber); border-radius:10px; padding:13px 18px; font-size:15px; color:#6b4410; line-height:1.45; display:flex; gap:11px; align-items:flex-start}
+  .tip b{color:var(--amber-d)}
+  .tip .ti{font-size:20px; flex-shrink:0; line-height:1.2}
+  .warn{background:var(--red-bg); border-color:var(--red-bd); border-left-color:var(--red); color:#7a2a2a}
+  .warn b{color:var(--red)}
+
+  /* ── FLOW STEPS ── */
+  .flow{display:flex; align-items:stretch; gap:0; margin:20px 0}
+  .flow .step{flex:1; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; position:relative; text-align:center}
+  .flow .step .sn{width:30px; height:30px; margin:0 auto 8px; border-radius:50%; background:var(--amber); color:#3a2600; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center}
+  .flow .step h4{font-size:15px; font-weight:700; color:var(--navy)}
+  .flow .step p{font-size:12.5px; color:var(--ink2); margin-top:3px; line-height:1.35}
+  .flow .arr{align-self:center; color:var(--amber); font-size:26px; font-weight:700; padding:0 6px; flex-shrink:0}
+
+  /* ── FEATURE GRID ── */
+  .feat-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; flex:1}
+  .feat{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px}
+  .feat .fi{width:44px; height:44px; border-radius:11px; background:var(--navy); color:var(--amber); display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:12px}
+  .feat h3{font-size:16.5px; font-weight:700; color:var(--navy); margin-bottom:6px}
+  .feat p{font-size:14px; color:var(--ink2); line-height:1.45}
+
+  /* ── FIELD TWO-COLUMN (filtrid/tulemused) ── */
+  .field-list{display:flex; flex-direction:column; gap:6px; margin-top:4px}
+  .field-row{display:flex; gap:10px; font-size:14px; line-height:1.35}
+  .field-row .fn{font-weight:700; color:var(--navy); flex-shrink:0; width:118px}
+  .field-row .fd{color:var(--ink2)}
+
+  /* ── SCREENSHOT EXAMPLE LAYOUT ── */
+  .shot-wrap{display:flex; flex-direction:column; gap:12px; flex:1; min-height:0}
+  .shot{display:flex; flex-direction:column}
+  .shot-label{font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--ink3); margin-bottom:5px; display:flex; align-items:center; gap:7px}
+  .shot-label .tag{background:var(--navy); color:#fff; padding:2px 8px; border-radius:5px; font-size:10.5px; letter-spacing:.4px}
+  .shot-label .tag.res{background:var(--green)}
+  .shot img{width:100%; border:1px solid var(--line2); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.07); display:block}
+  .shot img.tall{object-fit:contain; max-height:100%}
+
+  .ex-head{display:flex; align-items:baseline; gap:12px; margin-bottom:4px}
+  .ex-tag{background:var(--amber); color:#3a2600; font-weight:800; font-size:13px; padding:3px 11px; border-radius:20px; flex-shrink:0}
+  .ex-desc{font-size:14.5px; color:var(--ink2); margin:8px 0 12px; line-height:1.45}
+  .theme-chip{font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--amber-d)}
+
+  /* ── DATA TABLES (recreated rule tables) ── */
+  table.rt{width:100%; border-collapse:collapse; font-size:13px; background:var(--card); border-radius:8px; overflow:hidden; border:1px solid var(--line2)}
+  table.rt th{background:var(--navy); color:#fff; font-weight:600; text-align:left; padding:7px 10px; font-size:12px; white-space:nowrap}
+  table.rt td{padding:7px 10px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); color:var(--ink)}
+  table.rt tr:last-child td{border-bottom:none}
+  table.rt td:last-child{border-right:none}
+  table.rt tr.hl td{background:var(--amber-bg)}
+  table.rt .mono{font-family:'Consolas',monospace; font-size:12.5px}
+  table.rt .muted{color:var(--ink3)}
+  .check{color:var(--green); font-weight:800}
+
+  .pill{display:inline-block; padding:2px 9px; border-radius:20px; font-size:12px; font-weight:600}
+  .pill.b{background:var(--blue-bg); color:var(--blue); border:1px solid var(--blue-bd)}
+  .pill.a{background:var(--amber-bg); color:var(--amber-d); border:1px solid var(--amber)}
+  .pill.v{background:var(--violet-bg); color:var(--violet)}
+
+  /* ── PRIORITY LADDER ── */
+  .ladder{display:flex; flex-direction:column; gap:12px; margin-top:6px}
+  .rung{display:flex; align-items:center; gap:18px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; position:relative}
+  .rung .lvl{width:44px; height:44px; border-radius:11px; color:#fff; font-weight:800; font-size:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .rung.l1 .lvl{background:var(--amber-d)} .rung.l2 .lvl{background:var(--navy)} .rung.l3 .lvl{background:var(--ink3)} .rung.l4 .lvl{background:#b0bcc7}
+  .rung h4{font-size:17px; font-weight:700; color:var(--navy)}
+  .rung p{font-size:13.5px; color:var(--ink2); margin-top:2px; line-height:1.35}
+  .rung .prio{margin-left:auto; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ink3); flex-shrink:0}
+
+  /* ── FAQ ── */
+  .faq{display:grid; grid-template-columns:1fr 1fr; gap:14px 22px; margin-top:6px}
+  .faq-item{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:15px 18px}
+  .faq-item h4{font-size:15px; font-weight:700; color:var(--navy); margin-bottom:6px; display:flex; gap:8px; align-items:flex-start}
+  .faq-item h4 .q{color:var(--amber-d); font-weight:800; flex-shrink:0}
+  .faq-item p{font-size:13.5px; color:var(--ink2); line-height:1.45}
+
+  /* ── SUMMARY LIST ── */
+  .sum-list{display:flex; flex-direction:column; gap:11px; margin-top:6px}
+  .sum-item{display:flex; gap:14px; align-items:flex-start; font-size:16px; color:var(--ink); line-height:1.4}
+  .sum-item .ci{flex-shrink:0; width:28px; height:28px; border-radius:8px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-weight:800; border:1px solid var(--green-bd)}
+  .sum-item b{color:var(--navy)}
+
+  .xml-tag{font-family:'Consolas',monospace; background:var(--navy3); color:#8fd3a0; padding:2px 7px; border-radius:4px; font-size:12.5px; display:inline-block; margin:2px 3px 2px 0}
+
+  /* ── CHROME: nav, progress, counter ── */
+  #progress{position:fixed; top:0; left:0; height:4px; background:var(--amber); z-index:50; transition:width .25s}
+  #counter{position:fixed; bottom:14px; right:18px; z-index:50; font-size:13px; color:#8fa6bd; background:rgba(11,24,38,.7); padding:4px 12px; border-radius:20px; font-weight:600; letter-spacing:.5px}
+  #hint{position:fixed; bottom:14px; left:18px; z-index:50; font-size:12px; color:#6b8199}
+  .nav-zone{position:fixed; top:0; bottom:0; width:14%; z-index:40; cursor:pointer}
+  #nav-prev{left:0} #nav-next{right:0}
+  .slide-foot{position:absolute; left:64px; bottom:22px; font-size:12px; color:var(--ink3); display:flex; align-items:center; gap:8px}
+  .slide-foot .lg{font-weight:800; color:var(--navy)}
+  .divider .slide-foot,.cover .slide-foot{color:#7089a0}
+  .divider .slide-foot .lg,.cover .slide-foot .lg{color:var(--amber)}
+
+  @media print{
+    body{overflow:visible; display:block; background:#fff}
+    #stage{transform:none!important; box-shadow:none}
+    .slide{page-break-after:always}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="counter"></div>
+<div class="nav-zone" id="nav-prev" onclick="go(-1)"></div>
+<div class="nav-zone" id="nav-next" onclick="go(1)"></div>
+
+<div id="viewport">
+<div id="stage">
+
+  <!-- 1 · COVER -->
+  <section class="slide active cover">
+    <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="#e8a13a" stroke-width="1"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    <span class="badge">⚙️ Directo · Raamatupidajate webinar</span>
+    <h1>Hankija<br>Automaatika</h1>
+    <p class="lead">E-arvetest valmis ostuarveteni — automaatselt ja täpselt.</p>
+    <div class="meta"><span>2026</span><span>•</span><span>Kestus ~1,5 h</span><span>•</span><span>wiki.directo.ee/et/yld_hankija</span></div>
+    <div class="slide-foot"><span class="lg">Directo</span> · Hankija automaatika</div>
+  </section>
+
+  <!-- 2 · AGENDA -->
+  <section class="slide">
+    <div class="kicker">Päevakord</div>
+    <h1 class="slide-title">Mida täna vaatame</h1>
+    <div class="title-rule"></div>
+    <div class="agenda-grid">
+      <div class="agenda-item"><div class="n">1</div><div><h3>E-arve on alus</h3><p>Miks automaatika töötab ainult e-arvega + Directo AI nipp</p></div></div>
+      <div class="agenda-item"><div class="n">2</div><div><h3>Mis see on ja mida oskab</h3><p>Lihtne mudel: filter → tulemus. Millal kasutada, millal mitte</p></div></div>
+      <div class="agenda-item"><div class="n">3</div><div><h3>Seadistamine</h3><p>Hankija kaardi sakk „Automaatika" — väljad ja loogika</p></div></div>
+      <div class="agenda-item"><div class="n">4</div><div><h3>Praktilised näited</h3><p>10 elulist stsenaariumi päris Directo ekraanidega</p></div></div>
+      <div class="agenda-item"><div class="n">5</div><div><h3>Reeglite loogika</h3><p>Täitmise järjekord ja KM koodi valik</p></div></div>
+      <div class="agenda-item"><div class="n">6</div><div><h3>Nipid ja KKK</h3><p>Parimad praktikad ja levinud vead</p></div></div>
+    </div>
+    <div class="slide-foot"><span class="lg">Directo</span> · Hankija automaatika</div>
+  </section>
+
+  <!-- 3 · DIVIDER OSA 1 -->
+  <section class="slide divider">
+    <div class="num">01</div>
+    <h2>E-arve on alus</h2>
+    <p>Hankija automaatika töötab ainult e-arvega. Vaatame, miks — ja kuidas ka PDF-arved e-arveteks muuta.</p>
+    <div class="slide-foot"><span class="lg">Osa 1</span> · E-arve on alus</div>
+  </section>
+
+  <!-- 4 · E-ARVE vs PDF -->
+  <section class="slide">
+    <div class="kicker">Osa 1 · Alus</div>
+    <h1 class="slide-title">E-arve vs PDF — miks e-arve võidab</h1>
+    <div class="title-rule"></div>
+    <div class="cols">
+      <div class="col"><div class="card bad fill">
+        <h3>✕ PDF-arve</h3>
+        <ul>
+          <li>Andmed tuvastatakse tekstipõhiselt — madal täpsus</li>
+          <li>Ei toeta automaatkonteeringu reegleid</li>
+          <li>Vajab käsitsi kontrolli iga kord</li>
+        </ul>
+      </div></div>
+      <div class="col"><div class="card good fill">
+        <h3>✅ E-arve (XML)</h3>
+        <ul>
+          <li>Andmed tulevad struktuurselt — 100% täpne tuvastus</li>
+          <li>Toetab täielikku hankija automaatikat</li>
+          <li>Võimaldab automaatse ostuarve loomise + kinnituse</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>NIPP — Directo AI.</b> Tekstipõhised PDF-arved saab Directo AI-ga automaatselt e-arveteks muuta ja neid siis töödelda nagu tavalisi e-arveid.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 1</span> · E-arve on alus</div>
+  </section>
+
+  <!-- 5 · DIVIDER OSA 2 -->
+  <section class="slide divider">
+    <div class="num">02</div>
+    <h2>Mis see on ja mida oskab</h2>
+    <p>Kõige tähtsam mõttemudel: reegel koosneb <b>filtrist</b> (millal rakendub) ja <b>tulemusest</b> (mida täidab).</p>
+    <div class="slide-foot"><span class="lg">Osa 2</span> · Mõiste ja võimekus</div>
+  </section>
+
+  <!-- 6 · MIS ON (mental model) -->
+  <section class="slide">
+    <div class="kicker">Osa 2 · Mõiste</div>
+    <h1 class="slide-title">Mis on Hankija Automaatika?</h1>
+    <div class="title-rule"></div>
+    <p style="font-size:18px; color:var(--ink2); line-height:1.5; max-width:1000px; margin-bottom:6px">
+      See on <b style="color:var(--navy)">reeglite komplekt hankija kaardil</b>, mis täidab e-arvest loodud ostuarve read automaatselt — konto, KM kood, objekt, projekt, kasutaja — kohe arve saabumisel.</p>
+    <div class="flow">
+      <div class="step"><div class="sn">1</div><h4>E-arve saabub</h4><p>Dokumentide Transport</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="sn">2</div><h4>Ostuarve luuakse</h4><p>Automaatselt</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="sn">3</div><h4>Reeglid rakenduvad</h4><p>Konto, objekt, projekt…</p></div>
+      <div class="arr">→</div>
+      <div class="step"><div class="sn">4</div><h4>Arve kinnitub</h4><p>Kui reeglid lubavad</p></div>
+    </div>
+    <div class="tip"><span class="ti">📍</span><div><b>Kust leida:</b> Ost → Dokumendid → Hankijad → ava hankija kaart → sakk <b>Automaatika</b>. Seadistatakse iga hankija jaoks eraldi.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 2</span> · Mõiste ja võimekus</div>
+  </section>
+
+  <!-- 7 · MIDA OSKAB (features) -->
+  <section class="slide">
+    <div class="kicker">Osa 2 · Võimekus</div>
+    <h1 class="slide-title">Mida automaatika oskab?</h1>
+    <div class="title-rule"></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="fi">📋</div><h3>Automaatne kirjendamine</h3><p>Reeglid otsivad e-arve realt teksti ja täidavad konto, objekti, projekti, kasutaja.</p></div>
+      <div class="feat"><div class="fi">⊞</div><h3>Ridade koondamine</h3><p>Arveread koondatakse üheks — sarnase kirjelduse või summavahemiku alusel.</p></div>
+      <div class="feat"><div class="fi">👤</div><h3>Seotus personaliga</h3><p>Read seotakse töötajatega — nt kütusekulu kütusekaardi kasutaja järgi.</p></div>
+      <div class="feat"><div class="fi">📐</div><h3>Finantsretsept</h3><p>Kulu jagatakse objektide vahel kindlas proportsioonis.</p></div>
+      <div class="feat"><div class="fi">✅</div><h3>Automaatkinnitus</h3><p>Kui summa klapib täpselt või jääb vahemikku, arve kinnitub ise.</p></div>
+      <div class="feat"><div class="fi">📤</div><h3>Import / eksport</h3><p>Reeglitabeli saab Excelisse eksportida, muuta ja tagasi importida.</p></div>
+    </div>
+    <div class="slide-foot"><span class="lg">Osa 2</span> · Mõiste ja võimekus</div>
+  </section>
+
+  <!-- 8 · MILLAL KASUTADA -->
+  <section class="slide">
+    <div class="kicker">Osa 2 · Sobivus</div>
+    <h1 class="slide-title">Millal kasutada?</h1>
+    <div class="title-rule"></div>
+    <div class="cols">
+      <div class="col"><div class="card good fill">
+        <h3>✅ Sobib hästi</h3>
+        <ul>
+          <li>Püsiva iseloomuga kuluarved (üür, IT, side, kindlustus)</li>
+          <li>Arved, kus read on iga kord sarnase sisuga</li>
+          <li>Paljurealised arved, mis vajavad korduvat konteerimist</li>
+        </ul>
+      </div></div>
+      <div class="col"><div class="card bad fill">
+        <h3>✕ Ei sobi hästi</h3>
+        <ul>
+          <li>Laokaupade ostuarved, kui laoarvestus toimib Directos</li>
+          <li>Arved, kus rea sisu muutub iga kord täielikult</li>
+        </ul>
+      </div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Täielik automatiseerimine:</b> kui e-arve saabumisel luuakse automaatselt ostuarve + automaatkinnitus, jääb ainsaks käsitsi tegevuseks arve tasumine.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 2</span> · Mõiste ja võimekus</div>
+  </section>
+
+  <!-- 9 · DIVIDER OSA 3 (seadistamine) -->
+  <section class="slide divider">
+    <div class="num">03</div>
+    <h2>Seadistamine</h2>
+    <p>Hankija kaardi sakk „Automaatika" — vasakul <b>filtrid</b>, paremal <b>täidetavad väljad</b>.</p>
+    <div class="slide-foot"><span class="lg">Osa 3</span> · Seadistamine</div>
+  </section>
+
+  <!-- 10 · AUTOMAATIKA SAKK (screenshot) -->
+  <section class="slide">
+    <div class="kicker">Osa 3 · Seadistamine</div>
+    <h1 class="slide-title">Hankija kaart → sakk „Automaatika"</h1>
+    <div class="title-rule"></div>
+    <div class="shot-wrap">
+      <div class="shot">
+        <div class="shot-label"><span class="tag">Ekraan</span> Reeglite tabel — vasakul filtrid, paremal täidetavad väljad</div>
+        <img src="hankija-automaatika-pildid/image4.png" alt="Automaatika sakk">
+      </div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Kõige täpsem kontroll</b> on vaadata, milline tekst jõuab pärast e-arve importi ostuarve rea <b>Sisu</b> väljale — just selle järgi „Sisaldus" filter tegelikult töötab. Ava e-arve XML Dok. Transpordist nupuga <b>XML</b>.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 3</span> · Seadistamine</div>
+  </section>
+
+  <!-- 11 · VÄLJAD: FILTRID vs TULEMUSED -->
+  <section class="slide">
+    <div class="kicker">Osa 3 · Väljad</div>
+    <h1 class="slide-title">Iga reegel = filter + tulemus</h1>
+    <div class="title-rule"></div>
+    <div class="cols">
+      <div class="col"><div class="card fill">
+        <h3><span class="icon-badge" style="background:var(--blue-bg);color:var(--blue)">🔎</span> FILTRID — millal reegel rakendub?</h3>
+        <div class="field-list">
+          <div class="field-row"><span class="fn">Sisaldus</span><span class="fd">tekst, mida otsitakse rea Sisust</span></div>
+          <div class="field-row"><span class="fn">Artikkel</span><span class="fd">artiklikood e-arve realt</span></div>
+          <div class="field-row"><span class="fn">Viitenumber</span><span class="fd">lepingupõhine viitenumber</span></div>
+          <div class="field-row"><span class="fn">Kogus</span><span class="fd">täpne kogus (toetab &gt; ja &lt;)</span></div>
+          <div class="field-row"><span class="fn">Rea summa (…kuni)</span><span class="fd">summa või vahemik</span></div>
+          <div class="field-row"><span class="fn">Kuulub personal</span><span class="fd">seos töötaja kaardiga</span></div>
+          <div class="field-row"><span class="fn">Ainus</span><span class="fd">rakendudes ei kirjuta teised üle</span></div>
+        </div>
+      </div></div>
+      <div class="col"><div class="card fill">
+        <h3><span class="icon-badge" style="background:var(--green-bg);color:var(--green)">✓</span> TULEMUSED — mis täidetakse?</h3>
+        <div class="field-list">
+          <div class="field-row"><span class="fn">Konto</span><span class="fd">kulukonto arve reale</span></div>
+          <div class="field-row"><span class="fn">KM kood</span><span class="fd">käibemaksukood</span></div>
+          <div class="field-row"><span class="fn">Objekt / Projekt</span><span class="fd">finantsdimensioonid</span></div>
+          <div class="field-row"><span class="fn">Kasutaja / Klient</span><span class="fd">töötaja- või kliendikood</span></div>
+          <div class="field-row"><span class="fn">Sisu</span><span class="fd">rea kirjelduse tekst</span></div>
+          <div class="field-row"><span class="fn">Finantsretsept</span><span class="fd">kulu jagamise retsept</span></div>
+          <div class="field-row"><span class="fn">Koond</span><span class="fd">read koondatakse ühele reale</span></div>
+          <div class="field-row"><span class="fn">Kinnita (+ K.summa)</span><span class="fd">arve kinnitub, lubatud summa/vahemik</span></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>„%" märk väljal Sisaldus</b> tähendab „kõik arve read". Seda kasutatakse üld­reeglites — pane need alati tabeli lõppu.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 3</span> · Seadistamine</div>
+  </section>
+
+  <!-- 12 · DIVIDER OSA 4 (näited) -->
+  <section class="slide divider">
+    <div class="num">04</div>
+    <h2>Praktilised näited</h2>
+    <p>10 elulist stsenaariumi — Dok. Transport → ostuarve → automaatika rakendub. Iga näide päris Directo ekraaniga.</p>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 13 · NÄIDE 1 koondamine -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 1</span><span class="theme-chip">Teema · Koondamine</span></div>
+    <h1 class="slide-title" style="font-size:30px">Kõik read ühele kontole + objekt + automaatkinnitus</h1>
+    <p class="ex-desc">Reegel: <span class="pill a">Sisaldus = %</span> <span class="pill b">Konto 522104</span> <span class="pill b">Objekt PARNU</span> <span class="pill v">Koond = Dokument</span> <span class="pill" style="background:var(--green-bg);color:var(--green)">Kinnita ✓</span>. Kõik read koondatakse üheks ja arve kinnitub ise.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> Hankija automaatika</div><img src="hankija-automaatika-pildid/image7.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — üks rida, kinnitatud</div><img src="hankija-automaatika-pildid/image8.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Koond = Dokument</b> koondab kõik read üheks. <b>Kinnita</b>-linnuke → arve kinnitub automaatselt.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 14 · NÄIDE 2 % rida-realt -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 2</span><span class="theme-chip">Teema · % loogika</span></div>
+    <h1 class="slide-title" style="font-size:30px">Kõik rida-realt kindlale kontole</h1>
+    <p class="ex-desc"><span class="pill a">Sisaldus = %</span> tähendab „mida iganes" — reegel rakendub kõigile ridadele. Iga rida jääb eraldi reaks ostuarvel, kõik lähevad samale kontole.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> Hankija automaatika</div><img src="hankija-automaatika-pildid/image9.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — read eraldi, sama konto</div><img src="hankija-automaatika-pildid/image10.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>„%" tabeli lõpus</b> tagab, et kõik ülejäänud read saavad vaikimisi konto. Spetsiifilisemad reeglid pane alati <b>ette</b>.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 15 · NÄIDE 3 KM koodid -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 3</span><span class="theme-chip">Teema · KM koodid</span></div>
+    <h1 class="slide-title" style="font-size:30px">Erinevad käibemaksumäärad ühel arvel</h1>
+    <p class="ex-desc">Kui reeglis <b>KM kood jätta tühjaks</b>, võtab Directo KM määra igalt e-arve realt eraldi. Reegel määrab ainult konto — sobib arvetele, kus on nii 24%, 0% kui pöördmaks segamini.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> KM kood tühi → tuleb e-arvelt</div><img src="hankija-automaatika-pildid/image11.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — iga real oma KM määr</div><img src="hankija-automaatika-pildid/image12.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div>Kui reeglis <b>KM kood on täidetud</b>, on see alati ülimuslik ja kirjutab e-arve KM üle (nt osaline sisendkm 40% või 50%). Loogika: reegel → hankija kaart → artikkel → e-arve määr.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 16 · NÄIDE 4 automaatkinnitus summa -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 4</span><span class="theme-chip">Teema · Automaatkinnitus</span></div>
+    <h1 class="slide-title" style="font-size:30px">Automaatkinnitus summa järgi</h1>
+    <p class="ex-desc">Reale määratakse <b>K.summa</b>. Kui ostuarve rea summa klapib täpselt (või jääb vahemikku <b>K.summa – K.summa kuni</b>), arve kinnitub. Kui mõni summa erineb, arve <b>luuakse, aga ei kinnitu</b>.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> K.summa määratud</div><img src="hankija-automaatika-pildid/image19.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — summad klapivad → kinnitatud</div><img src="hankija-automaatika-pildid/image20.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Vahemik kaitseb üllatuste eest</b>, aga lubab väikest kõikumist (nt küttearved, kommunaal). Mitte­kinnitumise põhjuse näed ostuarve <b>sisekommentaari</b> tulbast.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 17 · NÄIDE 5 tingimuslik kinnitus -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 5</span><span class="theme-chip">Teema · Automaatkinnitus</span></div>
+    <h1 class="slide-title" style="font-size:30px">Tingimuslik kinnitus — ootamatud lisaread</h1>
+    <p class="ex-desc">Kui arvel on ridu, millele <b>ükski kinnita-reegel ei rakendu</b>, jääb kogu arve kinnitamata. See on kaitsemehhanism ootamatute lisaridade vastu — nt hankija lisab arvele uue teenuse.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> Osa ridu vahemikuga, osa ei</div><img src="hankija-automaatika-pildid/image23.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — tuttavad read vahemikus → kinnitatud</div><img src="hankija-automaatika-pildid/image24.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div>Automaatkinnitus on <b>turvaline vaikimisi</b>: kui midagi ootamatut lisandub, jääb arve inimese üle vaadata, mitte ei kinnitu vaikselt valesti.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 18 · NÄIDE 6 finantsretsept -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 6</span><span class="theme-chip">Teema · Finantsretsept</span></div>
+    <h1 class="slide-title" style="font-size:30px">Finantsretsept — kulu jagamine objektide vahel</h1>
+    <p class="ex-desc">Reeglis määratud <b>finantsretsept</b> jagab rea kulu objektide vahel (nt ADM 20%, HOOLDUS 50%, MÜÜK 30%). <span class="pill v">Retsept = Rida</span> → jagamine igal real eraldi; <span class="pill v">= Dokument</span> → kogu arvele.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">Reegel</span> Finantsretsept määratud real</div><img src="hankija-automaatika-pildid/image15.png" alt="reegel"></div>
+      <div class="shot"><div class="shot-label"><span class="tag res">Tulemus</span> Ostuarve — rida jagatud objektidele</div><img src="hankija-automaatika-pildid/image16.png" alt="ostuarve"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Üks retsept, mitu kontot:</b> kui retseptis on konto <span class="mono">{10}</span>, tuleb konto automaatika reeglist. Nii jagab sama retsept eri kulukontode kulusid — eraldi retsepti pole vaja.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 19 · NÄIDE 7 personal (kuulub personal) -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 7</span><span class="theme-chip">Teema · Personal</span></div>
+    <h1 class="slide-title" style="font-size:30px">Personaliga sidumine — kõik samale kontole</h1>
+    <p class="ex-desc">Telia arve: iga töötaja mobiilinumbriga seotud kuluplokk. Kõigi kulud → ühele kontole, iga rida seotakse õige töötajaga läbi personali kaardi.</p>
+    <div class="cols">
+      <div class="col"><div class="card fill" style="padding:14px 16px">
+        <h3 style="font-size:15px">1 · Töötaja kaardil (Personal → Dokumendid)</h3>
+        <table class="rt">
+          <thead><tr><th>Tüüp</th><th>Dok.nr = mobiilinumber</th></tr></thead>
+          <tbody>
+            <tr><td>Telefon</td><td class="mono">Mati → 55001234</td></tr>
+            <tr><td>Telefon</td><td class="mono">Kati → 55005678</td></tr>
+            <tr><td>Telefon</td><td class="mono">Juta → 55009999</td></tr>
+          </tbody>
+        </table>
+        <h3 style="font-size:15px; margin-top:14px">2 · Automaatika reegel</h3>
+        <table class="rt">
+          <thead><tr><th>Kuulub personal</th><th>Konto</th><th>Objekt</th><th>Kasutaja</th></tr></thead>
+          <tbody><tr class="hl"><td>Telefon</td><td class="mono">5700</td><td class="muted">tühi → töötajalt</td><td class="muted">täitub ise</td></tr></tbody>
+        </table>
+      </div></div>
+      <div class="col"><div class="card fill good" style="padding:14px 16px">
+        <h3 style="font-size:15px">3 · Tulemus ostuarvel</h3>
+        <table class="rt">
+          <thead><tr><th>Rida</th><th>Konto</th><th>Kasutaja</th></tr></thead>
+          <tbody>
+            <tr><td>Mati kõned</td><td class="mono">5700</td><td>MATI</td></tr>
+            <tr><td>Kati kõned</td><td class="mono">5700</td><td>KATI</td></tr>
+            <tr><td>Juta kõned</td><td class="mono">5700</td><td>JUTA</td></tr>
+          </tbody>
+        </table>
+        <div class="tip" style="margin-top:16px"><span class="ti">💡</span><div><b>Objekt täidetakse töötajalt</b> automaatselt ainult siis, kui reeglil Objekt on TÜHI. Reeglil olev objekt on alati prioriteet.</div></div>
+      </div></div>
+    </div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 20 · NÄIDE 8 personal erand (Ainus) -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 8</span><span class="theme-chip">Teema · Personal · „Ainus"</span></div>
+    <h1 class="slide-title" style="font-size:30px">Erand ühele töötajale — „Ainus" linnuke</h1>
+    <p class="ex-desc">Enamiku parkimistasud → konto 5700. <b>Erand:</b> Juta parkimistasud → konto 5720, eri objekt. Erandreegel tuleb tabelis <b>ESIMESENA</b> + <b>Ainus</b> linnuke.</p>
+    <div class="card" style="padding:16px 18px; margin-bottom:14px">
+      <table class="rt">
+        <thead><tr><th>#</th><th>Sisaldus</th><th>Konto</th><th>Objekt</th><th>Kuulub personal</th><th>Ainus</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>1</td><td class="mono">Parkimistasu%55009999</td><td class="mono">5720</td><td>JUTA-PARK</td><td>Telefon</td><td class="check">✓</td></tr>
+          <tr><td>2</td><td class="mono">%</td><td class="mono">5700</td><td class="muted">tühi</td><td>Telefon</td><td class="muted">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols" style="gap:14px">
+      <div class="card good" style="flex:1; padding:12px 16px"><h3 style="font-size:14px">Tulemus</h3>
+        <ul style="gap:5px"><li>Juta parkimine → 5720, obj JUTA-PARK (Ainus hoiab üldreegli eemal)</li><li>Kõik teised → 5700, objekt + kasutaja töötaja kaardilt</li><li>Juta muud kõned → 5700, kasutaja JUTA</li></ul>
+      </div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Reegel:</b> erand alati ETTE + „Ainus" linnuke, üldreegel lõppu. Nii ei kirjuta üldreegel erandi tulemust üle.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 21 · NÄIDE 9 lepingupõhine (Viitenumber vs Sisaldus) -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 9</span><span class="theme-chip">Teema · Lepingupõhine</span></div>
+    <h1 class="slide-title" style="font-size:30px">Lepingu number — Viitenumber vs Sisaldus</h1>
+    <p class="ex-desc">Lepingu number võib e-arve XML-is olla eri kohtades. <b>Enefit</b> saadab selle väljal <span class="xml-tag">&lt;CustomerRef&gt;</span> → kasuta filtrit <b>Viitenumber</b>. <b>Elektrum</b> paneb selle „Group-id" välja → number tuleb kirjutada filtrisse <b>Sisaldus</b>.</p>
+    <div class="shot-wrap">
+      <div class="shot"><div class="shot-label"><span class="tag">E-arve XML</span> Enefit — lepingu nr CustomerRef väljal</div><img src="hankija-automaatika-pildid/image38.png" alt="xml"></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Viitenumber</b> otsib täpset vastet, <b>Sisaldus</b> otsib tekstilõiku. Iga lepingu reegel võib määrata eri objekti (konto sama) → üks arve jaguneb objektidele. Vaata alati XML-i, et teada, kus number asub.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 22 · NÄIDE 10 koondamine kandel -->
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 10</span><span class="theme-chip">Teema · Koondamine kandel</span></div>
+    <h1 class="slide-title" style="font-size:30px">Kui ostuarvel ei saa koondada — koonda kandel</h1>
+    <p class="ex-desc">Andmesideteenuste arvel on erineva sisuga read (Kõned, SMS, Internet…), ühist teksti pole. Ostuarvel eri reeglitega ridu ühele reale ei saa — <b>kuid kandel koonduvad identsed read automaatselt</b>.</p>
+    <div class="cols" style="gap:14px">
+      <div class="col"><div class="card bad fill" style="padding:12px 16px"><h3 style="font-size:14px">✕ Ostuarvel ei saa koondada</h3>
+        <ul style="gap:6px"><li>Sisalduses pole ühist teksti kõigile</li><li>Erinevate reeglitega ridu ei saa ühele reale panna</li></ul></div></div>
+      <div class="col"><div class="card good fill" style="padding:12px 16px"><h3 style="font-size:14px">✅ Kandel saab koondada</h3>
+        <ul style="gap:6px"><li>Konto + KM kood + objekt (+ projekt) identsed</li><li>Mõlema reegli <b>Sisu</b> väli täidetud SAMA tekstiga</li></ul></div></div>
+    </div>
+    <div class="card" style="padding:12px 16px; margin-top:12px">
+      <table class="rt">
+        <thead><tr><th>Sisaldus</th><th>Konto</th><th>KM kood</th><th>Objekt</th><th>Sisu (identne!)</th><th>Koond</th></tr></thead>
+        <tbody>
+          <tr><td>Kõned</td><td class="mono">5700</td><td>1</td><td>ADMIN</td><td class="hl" style="font-weight:600">Kõned ja internet</td><td>Rida</td></tr>
+          <tr><td>SMS</td><td class="mono">5700</td><td>1</td><td>ADMIN</td><td class="hl" style="font-weight:600">Kõned ja internet</td><td>Rida</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip warn"><span class="ti">⚠️</span><div><b>Eeldus kandel koondumiseks:</b> konto, KM kood, objekt ja projekt identsed + Sisu täpselt sama tekstiga. Kui Sisu on tühi, koonduvad vaid täiesti identsed read.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
+  <!-- 23 · DIVIDER OSA 5 (loogika) -->
+  <section class="slide divider">
+    <div class="num">05</div>
+    <h2>Reeglite loogika</h2>
+    <p>Kuidas Directo reeglid läbi käib ja mis järjekorras väljad täidetakse — see selgitab „miks tuli selline tulemus".</p>
+    <div class="slide-foot"><span class="lg">Osa 5</span> · Loogika</div>
+  </section>
+
+  <!-- 24 · JÄRK-JÄRGULINE RAKENDAMINE -->
+  <section class="slide">
+    <div class="kicker">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px">Reeglid käivad iga rea peal järjest läbi</h1>
+    <div class="title-rule"></div>
+    <p style="font-size:16px; color:var(--ink2); line-height:1.5; margin-bottom:12px">
+      Directo proovib <b style="color:var(--navy)">kõiki reegleid järjest</b> iga arve rea peal. Esimene sobiv täidab väljad. Iga järgmine reegel rakendub samuti — kuid täidab ainult <b style="color:var(--navy)">veel tühjaks jäänud</b> välju. <b>Juba täidetut üle ei kirjutata.</b></p>
+    <div class="card" style="padding:12px 16px; margin-bottom:12px">
+      <table class="rt">
+        <thead><tr><th>#</th><th>Sisaldus</th><th>Konto</th><th>Objekt</th><th>Kuulub personal</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="mono">Parkimistasu%55009999</td><td class="mono">5720</td><td>PARK</td><td class="muted">tühi</td></tr>
+          <tr><td>2</td><td class="mono">%</td><td class="mono">5700</td><td class="muted">tühi</td><td>Telefon</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols" style="gap:12px">
+      <div class="card" style="flex:1; padding:11px 14px; font-size:12.5px"><b>Parkimistasu 55009999 (Juta)</b><br>R1 ✓ → 5720, PARK<br>R2 ✓ (%) → 5700 EI kirjuta üle, leiab Juta<br><span style="color:var(--green);font-weight:700">= 5720, PARK, kasutaja JUTA</span></div>
+      <div class="card" style="flex:1; padding:11px 14px; font-size:12.5px"><b>Kõneminutid 55001234 (Mati)</b><br>R1 ✕ (pole „Parkimistasu")<br>R2 ✓ (%) → 5700, leiab Mati<br><span style="color:var(--green);font-weight:700">= 5700, objekt Mati kaardilt</span></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div>Kõik reeglid käivad iga rea peal · täidetud välja ei kirjutata üle · tühi väli täidetakse järgmise reegliga.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 5</span> · Loogika</div>
+  </section>
+
+  <!-- 25 · TÄITMISE JÄRJEKORD (priority) -->
+  <section class="slide">
+    <div class="kicker">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px">Kust väli oma väärtuse saab — prioriteet</h1>
+    <div class="title-rule"></div>
+    <div class="ladder">
+      <div class="rung l1"><div class="lvl">1</div><div><h4>Hankija automaatika reegel</h4><p>Kui reeglis on väli täidetud, kasutatakse seda väärtust.</p></div><div class="prio">Kõrgeim</div></div>
+      <div class="rung l2"><div class="lvl">2</div><div><h4>Hankija kaart (LS konto, KM kood)</h4><p>Kui reeglis väli tühi, võetakse väärtus hankija kaardilt.</p></div><div class="prio">↓</div></div>
+      <div class="rung l3"><div class="lvl">3</div><div><h4>E-arve andmed</h4><p>Kui hankija kaardil tühi, kasutatakse e-arve KM määra ja „Dok. transport eelistab" valikut.</p></div><div class="prio">Madalaim</div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div>Iga järgmine tase rakendub ainult siis, kui eelmine on tühi. <b>Reegel on alati ülimuslik.</b></div></div>
+    <div class="slide-foot"><span class="lg">Osa 5</span> · Loogika</div>
+  </section>
+
+  <!-- 26 · KM LOOGIKA + XML -->
+  <section class="slide">
+    <div class="kicker">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px">KM koodi valik & e-arve XML elemendid</h1>
+    <div class="title-rule"></div>
+    <div class="cols">
+      <div class="col"><div class="card fill">
+        <h3>KM koodi määramise loogika</h3>
+        <div class="ladder" style="gap:8px">
+          <div class="rung l1" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">1</div><div><h4 style="font-size:14.5px">Automaatika reegel</h4></div></div>
+          <div class="rung l2" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">2</div><div><h4 style="font-size:14.5px">Hankija kaart</h4></div></div>
+          <div class="rung l3" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">3</div><div><h4 style="font-size:14.5px">Artikkel / artikliklass</h4></div></div>
+          <div class="rung l4" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">4</div><div><h4 style="font-size:14.5px">KM määra järgi (Dok.transport eelistab = Jah)</h4></div></div>
+        </div>
+      </div></div>
+      <div class="col"><div class="card fill">
+        <h3>E-arve XML elemendid</h3>
+        <div class="field-list" style="gap:10px">
+          <div class="field-row"><span class="fn">Sisaldus</span><span class="fd"><span class="xml-tag">&lt;Description&gt;</span><span class="xml-tag">&lt;ItemDescription&gt;</span></span></div>
+          <div class="field-row"><span class="fn">Artikkel</span><span class="fd"><span class="xml-tag">&lt;ProductCode&gt;</span><span class="xml-tag">&lt;ItemID&gt;</span></span></div>
+          <div class="field-row"><span class="fn">Viitenumber</span><span class="fd"><span class="xml-tag">&lt;CustomerRef&gt;</span><span class="xml-tag">&lt;InvoiceReference&gt;</span></span></div>
+          <div class="field-row"><span class="fn">Kogus</span><span class="fd"><span class="xml-tag">&lt;Quantity&gt;</span><span class="xml-tag">&lt;LineQuantity&gt;</span></span></div>
+          <div class="field-row"><span class="fn">Rea summa</span><span class="fd"><span class="xml-tag">&lt;LineTotal&gt;</span><span class="xml-tag">&lt;ItemAmount&gt;</span></span></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="tip warn"><span class="ti">⚠️</span><div><b>0% KM-koode on mitu</b> (maksuvaba, pöördmaks jne) — need tuleb ette määrata hankijale, artiklile või automaatika reeglis!</div></div>
+    <div class="slide-foot"><span class="lg">Osa 5</span> · Loogika</div>
+  </section>
+
+  <!-- 27 · DIVIDER OSA 6 -->
+  <section class="slide divider">
+    <div class="num">06</div>
+    <h2>Nipid ja KKK</h2>
+    <p>Levinud küsimused, tüüpvead ja parimad praktikad seadistamisel.</p>
+    <div class="slide-foot"><span class="lg">Osa 6</span> · Nipid ja KKK</div>
+  </section>
+
+  <!-- 28 · KKK -->
+  <section class="slide">
+    <div class="kicker">Osa 6 · KKK</div>
+    <h1 class="slide-title">Sagedased küsimused</h1>
+    <div class="title-rule"></div>
+    <div class="faq">
+      <div class="faq-item"><h4><span class="q">?</span> Mitu reeglit rakendub ühele reale?</h4><p>KÕIK sobivad reeglid käivad iga rea peal läbi. Esimene täidab väljad, järgmised saavad täita ainult tühjaks jäänud välju.</p></div>
+      <div class="faq-item"><h4><span class="q">?</span> Miks reegel ei rakendu?</h4><p>Kontrolli, et rea Sisu sisaldab otsitavat teksti. Ava e-arve XML Dok. Transpordist → nupp „XML" ja vaata täpset teksti.</p></div>
+      <div class="faq-item"><h4><span class="q">?</span> Miks täidetakse vale sisu / objekt?</h4><p>Kasuta „Ainus" linnukest — kui see reegel rakendub, ei kirjuta teised reeglid seda rida enam üle.</p></div>
+      <div class="faq-item"><h4><span class="q">?</span> Töötaja objekti ei asetata?</h4><p>Objekt täidetakse töötajalt ainult siis, kui reeglil Objekt on TÜHI. Reeglil olev objekt on alati prioriteet.</p></div>
+    </div>
+    <div class="slide-foot"><span class="lg">Osa 6</span> · Nipid ja KKK</div>
+  </section>
+
+  <!-- 29 · KOKKUVÕTE -->
+  <section class="slide">
+    <div class="kicker">Kokkuvõte</div>
+    <h1 class="slide-title">Peamised mõtted kaasa</h1>
+    <div class="title-rule"></div>
+    <div class="sum-list">
+      <div class="sum-item"><span class="ci">✓</span><div>Töötab <b>e-arvetega</b> — seadista iga hankija kaardil eraldi (PDF → Directo AI-ga e-arveks).</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div>Iga reegel = <b>filter</b> (millal) + <b>tulemus</b> (mis täidetakse). <b>„%"</b> = kõik read; spetsiifilised ette, üldised lõppu.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div>Kõik reeglid käivad iga rea peal läbi — <b>täidetut üle ei kirjutata</b>. „Ainus" lukustab erandi.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div><b>Automaatkinnitus</b> säästab aega; summa vahemik annab lubatud hälbe ja kaitseb üllatuste eest.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div><b>Koond</b> muudab paljurealise arve üherealiseks; <b>finantsretsept</b> jagab kulu objektide vahel.</div></div>
+    </div>
+    <div class="slide-foot"><span class="lg">Kokkuvõte</span></div>
+  </section>
+
+  <!-- 30 · KÜSIMUSED -->
+  <section class="slide cover" style="text-align:center; align-items:center">
+    <span class="badge" style="margin:0 auto 26px">⚙️ Aitäh!</span>
+    <h1 style="font-size:72px">Küsimused?</h1>
+    <p class="lead" style="margin:24px auto 0; text-align:center">Loe lähemalt: <b style="color:#fff">wiki.directo.ee/et/yld_hankija#automaatika</b><br>ja raamatupidaja nipinurk — „Kuidas e-arvetest automaatselt ostuarveid luua".</p>
+    <div class="slide-foot" style="left:50%; transform:translateX(-50%)"><span class="lg">Directo</span> · Hankija automaatika</div>
+  </section>
+
+</div><!-- /stage -->
+</div><!-- /viewport -->
+
+<div id="counter"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let cur = 0;
+  const stage = document.getElementById('stage');
+
+  function fit(){
+    const s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    stage.style.transform = 'scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function show(i){
+    cur = Math.max(0, Math.min(slides.length-1, i));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===cur));
+    document.getElementById('progress').style.width = ((cur+1)/slides.length*100)+'%';
+    document.getElementById('counter').textContent = (cur+1)+' / '+slides.length;
+    location.hash = cur+1;
+  }
+  function go(d){ show(cur+d); }
+
+  document.addEventListener('keydown', e=>{
+    if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); go(1); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); go(-1); }
+    else if(e.key==='Home'){ show(0); }
+    else if(e.key==='End'){ show(slides.length-1); }
+  });
+
+  const start = parseInt(location.hash.replace('#',''))-1;
+  show(isNaN(start)?0:start);
+</script>
+</body>
+</html>
