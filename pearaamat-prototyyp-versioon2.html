@@ -67,6 +67,18 @@
   .mc-item:hover { background: #eef4fa; }
   .mc-item input[type=checkbox] { margin: 0; accent-color: #3a6a9a; }
 
+  /* ── OBJEKT ASETAJA ── */
+  .obj-wrap { position: relative; }
+  .obj-picker { display: none; position: absolute; left: 0; right: 0; top: 22px; background: #fff; border: 1px solid #aabccc; border-radius: 0 0 3px 3px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .obj-picker.open { display: block; }
+  .obj-picker-list { max-height: 220px; overflow-y: auto; }
+  .obj-picker-row { display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 11px; color: #1a2a3a; cursor: pointer; border-bottom: 1px solid #eef2f6; }
+  .obj-picker-row:hover { background: #eef4fa; }
+  .obj-picker-row .opc { font-weight: 700; color: #2a4a6a; min-width: 60px; }
+  .obj-picker-row .opn { flex: 1; color: #445; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .obj-picker-row .opl { font-size: 9px; color: #7a8a9a; background: #eef2f6; border-radius: 2px; padding: 1px 4px; white-space: nowrap; }
+  .obj-picker-hd { padding: 3px 8px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #6a8aa8; background: #f0f5fa; border-bottom: 1px solid #e0e8f0; }
+
   /* ── MAIN CONTENT ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
 
@@ -300,7 +312,20 @@
           <option>Osakond</option>
           <option>Pinnad</option>
         </select></div>
-        <div class="sf"><label>Objekt</label><select><option value=""></option><option>OBJ001</option><option>OBJ002</option><option>OSAKOND1</option><option>OSAKOND2</option></select></div>
+        <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: + = vähemalt üks (VÕI), , = kõik korraga (JA). Nt LADU,TLN+MÜÜK">Objekt</label>
+          <div class="obj-wrap" id="objWrap">
+            <div class="sf-lookup">
+              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off">
+              <button class="lkp-btn" type="button" title="Ava objekti asetaja" onclick="toggleObjPicker()">🔍</button>
+            </div>
+            <div class="obj-picker" id="objPicker">
+              <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
+                <input type="text" id="objPickerSearch" placeholder="Otsi objekti..." oninput="filterObjPicker(this.value)" style="width:100%;height:22px;border:1px solid #b8c4d0;border-radius:2px;padding:0 6px;font-size:11px;font-family:Arial,sans-serif;box-sizing:border-box;">
+              </div>
+              <div class="obj-picker-list" id="objPickerList"></div>
+            </div>
+          </div>
+        </div>
         <div class="sf"><label>Selgitus</label><input type="text" placeholder=""></div>
         <div class="sf"><label>Viide</label><input type="text" placeholder=""></div>
         <div class="sf"><label>KM kood</label><select><option>(kõik)</option></select></div>
@@ -1367,6 +1392,65 @@
       item.style.display = item.textContent.toLowerCase().includes(lq) ? '' : 'none';
     });
   }
+
+  /* ── OBJEKT ASETAJA ── */
+  const OBJ_LIST = [
+    { code: 'TLN',      name: 'Tallinn',            level: 'Linn' },
+    { code: 'TARTU',    name: 'Tartu',              level: 'Linn' },
+    { code: 'MÜÜK',     name: 'Müügiosakond',       level: 'Osakond' },
+    { code: 'TOOTMINE', name: 'Tootmisosakond',     level: 'Osakond' },
+    { code: 'IT',       name: 'IT-osakond',         level: 'Osakond' },
+    { code: 'LADU',     name: 'Ladu',               level: 'Osakond' },
+    { code: 'OBJ001',   name: 'Objekt 001',         level: 'Projekt' },
+    { code: 'OBJ002',   name: 'Objekt 002',         level: 'Projekt' },
+    { code: 'AUTO01',   name: 'Sõiduk ABC-123',     level: 'Auto' },
+    { code: 'AUTO02',   name: 'Sõiduk XYZ-987',     level: 'Auto' },
+  ];
+
+  function renderObjPicker(q) {
+    const lq = (q || '').toLowerCase();
+    const list = document.getElementById('objPickerList');
+    const filtered = OBJ_LIST.filter(o =>
+      o.code.toLowerCase().includes(lq) || o.name.toLowerCase().includes(lq) || o.level.toLowerCase().includes(lq));
+    if (!filtered.length) { list.innerHTML = '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>'; return; }
+    let html = '', lastLevel = null;
+    filtered.forEach(o => {
+      if (o.level !== lastLevel) { html += '<div class="obj-picker-hd">' + o.level + '</div>'; lastLevel = o.level; }
+      html += '<div class="obj-picker-row" onclick="pickObj(\'' + o.code + '\')">' +
+              '<span class="opc">' + o.code + '</span>' +
+              '<span class="opn">' + o.name + '</span>' +
+              '<span class="opl">' + o.level + '</span></div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function toggleObjPicker() {
+    const p = document.getElementById('objPicker');
+    const open = p.classList.toggle('open');
+    if (open) {
+      renderObjPicker('');
+      const s = document.getElementById('objPickerSearch');
+      s.value = ''; s.focus();
+    }
+  }
+
+  function filterObjPicker(q) { renderObjPicker(q); }
+
+  // Asetaja lisab objekti tekstivälja lõppu. Kui väljas juba midagi on,
+  // lisatakse '+' eraldajaga (VÕI-loogika); ',' (JA-kombinatsiooni) saab kasutaja käsitsi lisada.
+  function pickObj(code) {
+    const inp = document.getElementById('objInput');
+    let v = inp.value.trim();
+    if (v && !/[+,]\s*$/.test(v)) v += '+';
+    inp.value = v + code;
+    document.getElementById('objPicker').classList.remove('open');
+    inp.focus();
+  }
+
+  document.addEventListener('click', function(e) {
+    const w = document.getElementById('objWrap');
+    if (w && !w.contains(e.target)) document.getElementById('objPicker').classList.remove('open');
+  });
 
 
   (function() {
