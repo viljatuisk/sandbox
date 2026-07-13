@@ -269,6 +269,24 @@
             <br><span class="kkk-status">⏳ Lahendus prototüübis veel tegemata</span>
           </div>
         </div>
+        <div class="kkk-item">
+          <div class="kkk-q">Vahesumma hankija lõikes arvutab alg- ja lõppsaldo valesti</div>
+          <div class="kkk-a">
+            Vahesumma „hankija lõikes" kuvab alg- ja lõppsaldona ainult nende hankijate summa, kellel on valitud <b>perioodis kandeid</b>. Liikumiseta, kuid konto algsaldot mõjutavad hankijad jäetakse välja → saldod on väiksemad kui vaates ilma vahesummata. Muutus (käive) on mõlemas sama, erinevad ainult alg- ja lõppsaldo.
+            <br><b>Õige:</b> algsaldo peab hõlmama <b>kõiki</b> hankijaid; lõikes kuvatud saldode kokkusumma peab ühtima vaatega ilma vahesummata. Sama kontrollida ka teistes vahesumma-lõigetes (klient, objekt jne).
+            <br><b>Testida (baas ocra_emta):</b> Pearaamat, 01.01.2025–30.04.2025, konto 20100000, objekt 800699 — võrdle vaadet ilma vahesummata (õige) vs vahesumma hankija lõikes (vale).
+            <br><span class="kkk-status">⏳ Lahendus prototüübis veel tegemata</span>
+          </div>
+        </div>
+        <div class="kkk-item">
+          <div class="kkk-q">Filter „Tasemeta" ei tööta mitmerealiste kannete puhul reapõhiselt</div>
+          <div class="kkk-a">
+            Filter „Tasemeta" rakendub praegu <b>kande (dokumendi) tasemel</b>, mitte rea tasemel. Kui mitmerealisel kandel on osal ridadel objekti tase täidetud ja osal mitte, jätab aruanne <b>terve kande</b> sisse (leiab ≥1 filtrile vastava rea). Nii satuvad tulemusse ka täidetud tasemega read → valed summad ja alg-/lõppsaldode erinevused perioodide vahel.
+            <br><b>Õige:</b> „Tasemeta" rakendub <b>reapõhiselt</b> — välistatakse üksikud kande read, millel vastava taseme objekt on täidetud; alles jäävad ainult tasemeta read.
+            <br><b>Testida:</b> mitmerealine kanne, kus osal ridadel tase 0 olemas ja osal puudub; lisaks periood, kontod, „ainult saldoga", „muutustega kontod", Kanne → Arve. Kontrolli, et täidetud tasemega read ei kuvata ja perioodide alg-/lõppsaldod klapivad.
+            <br><span class="kkk-status">⏳ Lahendus prototüübis veel tegemata</span>
+          </div>
+        </div>
       </div>
       <div class="kkk-foot">Märkmed testimiseks — ei ole osa aruande funktsioonist.</div>
     </div>
