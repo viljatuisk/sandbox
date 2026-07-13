@@ -84,6 +84,7 @@
   .obj-mode-btn:last-child { border-radius: 0 2px 2px 0; }
   .obj-mode-btn.active { background: #2d4f72; color: #fff; border-color: #2d4f72; }
   .obj-mode-note { font-size: 9px; color: #6a7a8a; margin-top: 2px; min-height: 11px; }
+  tr.objhide { display: none !important; }
 
   /* ── VÄLJA JUHEND (?) + MODAAL ── */
   .help-i { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border-radius: 50%; background: #5a9fd4; color: #fff; font-size: 9px; font-weight: 700; cursor: pointer; vertical-align: middle; margin-left: 2px; }
@@ -1573,6 +1574,30 @@
       if (inp.value === OBJ_EMPTY_MARK) inp.value = '';
       note.textContent = '';
     }
+    applyObjModeFilter(mode);
+  }
+
+  // Filtreerib tabeli read objekti täidetuse järgi (Objekt on andmerea 5. veerg).
+  // Tühjaks jäänud grupid (koos päise ja vahesummadega) peidetakse.
+  function applyObjModeFilter(mode) {
+    const rows = document.querySelectorAll('#mainTbody tr.data');
+    rows.forEach(r => {
+      if (mode === 'all') { r.classList.remove('objhide'); return; }
+      const cell = r.children[4];
+      const filled = cell && cell.textContent.trim() !== '';
+      const hide = (mode === 'filled') ? !filled : filled;
+      r.classList.toggle('objhide', hide);
+    });
+    // Peida grupi päis + vahesummad, kui grupil pole ühtki nähtavat andmerida
+    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => {
+      const g = h.getAttribute('data-group');
+      const anyVisible = mode === 'all' ||
+        [...document.querySelectorAll('#mainTbody tr.data[data-grp="' + g + '"]')]
+          .some(r => !r.classList.contains('objhide'));
+      h.classList.toggle('objhide', !anyVisible);
+      document.querySelectorAll('#mainTbody tr.grp-sub[data-grp="' + g + '"], #mainTbody tr.corr-sub[data-grp="' + g + '"]')
+        .forEach(sr => { if (!anyVisible) sr.classList.add('objhide'); else sr.classList.remove('objhide'); });
+    });
   }
   // Käsitsi kirjutamine või asetajast valimine lülitab režiimi tagasi „Kõik“ peale
   (function(){
