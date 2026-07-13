@@ -555,6 +555,46 @@
     <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
   </section>
 
+  <!-- SUPPORTING · E-arve XML mootori all (Telia naidis) -->
+  <section class="slide">
+    <div class="kicker">Osa 4 · E-arve mootori all</div>
+    <h1 class="slide-title" style="font-size:28px">E-arve XML → ostuarve: kuidas read isikutega seotakse</h1>
+    <div class="title-rule"></div>
+    <div class="cols" style="gap:18px">
+      <div class="col"><div class="card fill" style="padding:14px 16px">
+        <h3 style="font-size:15px">E-arve XML (Telia näidis) — kaks sektsiooni</h3>
+        <pre style="background:#0f2138; color:#cdd9e5; font-family:'Consolas',monospace; font-size:11px; line-height:1.5; padding:12px 14px; border-radius:8px; overflow:auto; margin-top:4px">&lt;<span style="color:#7fb3e0">InvoiceItemGroup</span>&gt;
+  &lt;<span style="color:#7fb3e0">GroupEntry</span>&gt;
+    &lt;<span style="color:#7fb3e0">GroupDescription</span>&gt;Mati Tamm · <span style="background:#e8a13a;color:#2a1a00;font-weight:700">55001234</span>&lt;/&gt;
+  &lt;/GroupEntry&gt;
+  &lt;<span style="color:#7fb3e0">ItemEntry</span>&gt;
+    &lt;<span style="color:#7fb3e0">Description</span>&gt;Kõned · <span style="background:#e8a13a;color:#2a1a00;font-weight:700">55001234</span>&lt;/&gt;
+    &lt;<span style="color:#7fb3e0">ItemSum</span>&gt;8.50&lt;/&gt;
+  &lt;/ItemEntry&gt;
+&lt;/InvoiceItemGroup&gt;
+&lt;<span style="color:#7fb3e0">InvoiceItemGroup</span>&gt;
+  &lt;<span style="color:#7fb3e0">GroupDescription</span>&gt;Juta Kask · <span style="background:#e8a13a;color:#2a1a00;font-weight:700">55009999</span>&lt;/&gt;
+  ...
+&lt;/InvoiceItemGroup&gt;</pre>
+        <div style="font-size:11.5px;color:var(--ink3);margin-top:8px">Mobiilinumber on nii sektsiooni pealkirjas kui rea kirjelduses.</div>
+      </div></div>
+      <div class="col"><div class="card fill good" style="padding:14px 16px">
+        <h3 style="font-size:15px">Automaatika loeb numbri → seob töötaja</h3>
+        <p style="font-size:13px;color:var(--ink2);line-height:1.45;margin-bottom:10px">Reegel <span class="pill a">Kuulub personal = Telefon</span> otsib rea numbri töötajate Telefon-dokumentidest → leiab õige töötaja.</p>
+        <table class="rt">
+          <thead><tr><th>Ostuarve rida</th><th>Konto</th><th>Kasutaja</th></tr></thead>
+          <tbody>
+            <tr><td>Kõned · 55001234</td><td class="mono">5700</td><td>MATI</td></tr>
+            <tr><td>Kõned · 55009999</td><td class="mono">5700</td><td>JUTA</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:11.5px;color:var(--ink3);margin-top:10px">Alternatiiv: <b>Sisaldus = Kõned%55001234</b> — kui töötaja ei kuulu personali (vt Näide 11).</div>
+      </div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div><b>Vaata alati XML-i</b> (Dok. Transport → nupp „XML"), et näha, millisel väljal number asub. Näidisfailid: <span class="mono">telia-earve-naidis.xml</span> ja <span class="mono">telia-arve-naidis.pdf</span>.</div></div>
+    <div class="slide-foot"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
+
   <!-- 20 · NÄIDE 8 personal erand (Ainus) -->
   <section class="slide">
     <div class="ex-head"><span class="ex-tag">Näide 10</span><span class="theme-chip">Teema · Personal · „Ainus"</span></div>
