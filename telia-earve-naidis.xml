@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NÄIDISFAIL koolituseks (Hankija automaatika). Andmed on väljamõeldud.
+     Struktuur järgib Eesti e-arve standardit EVS 923:2014 (versioon 1.2).
+     Kaks sektsiooni (GroupEntry) kahe isiku kohta; iga rida sisaldab
+     isiku mobiilinumbrit, mille järgi Hankija automaatika saab rea siduda
+     töötajaga (Kuulub personal = Telefon  või  Sisaldus = teenus%number). -->
+<E_Invoice>
+  <Header>
+    <Date>2026-07-13</Date>
+    <FileId>TELIA-EARVE-NAIDIS-001</FileId>
+    <Version>1.2</Version>
+  </Header>
+  <Invoice invoiceId="58012345" serviceId="1" regNumber="12345678" sellerRegnumber="10234957">
+    <InvoiceParties>
+      <SellerParty>
+        <Name>Telia Eesti AS</Name>
+        <RegNumber>10234957</RegNumber>
+        <VATRegNumber>EE100268905</VATRegNumber>
+        <ContactData>
+          <ContactName>Arvete osakond</ContactName>
+          <PhoneNumber>+372 1551</PhoneNumber>
+          <E-mailAddress>arved@example.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Mustamäe tee 3</PostalAddress1>
+            <City>Tallinn</City>
+            <PostalCode>15033</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+        <AccountInfo>
+          <AccountNumber>EE882200221012345678</AccountNumber>
+          <BIC>HABAEE2X</BIC>
+        </AccountInfo>
+      </SellerParty>
+      <BuyerParty>
+        <Name>Näidis Ettevõte OÜ</Name>
+        <RegNumber>12345678</RegNumber>
+        <VATRegNumber>EE123456789</VATRegNumber>
+        <ContactData>
+          <ContactName>Raamatupidamine</ContactName>
+          <E-mailAddress>raamatupidaja@naidis.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Näidise tn 1</PostalAddress1>
+            <City>Tartu</City>
+            <PostalCode>50050</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+      </BuyerParty>
+    </InvoiceParties>
+    <InvoiceInformation>
+      <Type type="DEB"/>
+      <DocumentName>Arve</DocumentName>
+      <InvoiceNumber>58012345</InvoiceNumber>
+      <InvoiceContentText>Mobiilsideteenused 07.2026</InvoiceContentText>
+      <PaymentReferenceNumber>580123454</PaymentReferenceNumber>
+      <InvoiceDate>2026-07-13</InvoiceDate>
+      <DueDate>2026-07-27</DueDate>
+      <Period>
+        <StartDate>2026-07-01</StartDate>
+        <EndDate>2026-07-31</EndDate>
+      </Period>
+    </InvoiceInformation>
+    <InvoiceSumGroup>
+      <InvoiceSum>81.98</InvoiceSum>
+      <VAT>
+        <VATRate>24</VATRate>
+        <SumBeforeVAT>81.98</SumBeforeVAT>
+        <VATSum>19.68</VATSum>
+      </VAT>
+      <TotalVATSum>19.68</TotalVATSum>
+      <TotalSum>101.66</TotalSum>
+      <TotalToPay>101.66</TotalToPay>
+      <Currency>EUR</Currency>
+    </InvoiceSumGroup>
+    <InvoiceItem>
+
+      <!-- ================= SEKTSIOON 1 · MATI TAMM · 55001234 ================= -->
+      <InvoiceItemGroup>
+        <GroupEntry>
+          <GroupDescription>Mati Tamm · mobiil 55001234</GroupDescription>
+        </GroupEntry>
+        <ItemEntry>
+          <Description>Kuutasu pakett M · 55001234</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>19.99</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>19.99</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>4.80</VATSum>
+          </VAT>
+          <ItemTotal>24.79</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Kõned ja kõneminutid · 55001234</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>8.50</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>8.50</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>2.04</VATSum>
+          </VAT>
+          <ItemTotal>10.54</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Mobiilne andmeside · 55001234</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>5.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>5.00</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>1.20</VATSum>
+          </VAT>
+          <ItemTotal>6.20</ItemTotal>
+        </ItemEntry>
+      </InvoiceItemGroup>
+
+      <!-- ================= SEKTSIOON 2 · JUTA KASK · 55009999 ================= -->
+      <InvoiceItemGroup>
+        <GroupEntry>
+          <GroupDescription>Juta Kask · mobiil 55009999</GroupDescription>
+        </GroupEntry>
+        <ItemEntry>
+          <Description>Kuutasu pakett L · 55009999</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>24.99</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>24.99</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>6.00</VATSum>
+          </VAT>
+          <ItemTotal>30.99</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Kõned ja kõneminutid · 55009999</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>12.30</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>12.30</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>2.95</VATSum>
+          </VAT>
+          <ItemTotal>15.25</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Lühisõnumid SMS · 55009999</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>2.20</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>2.20</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>0.53</VATSum>
+          </VAT>
+          <ItemTotal>2.73</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Mobiilne andmeside · 55009999</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>9.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>9.00</ItemSum>
+          <VAT>
+            <VATRate>24</VATRate>
+            <VATSum>2.16</VATSum>
+          </VAT>
+          <ItemTotal>11.16</ItemTotal>
+        </ItemEntry>
+      </InvoiceItemGroup>
+
+    </InvoiceItem>
+    <PaymentInfo>
+      <Currency>EUR</Currency>
+      <PaymentDescription>Mobiilsideteenused 07.2026</PaymentDescription>
+      <Payable>YES</Payable>
+      <PayDueDate>2026-07-27</PayDueDate>
+      <PaymentTotalSum>101.66</PaymentTotalSum>
+      <PayerName>Näidis Ettevõte OÜ</PayerName>
+      <PaymentId>580123454</PaymentId>
+      <PayToAccount>EE882200221012345678</PayToAccount>
+      <PayToName>Telia Eesti AS</PayToName>
+    </PaymentInfo>
+  </Invoice>
+</E_Invoice>
