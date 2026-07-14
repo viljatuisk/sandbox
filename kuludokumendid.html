@@ -310,6 +310,69 @@
     transition: background .15s;
   }
   .btn-save:hover { background: #283593; }
+
+  /* Pildi eelvaade — täisekraan tšeki saatmiseks */
+  .preview-screen {
+    position: absolute; inset: 0; background: var(--bg);
+    display: none; flex-direction: column; z-index: 60;
+  }
+  .preview-screen.open { display: flex; }
+  .preview-back {
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: #fff; flex: 1;
+  }
+  .preview-back i { font-size: 20px; }
+  .preview-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .preview-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+  .receipt-preview {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px; text-align: center;
+    margin-bottom: 6px;
+  }
+  .receipt-preview .rp-icon { font-size: 42px; color: var(--text-tertiary); }
+  .receipt-preview .rp-amount { font-size: 22px; font-weight: 700; color: var(--text); margin-top: 6px; }
+  .receipt-preview .rp-vendor { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .pv-label {
+    font-size: 12px; color: var(--text-secondary); font-weight: 600;
+    display: block; margin: 14px 0 4px;
+  }
+  .pv-field {
+    width: 100%; font-size: 14px; font-family: inherit;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 11px; background: var(--bg); color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  select.pv-field { cursor: pointer; }
+  textarea.pv-field { resize: none; height: 56px; }
+  .pv-field:focus { border-color: var(--blue); }
+  .pv-month {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin: 20px 0;
+  }
+  .pv-month-btn {
+    width: 54px; height: 46px; flex-shrink: 0;
+    border: 1.5px solid var(--blue-border); border-radius: var(--radius);
+    background: var(--blue-light); color: var(--blue); font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .pv-month-btn:hover { background: #dce3f8; }
+  .pv-month-label { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: var(--text); }
+  .pv-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  .pv-cancel, .pv-send {
+    padding: 13px; border-radius: var(--radius); font-size: 15px;
+    cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .pv-cancel { border: 1.5px solid var(--blue-border); background: transparent; color: var(--text); }
+  .pv-cancel:hover { background: var(--bg-secondary); }
+  .pv-send { border: none; background: var(--blue); color: #fff; font-weight: 600; }
+  .pv-send:hover { background: #283593; }
+  .pv-delete {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    color: var(--red); font-size: 14px; font-weight: 500;
+    margin-top: 16px; cursor: pointer;
+  }
+  .pv-delete i { font-size: 17px; }
 </style>
 </head>
 <body>
@@ -331,8 +394,8 @@
       <h2>Kuludokumendid</h2>
       <p class="upload-hint">Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.</p>
       <div class="btn-grid">
-        <div class="upload-btn"><i class="ti ti-camera"></i>Pildista</div>
-        <div class="upload-btn"><i class="ti ti-photo-up"></i>Laadi üles</div>
+        <div class="upload-btn" onclick="openPreview('eur')"><i class="ti ti-camera"></i>Pildista</div>
+        <div class="upload-btn" onclick="openPreview('usd')"><i class="ti ti-photo-up"></i>Laadi üles</div>
       </div>
     </div>
 
@@ -398,8 +461,8 @@
       <label>Makseviis</label>
       <select id="editPayment">
         <option>Firma deebetkaart</option>
+        <option>Isiklik pangakaart</option>
         <option>Isiklik sularaha</option>
-        <option>Isiklik kaart</option>
       </select>
       <label>Kommentaar</label>
       <textarea id="editComment" placeholder="Lisa kommentaar..."></textarea>
@@ -407,6 +470,68 @@
         <button class="btn-cancel" onclick="closeEdit()">Tühista</button>
         <button class="btn-save" onclick="saveEdit()">Salvesta</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Pildi eelvaade: tšeki saatmise ekraan (Pildista / Laadi üles avavad selle) -->
+  <div class="preview-screen" id="previewScreen">
+    <div class="topbar">
+      <div class="preview-back" onclick="closePreview()"><i class="ti ti-arrow-left"></i>Kuludokumendid</div>
+      <div class="topbar-logout">Välju <i class="ti ti-logout"></i></div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-title">Pildi eelvaade</div>
+
+      <!-- Tšekilt tuvastatud pilt + summa (OCR) -->
+      <div class="receipt-preview">
+        <i class="ti ti-file-invoice rp-icon"></i>
+        <div class="rp-amount" id="pvDetectedAmount">—</div>
+        <div class="rp-vendor" id="pvDetectedVendor">—</div>
+      </div>
+
+      <label class="pv-label">Tüüp</label>
+      <select class="pv-field" id="pvLabel">
+        <option>Kontor</option>
+        <option>Kohvik</option>
+        <option>Transport</option>
+        <option>Majutus</option>
+        <option>Ehitusmaterjalid</option>
+        <option>Muu</option>
+      </select>
+
+      <label class="pv-label">Makseviis</label>
+      <select class="pv-field" id="pvPayment">
+        <option>Firma deebetkaart</option>
+        <option>Isiklik pangakaart</option>
+        <option>Isiklik sularaha</option>
+      </select>
+
+      <!-- Võõrvaluuta plokk: valuuta loetud tšekilt, kulutaja lisab tegelikult makstud EUR (→ Directo Summa-T) -->
+      <div id="pvCurrencyBlock" style="display:none;">
+        <div class="modal-fx-info" style="margin-top:14px;">
+          <span>Tšekil tuvastatud summa</span>
+          <strong id="pvForeignAmount">—</strong>
+        </div>
+        <label class="pv-label">Kui palju sa tegelikult maksid? (EUR)</label>
+        <input class="pv-field" id="pvPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80">
+        <div class="modal-hint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
+      </div>
+
+      <label class="pv-label">Kommentaar</label>
+      <textarea class="pv-field" id="pvComment" placeholder="Lisa kommentaar..."></textarea>
+
+      <!-- Periood, kuhu kulutus kirjendatakse -->
+      <div class="pv-month">
+        <div class="pv-month-btn" onclick="pvMonthStep(-1)"><i class="ti ti-arrow-left"></i></div>
+        <div class="pv-month-label" id="pvMonthLabel">—</div>
+        <div class="pv-month-btn" onclick="pvMonthStep(1)"><i class="ti ti-arrow-right"></i></div>
+      </div>
+
+      <div class="pv-actions">
+        <button class="pv-cancel" onclick="closePreview()"><i class="ti ti-circle-x"></i>Katkesta</button>
+        <button class="pv-send" onclick="sendPreview()"><i class="ti ti-send"></i>Saada</button>
+      </div>
+      <div class="pv-delete" onclick="closePreview()"><i class="ti ti-trash"></i>Kustuta</div>
     </div>
   </div>
 
@@ -419,14 +544,14 @@ const docs = [
   {id:1, status:'uploading', vendor:'', reg:'', amount:'', amountNum:0, date:'', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#c8d4e8'},
   {id:4, status:'ok',       vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#b0c4d8'},
   {id:5, status:'locked',   vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#b0c4d8'},
-  {id:6, status:'ok',       vendor:'Selver AS', reg:'10379733', amount:'24,90 €', amountNum:24.90, date:'12.06.2025', label:'Kontor', payment:'Isiklik kaart', comment:'Kohvikapslid kontorisse', color:'#d8c4b0'},
-  {id:7, status:'ok',       vendor:'Bolt Operations OÜ', reg:'14532901', amount:'8,45 €', amountNum:8.45, date:'18.06.2025', label:'Transport', payment:'Isiklik kaart', comment:'Sõit kliendikohtumisele', color:'#b0d8c4'},
+  {id:6, status:'ok',       vendor:'Selver AS', reg:'10379733', amount:'24,90 €', amountNum:24.90, date:'12.06.2025', label:'Kontor', payment:'Isiklik pangakaart', comment:'Kohvikapslid kontorisse', color:'#d8c4b0'},
+  {id:7, status:'ok',       vendor:'Bolt Operations OÜ', reg:'14532901', amount:'8,45 €', amountNum:8.45, date:'18.06.2025', label:'Transport', payment:'Isiklik pangakaart', comment:'Sõit kliendikohtumisele', color:'#b0d8c4'},
   {id:8, status:'ok',       vendor:'Hotell Palace', reg:'10056731', amount:'120,00 €', amountNum:120.00, date:'27.05.2025', label:'Majutus', payment:'Isiklik sularaha', comment:'Komandeering Tallinn', color:'#c4b0d8'},
-  {id:9, status:'locked',   vendor:'Rimi Eesti Food AS', reg:'10263574', amount:'15,30 €', amountNum:15.30, date:'21.05.2025', label:'Kohvik', payment:'Isiklik kaart', comment:'', color:'#d8d0b0'},
+  {id:9, status:'locked',   vendor:'Rimi Eesti Food AS', reg:'10263574', amount:'15,30 €', amountNum:15.30, date:'21.05.2025', label:'Kohvik', payment:'Isiklik pangakaart', comment:'', color:'#d8d0b0'},
   {id:10, status:'ok',      vendor:'Selver AS', reg:'10379733', amount:'42,10 €', amountNum:42.10, date:'05.05.2025', label:'Kontor', payment:'Firma deebetkaart', comment:'Kontoritarbed', color:'#d8c4b0'},
   // Võõrvaluutas tšekk: valuuta ja summa loetakse tšekilt (currency, amountForeign).
   // rate = Directo ametlik kurss (arvutuslik euroväärtus); paidEur = kulutaja tegelikult makstud EUR → Directo 'Summa-T'.
-  {id:11, status:'ok',      vendor:'Amazon EU', reg:'', currency:'USD', amountForeign:70, rate:0.9265, paidEur:null, amount:'70,00 USD', amountNum:0, date:'20.01.2025', label:'Kontor', payment:'Isiklik kaart', comment:'Kontoritarbed', color:'#c8b0d8'},
+  {id:11, status:'ok',      vendor:'Amazon EU', reg:'', currency:'USD', amountForeign:70, rate:0.9265, paidEur:null, amount:'70,00 USD', amountNum:0, date:'20.01.2025', label:'Kontor', payment:'Isiklik pangakaart', comment:'Kontoritarbed', color:'#c8b0d8'},
 ];
 
 // Makseviisi liigitus: isiklik raha vs ettevõtte maksevahend
@@ -589,12 +714,86 @@ function saveEdit() {
   d.payment = document.getElementById('editPayment').value;
   d.comment = document.getElementById('editComment').value;
   // Tegelikult makstud summa (Summa-T) — võõrvaluuta korral
-  if (isForeign(d)) {
-    const raw = document.getElementById('editPaidEur').value.trim().replace(/\s/g, '').replace(',', '.');
-    const val = parseFloat(raw);
-    d.paidEur = raw !== '' && !isNaN(val) ? val : null;
-  }
+  if (isForeign(d)) d.paidEur = parseEurInput(document.getElementById('editPaidEur').value);
   closeEdit(); render();
+}
+
+// Teisendab kasutaja sisestatud EUR-summa arvuks (koma → punkt); tühi/vigane → null
+function parseEurInput(str) {
+  const raw = (str || '').trim().replace(/\s/g, '').replace(',', '.');
+  const v = parseFloat(raw);
+  return raw !== '' && !isNaN(v) ? v : null;
+}
+
+/* ---- Pildi eelvaade (tšeki saatmine) ---- */
+// Demo "OCR" tulemused: Pildista → EUR tšekk, Laadi üles → võõrvaluuta (USD), et Summa-T väli esile tuleks.
+const CAPTURES = {
+  eur: {vendor:'Selver AS', reg:'10379733', currency:'EUR', amount:'45,15 €', amountNum:45.15,
+        day:'02', monthIndex:1, year:2026, defaultLabel:'Kohvik', color:'#d8c4b0'},
+  usd: {vendor:'Amazon EU', reg:'', currency:'USD', amountForeign:70, rate:0.9265, amount:'70,00 USD', amountNum:0,
+        day:'08', monthIndex:6, year:2026, defaultLabel:'Kontor', color:'#c8b0d8'},
+};
+let pending = null, pvMonthIndex = 0, pvYear = 2026;
+
+function openPreview(kind) {
+  pending = Object.assign({}, CAPTURES[kind]);
+  document.getElementById('pvDetectedAmount').textContent = pending.amount;
+  document.getElementById('pvDetectedVendor').textContent = pending.vendor;
+  document.getElementById('pvLabel').value = pending.defaultLabel;
+  document.getElementById('pvPayment').value = pending.currency === 'EUR' ? 'Firma deebetkaart' : 'Isiklik pangakaart';
+  document.getElementById('pvComment').value = '';
+  // Võõrvaluuta plokk ainult siis, kui tšekk pole eurodes
+  const fx = document.getElementById('pvCurrencyBlock');
+  if (isForeign(pending)) {
+    fx.style.display = 'block';
+    document.getElementById('pvForeignAmount').textContent = pending.amount;
+    document.getElementById('pvPaidEur').value = '';
+  } else {
+    fx.style.display = 'none';
+  }
+  // Periood vaikimisi tšeki kuupäeva järgi
+  pvMonthIndex = pending.monthIndex; pvYear = pending.year;
+  renderPvMonth();
+  document.getElementById('previewScreen').classList.add('open');
+}
+
+function renderPvMonth() {
+  document.getElementById('pvMonthLabel').textContent = `${MONTHS[pvMonthIndex].toUpperCase()} ${pvYear}`;
+}
+function pvMonthStep(delta) {
+  pvMonthIndex += delta;
+  if (pvMonthIndex > 11) { pvMonthIndex = 0; pvYear++; }
+  if (pvMonthIndex < 0)  { pvMonthIndex = 11; pvYear--; }
+  renderPvMonth();
+}
+
+function closePreview() {
+  document.getElementById('previewScreen').classList.remove('open');
+  pending = null;
+}
+
+function sendPreview() {
+  if (!pending) return;
+  const id = Math.max(...docs.map(d => d.id)) + 1;
+  const date = `${pending.day}.${String(pvMonthIndex + 1).padStart(2, '0')}.${pvYear}`;
+  const doc = {
+    id, status: 'ok', vendor: pending.vendor, reg: pending.reg,
+    amount: pending.amount, amountNum: pending.amountNum || 0, date,
+    label: document.getElementById('pvLabel').value,
+    payment: document.getElementById('pvPayment').value,
+    comment: document.getElementById('pvComment').value.trim(),
+    color: pending.color,
+  };
+  if (isForeign(pending)) {
+    doc.currency = pending.currency;
+    doc.amountForeign = pending.amountForeign;
+    doc.rate = pending.rate;
+    doc.paidEur = parseEurInput(document.getElementById('pvPaidEur').value);
+  }
+  docs.unshift(doc);         // uus tšekk nimekirja etappe; muudetav kuni Directos kulutust pole (status 'ok')
+  closePreview();
+  populateFilters();
+  render();
 }
 
 populateFilters();
