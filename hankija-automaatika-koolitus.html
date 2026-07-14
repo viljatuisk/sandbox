@@ -883,7 +883,15 @@
       <div class="rung l2"><div class="lvl">2</div><div><h4>Hankija kaart (LS konto, KM kood)</h4><p>Kui reeglis väli tühi, võetakse väärtus hankija kaardilt.</p></div><div class="prio">↓</div></div>
       <div class="rung l3"><div class="lvl">3</div><div><h4>E-arve andmed</h4><p>Kui hankija kaardil tühi, kasutatakse e-arve KM määra ja „Dok. transport eelistab" valikut.</p></div><div class="prio">Madalaim</div></div>
     </div>
-    <div class="tip"><span class="ti">💡</span><div>Iga järgmine tase rakendub ainult siis, kui eelmine on tühi. <b>Reegel on alati ülimuslik.</b></div></div>
+    <div style="margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 18px">
+        <h3 style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:3px">Kust tuleb rea &bdquo;Sisu&ldquo; (kirjeldus)? &mdash; s&uuml;steemiseadistus</h3>
+        <p style="font-size:12.5px;color:var(--ink2);margin-bottom:10px">S&uuml;steemiseadistused &rarr; <i>&bdquo;Ostuarve ja kulutuse konto asetamisel v&otilde;etakse kirjeldus alati kontolt&ldquo;</i></p>
+        <div style="display:flex;gap:14px">
+          <div style="flex:1;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.4"><span class="pill" style="background:#fff;color:var(--green);border:1px solid var(--green-bd)">EI</span> &nbsp;Sisu tuleb <b>automaatika reeglist</b> (kui reeglis Sisu t&uuml;hi &rarr; j&auml;&auml;b e-arve rea kirjeldus).</div>
+          <div style="flex:1;background:var(--amber-bg);border:1px solid var(--amber);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.4"><span class="pill a">JAH</span> &nbsp;Sisuks kirjutatakse <b>alati konto nimetus</b> (reegli Sisu ega e-arve kirjeldust ei arvestata).</div>
+        </div>
+      </div>
+      <div class="tip"><span class="ti">💡</span><div>Iga järgmine tase rakendub ainult siis, kui eelmine on tühi. <b>Reegel on alati ülimuslik.</b></div></div>
     <div class="slide-foot"><span class="lg">Osa 5</span> · Loogika</div>
   </section>
 
