@@ -508,10 +508,6 @@
 
       <!-- Võõrvaluuta plokk: valuuta loetud tšekilt, kulutaja lisab tegelikult makstud EUR (→ Directo Summa-T) -->
       <div id="pvCurrencyBlock" style="display:none;">
-        <div class="modal-fx-info" style="margin-top:14px;">
-          <span>Tšekil tuvastatud summa</span>
-          <strong id="pvForeignAmount">—</strong>
-        </div>
         <label class="pv-label">Kui palju sa tegelikult maksid? (EUR)</label>
         <input class="pv-field" id="pvPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80">
         <div class="modal-hint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
@@ -746,7 +742,6 @@ function openPreview(kind) {
   const fx = document.getElementById('pvCurrencyBlock');
   if (isForeign(pending)) {
     fx.style.display = 'block';
-    document.getElementById('pvForeignAmount').textContent = pending.amount;
     document.getElementById('pvPaidEur').value = '';
   } else {
     fx.style.display = 'none';
