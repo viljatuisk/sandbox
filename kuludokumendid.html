@@ -190,6 +190,12 @@
     font-size: 13px; color: var(--text-secondary);
     margin-bottom: 1px;
   }
+  .meta-currency-note {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 12px; color: var(--blue); font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .meta-currency-note i { font-size: 13px; }
   .meta-inline-wrap {
     position: relative; display: inline-flex; align-items: flex-start;
     gap: 4px; margin-top: 3px;
@@ -278,6 +284,17 @@
   }
   .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--blue); }
   .modal textarea { resize: none; height: 60px; }
+  .modal-fx-info {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 4px;
+  }
+  .modal-fx-info span { font-size: 12px; color: var(--text-secondary); }
+  .modal-fx-info strong { font-size: 15px; color: var(--text); }
+  .modal-hint {
+    font-size: 11px; color: var(--text-secondary);
+    line-height: 1.4; margin-top: 6px;
+  }
   .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
   .btn-cancel {
     padding: 11px; border: 1.5px solid var(--blue-border);
@@ -360,6 +377,16 @@
   <div class="modal-overlay" id="editModal">
     <div class="modal">
       <h3>Muuda dokumenti</h3>
+      <!-- Võõrvaluuta plokk: valuuta tuleb tšekilt, kulutaja lisab tegelikult makstud EUR (→ Directo Summa-T) -->
+      <div id="editCurrencyBlock" style="display:none;">
+        <div class="modal-fx-info">
+          <span>Tšekil tuvastatud summa</span>
+          <strong id="editForeignAmount">—</strong>
+        </div>
+        <label>Kui palju sa tegelikult maksid? (EUR)</label>
+        <input id="editPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80">
+        <div class="modal-hint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
+      </div>
       <label>Kulu tüüp</label>
       <select id="editLabel">
         <option>Kontor</option>
@@ -397,6 +424,9 @@ const docs = [
   {id:8, status:'ok',       vendor:'Hotell Palace', reg:'10056731', amount:'120,00 €', amountNum:120.00, date:'27.05.2025', label:'Majutus', payment:'Isiklik sularaha', comment:'Komandeering Tallinn', color:'#c4b0d8'},
   {id:9, status:'locked',   vendor:'Rimi Eesti Food AS', reg:'10263574', amount:'15,30 €', amountNum:15.30, date:'21.05.2025', label:'Kohvik', payment:'Isiklik kaart', comment:'', color:'#d8d0b0'},
   {id:10, status:'ok',      vendor:'Selver AS', reg:'10379733', amount:'42,10 €', amountNum:42.10, date:'05.05.2025', label:'Kontor', payment:'Firma deebetkaart', comment:'Kontoritarbed', color:'#d8c4b0'},
+  // Võõrvaluutas tšekk: valuuta ja summa loetakse tšekilt (currency, amountForeign).
+  // rate = Directo ametlik kurss (arvutuslik euroväärtus); paidEur = kulutaja tegelikult makstud EUR → Directo 'Summa-T'.
+  {id:11, status:'ok',      vendor:'Amazon EU', reg:'', currency:'USD', amountForeign:70, rate:0.9265, paidEur:null, amount:'70,00 USD', amountNum:0, date:'20.01.2025', label:'Kontor', payment:'Isiklik kaart', comment:'Kontoritarbed', color:'#c8b0d8'},
 ];
 
 // Makseviisi liigitus: isiklik raha vs ettevõtte maksevahend
@@ -414,6 +444,15 @@ function periodLabel(key) {
 }
 function formatEur(n) {
   return n.toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+// Kas tšekk on võõrvaluutas (valuuta loetud tšekilt, ei ole EUR)
+function isForeign(d) { return d.currency && d.currency !== 'EUR'; }
+// Tšeki euroväärtus summeerimiseks:
+//  - EUR tšekk: summa ise
+//  - Võõrvaluuta: kulutaja tegelikult makstud (Summa-T) kui teada, muidu ametliku kursiga hinnang
+function eurValue(d) {
+  if (isForeign(d)) return d.paidEur != null ? d.paidEur : d.amountForeign * (d.rate || 0);
+  return d.amountNum;
 }
 
 let editingId = null;
@@ -441,6 +480,7 @@ function metaHtml(d) {
   return `
     <div class="meta-vendor">${d.vendor || d.label}</div>
     <div class="meta-amount-date">${d.amount}${d.amount && d.date ? ' | ' : ''}${d.date}</div>
+    ${isForeign(d) ? `<div class="meta-currency-note"><i class="ti ti-arrow-right"></i>${d.paidEur != null ? `Tasutud ${formatEur(d.paidEur)}` : `≈ ${formatEur(d.amountForeign * (d.rate || 0))} · lisa tegelik summa`}</div>` : ''}
     <div class="meta-inline-wrap">
       <div class="meta-inline${d.comment ? ' has-comment' : ''}">
         <span>${d.label}</span>
@@ -501,8 +541,8 @@ function render() {
 
 // Liidab kokku filtreeritud tšekkide summad
 function updateSum(visible) {
-  const withAmount = visible.filter(d => d.amountNum > 0);
-  const total = withAmount.reduce((s, d) => s + d.amountNum, 0);
+  const withAmount = visible.filter(d => eurValue(d) > 0);
+  const total = withAmount.reduce((s, d) => s + eurValue(d), 0);
   document.getElementById('sumTotal').textContent = formatEur(total);
   document.getElementById('sumCount').textContent =
     `${withAmount.length} ${withAmount.length === 1 ? 'tšekk' : 'tšekki'}`;
@@ -526,6 +566,16 @@ function openEdit(id) {
   document.getElementById('editLabel').value = d.label;
   document.getElementById('editPayment').value = d.payment;
   document.getElementById('editComment').value = d.comment;
+  // Võõrvaluuta plokk ainult siis, kui tšekk pole eurodes
+  const fxBlock = document.getElementById('editCurrencyBlock');
+  if (isForeign(d)) {
+    fxBlock.style.display = 'block';
+    document.getElementById('editForeignAmount').textContent = d.amount;
+    document.getElementById('editPaidEur').value =
+      d.paidEur != null ? d.paidEur.toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2}) : '';
+  } else {
+    fxBlock.style.display = 'none';
+  }
   document.getElementById('editModal').classList.add('open');
 }
 
@@ -538,6 +588,12 @@ function saveEdit() {
   d.label = document.getElementById('editLabel').value;
   d.payment = document.getElementById('editPayment').value;
   d.comment = document.getElementById('editComment').value;
+  // Tegelikult makstud summa (Summa-T) — võõrvaluuta korral
+  if (isForeign(d)) {
+    const raw = document.getElementById('editPaidEur').value.trim().replace(/\s/g, '').replace(',', '.');
+    const val = parseFloat(raw);
+    d.paidEur = raw !== '' && !isNaN(val) ? val : null;
+  }
   closeEdit(); render();
 }
 
