@@ -219,6 +219,22 @@
   td.cmp.neg { color: #b00020; }
   td.zero { color: #9aa8b6; }
   tr.row-hidden { display: none !important; }
+
+  /* ── TÜKELDUS plokipäis ── */
+  tr.pl-split td { background: #2d4f72; color: #fff; font-weight: 700; padding: 6px 10px; font-size: 12px; letter-spacing: .3px; border-top: 3px solid #1f3a56; }
+  tr.pl-split.all td { background: #1f3a56; }
+  tr.pl-split .split-dim { font-size: 10px; font-weight: 400; opacity: .8; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* ── PÖÖRDTABEL ── */
+  table.pl thead th.pv-line { text-align: right; white-space: normal; max-width: 140px; min-width: 70px; vertical-align: bottom; }
+  table.pl thead th.pv-line.leaf { font-weight: 400; color: #3a5a7a; }
+  table.pl td.pv-per { text-align: left; font-weight: 600; color: #1a3a5a; }
+  table.pl td.pv-per .pvp-dates { display: block; font-weight: 400; font-size: 10px; color: #5a7a9a; }
+  table.pl td.pv-per .pvp-tag { font-size: 8px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 2px; margin-left: 4px; }
+  table.pl td.pv-per .pvp-tag.actual { background: #e4eefa; color: #2d5f8a; }
+  table.pl td.pv-per .pvp-tag.budget { background: #fbeed4; color: #8a5a12; }
+  table.pl tr.pv-cmp td { background: #f4faf5; }
+  table.pl tr.pv-cmp td.pv-per { color: #2a7a4a; }
 </style>
 <style id="colHideStyles"></style>
 </head>
@@ -403,7 +419,7 @@
       <div class="sidebar-head">Muud filtrid <span class="arrow">▸</span></div>
       <div class="sidebar-body collapsed">
         <div class="sf"><label>Valuuta</label><select><option value=""></option><option>EUR</option><option>USD</option><option>SEK</option></select></div>
-        <div class="sf"><label title="Tükelda aruanne valitud dimensiooni kaupa">Tükelda</label><select><option value=""></option><option>Objekt</option><option>Projekt</option><option>Klient</option><option>Hankija</option></select></div>
+        <div class="sf"><label title="Tükelda aruanne valitud dimensiooni kaupa — iga väärtus omaette plokina">Tükelda <span class="help-i" onclick="openHelp('tukelda')" title="Ava juhend">?</span></label><select id="selTukelda" onchange="renderReport()"><option value="">(ei tükelda)</option><option value="objekt">Objekt</option><option value="projekt">Projekt</option><option value="klient">Klient</option><option value="hankija">Hankija</option></select></div>
         <div class="sf"><label>Keel</label><select><option>Eesti</option><option>English</option><option>Русский</option></select></div>
         <div class="sf"><label>Ühik / täpsus</label><select><option>0,01</option><option>1</option><option>1000</option></select></div>
       </div>
@@ -435,7 +451,7 @@
         <label title="Kuva kontode nimed"><input type="checkbox" id="cbNimega" checked onchange="renderReport()"> Nimega</label>
         <div class="view-ctrl-sep"></div>
         <label title="Pööra tabel — read ↔ tulbad">
-          <select id="selPoordtabel">
+          <select id="selPoordtabel" onchange="renderReport()">
             <option value="">(pöördtabel)</option>
             <option value="1">Pöördtabel</option>
           </select>
@@ -487,6 +503,11 @@
 
       <h2 id="wiki-tase">Väli „Objekti tase"</h2>
       <p><b>Ainuvalik</b> — korraga saab valida ainult ühe objekti taseme. Kui tase on valitud, kuvatakse ainult sellel tasemel olevate objektidega read.</p>
+
+      <h2 id="wiki-tukelda">Tükelda</h2>
+      <p>„Tükelda" jagab aruande valitud dimensiooni (Objekt / Projekt / Klient / Hankija) <b>iga väärtuse jaoks eraldi plokiks</b>. Iga plokk on täismahus kasumiaruanne ainult selle dimensiooniväärtuse andmetega, lisaks kuvatakse plokk <b>„Kokku (kõik)"</b>.</p>
+      <p>Tükeldus toimib koos perioodide ja võrdlustega — iga tükeldusplokk sisaldab kõiki perioodi- ja võrdlustulpasid.</p>
+      <div class="wnote">Tükeldus ja pöördtabel toimivad koos: pöördtabeli korral kuvatakse iga tükeldusväärtus omaette reagrupina.</div>
     </div>
   </div>
 </div>
@@ -570,7 +591,7 @@
   /* ── help modal ── */
   function openHelp(section){
     document.getElementById('wikiOverlay').classList.add('open');
-    const map = { per:'wiki-per', objekt:'wiki-objekt', tase:'wiki-tase' };
+    const map = { per:'wiki-per', objekt:'wiki-objekt', tase:'wiki-tase', tukelda:'wiki-tukelda' };
     const el = document.getElementById(map[section]);
     const body = document.getElementById('wikiBody');
     if (el){ body.scrollTop = el.offsetTop - body.offsetTop - 6; el.classList.remove('wiki-target-flash'); void el.offsetWidth; el.classList.add('wiki-target-flash'); }
@@ -890,14 +911,39 @@
     document.getElementById('plThead').innerHTML = th;
   }
 
-  function cellFor(row, col){
+  /* ── TÜKELDUS dimensioonid — kaalud summeeruvad ~1-ks, nii et kogusummad säiliksid ── */
+  const SPLIT_DIMS = {
+    objekt:  { label:'Objekt', members:[
+      { code:'TLN',   name:'Tallinn',      w:0.52 },
+      { code:'TARTU', name:'Tartu',        w:0.33 },
+      { code:'(määramata)', name:'(määramata)', w:0.15 },
+    ]},
+    projekt: { label:'Projekt', members:[
+      { code:'PROJ2025', name:'Projekt 2025', w:0.58 },
+      { code:'TURUNDUS', name:'Turundus',     w:0.27 },
+      { code:'(määramata)', name:'(määramata)', w:0.15 },
+    ]},
+    klient:  { label:'Klient', members:[
+      { code:'CAT', name:'CAT Demo',             w:0.45 },
+      { code:'EST', name:'Estimaa Kaubandus AS', w:0.40 },
+      { code:'(määramata)', name:'(määramata)',  w:0.15 },
+    ]},
+    hankija: { label:'Hankija', members:[
+      { code:'ITA', name:'IT-Arendus OÜ', w:0.60 },
+      { code:'BNK', name:'Bank Demo',     w:0.28 },
+      { code:'(määramata)', name:'(määramata)', w:0.12 },
+    ]},
+  };
+
+  // scale = tükeldusploki kaal (1 = kogu ettevõte). Protsendivõrdluses kaal taandub.
+  function cellFor(row, col, scale){
+    scale = scale == null ? 1 : scale;
     if (col.kind === 'period'){
-      const v = rowValue(row, col.p);
+      const v = rowValue(row, col.p) * scale;
       return { text: fmtNum(v), neg: v < 0, zero: v === 0, cmp:false };
     }
-    // võrdlustulp
-    const v = rowValue(row, col.p);
-    const r = rowValue(row, col.ref);
+    const v = rowValue(row, col.p) * scale;
+    const r = rowValue(row, col.ref) * scale;
     if (col.p.cmpMode === 'pct'){
       if (r === 0) return { text:'—', neg:false, zero:true, cmp:true };
       const pct = (v - r) / Math.abs(r) * 100;
@@ -907,56 +953,120 @@
     return { text: fmtNum(d), neg: d < 0, zero: d === 0, cmp:true };
   }
 
-  function renderReport(){
-    const cols = columnDefs();
-    renderThead(cols);
-    const nameOn   = document.getElementById('cbNimega').checked;
-    const kontodOn = document.getElementById('cbKontod').checked;
-    const nulliga  = document.getElementById('cbNulliga').checked;
-    const totalCols = 1 + (nameOn ? 1 : 0) + cols.length;
-
+  /* ── TAVAVAADE — ühe tükeldusploki read ── */
+  function buildNormalRows(cols, scale, o){
     let html = '';
     PL_SCHEMA.forEach(row => {
-      if (row.t === 'leaf' && !kontodOn) return;
-
-      // nulliga peitmine — kui kõik perioodide väärtused on 0
-      if (!nulliga && (row.t === 'leaf' || row.t === 'subtotal' || row.t === 'grp')){
-        const allZero = periods.every(p => rowValue(row, p) === 0);
-        if (allZero && row.t === 'leaf') return;
-      }
+      if (row.t === 'leaf' && !o.kontodOn) return;
+      if (row.t === 'leaf' && !o.nulliga && periods.every(p => rowValue(row, p) === 0)) return;
 
       if (row.t === 'sec'){
-        html += '<tr class="pl-sec"><td colspan="' + totalCols + '">' + esc(row.name) + '</td></tr>';
+        html += '<tr class="pl-sec"><td colspan="' + o.totalCols + '">' + esc(row.name) + '</td></tr>';
         return;
       }
       if (row.t === 'grp'){
-        // grupipäis ilma summadeta (nagu vana aruandes alampealkiri)
-        html += '<tr class="pl-grp"><td class="lbl"' + (nameOn ? '' : ' colspan="1"') + '>' + esc(row.name) + '</td>';
-        if (nameOn) html += '<td class="lbl"></td>';
+        html += '<tr class="pl-grp"><td class="lbl">' + esc(row.name) + '</td>';
+        if (o.nameOn) html += '<td class="lbl"></td>';
         cols.forEach(() => html += '<td></td>');
         html += '</tr>';
         return;
       }
-
       const cls = row.t === 'leaf' ? 'pl-leaf'
                 : row.t === 'subtotal' ? 'pl-subtotal'
                 : row.t === 'total' ? 'pl-total'
-                : row.t === 'result' ? ('pl-result' + (row.grand ? ' grand' : '')) : '';
-      const code = row.t === 'leaf' ? row.code : '';
-      // Esimene tulp: leaf → konto number, muud → kirje nimi.
-      // Teine tulp (Nimega): leaf → konto nimi, muud → tühi (nimi on juba esimeses tulbas).
+                : ('pl-result' + (row.grand ? ' grand' : ''));
       html += '<tr class="' + cls + '">';
-      html += '<td class="lbl' + (row.t==='leaf' ? ' code link' : '') + '">' + esc(row.t==='leaf' ? code : row.name) + '</td>';
-      if (nameOn) html += '<td class="lbl">' + esc(row.t==='leaf' ? row.name : '') + '</td>';
+      html += '<td class="lbl' + (row.t==='leaf' ? ' code link' : '') + '">' + esc(row.t==='leaf' ? row.code : row.name) + '</td>';
+      if (o.nameOn) html += '<td class="lbl">' + esc(row.t==='leaf' ? row.name : '') + '</td>';
       cols.forEach(col => {
-        const c = cellFor(row, col);
+        const c = cellFor(row, col, scale);
         const kls = [c.cmp ? 'cmp' : '', c.neg ? 'neg' : '', (c.zero && !c.cmp) ? 'zero' : ''].filter(Boolean).join(' ');
         html += '<td class="' + kls + '">' + c.text + '</td>';
       });
       html += '</tr>';
     });
-    document.getElementById('plTbody').innerHTML = html;
+    return html;
+  }
+
+  /* ── PÖÖRDTABEL — read = perioodid/võrdlused, tulbad = kasumiaruande kirjed ── */
+  function pivotValueRows(kontodOn, nulliga){
+    return PL_SCHEMA.filter(row => {
+      if (row.t === 'sec' || row.t === 'grp') return false;
+      if (row.t === 'leaf' && !kontodOn) return false;
+      if (row.t === 'leaf' && !nulliga && periods.every(p => rowValue(row, p) === 0)) return false;
+      return true;
+    });
+  }
+  function buildPivotThead(vrows, nameOn){
+    let th = '<tr><th class="lbl" style="min-width:150px">Periood</th>';
+    vrows.forEach(r => {
+      const isLeaf = r.t === 'leaf';
+      const label = isLeaf ? (nameOn ? r.name : r.code) : r.name;
+      th += '<th class="pv-line' + (isLeaf?' leaf':'') + '" title="' + esc(isLeaf ? r.code + ' ' + r.name : r.name) + '">' + esc(label) + '</th>';
+    });
+    return th + '</tr>';
+  }
+  function buildPivotRows(cols, vrows, scale){
+    let html = '';
+    cols.forEach(col => {
+      if (col.kind === 'period'){
+        const isB = col.p.type === 'budget';
+        html += '<tr><td class="pv-per">' + periodIndexLabel(col.p) +
+          '<span class="pvp-tag ' + (isB?'budget':'actual') + '">' + (isB?'Eelarve':'Tegelik') + '</span>' +
+          '<span class="pvp-dates">' + esc(col.p.start) + ' – ' + esc(col.p.end) + ' · ' + SIM_LABEL[col.p.sim] + '</span></td>';
+      } else {
+        html += '<tr class="pv-cmp"><td class="pv-per">Δ ' + periodIndexLabel(col.p) + ' vs ' + periodIndexLabel(col.ref) +
+          '<span class="pvp-dates">' + (col.p.cmpMode==='pct'?'Vahe %':'Vahe €') + '</span></td>';
+      }
+      vrows.forEach(r => {
+        const c = cellFor(r, col, scale);
+        const kls = [c.cmp ? 'cmp' : '', c.neg ? 'neg' : '', (c.zero && !c.cmp) ? 'zero' : ''].filter(Boolean).join(' ');
+        html += '<td class="' + kls + '">' + c.text + '</td>';
+      });
+      html += '</tr>';
+    });
+    return html;
+  }
+
+  function renderReport(){
+    const cols = columnDefs();
+    const nameOn   = document.getElementById('cbNimega').checked;
+    const kontodOn = document.getElementById('cbKontod').checked;
+    const nulliga  = document.getElementById('cbNulliga').checked;
+    const pivot    = document.getElementById('selPoordtabel').value === '1';
+    const split    = SPLIT_DIMS[document.getElementById('selTukelda').value] || null;
     document.getElementById('schemaTab').textContent = document.getElementById('selSkeem').value;
+
+    if (pivot){
+      const vrows = pivotValueRows(kontodOn, nulliga);
+      document.getElementById('plThead').innerHTML = buildPivotThead(vrows, nameOn);
+      const pc = 1 + vrows.length;
+      let html = '';
+      if (split){
+        split.members.forEach(m => {
+          html += '<tr class="pl-split"><td colspan="' + pc + '"><span class="split-dim">' + esc(split.label) + ':</span> ' + esc(m.code) + ' — ' + esc(m.name) + '</td></tr>';
+          html += buildPivotRows(cols, vrows, m.w);
+        });
+        html += '<tr class="pl-split all"><td colspan="' + pc + '">Kokku (kõik ' + esc(split.label.toLowerCase()) + ')</td></tr>';
+      }
+      html += buildPivotRows(cols, vrows, 1);
+      document.getElementById('plTbody').innerHTML = html;
+      return;
+    }
+
+    // tavavaade
+    renderThead(cols);
+    const o = { nameOn, kontodOn, nulliga, totalCols: 1 + (nameOn ? 1 : 0) + cols.length };
+    let html = '';
+    if (split){
+      split.members.forEach(m => {
+        html += '<tr class="pl-split"><td colspan="' + o.totalCols + '"><span class="split-dim">' + esc(split.label) + ':</span> ' + esc(m.code) + ' — ' + esc(m.name) + '</td></tr>';
+        html += buildNormalRows(cols, m.w, o);
+      });
+      html += '<tr class="pl-split all"><td colspan="' + o.totalCols + '">Kokku (kõik ' + esc(split.label.toLowerCase()) + ')</td></tr>';
+    }
+    html += buildNormalRows(cols, 1, o);
+    document.getElementById('plTbody').innerHTML = html;
   }
 
   /* ── init ── */
