@@ -80,6 +80,16 @@
     cursor: pointer; white-space: nowrap;
   }
   .topbar-logout i { font-size: 18px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .lang-toggle {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; color: #fff;
+    border: 1px solid rgba(255,255,255,0.5); border-radius: 6px;
+    padding: 3px 8px; cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,0.15); }
+  .lang-toggle i { font-size: 14px; }
 
   /* Scrollable content */
   .content {
@@ -463,42 +473,43 @@
   <div class="topbar">
     <div class="topbar-logo">My<span>Directo</span></div>
     <div class="topbar-company">OÜ Davai Laama</div>
-    <div class="topbar-logout">
-      Välju <i class="ti ti-logout"></i>
+    <div class="topbar-right">
+      <div class="lang-toggle" id="langToggle" onclick="toggleLang()"><i class="ti ti-language"></i><span id="langLabel">EN</span></div>
+      <div class="topbar-logout"><span data-i18n="logout">Välju</span> <i class="ti ti-logout"></i></div>
     </div>
   </div>
 
   <!-- Scrollable content -->
   <div class="content">
     <div class="section">
-      <h2>Kuludokumendid</h2>
-      <p class="upload-hint">Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.</p>
+      <h2 data-i18n="appTitle">Kuludokumendid</h2>
+      <p class="upload-hint" data-i18n-html="hint">Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.</p>
       <div class="btn-grid">
-        <div class="upload-btn" onclick="openPreview('eur')"><i class="ti ti-camera"></i>Pildista</div>
-        <div class="upload-btn" onclick="openPreview('usd')"><i class="ti ti-photo-up"></i>Laadi üles</div>
+        <div class="upload-btn" onclick="openPreview('eur')"><i class="ti ti-camera"></i><span data-i18n="takePhoto">Pildista</span></div>
+        <div class="upload-btn" onclick="openPreview('usd')"><i class="ti ti-photo-up"></i><span data-i18n="upload">Laadi üles</span></div>
       </div>
     </div>
 
     <hr class="divider">
-    <div class="list-title">Üles laaditud dokumendid</div>
+    <div class="list-title" data-i18n="uploadedDocs">Üles laaditud dokumendid</div>
 
     <!-- Filtrid -->
     <div class="filter-bar">
       <div class="filter-grid">
         <div class="filter-field">
-          <label><i class="ti ti-calendar-month"></i>Periood</label>
+          <label><i class="ti ti-calendar-month"></i><span data-i18n="period">Periood</span></label>
           <select id="filterPeriod" onchange="applyFilters()"></select>
         </div>
         <div class="filter-field">
-          <label><i class="ti ti-wallet"></i>Makseviis</label>
+          <label><i class="ti ti-wallet"></i><span data-i18n="paymentMethod">Makseviis</span></label>
           <select id="filterPayment" onchange="applyFilters()">
-            <option value="all">Kõik makseviisid</option>
-            <option value="personal">Isiklik raha</option>
-            <option value="company">Ettevõtte maksevahend</option>
+            <option value="all" data-i18n="allPaymentMethods">Kõik makseviisid</option>
+            <option value="personal" data-i18n="personalMoney">Isiklik raha</option>
+            <option value="company" data-i18n="companyMeans">Ettevõtte maksevahend</option>
           </select>
         </div>
         <div class="filter-field full">
-          <label><i class="ti ti-building-store"></i>Hankija</label>
+          <label><i class="ti ti-building-store"></i><span data-i18n="supplier">Hankija</span></label>
           <select id="filterVendor" onchange="applyFilters()"></select>
         </div>
       </div>
@@ -519,36 +530,36 @@
   <!-- Edit modal -->
   <div class="modal-overlay" id="editModal">
     <div class="modal">
-      <h3>Muuda dokumenti</h3>
+      <h3 data-i18n="editDoc">Muuda dokumenti</h3>
       <!-- Võõrvaluuta plokk: valuuta tuleb tšekilt, kulutaja lisab tegelikult makstud EUR (→ Directo Summa-T) -->
       <div id="editCurrencyBlock" style="display:none;">
         <div class="modal-fx-info">
-          <span>Tšekil tuvastatud summa</span>
+          <span data-i18n="detectedAmount">Tšekil tuvastatud summa</span>
           <strong id="editForeignAmount">—</strong>
         </div>
-        <label>Kui palju sa tegelikult maksid? (EUR)</label>
-        <input id="editPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80">
-        <div class="modal-hint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
+        <label data-i18n="howMuchPaid">Kui palju sa tegelikult maksid? (EUR)</label>
+        <input id="editPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80" data-i18n-ph="egAmount">
+        <div class="modal-hint" data-i18n="fxHint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
       </div>
-      <label>Kulu tüüp</label>
+      <label data-i18n="expenseType">Kulu tüüp</label>
       <select id="editLabel">
-        <option>Kontor</option>
-        <option>Kohvik</option>
-        <option>Transport</option>
-        <option>Majutus</option>
-        <option>Muu</option>
+        <option value="Kontor" data-i18n="type_office">Kontor</option>
+        <option value="Kohvik" data-i18n="type_cafe">Kohvik</option>
+        <option value="Transport" data-i18n="type_transport">Transport</option>
+        <option value="Majutus" data-i18n="type_accommodation">Majutus</option>
+        <option value="Muu" data-i18n="type_other">Muu</option>
       </select>
-      <label>Makseviis</label>
+      <label data-i18n="paymentMethod">Makseviis</label>
       <select id="editPayment">
-        <option>Firma deebetkaart</option>
-        <option>Isiklik pangakaart</option>
-        <option>Isiklik sularaha</option>
+        <option value="Firma deebetkaart" data-i18n="pay_companyDebit">Firma deebetkaart</option>
+        <option value="Isiklik pangakaart" data-i18n="pay_personalCard">Isiklik pangakaart</option>
+        <option value="Isiklik sularaha" data-i18n="pay_personalCash">Isiklik sularaha</option>
       </select>
-      <label>Kommentaar</label>
-      <textarea id="editComment" placeholder="Lisa kommentaar..."></textarea>
+      <label data-i18n="comment">Kommentaar</label>
+      <textarea id="editComment" placeholder="Lisa kommentaar..." data-i18n-ph="addComment"></textarea>
       <div class="modal-btns">
-        <button class="btn-cancel" onclick="closeEdit()">Tühista</button>
-        <button class="btn-save" onclick="saveEdit()">Salvesta</button>
+        <button class="btn-cancel" onclick="closeEdit()" data-i18n="cancel">Tühista</button>
+        <button class="btn-save" onclick="saveEdit()" data-i18n="save">Salvesta</button>
       </div>
     </div>
   </div>
@@ -556,11 +567,11 @@
   <!-- Pildi eelvaade: tšeki saatmise ekraan (Pildista / Laadi üles avavad selle) -->
   <div class="preview-screen" id="previewScreen">
     <div class="topbar">
-      <div class="preview-back" onclick="closePreview()"><i class="ti ti-arrow-left"></i>Kuludokumendid</div>
-      <div class="topbar-logout">Välju <i class="ti ti-logout"></i></div>
+      <div class="preview-back" onclick="closePreview()"><i class="ti ti-arrow-left"></i><span data-i18n="appTitle">Kuludokumendid</span></div>
+      <div class="topbar-logout"><span data-i18n="logout">Välju</span> <i class="ti ti-logout"></i></div>
     </div>
     <div class="preview-body">
-      <div class="preview-title">Pildi eelvaade</div>
+      <div class="preview-title" data-i18n="imagePreview">Pildi eelvaade</div>
 
       <!-- Tšekilt tuvastatud pilt + summa (OCR) -->
       <div class="receipt-preview">
@@ -569,32 +580,32 @@
         <div class="rp-vendor" id="pvDetectedVendor">—</div>
       </div>
 
-      <label class="pv-label">Tüüp</label>
+      <label class="pv-label" data-i18n="type">Tüüp</label>
       <select class="pv-field" id="pvLabel">
-        <option>Kontor</option>
-        <option>Kohvik</option>
-        <option>Transport</option>
-        <option>Majutus</option>
-        <option>Ehitusmaterjalid</option>
-        <option>Muu</option>
+        <option value="Kontor" data-i18n="type_office">Kontor</option>
+        <option value="Kohvik" data-i18n="type_cafe">Kohvik</option>
+        <option value="Transport" data-i18n="type_transport">Transport</option>
+        <option value="Majutus" data-i18n="type_accommodation">Majutus</option>
+        <option value="Ehitusmaterjalid" data-i18n="type_building">Ehitusmaterjalid</option>
+        <option value="Muu" data-i18n="type_other">Muu</option>
       </select>
 
-      <label class="pv-label">Makseviis</label>
+      <label class="pv-label" data-i18n="paymentMethod">Makseviis</label>
       <select class="pv-field" id="pvPayment">
-        <option>Firma deebetkaart</option>
-        <option>Isiklik pangakaart</option>
-        <option>Isiklik sularaha</option>
+        <option value="Firma deebetkaart" data-i18n="pay_companyDebit">Firma deebetkaart</option>
+        <option value="Isiklik pangakaart" data-i18n="pay_personalCard">Isiklik pangakaart</option>
+        <option value="Isiklik sularaha" data-i18n="pay_personalCash">Isiklik sularaha</option>
       </select>
 
       <!-- Võõrvaluuta plokk: valuuta loetud tšekilt, kulutaja lisab tegelikult makstud EUR (→ Directo Summa-T) -->
       <div id="pvCurrencyBlock" style="display:none;">
-        <label class="pv-label">Kui palju sa tegelikult maksid? (EUR)</label>
-        <input class="pv-field" id="pvPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80">
-        <div class="modal-hint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
+        <label class="pv-label" data-i18n="howMuchPaid">Kui palju sa tegelikult maksid? (EUR)</label>
+        <input class="pv-field" id="pvPaidEur" type="text" inputmode="decimal" placeholder="nt 64,80" data-i18n-ph="egAmount">
+        <div class="modal-hint" data-i18n="fxHint">Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.</div>
       </div>
 
-      <label class="pv-label">Kommentaar</label>
-      <textarea class="pv-field" id="pvComment" placeholder="Lisa kommentaar..."></textarea>
+      <label class="pv-label" data-i18n="comment">Kommentaar</label>
+      <textarea class="pv-field" id="pvComment" placeholder="Lisa kommentaar..." data-i18n-ph="addComment"></textarea>
 
       <!-- Periood, kuhu kulutus kirjendatakse -->
       <div class="pv-month">
@@ -604,21 +615,21 @@
       </div>
 
       <div class="pv-actions">
-        <button class="pv-cancel" onclick="closePreview()"><i class="ti ti-circle-x"></i>Katkesta</button>
-        <button class="pv-send" onclick="sendPreview()"><i class="ti ti-send"></i>Saada</button>
+        <button class="pv-cancel" onclick="closePreview()"><i class="ti ti-circle-x"></i><span data-i18n="abort">Katkesta</span></button>
+        <button class="pv-send" onclick="sendPreview()"><i class="ti ti-send"></i><span data-i18n="send">Saada</span></button>
       </div>
-      <div class="pv-delete" onclick="closePreview()"><i class="ti ti-trash"></i>Kustuta</div>
+      <div class="pv-delete" onclick="closePreview()"><i class="ti ti-trash"></i><span data-i18n="delete">Kustuta</span></div>
     </div>
   </div>
 
   <!-- Duplikaadi võrdlusaken (dünaamiline) -->
   <div class="modal-overlay" id="dupModal">
     <div class="modal dup-modal" id="dupModalBox">
-      <h3 class="dup-h3" id="dupTitle"><i class="ti ti-alert-triangle"></i><span>Võimalik duplikaat</span></h3>
+      <h3 class="dup-h3" id="dupTitle"><i class="ti ti-alert-triangle"></i><span></span></h3>
       <p class="dup-note" id="dupNote"></p>
       <div class="dup-compare">
         <div class="dup-card new">
-          <div class="dup-card-title">Uus pilt</div>
+          <div class="dup-card-title" data-i18n="dupNewImg">Uus pilt</div>
           <div class="thumb" id="dupNewThumb"></div>
           <div class="dup-card-vendor" id="dupNewVendor"></div>
           <div class="dup-card-info" id="dupNewInfo"></div>
@@ -626,7 +637,7 @@
           <div class="dup-card-status"><i class="ti ti-clock"></i><span id="dupNewTime"></span></div>
         </div>
         <div class="dup-card">
-          <div class="dup-card-title">Olemasolev</div>
+          <div class="dup-card-title" data-i18n="dupExisting">Olemasolev</div>
           <div class="thumb" id="dupOldThumb"></div>
           <div class="dup-card-vendor" id="dupOldVendor"></div>
           <div class="dup-card-info" id="dupOldInfo"></div>
@@ -637,17 +648,17 @@
       <div class="dup-match" id="dupMatch"></div>
       <div class="dup-caveat" id="dupCaveat"></div>
       <div class="modal-btns">
-        <button class="btn-delete" onclick="dupDelete()"><i class="ti ti-trash"></i> Kustuta</button>
-        <button class="btn-warn" onclick="dupSend()">See on uus tšekk — saada</button>
+        <button class="btn-delete" onclick="dupDelete()"><i class="ti ti-trash"></i> <span data-i18n="delete">Kustuta</span></button>
+        <button class="btn-warn" onclick="dupSend()" data-i18n="dupSendBtn">See on uus tšekk — saada</button>
       </div>
-      <button class="btn-later" onclick="closeDup()">Otsustan hiljem</button>
+      <button class="btn-later" onclick="closeDup()" data-i18n="decideLater">Otsustan hiljem</button>
     </div>
   </div>
 
   <!-- Toast: tehniline blokk (sama pilt / hash) -->
   <div class="toast" id="toast">
     <i class="ti ti-photo-x"></i>
-    <div><b>See pilt on juba esitatud.</b><br>Täpselt sama fail on juba üles laaditud — uut kirjet ei loodud.</div>
+    <div><b data-i18n="toastTitle">See pilt on juba esitatud.</b><br><span data-i18n="toastBody">Täpselt sama fail on juba üles laaditud — uut kirjet ei loodud.</span></div>
   </div>
 
 </div>
@@ -661,12 +672,12 @@ const docs = [
       strength:'strong', newThumb:'#b0c4d8', oldThumb:'#b0c4d8',
       vendor:'OÜ Statoil', info:'66,60 € | 09.06.2025', nr:'903112',
       oldVendor:'OÜ Statoil', oldInfo:'66,60 € | 09.06.2025', oldNr:'903112',
-      oldStatus:'Saadetud Directosse', time:'Üles laaditud täna 17:08'}},
+      oldStatus:{et:'Saadetud Directosse',en:'Sent to Directo'}, time:{et:'Üles laaditud täna 17:08',en:'Uploaded today 17:08'}}},
   {id:21, status:'dup', color:'#d8c4b0', dup:{
       strength:'weak', newThumb:'#d8c4b0', oldThumb:'#d8c4b0',
-      vendor:'Selver AS', info:'24,90 € | 12.06.2025', nr:'(loetamatu)',
+      vendor:'Selver AS', info:'24,90 € | 12.06.2025', nr:{et:'(loetamatu)',en:'(unreadable)'},
       oldVendor:'Selver AS', oldInfo:'24,90 € | 12.06.2025', oldNr:'5567',
-      oldStatus:'Saadetud Directosse', time:'Üles laaditud täna 16:42'}},
+      oldStatus:{et:'Saadetud Directosse',en:'Sent to Directo'}, time:{et:'Üles laaditud täna 16:42',en:'Uploaded today 16:42'}}},
   {id:1, status:'uploading', vendor:'', reg:'', amount:'', amountNum:0, date:'', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#c8d4e8'},
   {id:4, status:'ok',       vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'Bensiin ja kabanoss kallitele külalistele', color:'#b0c4d8'},
   {id:5, status:'locked',   vendor:'OÜ Statoil', reg:'10180022', amount:'66,60 €', amountNum:66.60, date:'09.06.2025', label:'Transport', payment:'Firma deebetkaart', comment:'', color:'#b0c4d8'},
@@ -680,11 +691,127 @@ const docs = [
   {id:11, status:'ok',      vendor:'Amazon EU', reg:'', currency:'USD', amountForeign:70, rate:0.9265, paidEur:null, amount:'70,00 USD', amountNum:0, date:'20.01.2025', label:'Kontor', payment:'Isiklik pangakaart', comment:'Kontoritarbed', color:'#c8b0d8'},
 ];
 
+/* ===== i18n (keelevahetus ET/EN) ===== */
+let LANG = 'et';
+const MONTHS_ALL = {
+  et: ['Jaanuar','Veebruar','Märts','Aprill','Mai','Juuni','Juuli','August','September','Oktoober','November','Detsember'],
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December']
+};
+const T = {
+  logout:{et:'Välju',en:'Log out'},
+  appTitle:{et:'Kuludokumendid',en:'Expense documents'},
+  hint:{et:'Pildista dokumendid heas valguses, sirgelt<br>ja täies mahus. Igast tšekist tee üks pilt.',en:'Photograph the documents in good light, straight<br>and in full. Take one photo of each receipt.'},
+  takePhoto:{et:'Pildista',en:'Take photo'},
+  upload:{et:'Laadi üles',en:'Upload'},
+  uploadedDocs:{et:'Üles laaditud dokumendid',en:'Uploaded documents'},
+  period:{et:'Periood',en:'Period'},
+  paymentMethod:{et:'Makseviis',en:'Payment method'},
+  allPaymentMethods:{et:'Kõik makseviisid',en:'All payment methods'},
+  personalMoney:{et:'Isiklik raha',en:'Personal money'},
+  companyMeans:{et:'Ettevõtte maksevahend',en:'Company payment method'},
+  supplier:{et:'Hankija',en:'Supplier'},
+  allPeriods:{et:'Kõik perioodid',en:'All periods'},
+  allSuppliers:{et:'Kõik hankijad',en:'All suppliers'},
+  sumFiltered:{et:'Filtreeritud tšekkide summa',en:'Total of the filtered receipts'},
+  sumReimburse:{et:'Hüvitamisele kuuluv summa',en:'Amount to be reimbursed'},
+  receiptOne:{et:'tšekk',en:'receipt'},
+  receiptMany:{et:'tšekki',en:'receipts'},
+  editDoc:{et:'Muuda dokumenti',en:'Edit document'},
+  detectedAmount:{et:'Tšekil tuvastatud summa',en:'Amount detected on the receipt'},
+  howMuchPaid:{et:'Kui palju sa tegelikult maksid? (EUR)',en:'How much did you actually pay? (EUR)'},
+  egAmount:{et:'nt 64,80',en:'e.g. 64,80'},
+  fxHint:{et:'Vaata pangaväljavõttelt, kui palju eurodes maha läks. Jäta tühjaks, kui ei tea — Directo kasutab ametlikku kurssi. Kurssi ja kursivahet arvutab Directo ise.',en:'Check your bank statement for how much was charged in euros. Leave it empty if you don\'t know — Directo uses the official rate. Directo calculates the rate and the exchange difference itself.'},
+  expenseType:{et:'Kulu tüüp',en:'Expense type'},
+  comment:{et:'Kommentaar',en:'Comment'},
+  addComment:{et:'Lisa kommentaar...',en:'Add a comment...'},
+  cancel:{et:'Tühista',en:'Cancel'},
+  save:{et:'Salvesta',en:'Save'},
+  imagePreview:{et:'Pildi eelvaade',en:'Image preview'},
+  type:{et:'Tüüp',en:'Type'},
+  abort:{et:'Katkesta',en:'Cancel'},
+  send:{et:'Saada',en:'Send'},
+  delete:{et:'Kustuta',en:'Delete'},
+  processing:{et:'Töötlemisel...',en:'Processing...'},
+  uploadErr:{et:'Viga ülesslaadimisel!',en:'Upload failed!'},
+  imageDeleted:{et:'Pilt kustutatud!',en:'Image deleted!'},
+  paid:{et:'Tasutud',en:'Paid'},
+  addActual:{et:'lisa tegelik summa',en:'add actual amount'},
+  dupStrongLabel:{et:'Sama numbriga tšekk on juba esitatud',en:'A receipt with the same number has already been submitted'},
+  dupWeakLabel:{et:'Võimalik duplikaat',en:'Possible duplicate'},
+  dupChip:{et:'Kulutaja kinnitas: mitte duplikaat — märge saadeti Directosse kaasa',en:'Spender confirmed: not a duplicate — flag sent to Directo'},
+  dupNoteStrong:{et:'Selle müüja sama numbriga tšekk on juba esitatud. Kahel eri tšekil ei saa olla sama numbrit — suure tõenäosusega on tegu duplikaadiga. Kontrolli enne saatmist.',en:'A receipt with the same number from this vendor has already been submitted. Two different receipts cannot have the same number — this is very likely a duplicate. Check before sending.'},
+  dupNoteWeak:{et:'See tšekk paistab olevat juba esitatud. Müüja, summa ja kuupäev kattuvad varasema tšekiga. Kontrolli, kas tegu on sama tšekiga või kahe eri ostuga.',en:'This receipt appears to have already been submitted. The vendor, amount and date match an earlier receipt. Check whether it is the same receipt or two separate purchases.'},
+  dupCaveatStrong:{et:'Tšeki number loeti pildilt automaatselt (AI). Halva pildi korral võib number olla valesti loetud — seetõttu kirjet automaatselt ei kustutata.',en:'The receipt number was read from the image automatically (AI). With a poor image the number may be misread — that is why the entry is not deleted automatically.'},
+  dupCaveatWeak:{et:'Kaks samasugust ostu (nt kaks kohvi samal päeval) on lubatud. Kui tegu on eri ostuga, vali „See on uus tšekk“.',en:'Two identical purchases (e.g. two coffees on the same day) are allowed. If it is a separate purchase, choose “This is a new receipt”.'},
+  dupSendBtn:{et:'See on uus tšekk — saada',en:'This is a new receipt — send'},
+  decideLater:{et:'Otsustan hiljem',en:'Decide later'},
+  dupNewImg:{et:'Uus pilt',en:'New image'},
+  dupExisting:{et:'Olemasolev',en:'Existing'},
+  receiptNo:{et:'Tšeki nr',en:'Receipt no'},
+  matchStrong:{et:'Kattuvad: <b>müüja</b>, <b>tšeki nr</b> {nr}, <b>summa</b> ja <b>kuupäev</b>.',en:'Matching: <b>vendor</b>, <b>receipt no</b> {nr}, <b>amount</b> and <b>date</b>.'},
+  matchWeak:{et:'Kattuvad: <b>müüja</b>, <b>summa</b> ja <b>kuupäev</b>. Tšeki number erineb või pole loetav.',en:'Matching: <b>vendor</b>, <b>amount</b> and <b>date</b>. The receipt number differs or is not readable.'},
+  toastTitle:{et:'See pilt on juba esitatud.',en:'This image has already been submitted.'},
+  toastBody:{et:'Täpselt sama fail on juba üles laaditud — uut kirjet ei loodud.',en:'The exact same file has already been uploaded — no new entry was created.'},
+  // valikute (select) kuvatekstid — väärtus jääb kanooniliseks (eesti)
+  type_office:{et:'Kontor',en:'Office'},
+  type_cafe:{et:'Kohvik',en:'Café'},
+  type_transport:{et:'Transport',en:'Transport'},
+  type_accommodation:{et:'Majutus',en:'Accommodation'},
+  type_building:{et:'Ehitusmaterjalid',en:'Building materials'},
+  type_other:{et:'Muu',en:'Other'},
+  pay_companyDebit:{et:'Firma deebetkaart',en:'Company debit card'},
+  pay_personalCard:{et:'Isiklik pangakaart',en:'Personal bank card'},
+  pay_personalCash:{et:'Isiklik sularaha',en:'Personal cash'}
+};
+function t(k){ return (T[k] && T[k][LANG] != null) ? T[k][LANG] : k; }
+function tv(x){ return (x && typeof x === 'object') ? (x[LANG] != null ? x[LANG] : x.et) : x; }
+
+// Kanoonilised (eesti) väärtused → kuvatav tekst kummaski keeles
+const LABELS = {
+  'Kontor':{et:'Kontor',en:'Office'}, 'Kohvik':{et:'Kohvik',en:'Café'},
+  'Transport':{et:'Transport',en:'Transport'}, 'Majutus':{et:'Majutus',en:'Accommodation'},
+  'Ehitusmaterjalid':{et:'Ehitusmaterjalid',en:'Building materials'}, 'Muu':{et:'Muu',en:'Other'}
+};
+const PAYMENTS = {
+  'Firma deebetkaart':{et:'Firma deebetkaart',en:'Company debit card'},
+  'Isiklik pangakaart':{et:'Isiklik pangakaart',en:'Personal bank card'},
+  'Isiklik sularaha':{et:'Isiklik sularaha',en:'Personal cash'}
+};
+const COMMENTS = {
+  'Bensiin ja kabanoss kallitele külalistele':'Petrol and cabanossi for our dear guests',
+  'Kohvikapslid kontorisse':'Coffee capsules for the office',
+  'Sõit kliendikohtumisele':'Ride to a client meeting',
+  'Komandeering Tallinn':'Business trip to Tallinn',
+  'Kontoritarbed':'Office supplies',
+  'kulutaja kinnitas: mitte duplikaat':'spender confirmed: not a duplicate'
+};
+function tLabel(v){ return (LABELS[v] && LABELS[v][LANG]) || v; }
+function tPayment(v){ return (PAYMENTS[v] && PAYMENTS[v][LANG]) || v; }
+function tComment(v){ if(!v) return v; if(typeof v==='object') return v[LANG]; return (LANG==='en' && COMMENTS[v]) ? COMMENTS[v] : v; }
+
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
+}
+function setLang(l){
+  LANG = l;
+  document.documentElement.lang = l;
+  MONTHS = MONTHS_ALL[l];
+  document.getElementById('langLabel').textContent = (l === 'et') ? 'EN' : 'ET';
+  applyStaticI18n();
+  populateFilters();
+  render();
+  renderPvMonth();
+  if (document.getElementById('dupModal').classList.contains('open') && dupId != null) openDup(dupId);
+}
+function toggleLang(){ setLang(LANG === 'et' ? 'en' : 'et'); }
+
 // Makseviisi liigitus: isiklik raha vs ettevõtte maksevahend
 function isPersonal(payment) { return /^Isiklik/i.test(payment || ''); }
 
 // Perioodi (kuu) arvutamine kuupäevast "DD.MM.YYYY"
-const MONTHS = ['Jaanuar','Veebruar','Märts','Aprill','Mai','Juuni','Juuli','August','September','Oktoober','November','Detsember'];
+let MONTHS = MONTHS_ALL[LANG];
 function periodKey(date) {
   const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date || '');
   return m ? `${m[3]}-${m[2]}` : '';        // nt "2025-06" — sorteerimiseks
@@ -718,37 +845,37 @@ function thumbHtml(d) {
 function metaHtml(d) {
   if (d.status === 'uploading') {
     return `
-      <div class="meta-uploading">Töötlemisel...</div>
-      ${d.comment ? `<div class="meta-desc">${d.comment}</div>` : ''}`;
+      <div class="meta-uploading">${t('processing')}</div>
+      ${d.comment ? `<div class="meta-desc">${tComment(d.comment)}</div>` : ''}`;
   }
   if (d.status === 'dup') {
     const strong = d.dup.strength === 'strong';
-    const label = strong ? 'Sama numbriga tšekk on juba esitatud' : 'Võimalik duplikaat';
+    const label = strong ? t('dupStrongLabel') : t('dupWeakLabel');
     return `
       <div class="meta-warn${strong ? ' strong' : ''}"><i class="ti ti-alert-triangle"></i>${label}</div>
       <div class="meta-vendor">${d.dup.vendor}</div>
       <div class="meta-amount-date">${d.dup.info}</div>`;
   }
   if (d.status === 'error') {
-    return `<div class="meta-error"><i class="ti ti-circle-x"></i>Viga ülesslaadimisel!</div>`;
+    return `<div class="meta-error"><i class="ti ti-circle-x"></i>${t('uploadErr')}</div>`;
   }
   if (d.status === 'deleted') {
-    return `<div class="meta-deleted">Pilt kustutatud!</div>`;
+    return `<div class="meta-deleted">${t('imageDeleted')}</div>`;
   }
   // ok või locked
   return `
-    <div class="meta-vendor">${d.vendor || d.label}</div>
+    <div class="meta-vendor">${d.vendor || tLabel(d.label)}</div>
     <div class="meta-amount-date">${d.amount}${d.amount && d.date ? ' | ' : ''}${d.date}</div>
-    ${isForeign(d) ? `<div class="meta-currency-note"><i class="ti ti-arrow-right"></i>${d.paidEur != null ? `Tasutud ${formatEur(d.paidEur)}` : `≈ ${formatEur(d.amountForeign * (d.rate || 0))} · lisa tegelik summa`}</div>` : ''}
+    ${isForeign(d) ? `<div class="meta-currency-note"><i class="ti ti-arrow-right"></i>${d.paidEur != null ? `${t('paid')} ${formatEur(d.paidEur)}` : `≈ ${formatEur(d.amountForeign * (d.rate || 0))} · ${t('addActual')}`}</div>` : ''}
     <div class="meta-inline-wrap">
       <div class="meta-inline${d.comment ? ' has-comment' : ''}">
-        <span>${d.label}</span>
+        <span>${tLabel(d.label)}</span>
         <span class="meta-sep">·</span>
-        <span class="meta-payment">${d.payment}</span>
-        ${d.comment ? `<span class="meta-sep">·</span><span class="meta-comment">${d.comment}</span>` : ''}
+        <span class="meta-payment">${tPayment(d.payment)}</span>
+        ${d.comment ? `<span class="meta-sep">·</span><span class="meta-comment">${tComment(d.comment)}</span>` : ''}
       </div>
     </div>
-    ${d.dupFlag ? `<div class="dup-chip"><i class="ti ti-alert-triangle"></i>Kulutaja kinnitas: mitte duplikaat — märge saadeti Directosse kaasa</div>` : ''}`;
+    ${d.dupFlag ? `<div class="dup-chip"><i class="ti ti-alert-triangle"></i>${t('dupChip')}</div>` : ''}`;
 }
 
 function actionHtml(d) {
@@ -778,14 +905,18 @@ function matchesFilters(d) {
 function populateFilters() {
   const periods = [...new Set(docs.map(d => periodKey(d.date)).filter(Boolean))].sort().reverse();
   const periodSel = document.getElementById('filterPeriod');
-  periodSel.innerHTML = `<option value="all">Kõik perioodid</option>` +
+  const prevPeriod = periodSel.value;
+  periodSel.innerHTML = `<option value="all">${t('allPeriods')}</option>` +
     periods.map(k => `<option value="${k}">${periodLabel(k)}</option>`).join('');
+  if (prevPeriod) periodSel.value = prevPeriod;
 
   const vendors = [...new Map(docs.filter(d => d.vendor).map(d => [d.vendor, d.reg])).entries()]
     .sort((a,b) => a[0].localeCompare(b[0], 'et'));
   const vendorSel = document.getElementById('filterVendor');
-  vendorSel.innerHTML = `<option value="all">Kõik hankijad</option>` +
+  const prevVendor = vendorSel.value;
+  vendorSel.innerHTML = `<option value="all">${t('allSuppliers')}</option>` +
     vendors.map(([name, reg]) => `<option value="${name}">${name}${reg ? ` (${reg})` : ''}</option>`).join('');
+  if (prevVendor) vendorSel.value = prevVendor;
 }
 
 function render() {
@@ -799,7 +930,7 @@ function render() {
         <div class="doc-meta">${metaHtml(d)}</div>
         ${actionHtml(d)}
       </div>`).join('')
-    : `<div class="filter-empty">Valitud filtritele vastavaid tšekke ei leitud.</div>`;
+    : `<div class="filter-empty">${LANG === 'en' ? 'No receipts match the selected filters.' : 'Valitud filtritele vastavaid tšekke ei leitud.'}</div>`;
 
   updateSum(visible);
 }
@@ -810,12 +941,12 @@ function updateSum(visible) {
   const total = withAmount.reduce((s, d) => s + eurValue(d), 0);
   document.getElementById('sumTotal').textContent = formatEur(total);
   document.getElementById('sumCount').textContent =
-    `${withAmount.length} ${withAmount.length === 1 ? 'tšekk' : 'tšekki'}`;
+    `${withAmount.length} ${withAmount.length === 1 ? t('receiptOne') : t('receiptMany')}`;
 
   // Kui filtreeritud ainult isiklikust rahast tasutud tšekid → näita hüvitatavat summat
   const onlyPersonal = document.getElementById('filterPayment').value === 'personal';
   document.getElementById('sumLabel').textContent =
-    onlyPersonal ? 'Hüvitamisele kuuluv summa' : 'Filtreeritud tšekkide summa';
+    onlyPersonal ? t('sumReimburse') : t('sumFiltered');
 }
 
 function applyFilters() { render(); }
@@ -838,31 +969,28 @@ function openDup(id) {
   box.classList.toggle('strong', strong);
   const title = document.getElementById('dupTitle');
   title.classList.toggle('strong', strong);
-  title.querySelector('span').textContent = strong ? 'Sama numbriga tšekk on juba esitatud' : 'Võimalik duplikaat';
+  title.querySelector('span').textContent = strong ? t('dupStrongLabel') : t('dupWeakLabel');
 
-  document.getElementById('dupNote').textContent = strong
-    ? 'Selle müüja sama numbriga tšekk on juba esitatud. Kahel eri tšekil ei saa olla sama numbrit — suure tõenäosusega on tegu duplikaadiga. Kontrolli enne saatmist.'
-    : 'See tšekk paistab olevat juba esitatud. Müüja, summa ja kuupäev kattuvad varasema tšekiga. Kontrolli, kas tegu on sama tšekiga või kahe eri ostuga.';
+  document.getElementById('dupNote').textContent = strong ? t('dupNoteStrong') : t('dupNoteWeak');
 
   document.getElementById('dupNewThumb').style.background = p.newThumb;
   document.getElementById('dupNewVendor').textContent = p.vendor;
   document.getElementById('dupNewInfo').textContent = p.info;
-  document.getElementById('dupNewNr').innerHTML = `Tšeki nr: <b>${p.nr}</b>`;
-  document.getElementById('dupNewTime').textContent = p.time;
+  document.getElementById('dupNewNr').innerHTML = `${t('receiptNo')}: <b>${tv(p.nr)}</b>`;
+  document.getElementById('dupNewTime').textContent = tv(p.time);
 
   document.getElementById('dupOldThumb').style.background = p.oldThumb;
   document.getElementById('dupOldVendor').textContent = p.oldVendor;
   document.getElementById('dupOldInfo').textContent = p.oldInfo;
-  document.getElementById('dupOldNr').innerHTML = `Tšeki nr: <b>${p.oldNr}</b>`;
-  document.getElementById('dupOldStatus').textContent = p.oldStatus;
+  document.getElementById('dupOldNr').innerHTML = `${t('receiptNo')}: <b>${tv(p.oldNr)}</b>`;
+  document.getElementById('dupOldStatus').textContent = tv(p.oldStatus);
 
   document.getElementById('dupMatch').innerHTML = strong
-    ? `Kattuvad: <b>müüja</b>, <b>tšeki nr</b> ${p.oldNr}, <b>summa</b> ja <b>kuupäev</b>.`
-    : `Kattuvad: <b>müüja</b>, <b>summa</b> ja <b>kuupäev</b>. Tšeki number erineb või pole loetav.`;
+    ? t('matchStrong').replace('{nr}', tv(p.oldNr))
+    : t('matchWeak');
 
-  document.getElementById('dupCaveat').innerHTML = strong
-    ? `<i class="ti ti-info-circle"></i><span>Tšeki number loeti pildilt automaatselt (AI). Halva pildi korral võib number olla valesti loetud — seetõttu kirjet automaatselt ei kustutata.</span>`
-    : `<i class="ti ti-info-circle"></i><span>Kaks samasugust ostu (nt kaks kohvi samal päeval) on lubatud. Kui tegu on eri ostuga, vali „See on uus tšekk“.</span>`;
+  document.getElementById('dupCaveat').innerHTML =
+    `<i class="ti ti-info-circle"></i><span>${strong ? t('dupCaveatStrong') : t('dupCaveatWeak')}</span>`;
 
   document.getElementById('dupModal').classList.add('open');
 }
@@ -1022,8 +1150,7 @@ function sendPreview() {
   render();
 }
 
-populateFilters();
-render();
+setLang('et');   // init: rakendab keele, täidab filtrid ja renderdab
 </script>
 </body>
 </html>
