@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NÄIDISFAIL koolituseks (Hankija automaatika, näide "Koond = Dokument").
+     Andmed on väljamõeldud. Struktuur järgib Eesti e-arve standardit EVS 923:2014.
+     Arvel on 3 püsiteenuse rida (eri asukohad) + 1 lisateenuse rida.
+     Automaatika reegliga "Püsiteenus" + Koond = Dokument koonduvad 3 rida üheks;
+     "Lisateenus" jääb eraldi reaks. -->
+<E_Invoice>
+  <Header>
+    <Date>2026-07-13</Date>
+    <FileId>KASEKE-EARVE-NAIDIS-001</FileId>
+    <Version>1.2</Version>
+  </Header>
+  <Invoice invoiceId="KAS-2026-0714" serviceId="1" regNumber="12345678" sellerRegnumber="12874922">
+    <InvoiceParties>
+      <SellerParty>
+        <Name>Kaseke AS</Name>
+        <RegNumber>12874922</RegNumber>
+        <VATRegNumber>EE102874922</VATRegNumber>
+        <ContactData>
+          <ContactName>Arvete osakond</ContactName>
+          <PhoneNumber>+372 600 6000</PhoneNumber>
+          <E-mailAddress>arved@kaseke.example.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Kase tee 5</PostalAddress1>
+            <City>Tallinn</City>
+            <PostalCode>10920</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+        <AccountInfo>
+          <AccountNumber>EE471010012874922001</AccountNumber>
+          <BIC>EEUHEE2X</BIC>
+        </AccountInfo>
+      </SellerParty>
+      <BuyerParty>
+        <Name>Näidis Ettevõte OÜ</Name>
+        <RegNumber>12345678</RegNumber>
+        <VATRegNumber>EE123456789</VATRegNumber>
+        <ContactData>
+          <ContactName>Raamatupidamine</ContactName>
+          <E-mailAddress>raamatupidaja@naidis.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Näidise tn 1</PostalAddress1>
+            <City>Tartu</City>
+            <PostalCode>50050</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+      </BuyerParty>
+    </InvoiceParties>
+    <InvoiceInformation>
+      <Type type="DEB"/>
+      <DocumentName>Arve</DocumentName>
+      <InvoiceNumber>KAS-2026-0714</InvoiceNumber>
+      <InvoiceContentText>Haldusteenused 07.2026</InvoiceContentText>
+      <PaymentReferenceNumber>702600714</PaymentReferenceNumber>
+      <InvoiceDate>2026-07-13</InvoiceDate>
+      <DueDate>2026-07-27</DueDate>
+      <Period>
+        <StartDate>2026-07-01</StartDate>
+        <EndDate>2026-07-31</EndDate>
+      </Period>
+    </InvoiceInformation>
+    <InvoiceSumGroup>
+      <InvoiceSum>350.00</InvoiceSum>
+      <VAT>
+        <VATRate>24</VATRate>
+        <SumBeforeVAT>350.00</SumBeforeVAT>
+        <VATSum>84.00</VATSum>
+      </VAT>
+      <TotalVATSum>84.00</TotalVATSum>
+      <TotalSum>434.00</TotalSum>
+      <TotalToPay>434.00</TotalToPay>
+      <Currency>EUR</Currency>
+    </InvoiceSumGroup>
+    <InvoiceItem>
+      <InvoiceItemGroup>
+        <ItemEntry>
+          <Description>Püsiteenus – Tartu, Riia 12</Description>
+          <ItemDetailInfo>
+            <ItemUnit>kuu</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>100.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>100.00</ItemSum>
+          <VAT><VATRate>24</VATRate><VATSum>24.00</VATSum></VAT>
+          <ItemTotal>124.00</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Püsiteenus – Pärnu, Aia 3</Description>
+          <ItemDetailInfo>
+            <ItemUnit>kuu</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>120.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>120.00</ItemSum>
+          <VAT><VATRate>24</VATRate><VATSum>28.80</VATSum></VAT>
+          <ItemTotal>148.80</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Püsiteenus – Tallinn, Kase 5</Description>
+          <ItemDetailInfo>
+            <ItemUnit>kuu</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>80.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>80.00</ItemSum>
+          <VAT><VATRate>24</VATRate><VATSum>19.20</VATSum></VAT>
+          <ItemTotal>99.20</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Lisateenus – täiendav hooldustöö</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>50.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>50.00</ItemSum>
+          <VAT><VATRate>24</VATRate><VATSum>12.00</VATSum></VAT>
+          <ItemTotal>62.00</ItemTotal>
+        </ItemEntry>
+      </InvoiceItemGroup>
+    </InvoiceItem>
+    <PaymentInfo>
+      <Currency>EUR</Currency>
+      <PaymentDescription>Haldusteenused 07.2026</PaymentDescription>
+      <Payable>YES</Payable>
+      <PayDueDate>2026-07-27</PayDueDate>
+      <PaymentTotalSum>434.00</PaymentTotalSum>
+      <PayerName>Näidis Ettevõte OÜ</PayerName>
+      <PaymentId>702600714</PaymentId>
+      <PayToAccount>EE471010012874922001</PayToAccount>
+      <PayToName>Kaseke AS</PayToName>
+    </PaymentInfo>
+  </Invoice>
+</E_Invoice>
