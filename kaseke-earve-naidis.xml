@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- NÄIDISFAIL koolituseks (Hankija automaatika, näide "Koond = Dokument").
      Andmed on väljamõeldud. Struktuur järgib Eesti e-arve standardit EVS 923:2014.
-     Arvel on 3 püsiteenuse rida (eri asukohad) + 1 lisateenuse rida.
-     Automaatika reegliga "Püsiteenus" + Koond = Dokument koonduvad 3 rida üheks;
+     Arvel on 2 püsiteenuse rida (eri asukohad) + 1 lisateenuse rida.
+     Automaatika reegliga "Püsiteenus" + Koond = Dokument koonduvad 2 rida üheks;
      "Lisateenus" jääb eraldi reaks. -->
 <E_Invoice>
   <Header>
@@ -62,15 +62,15 @@
       </Period>
     </InvoiceInformation>
     <InvoiceSumGroup>
-      <InvoiceSum>350.00</InvoiceSum>
+      <InvoiceSum>270.00</InvoiceSum>
       <VAT>
         <VATRate>24</VATRate>
-        <SumBeforeVAT>350.00</SumBeforeVAT>
-        <VATSum>84.00</VATSum>
+        <SumBeforeVAT>270.00</SumBeforeVAT>
+        <VATSum>64.80</VATSum>
       </VAT>
-      <TotalVATSum>84.00</TotalVATSum>
-      <TotalSum>434.00</TotalSum>
-      <TotalToPay>434.00</TotalToPay>
+      <TotalVATSum>64.80</TotalVATSum>
+      <TotalSum>334.80</TotalSum>
+      <TotalToPay>334.80</TotalToPay>
       <Currency>EUR</Currency>
     </InvoiceSumGroup>
     <InvoiceItem>
@@ -98,17 +98,6 @@
           <ItemTotal>148.80</ItemTotal>
         </ItemEntry>
         <ItemEntry>
-          <Description>Püsiteenus – Tallinn, Kase 5</Description>
-          <ItemDetailInfo>
-            <ItemUnit>kuu</ItemUnit>
-            <ItemAmount>1</ItemAmount>
-            <ItemPrice>80.00</ItemPrice>
-          </ItemDetailInfo>
-          <ItemSum>80.00</ItemSum>
-          <VAT><VATRate>24</VATRate><VATSum>19.20</VATSum></VAT>
-          <ItemTotal>99.20</ItemTotal>
-        </ItemEntry>
-        <ItemEntry>
           <Description>Lisateenus – täiendav hooldustöö</Description>
           <ItemDetailInfo>
             <ItemUnit>tk</ItemUnit>
@@ -126,7 +115,7 @@
       <PaymentDescription>Haldusteenused 07.2026</PaymentDescription>
       <Payable>YES</Payable>
       <PayDueDate>2026-07-27</PayDueDate>
-      <PaymentTotalSum>434.00</PaymentTotalSum>
+      <PaymentTotalSum>334.80</PaymentTotalSum>
       <PayerName>Näidis Ettevõte OÜ</PayerName>
       <PaymentId>702600714</PaymentId>
       <PayToAccount>EE471010012874922001</PayToAccount>
