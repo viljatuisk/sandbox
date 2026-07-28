@@ -212,6 +212,10 @@
     #stage{transform:none!important; box-shadow:none}
     .slide{page-break-after:always}
   }
+  #lang-switch{position:fixed; top:12px; right:14px; z-index:200; display:flex; border:1px solid #c3ccd6; border-radius:6px; overflow:hidden; font-family:'Segoe UI',Arial,sans-serif; box-shadow:0 1px 5px rgba(0,0,0,.15); background:#fff}
+  #lang-switch button{border:none; background:#fff; color:#5a6b7b; font-size:12px; font-weight:700; letter-spacing:.6px; padding:5px 11px; cursor:pointer; line-height:1.2}
+  #lang-switch button.active{background:#2f6ab5; color:#fff}
+  #lang-switch button:not(.active):hover{background:#eef3f9}
 </style>
 </head>
 <body>
@@ -220,6 +224,7 @@
 <div id="counter"></div>
 <div class="nav-zone" id="nav-prev" onclick="go(-1)"></div>
 <div class="nav-zone" id="nav-next" onclick="go(1)"></div>
+<div id="lang-switch"><button data-lang="et" class="active" onclick="setLang('et')">EST</button><button data-lang="en" onclick="setLang('en')">ENG</button></div>
 
 <div id="viewport">
 <div id="stage">
@@ -227,25 +232,25 @@
   <!-- 1 · COVER -->
   <section class="slide active cover">
     <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="#e8a13a" stroke-width="1"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    <span class="badge">⚙️ Directo · Raamatupidajate webinar</span>
-    <h1>Hankija<br>Automaatika</h1>
-    <p class="lead">E-arvetest valmis ostuarveteni — automaatselt ja täpselt.</p>
-    <div class="meta"><span>2026</span><span>•</span><span>Kestus ~1,5 h</span><span>•</span><span>wiki.directo.ee/et/yld_hankija</span></div>
+    <span class="badge" data-en="⚙️ Directo · Accountants&#39; webinar">⚙️ Directo · Raamatupidajate webinar</span>
+    <h1 data-en="Supplier<br>Automation">Hankija<br>Automaatika</h1>
+    <p class="lead" data-en="From e-invoices to ready purchase invoices — automatically and accurately.">E-arvetest valmis ostuarveteni — automaatselt ja täpselt.</p>
+    <div class="meta"><span>2026</span><span>•</span><span data-en="Duration ~1.5 h">Kestus ~1,5 h</span><span>•</span><span>wiki.directo.ee/et/yld_hankija</span></div>
     <div class="slide-foot"><span class="lg">Directo</span> · Hankija automaatika</div>
   </section>
 
   <!-- 2 · AGENDA -->
   <section class="slide">
-    <div class="kicker">Päevakord</div>
-    <h1 class="slide-title">Mida täna vaatame</h1>
+    <div class="kicker" data-en="Agenda">Päevakord</div>
+    <h1 class="slide-title" data-en="What we&#39;ll cover today">Mida täna vaatame</h1>
     <div class="title-rule"></div>
     <div class="agenda-grid">
-      <div class="agenda-item"><div class="n">1</div><div><h3>E-arve on alus</h3><p>Miks automaatika töötab ainult e-arvega + Directo AI nipp</p></div></div>
-      <div class="agenda-item"><div class="n">2</div><div><h3>Mis see on ja mida oskab</h3><p>Lihtne mudel: filter → tulemus. Millal kasutada, millal mitte</p></div></div>
-      <div class="agenda-item"><div class="n">3</div><div><h3>Seadistamine</h3><p>Hankija kaardi sakk „Automaatika" — väljad ja loogika</p></div></div>
-      <div class="agenda-item"><div class="n">4</div><div><h3>Praktilised näited</h3><p>19 elulist stsenaariumi reeglitabeli ja tulemusega</p></div></div>
-      <div class="agenda-item"><div class="n">5</div><div><h3>Reeglite loogika</h3><p>Täitmise järjekord ja KM koodi valik</p></div></div>
-      <div class="agenda-item"><div class="n">6</div><div><h3>Nipid ja KKK</h3><p>Parimad praktikad ja levinud vead</p></div></div>
+      <div class="agenda-item"><div class="n">1</div><div><h3 data-en="The e-invoice is the foundation">E-arve on alus</h3><p data-en="Why automation works only with e-invoices + a Directo AI tip">Miks automaatika töötab ainult e-arvega + Directo AI nipp</p></div></div>
+      <div class="agenda-item"><div class="n">2</div><div><h3 data-en="What it is and what it can do">Mis see on ja mida oskab</h3><p data-en="Simple model: filter → result. When to use it, when not">Lihtne mudel: filter → tulemus. Millal kasutada, millal mitte</p></div></div>
+      <div class="agenda-item"><div class="n">3</div><div><h3 data-en="Setup">Seadistamine</h3><p data-en="Supplier card &#39;Automation&#39; tab — fields and logic">Hankija kaardi sakk „Automaatika" — väljad ja loogika</p></div></div>
+      <div class="agenda-item"><div class="n">4</div><div><h3 data-en="Practical examples">Praktilised näited</h3><p data-en="19 real-life scenarios with a rule table and result">19 elulist stsenaariumi reeglitabeli ja tulemusega</p></div></div>
+      <div class="agenda-item"><div class="n">5</div><div><h3 data-en="Rule logic">Reeglite loogika</h3><p data-en="Order of execution and VAT code selection">Täitmise järjekord ja KM koodi valik</p></div></div>
+      <div class="agenda-item"><div class="n">6</div><div><h3 data-en="Tips &amp; FAQ">Nipid ja KKK</h3><p data-en="Best practices and common mistakes">Parimad praktikad ja levinud vead</p></div></div>
     </div>
     <div class="slide-foot"><span class="lg">Directo</span> · Hankija automaatika</div>
   </section>
@@ -1206,6 +1211,18 @@
 
   const start = parseInt(location.hash.replace('#',''))-1;
   show(isNaN(start)?0:start);
+
+  function setLang(lang){
+    document.querySelectorAll('[data-en]').forEach(function(el){
+      if(el.getAttribute('data-et')===null) el.setAttribute('data-et', el.innerHTML);
+      el.innerHTML = (lang==='en') ? el.getAttribute('data-en') : el.getAttribute('data-et');
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('#lang-switch button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang')===lang); });
+    try{ localStorage.setItem('deckLang', lang); }catch(e){}
+  }
+  var _savedLang='et'; try{ _savedLang = localStorage.getItem('deckLang')||'et'; }catch(e){}
+  setLang(_savedLang);
 </script>
 </body>
 </html>
