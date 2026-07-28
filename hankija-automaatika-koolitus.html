@@ -1212,15 +1212,50 @@
   const start = parseInt(location.hash.replace('#',''))-1;
   show(isNaN(start)?0:start);
 
+  var DECK_DICT = {
+    "Sisaldus":"Contains","Artikkel":"Item","Viite-<br>number":"Ref.<br>number","Kogus":"Qty",
+    "Rea<br>summa":"Row<br>sum","Ainus":"Only","Kuulub<br>personali":"Belongs to<br>personnel",
+    "Kuulub personal":"Belongs to personnel","Personal":"Personnel",
+    "Konto":"Account","KM<br>kood":"VAT<br>code","Objekt":"Object","Projekt":"Project","Kasutaja":"User",
+    "Sisu":"Description","Finants-<br>retsept":"Financial<br>recipe","Finantsretsept":"Financial recipe",
+    "Koond":"Consolidate","Kinnita":"Confirm","K.summa":"C.sum","NR":"No","Nr":"No","Summa":"Sum",
+    "KMK":"VAT code","KM":"VAT","Rida":"Row","Valiku tüüp":"Selection type","Tüüp":"Type",
+    "Artikkel<br>(e-arvel)":"Item<br>(e-invoice)","Artikkel<br>(Directo)":"Item<br>(Directo)",
+    "Väljastaja":"Issuer","Klient":"Customer","Dok.nr":"Doc.no",
+    "Üldinfo":"General","Kontaktid":"Contacts","Pangakontod":"Bank accounts","Tegevused":"Activities",
+    "Muutused":"Changes","Automaatika":"Automation","Transport":"Transport",
+    "Salvesta":"Save","Kopeeri":"Copy","Kustuta":"Delete",
+    "Hankija":"Supplier","Hankija arve":"Supplier invoice","Kasutus":"Usage","Kommentaar":"Comment",
+    "Kred. konto":"Credit acc.","Nimetus":"Name","Number":"Number","Sisekommentaar":"Internal comment","Tasuda":"To pay",
+    "KM kokku":"VAT total","Olek:":"Status:","Vaata":"View","Kinnitatud":"Confirmed",
+    "Ridade täiendamine (e-arvelt)":"Filling rows (from the e-invoice)","Dokument":"Document"
+  };
+  function _translateUI(lang){
+    document.querySelectorAll('.dm th').forEach(function(el){
+      if(el.getAttribute('data-uien')===null) el.setAttribute('data-uien', el.innerHTML);
+      var o = el.getAttribute('data-uien');
+      el.innerHTML = (lang==='en' && DECK_DICT[o]!==undefined) ? DECK_DICT[o] : o;
+    });
+    document.querySelectorAll('.dm-sec, .dm-btn, .dm-olek, .dm-tabs .t, .dm-drop, .dm-hdr .lb, .dm-sums b').forEach(function(el){
+      var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
+      while(n = w.nextNode()){
+        if(n.__o===undefined) n.__o = n.nodeValue;
+        var raw = n.__o, key = raw.replace(/▾/g,'').replace(/ /g,' ').trim();
+        n.nodeValue = (lang==='en' && DECK_DICT[key]!==undefined) ? raw.replace(key, DECK_DICT[key]) : raw;
+      }
+    });
+  }
   function setLang(lang){
     document.querySelectorAll('[data-en]').forEach(function(el){
       if(el.getAttribute('data-et')===null) el.setAttribute('data-et', el.innerHTML);
       el.innerHTML = (lang==='en') ? el.getAttribute('data-en') : el.getAttribute('data-et');
     });
+    _translateUI(lang);
     document.documentElement.lang = lang;
     document.querySelectorAll('#lang-switch button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang')===lang); });
     try{ localStorage.setItem('deckLang', lang); }catch(e){}
   }
+
   var _savedLang='et'; try{ _savedLang = localStorage.getItem('deckLang')||'et'; }catch(e){}
   setLang(_savedLang);
 </script>
