@@ -990,14 +990,14 @@
     <h1 class="slide-title" style="font-size:30px" data-en="When you can&#39;t consolidate on the purchase invoice — consolidate in the ledger entry">Kui ostuarvel ei saa koondada — koonda kandel</h1>
     <p class="ex-desc" data-en="A data-services invoice has rows with different content (Calls, SMS, Internet…), no common text. On the purchase invoice, rows from different rules can&#39;t be merged into one — <b>but in the ledger entry identical rows consolidate automatically</b>.">Andmesideteenuste arvel on erineva sisuga read (Kõned, SMS, Internet…), ühist teksti pole. Ostuarvel eri reeglitega ridu ühele reale ei saa — <b>kuid kandel koonduvad identsed read automaatselt</b>.</p>
     <div class="cols" style="gap:14px">
-      <div class="col"><div class="card bad fill" style="padding:12px 16px"><h3 style="font-size:14px">✕ Ostuarvel ei saa koondada</h3>
-        <ul style="gap:6px"><li>Sisalduses pole ühist teksti kõigile</li><li>Erinevate reeglitega ridu ei saa ühele reale panna</li></ul></div></div>
-      <div class="col"><div class="card good fill" style="padding:12px 16px"><h3 style="font-size:14px">✅ Kandel saab koondada</h3>
-        <ul style="gap:6px"><li>Konto + KM kood + objekt (+ projekt) identsed</li><li>Mõlema reegli <b>Sisu</b> väli täidetud SAMA tekstiga</li></ul></div></div>
+      <div class="col"><div class="card bad fill" style="padding:12px 16px"><h3 style="font-size:14px" data-en="✕ Can&#39;t consolidate on the purchase invoice">✕ Ostuarvel ei saa koondada</h3>
+        <ul style="gap:6px"><li data-en="There&#39;s no common text in Contains for all rows">Sisalduses pole ühist teksti kõigile</li><li data-en="Rows from different rules can&#39;t be put on one row">Erinevate reeglitega ridu ei saa ühele reale panna</li></ul></div></div>
+      <div class="col"><div class="card good fill" style="padding:12px 16px"><h3 style="font-size:14px" data-en="✅ Can consolidate in the ledger entry">✅ Kandel saab koondada</h3>
+        <ul style="gap:6px"><li data-en="Account + VAT code + object (+ project) identical">Konto + KM kood + objekt (+ projekt) identsed</li><li data-en="Both rules&#39; <b>Description</b> field filled with the SAME text">Mõlema reegli <b>Sisu</b> väli täidetud SAMA tekstiga</li></ul></div></div>
     </div>
     <div class="card" style="padding:12px 16px; margin-top:12px">
       <table class="rt">
-        <thead><tr><th>Sisaldus</th><th>Konto</th><th>KM kood</th><th>Objekt</th><th>Sisu (identne!)</th><th>Koond</th></tr></thead>
+        <thead><tr><th>Sisaldus</th><th>Konto</th><th>KM kood</th><th>Objekt</th><th data-en="Description (identical!)">Sisu (identne!)</th><th>Koond</th></tr></thead>
         <tbody>
           <tr><td>Kõned</td><td class="mono">5700</td><td>1</td><td>ADMIN</td><td class="hl" style="font-weight:600">Kõned ja internet</td><td>Rida</td></tr>
           <tr><td>SMS</td><td class="mono">5700</td><td>1</td><td>ADMIN</td><td class="hl" style="font-weight:600">Kõned ja internet</td><td>Rida</td></tr>
@@ -1058,10 +1058,10 @@
 
   <!-- 24 · JÄRK-JÄRGULINE RAKENDAMINE -->
   <section class="slide">
-    <div class="kicker">Osa 5 · Loogika</div>
-    <h1 class="slide-title" style="font-size:32px">Reeglid käivad iga rea peal järjest läbi</h1>
+    <div class="kicker" data-en="Part 5 · Logic">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px" data-en="Rules run through each row in sequence">Reeglid käivad iga rea peal järjest läbi</h1>
     <div class="title-rule"></div>
-    <p style="font-size:16px; color:var(--ink2); line-height:1.5; margin-bottom:12px">
+    <p style="font-size:16px; color:var(--ink2); line-height:1.5; margin-bottom:12px" data-en="Directo tries <b style='color:var(--navy)'>all rules in sequence</b> on each invoice row. The first matching one fills the fields. Every following rule also applies — but fills only the <b style='color:var(--navy)'>still-empty</b> fields. <b>Already-filled fields are not overwritten.</b>">
       Directo proovib <b style="color:var(--navy)">kõiki reegleid järjest</b> iga arve rea peal. Esimene sobiv täidab väljad. Iga järgmine reegel rakendub samuti — kuid täidab ainult <b style="color:var(--navy)">veel tühjaks jäänud</b> välju. <b>Juba täidetut üle ei kirjutata.</b></p>
     <div class="card" style="padding:12px 16px; margin-bottom:12px">
       <table class="rt">
@@ -1082,17 +1082,17 @@
 
   <!-- 25 · TÄITMISE JÄRJEKORD (priority) -->
   <section class="slide">
-    <div class="kicker">Osa 5 · Loogika</div>
-    <h1 class="slide-title" style="font-size:32px">Kust ostuarve väli oma väärtuse saab — prioriteet</h1>
+    <div class="kicker" data-en="Part 5 · Logic">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px" data-en="Where a purchase invoice field gets its value — priority">Kust ostuarve väli oma väärtuse saab — prioriteet</h1>
     <div class="title-rule"></div>
     <div class="ladder">
-      <div class="rung l1"><div class="lvl">1</div><div><h4>Hankija automaatika reegel</h4><p>Kui reeglis on väli täidetud, kasutatakse seda väärtust.</p></div><div class="prio">Kõrgeim</div></div>
-      <div class="rung l2"><div class="lvl">2</div><div><h4>Hankija kaart (LS konto, KM kood)</h4><p>Kui reeglis väli tühi, võetakse väärtus hankija kaardilt.</p></div><div class="prio">↓</div></div>
-      <div class="rung l3"><div class="lvl">3</div><div><h4>E-arve andmed</h4><p>Kui hankija kaardil tühi, kasutatakse e-arve KM määra ja „Dok. transport eelistab" valikut.</p></div><div class="prio">Madalaim</div></div>
+      <div class="rung l1"><div class="lvl">1</div><div><h4 data-en="Supplier automation rule">Hankija automaatika reegel</h4><p data-en="If the field is filled in the rule, that value is used.">Kui reeglis on väli täidetud, kasutatakse seda väärtust.</p></div><div class="prio">Kõrgeim</div></div>
+      <div class="rung l2"><div class="lvl">2</div><div><h4 data-en="Supplier card (default account, VAT code)">Hankija kaart (LS konto, KM kood)</h4><p data-en="If the field is empty in the rule, the value is taken from the supplier card.">Kui reeglis väli tühi, võetakse väärtus hankija kaardilt.</p></div><div class="prio">↓</div></div>
+      <div class="rung l3"><div class="lvl">3</div><div><h4 data-en="E-invoice data">E-arve andmed</h4><p data-en="If empty on the supplier card, the e-invoice VAT rate and the &#39;Doc. transport prefers&#39; option are used.">Kui hankija kaardil tühi, kasutatakse e-arve KM määra ja „Dok. transport eelistab" valikut.</p></div><div class="prio">Madalaim</div></div>
     </div>
     <div style="margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 18px">
-        <h3 style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:3px">Kust tuleb rea &bdquo;Sisu&ldquo; (kirjeldus)? &mdash; s&uuml;steemiseadistus</h3>
-        <p style="font-size:12.5px;color:var(--ink2);margin-bottom:10px">S&uuml;steemiseadistused &rarr; <i>&bdquo;Ostuarve ja kulutuse konto asetamisel v&otilde;etakse kirjeldus alati kontolt&ldquo;</i></p>
+        <h3 style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:3px" data-en="Where does the row&#39;s &#39;Description&#39; come from? &mdash; a system setting">Kust tuleb rea &bdquo;Sisu&ldquo; (kirjeldus)? &mdash; s&uuml;steemiseadistus</h3>
+        <p style="font-size:12.5px;color:var(--ink2);margin-bottom:10px" data-en="System settings &rarr; <i>&#39;When the purchase invoice / expense account is placed, the description is always taken from the account&#39;</i>">S&uuml;steemiseadistused &rarr; <i>&bdquo;Ostuarve ja kulutuse konto asetamisel v&otilde;etakse kirjeldus alati kontolt&ldquo;</i></p>
         <div style="display:flex;gap:14px">
           <div style="flex:1;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.4"><span class="pill" style="background:#fff;color:var(--green);border:1px solid var(--green-bd)">EI</span> &nbsp;Sisu tuleb <b>automaatika reeglist</b> (kui reeglis Sisu t&uuml;hi &rarr; j&auml;&auml;b e-arve rea kirjeldus).</div>
           <div style="flex:1;background:var(--amber-bg);border:1px solid var(--amber);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.4"><span class="pill a">JAH</span> &nbsp;Sisuks kirjutatakse <b>alati konto nimetus</b> (reegli Sisu ega e-arve kirjeldust ei arvestata).</div>
@@ -1104,21 +1104,21 @@
 
   <!-- 26 · KM LOOGIKA + XML -->
   <section class="slide">
-    <div class="kicker">Osa 5 · Loogika</div>
-    <h1 class="slide-title" style="font-size:32px">KM koodi valik & e-arve XML elemendid</h1>
+    <div class="kicker" data-en="Part 5 · Logic">Osa 5 · Loogika</div>
+    <h1 class="slide-title" style="font-size:32px" data-en="VAT code selection & e-invoice XML elements">KM koodi valik & e-arve XML elemendid</h1>
     <div class="title-rule"></div>
     <div class="cols">
       <div class="col"><div class="card fill">
-        <h3>KM koodi määramise loogika</h3>
+        <h3 data-en="VAT code selection logic">KM koodi määramise loogika</h3>
         <div class="ladder" style="gap:8px">
-          <div class="rung l1" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">1</div><div><h4 style="font-size:14.5px">Automaatika reegel</h4></div></div>
-          <div class="rung l2" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">2</div><div><h4 style="font-size:14.5px">Hankija kaart</h4></div></div>
-          <div class="rung l3" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">3</div><div><h4 style="font-size:14.5px">Artikkel / artikliklass</h4></div></div>
-          <div class="rung l4" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">4</div><div><h4 style="font-size:14.5px">KM määra järgi (Dok.transport eelistab = Jah)</h4></div></div>
+          <div class="rung l1" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">1</div><div><h4 style="font-size:14.5px" data-en="Automation rule">Automaatika reegel</h4></div></div>
+          <div class="rung l2" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">2</div><div><h4 style="font-size:14.5px" data-en="Supplier card">Hankija kaart</h4></div></div>
+          <div class="rung l3" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">3</div><div><h4 style="font-size:14.5px" data-en="Item / item class">Artikkel / artikliklass</h4></div></div>
+          <div class="rung l4" style="padding:10px 14px"><div class="lvl" style="width:32px;height:32px;font-size:15px">4</div><div><h4 style="font-size:14.5px" data-en="By VAT rate (Doc.transport prefers = Yes)">KM määra järgi (Dok.transport eelistab = Jah)</h4></div></div>
         </div>
       </div></div>
       <div class="col"><div class="card fill">
-        <h3>E-arve XML elemendid</h3>
+        <h3 data-en="E-invoice XML elements">E-arve XML elemendid</h3>
         <div class="field-list" style="gap:10px">
           <div class="field-row"><span class="fn">Sisaldus</span><span class="fd"><span class="xml-tag">&lt;Description&gt;</span><span class="xml-tag">&lt;ItemDescription&gt;</span></span></div>
           <div class="field-row"><span class="fn">Artikkel</span><span class="fd"><span class="xml-tag">&lt;ProductCode&gt;</span><span class="xml-tag">&lt;ItemID&gt;</span></span></div>
@@ -1142,29 +1142,29 @@
 
   <!-- 28 · KKK -->
   <section class="slide">
-    <div class="kicker">Osa 6 · KKK</div>
-    <h1 class="slide-title">Sagedased küsimused</h1>
+    <div class="kicker" data-en="Part 6 · FAQ">Osa 6 · KKK</div>
+    <h1 class="slide-title" data-en="Frequently asked questions">Sagedased küsimused</h1>
     <div class="title-rule"></div>
     <div class="faq">
-      <div class="faq-item"><h4><span class="q">?</span> Mitu reeglit rakendub ühele reale?</h4><p>KÕIK sobivad reeglid käivad iga rea peal läbi. Esimene täidab väljad, järgmised saavad täita ainult tühjaks jäänud välju.</p></div>
-      <div class="faq-item"><h4><span class="q">?</span> Miks reegel ei rakendu?</h4><p>Kontrolli, et rea Sisu sisaldab otsitavat teksti. Ava e-arve XML Dok. Transpordist → nupp „XML" ja vaata täpset teksti.</p></div>
-      <div class="faq-item"><h4><span class="q">?</span> Miks täidetakse vale sisu / objekt?</h4><p>Kasuta „Ainus" linnukest — kui see reegel rakendub, ei kirjuta teised reeglid seda rida enam üle.</p></div>
-      <div class="faq-item"><h4><span class="q">?</span> Töötaja objekti ei asetata?</h4><p>Objekt täidetakse töötajalt ainult siis, kui reeglil Objekt on TÜHI. Reeglil olev objekt on alati prioriteet.</p></div>
+      <div class="faq-item"><h4 data-en="<span class='q'>?</span> How many rules apply to one row?"><span class="q">?</span> Mitu reeglit rakendub ühele reale?</h4><p data-en="ALL matching rules run through each row. The first fills the fields, the following ones can fill only the fields that were left empty.">KÕIK sobivad reeglid käivad iga rea peal läbi. Esimene täidab väljad, järgmised saavad täita ainult tühjaks jäänud välju.</p></div>
+      <div class="faq-item"><h4 data-en="<span class='q'>?</span> Why doesn&#39;t a rule apply?"><span class="q">?</span> Miks reegel ei rakendu?</h4><p data-en="Check that the row&#39;s Description contains the searched text. Open the e-invoice XML from Doc. Transport → the &#39;XML&#39; button and look at the exact text.">Kontrolli, et rea Sisu sisaldab otsitavat teksti. Ava e-arve XML Dok. Transpordist → nupp „XML" ja vaata täpset teksti.</p></div>
+      <div class="faq-item"><h4 data-en="<span class='q'>?</span> Why is the wrong description / object filled?"><span class="q">?</span> Miks täidetakse vale sisu / objekt?</h4><p data-en="Use the &#39;Only&#39; checkbox — when this rule applies, other rules no longer overwrite this row.">Kasuta „Ainus" linnukest — kui see reegel rakendub, ei kirjuta teised reeglid seda rida enam üle.</p></div>
+      <div class="faq-item"><h4 data-en="<span class='q'>?</span> The employee&#39;s object isn&#39;t placed?"><span class="q">?</span> Töötaja objekti ei asetata?</h4><p data-en="The object is filled from the employee only if Object is EMPTY in the rule. An object in the rule is always the priority.">Objekt täidetakse töötajalt ainult siis, kui reeglil Objekt on TÜHI. Reeglil olev objekt on alati prioriteet.</p></div>
     </div>
     <div class="slide-foot" data-en="<span class='lg'>Part 6</span> · Tips &amp; FAQ"><span class="lg">Osa 6</span> · Nipid ja KKK</div>
   </section>
 
   <!-- 29 · KOKKUVÕTE -->
   <section class="slide">
-    <div class="kicker">Kokkuvõte</div>
-    <h1 class="slide-title">Peamised mõtted kaasa</h1>
+    <div class="kicker" data-en="Summary">Kokkuvõte</div>
+    <h1 class="slide-title" data-en="Key takeaways">Peamised mõtted kaasa</h1>
     <div class="title-rule"></div>
     <div class="sum-list">
-      <div class="sum-item"><span class="ci">✓</span><div>Töötab <b>e-arvetega</b> — seadista iga hankija kaardil eraldi (PDF → Directo AI-ga e-arveks).</div></div>
-      <div class="sum-item"><span class="ci">✓</span><div>Iga reegel = <b>filter</b> (millal) + <b>tulemus</b> (mis täidetakse). <b>„%"</b> = kõik read; spetsiifilised ette, üldised lõppu.</div></div>
-      <div class="sum-item"><span class="ci">✓</span><div>Kõik reeglid käivad iga rea peal läbi — <b>täidetut üle ei kirjutata</b>. „Ainus" lukustab erandi.</div></div>
-      <div class="sum-item"><span class="ci">✓</span><div><b>Automaatkinnitus</b> säästab aega; summa vahemik annab lubatud hälbe ja kaitseb üllatuste eest.</div></div>
-      <div class="sum-item"><span class="ci">✓</span><div><b>Koond</b> muudab paljurealise arve üherealiseks; <b>finantsretsept</b> jagab kulu objektide vahel.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div data-en="Works with <b>e-invoices</b> — set it up separately on each supplier card (PDF → e-invoice with Directo AI).">Töötab <b>e-arvetega</b> — seadista iga hankija kaardil eraldi (PDF → Directo AI-ga e-arveks).</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div data-en="Each rule = <b>filter</b> (when) + <b>result</b> (what gets filled). <b>&#39;%&#39;</b> = all rows; specific ones first, general ones at the end.">Iga reegel = <b>filter</b> (millal) + <b>tulemus</b> (mis täidetakse). <b>„%"</b> = kõik read; spetsiifilised ette, üldised lõppu.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div data-en="All rules run through each row — <b>filled fields are not overwritten</b>. &#39;Only&#39; locks the exception.">Kõik reeglid käivad iga rea peal läbi — <b>täidetut üle ei kirjutata</b>. „Ainus" lukustab erandi.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div data-en="<b>Auto-confirmation</b> saves time; an amount range gives an allowed tolerance and protects against surprises."><b>Automaatkinnitus</b> säästab aega; summa vahemik annab lubatud hälbe ja kaitseb üllatuste eest.</div></div>
+      <div class="sum-item"><span class="ci">✓</span><div data-en="<b>Consolidate</b> turns a multi-row invoice into a single-row one; a <b>financial recipe</b> splits the cost between objects."><b>Koond</b> muudab paljurealise arve üherealiseks; <b>finantsretsept</b> jagab kulu objektide vahel.</div></div>
     </div>
     <div class="slide-foot" data-en="<span class='lg'>Summary</span>"><span class="lg">Kokkuvõte</span></div>
   </section>
@@ -1173,7 +1173,7 @@
   <section class="slide cover" style="text-align:center; align-items:center">
     <span class="badge" style="margin:0 auto 26px">⚙️ Aitäh!</span>
     <h1 style="font-size:72px">Küsimused?</h1>
-    <p class="lead" style="margin:24px auto 0; text-align:center">Loe lähemalt: <b style="color:#fff">wiki.directo.ee/et/yld_hankija#automaatika</b><br>ja raamatupidaja nipinurk — „Kuidas e-arvetest automaatselt ostuarveid luua".</p>
+    <p class="lead" style="margin:24px auto 0; text-align:center" data-en="Read more: <b style='color:#fff'>wiki.directo.ee/et/yld_hankija#automaatika</b><br>and the accountant&#39;s tips corner — &#39;How to create purchase invoices from e-invoices automatically&#39;.">Loe lähemalt: <b style="color:#fff">wiki.directo.ee/et/yld_hankija#automaatika</b><br>ja raamatupidaja nipinurk — „Kuidas e-arvetest automaatselt ostuarveid luua".</p>
     <div class="slide-foot" style="left:50%; transform:translateX(-50%)"><span class="lg">Directo</span> · Hankija automaatika</div>
   </section>
 
@@ -1228,15 +1228,15 @@
     "Hankija":"Supplier","Hankija arve":"Supplier invoice","Kasutus":"Usage","Kommentaar":"Comment",
     "Kred. konto":"Credit acc.","Nimetus":"Name","Number":"Number","Sisekommentaar":"Internal comment","Tasuda":"To pay",
     "KM kokku":"VAT total","Olek:":"Status:","Vaata":"View","Kinnitatud":"Confirmed",
-    "Ridade täiendamine (e-arvelt)":"Filling rows (from the e-invoice)","Dokument":"Document"
+    "Ridade täiendamine (e-arvelt)":"Filling rows (from the e-invoice)","Dokument":"Document","Kõrgeim":"Highest","Madalaim":"Lowest","Rida ":"Row "
   };
   function _translateUI(lang){
-    document.querySelectorAll('.dm th').forEach(function(el){
+    document.querySelectorAll('.dm th, .rt th').forEach(function(el){
       if(el.getAttribute('data-uien')===null) el.setAttribute('data-uien', el.innerHTML);
       var o = el.getAttribute('data-uien');
       el.innerHTML = (lang==='en' && DECK_DICT[o]!==undefined) ? DECK_DICT[o] : o;
     });
-    document.querySelectorAll('.dm-sec, .dm-btn, .dm-olek, .dm-tabs .t, .dm-drop, .dm-hdr .lb, .dm-sums b').forEach(function(el){
+    document.querySelectorAll('.dm-sec, .dm-btn, .dm-olek, .dm-tabs .t, .dm-drop, .dm-hdr .lb, .dm-sums b, .prio').forEach(function(el){
       var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
       while(n = w.nextNode()){
         if(n.__o===undefined) n.__o = n.nodeValue;
