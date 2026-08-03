@@ -1974,20 +1974,30 @@
   // ── ANDMEVÄLJAD (lisaväljad seotud olemitelt — nagu 'Valitavad väljad' seadistus) ──
   const EXTRA_FIELD_DEFS = [
     { entity: 'Hankija', fields: [
-      { key: 'h_regnr',  label: 'Reg nr',  col: 'Hankija reg nr',  sample: '10823456' },
-      { key: 'h_kmnr',   label: 'KM nr',   col: 'Hankija KM nr',   sample: 'EE101234567' },
-      { key: 'h_klass',  label: 'Klass',   col: 'Hankija klass',   sample: 'TARNIJA' },
-      { key: 'h_haldur', label: 'Haldur',  col: 'Hankija haldur',  sample: 'Mari K.' },
-      { key: 'h_epost',  label: 'E-post',  col: 'Hankija e-post',  sample: 'info@näidis.ee' },
+      { key: 'h_regnr',   label: 'Reg nr',        col: 'Hankija reg nr',       sample: '10823456' },
+      { key: 'h_kmnr',    label: 'KM nr',         col: 'Hankija KM nr',        sample: 'EE101234567' },
+      { key: 'h_klass',   label: 'Klass',         col: 'Hankija klass',        sample: 'TARNIJA' },
+      { key: 'h_haldur',  label: 'Haldur',        col: 'Hankija haldur',       sample: 'Mari K.' },
+      { key: 'h_aadress', label: 'Aadress',       col: 'Hankija aadress',      sample: 'Tööstuse 5, Tallinn' },
+      { key: 'h_maakond', label: 'Maakond',       col: 'Hankija maakond',      sample: 'Harjumaa' },
+      { key: 'h_riik',    label: 'Riik',          col: 'Hankija riik',         sample: 'Eesti' },
+      { key: 'h_tel',     label: 'Telefon',       col: 'Hankija telefon',      sample: '+372 600 0000' },
+      { key: 'h_epost',   label: 'E-post',        col: 'Hankija e-post',       sample: 'info@näidis.ee' },
+      { key: 'h_lahting', label: 'Läh. tingimus', col: 'Hankija läh. tingim.', sample: '14 päeva' },
+      { key: 'h_maksesaaja', label: 'Makse saaja', col: 'Hankija makse saaja', sample: 'Näidis OÜ' },
     ]},
     { entity: 'Klient', fields: [
-      { key: 'k_regnr',  label: 'Reg nr',  col: 'Kliendi reg nr',  sample: '12345678' },
-      { key: 'k_klass',  label: 'Klass',   col: 'Kliendi klass',   sample: 'HULGI' },
-      { key: 'k_haldur', label: 'Haldur',  col: 'Kliendi haldur',  sample: 'Jaan T.' },
-    ]},
-    { entity: 'Projekt', fields: [
-      { key: 'p_juht',   label: 'Juht',    col: 'Projekti juht',   sample: 'Tiit P.' },
-      { key: 'p_klass',  label: 'Klass',   col: 'Projekti klass',  sample: 'ARENDUS' },
+      { key: 'k_regnr',   label: 'Reg nr',    col: 'Kliendi reg nr',    sample: '12345678' },
+      { key: 'k_kmnr',    label: 'KM nr',     col: 'Kliendi KM nr',     sample: 'EE102345678' },
+      { key: 'k_klass',   label: 'Klass',     col: 'Kliendi klass',     sample: 'HULGI' },
+      { key: 'k_haldur',  label: 'Haldur',    col: 'Kliendi haldur',    sample: 'Jaan T.' },
+      { key: 'k_aadress', label: 'Aadress',   col: 'Kliendi aadress',   sample: 'Pärnu mnt 12, Tallinn' },
+      { key: 'k_maakond', label: 'Maakond',   col: 'Kliendi maakond',   sample: 'Harjumaa' },
+      { key: 'k_riik',    label: 'Riik',      col: 'Kliendi riik',      sample: 'Eesti' },
+      { key: 'k_tel',     label: 'Telefon',   col: 'Kliendi telefon',   sample: '+372 500 0000' },
+      { key: 'k_epost',   label: 'E-post',    col: 'Kliendi e-post',    sample: 'klient@näidis.ee' },
+      { key: 'k_hinnavalem', label: 'Hinnavalem', col: 'Kliendi hinnavalem', sample: 'HULGI-10%' },
+      { key: 'k_esindaja', label: 'Esindaja', col: 'Kliendi esindaja',  sample: 'Kati L.' },
     ]},
   ];
   const _extraActive = new Set();
