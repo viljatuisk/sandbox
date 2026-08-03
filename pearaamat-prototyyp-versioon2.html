@@ -2034,14 +2034,22 @@
       list.appendChild(empty);
       return;
     }
-    EXTRA_FIELD_DEFS.forEach(g => g.fields.forEach(f => {
-      if (!_extraActive.has(f.key)) return;
-      const item = document.createElement('label');
-      item.className = 'col-picker-item';
-      item.dataset.label = (g.entity + ' ' + f.label + ' ' + f.col).toLowerCase();
-      item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" checked onchange="toggleExtraField(\'' + f.key + '\', this.checked)"> ' + f.col;
-      list.appendChild(item);
-    }));
+    // Grupeeritud allika (andmekaardi) kaupa — sama struktuur nagu väljavalija hüpikus.
+    EXTRA_FIELD_DEFS.forEach(g => {
+      const active = g.fields.filter(f => _extraActive.has(f.key));
+      if (active.length === 0) return;
+      const gh = document.createElement('div');
+      gh.className = 'field-picker-group';
+      gh.textContent = g.entity;
+      list.appendChild(gh);
+      active.forEach(f => {
+        const item = document.createElement('label');
+        item.className = 'col-picker-item';
+        item.dataset.label = (g.entity + ' ' + f.label + ' ' + f.col).toLowerCase();
+        item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" checked onchange="toggleExtraField(\'' + f.key + '\', this.checked)"> ' + f.label;
+        list.appendChild(item);
+      });
+    });
   }
 
   function toggleExtraField(key, on) {
