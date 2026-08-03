@@ -127,6 +127,31 @@
   .wiki-target-flash { animation: wikiFlash 1.4s ease-out; }
   @keyframes wikiFlash { 0%,40% { background: #fff6d8; } 100% { background: transparent; } }
 
+  /* ── MATRIX ASETAJA ── */
+  .mx-overlay { display: none; position: fixed; inset: 0; background: rgba(20,35,55,0.45); z-index: 5000; }
+  .mx-overlay.open { display: flex; align-items: center; justify-content: center; }
+  .mx-modal { background: #fff; width: 640px; max-width: 94vw; max-height: 88vh; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); display: flex; flex-direction: column; overflow: hidden; }
+  .mx-head { background: #2d4a6b; color: #fff; padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .mx-head .mx-title { font-size: 14px; font-weight: 700; }
+  .mx-head .mx-close { background: none; border: none; color: #cfe0f0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  .mx-head .mx-close:hover { color: #fff; }
+  .mx-body { overflow-y: auto; }
+  .mx-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .mx-table th { background: #f0f4f8; color: #2d4a6b; text-align: left; padding: 6px 12px; border-bottom: 1px solid #d4dfe9; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  .mx-table td { padding: 5px 12px; border-bottom: 1px solid #eef2f6; vertical-align: middle; }
+  .mx-table tr:hover td { background: #f6f9fc; }
+  .mx-lvl { width: 28px; color: #7a8a9a; font-weight: 700; text-align: center; }
+  .mx-name { font-weight: 700; color: #2d4a6b; white-space: nowrap; }
+  .mx-sel select { width: 100%; height: 24px; border: 1px solid #9ab8d4; border-radius: 2px; font-size: 12px; padding: 0 4px; font-family: Arial, sans-serif; background: #fff; color: #1a2a3a; }
+  .mx-sel select:focus { outline: none; border-color: #3a7abf; }
+  .mx-foot { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #f5f8fb; border-top: 1px solid #dde5ec; flex-shrink: 0; }
+  .mx-btn { background: #2d4f72; color: #fff; border: none; border-radius: 3px; padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: Arial, sans-serif; }
+  .mx-btn:hover { background: #26456b; }
+  .mx-btn.sec { background: #fff; color: #3a5a7a; border: 1px solid #9ab8d4; }
+  .mx-btn.sec:hover { background: #eef3f8; }
+  .mx-preview { flex: 1; font-size: 12px; color: #445; font-family: Consolas, monospace; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mx-hint { padding: 7px 14px; font-size: 11px; color: #6a7a8a; background: #fbfdff; border-bottom: 1px solid #eef2f6; }
+
   /* ── MAIN CONTENT ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
 
@@ -399,7 +424,8 @@
           <div class="obj-wrap" id="objWrap">
             <div class="sf-lookup">
               <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off">
-              <button class="lkp-btn" type="button" title="Ava objekti asetaja" onclick="toggleObjPicker()">🔍</button>
+              <button class="lkp-btn" type="button" title="Nimekiri-asetaja" onclick="toggleObjPicker()" style="border-radius:0;">🔍</button>
+              <button class="lkp-btn" type="button" title="Matrix-asetaja (vali objekt taseme kaupa)" onclick="openObjMatrix()">⊞</button>
             </div>
             <div class="obj-picker" id="objPicker">
               <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
@@ -1249,6 +1275,27 @@
   </div>
 </div>
 
+<div class="mx-overlay" id="mxOverlay" onclick="if(event.target===this)closeObjMatrix()">
+  <div class="mx-modal">
+    <div class="mx-head">
+      <span class="mx-title">⊞ Aseta objektid — Matrix</span>
+      <button class="mx-close" onclick="closeObjMatrix()" title="Sulge">&times;</button>
+    </div>
+    <div class="mx-hint">Vali igalt tasemelt objekt. Valitud objektid asetatakse Objekt-välja komadega (kombinatsioon = JA). Iga uus ASETA lisab olemasolevale <code>+</code>-ga (VÕI).</div>
+    <div class="mx-body">
+      <table class="mx-table">
+        <thead><tr><th class="mx-lvl">Tase</th><th>Tüüp</th><th style="width:55%">Objekt</th></tr></thead>
+        <tbody id="mxTbody"></tbody>
+      </table>
+    </div>
+    <div class="mx-foot">
+      <button class="mx-btn sec" onclick="clearObjMatrix()">Tühjenda</button>
+      <span class="mx-preview" id="mxPreview"></span>
+      <button class="mx-btn" onclick="asetaObjMatrix()">ASETA</button>
+    </div>
+  </div>
+</div>
+
 <script>
   function openObjHelp(section) {
     document.getElementById('wikiOverlay').classList.add('open');
@@ -1613,6 +1660,70 @@
     if (w && !w.contains(e.target)) document.getElementById('objPicker').classList.remove('open');
   });
 
+  /* ── MATRIX ASETAJA ── */
+  // Objekti tasemed + iga taseme objektid (nagu Directo Matrix-asetaja).
+  const MATRIX_LEVELS = [
+    { lvl: 0, tyyp: 'Tehingupartner',            objs: [] },
+    { lvl: 1, tyyp: 'Rahavood',                  objs: [{k:'RV1',n:'Põhitegevus'},{k:'RV2',n:'Investeerimine'},{k:'RV3',n:'Finantseerimine'}] },
+    { lvl: 2, tyyp: 'Allikad',                   objs: [{k:'ALL01',n:'Omavahendid'},{k:'ALL02',n:'Toetus'}] },
+    { lvl: 3, tyyp: 'Tegevusala',                objs: [{k:'TA05',n:'Müügitegevus'},{k:'TA06',n:'Tootmine'},{k:'TA07',n:'Haldus'}] },
+    { lvl: 4, tyyp: 'Põhi- või toetav tegevus',  objs: [{k:'PT1',n:'Põhitegevus'},{k:'PT2',n:'Toetav tegevus'}] },
+    { lvl: 5, tyyp: 'Haldusala',                 objs: [{k:'E100',n:'Haldusala E100'},{k:'E300',n:'Haldusala E300'}] },
+    { lvl: 6, tyyp: 'Osakond',                   objs: [{k:'MÜÜK',n:'Müügiosakond'},{k:'TOOTMINE',n:'Tootmisosakond'},{k:'IT',n:'IT-osakond'},{k:'LADU',n:'Ladu'}] },
+    { lvl: 7, tyyp: 'Objekt osakonnas',          objs: [{k:'TLN',n:'Tallinn'},{k:'TARTU',n:'Tartu'}] },
+    { lvl: 8, tyyp: 'Lisatase – seotud osapooled', objs: [{k:'OBJ001',n:'Objekt 001'},{k:'OBJ002',n:'Objekt 002'}] },
+  ];
+
+  function buildObjMatrix() {
+    const tb = document.getElementById('mxTbody');
+    if (tb.childElementCount) return; // ehita üks kord
+    tb.innerHTML = MATRIX_LEVELS.map(L => {
+      const opts = '<option value=""></option>' + L.objs.map(o =>
+        '<option value="' + o.k + '">' + o.k + ' — ' + o.n + '</option>').join('');
+      const cell = L.objs.length
+        ? '<select data-lvl="' + L.lvl + '" onchange="updateMxPreview()">' + opts + '</select>'
+        : '<span style="color:#aab;">(asetajata tase)</span>';
+      return '<tr><td class="mx-lvl">' + L.lvl + '</td><td class="mx-name">' + L.tyyp + '</td><td class="mx-sel">' + cell + '</td></tr>';
+    }).join('');
+  }
+
+  function collectMatrix() {
+    return [...document.querySelectorAll('#mxTbody select')]
+      .map(s => s.value.trim()).filter(Boolean);
+  }
+
+  function updateMxPreview() {
+    const vals = collectMatrix();
+    document.getElementById('mxPreview').textContent = vals.length ? vals.join(',') : '(vali objektid)';
+  }
+
+  function openObjMatrix() {
+    buildObjMatrix();
+    document.getElementById('objPicker').classList.remove('open');
+    updateMxPreview();
+    document.getElementById('mxOverlay').classList.add('open');
+  }
+  function closeObjMatrix() { document.getElementById('mxOverlay').classList.remove('open'); }
+  function clearObjMatrix() {
+    document.querySelectorAll('#mxTbody select').forEach(s => s.value = '');
+    updateMxPreview();
+  }
+  // ASETA: valitud objektid komadega (kombinatsioon = JA). Kui väljas on juba sisu,
+  // lisatakse uus kombinatsioon '+'-ga (VÕI).
+  function asetaObjMatrix() {
+    const combo = collectMatrix().join(',');
+    if (!combo) { closeObjMatrix(); return; }
+    const inp = document.getElementById('objInput');
+    if (inp.disabled) setObjMode('all'); // lülita Täidetud/Täitmata režiimist tagasi
+    let v = inp.value.trim();
+    if (v && !/[+,]\s*$/.test(v)) v += '+';
+    inp.value = v + combo;
+    clearObjMatrix();
+    closeObjMatrix();
+    inp.focus();
+  }
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeObjMatrix(); });
+
   // Täidetud / Täitmata objekt — vana Pearaamatu loogika.
   // 'empty' kasutab süsteemiseadistuses määratud tühja välja märki.
   const OBJ_EMPTY_MARK = ':'; // NB! prototüübi näidisväärtus — päris väärtus tuleb süsteemiseadistusest
@@ -1759,6 +1870,11 @@
 
   function toggleCol(key, checked) {
     colVisible[key] = checked;
+    // Koondvaates on fikseeritud 7 tulpa; ainult 'corrAccount' mõjutab (lülitab korr-kontode lahustuse).
+    if (_summaOn) {
+      if (key === 'corrAccount') summaFilterChange();
+      return;
+    }
     applyColStyles();
   }
 
@@ -1968,6 +2084,39 @@
 
   let _origThead = null, _origTbody = null, _summaOn = false;
   let _vaheObjOn = false, _origTbodyVahe = null;
+  let _corrByAccount = null, _corrNames = null;
+
+  // Tuletab detailtabelist (_origTbody) iga konto lõikes korr-kontode Deebet/Kreedit summad.
+  function _computeCorr() {
+    const byAcct = new Map();
+    const names  = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
+    const tmp = document.createElement('tbody');
+    tmp.innerHTML = _origTbody || '';
+    let curKonto = '';
+    Array.from(tmp.querySelectorAll('tr')).forEach(row => {
+      if (row.classList.contains('grp-header')) {
+        const td0 = row.querySelector('td');
+        curKonto = td0 ? td0.textContent.trim().replace(/^[▾▸]\s*/, '') : '';
+        return;
+      }
+      if (row.classList.contains('corr-sub')) {
+        const m = row.textContent.trim().match(/Korr\. konto:\s*(\S+)\s*—\s*(.+)/);
+        if (m) names.set(m[1], m[2].trim());
+        return;
+      }
+      if (!row.classList.contains('data') || !row.getAttribute('data-grp')) return;
+      const tds = row.querySelectorAll('td');
+      const corr = tds[2] ? tds[2].textContent.trim() : '';
+      if (!corr || !curKonto) return;
+      if (!byAcct.has(curKonto)) byAcct.set(curKonto, new Map());
+      const cm = byAcct.get(curKonto);
+      if (!cm.has(corr)) cm.set(corr, { deebet: 0, kreedit: 0 });
+      const acc = cm.get(corr);
+      acc.deebet  += _parseNum(tds[18]);
+      acc.kreedit += _parseNum(tds[19]);
+    });
+    return { byAcct, names };
+  }
 
   function _parseNum(td) {
     if (!td) return 0;
@@ -2060,9 +2209,11 @@
     document.getElementById('colHideStyles').textContent = '';
   }
 
-  function _summaDataRow(r) {
-    return '<tr class="data">' +
-      '<td>' + r.konto + '</td>' +
+  function _summaDataRow(r, hasCorr) {
+    const tog = hasCorr ? '<span class="summa-tog" style="display:inline-block;width:12px;color:#1a3a5a;cursor:pointer;">▾</span> ' : '';
+    const clk = hasCorr ? ' onclick="toggleSummaCorr(\'sk' + r.konto + '\', this)" style="cursor:pointer;"' : '';
+    return '<tr class="data"' + clk + '>' +
+      '<td>' + tog + r.konto + '</td>' +
       '<td>' + r.nimetus + '</td>' +
       '<td class="r">' + fmtNum(r.algsaldo) + '</td>' +
       '<td class="r">' + fmtNum(r.deebet) + '</td>' +
@@ -2070,6 +2221,46 @@
       '<td class="r"' + (r.muutus < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(r.muutus) + '</td>' +
       '<td class="r" style="font-weight:700' + (r.loppsaldo < 0 ? ';color:#b00' : '') + '">' + fmtNum(r.loppsaldo) + '</td>' +
       '</tr>';
+  }
+
+  // Taandatud korr-konto alamread (Deebet/Kreedit summeeritud), Algsaldo/Muutus/Lõppsaldo tühjad — nagu vanas 'ainult summa' + 'näita korr. kontosid'.
+  function _summaCorrRows(konto) {
+    if (!colVisible.corrAccount || !_corrByAccount) return '';
+    const cm = _corrByAccount.get(konto);
+    if (!cm || cm.size === 0) return '';
+    const sk = 'sk' + konto;
+    let h = '<tr class="summa-corr" data-sk="' + sk + '" style="background:#eef4fa;">' +
+      '<td style="padding-left:24px;font-style:italic;font-size:10px;color:#5a6a7a;">Korrespondeerib</td>' +
+      '<td style="font-style:italic;font-size:10px;color:#5a6a7a;">Nimi</td>' +
+      '<td colspan="5"></td></tr>';
+    Array.from(cm.keys()).sort().forEach(code => {
+      const c  = cm.get(code);
+      const nm = (_corrNames && _corrNames.get(code)) || '';
+      h += '<tr class="summa-corr" data-sk="' + sk + '" style="background:#f2f7fb;">' +
+        '<td style="padding-left:24px;font-size:11px;color:#33475b;">' + code + '</td>' +
+        '<td style="font-size:11px;color:#33475b;">' + nm + '</td>' +
+        '<td class="r"></td>' +
+        '<td class="r">' + fmtNum(c.deebet) + '</td>' +
+        '<td class="r">' + fmtNum(c.kreedit) + '</td>' +
+        '<td class="r"></td>' +
+        '<td class="r"></td></tr>';
+    });
+    return h;
+  }
+
+  // Emarida + selle korr-konto alamread ühe plokina.
+  function _summaAccountBlock(r) {
+    const corr = _summaCorrRows(r.konto);
+    return _summaDataRow(r, corr !== '') + corr;
+  }
+
+  function toggleSummaCorr(sk, rowEl) {
+    const tog = rowEl.querySelector('.summa-tog');
+    const collapse = tog ? tog.textContent.trim() === '▾' : true;
+    document.querySelectorAll('#mainTbody tr.summa-corr[data-sk="' + sk + '"]').forEach(r => {
+      r.style.display = collapse ? 'none' : '';
+    });
+    if (tog) tog.textContent = collapse ? '▸' : '▾';
   }
 
   function _summaSubtotalRow(rows, label) {
@@ -2092,6 +2283,16 @@
     const tbody = document.getElementById('mainTbody');
     const theadRow = document.querySelector('table thead tr');
     let html = '';
+
+    // Korr-kontode lahustus arvutatakse detailtabelist ainult kui 'corrAccount' tulp on valitud (vali tulbad).
+    if (colVisible.corrAccount) {
+      const cc = _computeCorr();
+      _corrByAccount = cc.byAcct;
+      _corrNames = cc.names;
+    } else {
+      _corrByAccount = null;
+      _corrNames = null;
+    }
 
     // Always use the standard 7-column header
     theadRow.innerHTML =
@@ -2195,11 +2396,11 @@
       });
       grpKeys.forEach(key => {
         const grpRows = grpMap.get(key);
-        grpRows.forEach(r => { html += _summaDataRow(r); });
+        grpRows.forEach(r => { html += _summaAccountBlock(r); });
         html += _summaSubtotalRow(grpRows, 'Kokku ' + key + 'xxx');
       });
     } else {
-      data.forEach(r => { html += _summaDataRow(r); });
+      data.forEach(r => { html += _summaAccountBlock(r); });
     }
     const totAlg = data.reduce((s, r) => s + r.algsaldo, 0);
     const totD   = data.reduce((s, r) => s + r.deebet,   0);
