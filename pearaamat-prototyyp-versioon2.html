@@ -662,14 +662,14 @@
               <div class="col-picker-list" id="colPickerList"></div>
             </div>
             <div class="col-sec" id="colSecFields">
-              <div class="col-sec-head" onclick="toggleColSec('colSecFields')"><span class="col-sec-arrow">▾</span> Vali andmeväljad</div>
+              <div class="col-sec-head" onclick="toggleColSec('colSecFields')"><span class="col-sec-arrow">▾</span> Vali lisainfo väljad</div>
               <div class="col-picker-list" id="colFieldsList"></div>
-              <div class="col-addfield" onclick="openFieldPicker()">＋ Vali andmeväljad…</div>
+              <div class="col-addfield" onclick="openFieldPicker()">＋ Vali lisainfo väljad…</div>
             </div>
             <div class="col-picker-footer" onclick="resetCols()">↺ Taasta algseaded</div>
           </div>
           <div class="field-picker-panel" id="fieldPickerPanel" onclick="event.stopPropagation()">
-            <div class="field-picker-title">Vali andmeväljad <span class="field-picker-close" onclick="closeFieldPicker()">✕</span></div>
+            <div class="field-picker-title">Vali lisainfo väljad <span class="field-picker-close" onclick="closeFieldPicker()">✕</span></div>
             <div class="field-picker-body" id="fieldPickerBody"></div>
           </div>
         </div>
@@ -2031,7 +2031,7 @@
     if (_extraActive.size === 0) {
       const empty = document.createElement('div');
       empty.className = 'col-fields-empty';
-      empty.textContent = 'Pole veel lisatud. Vajuta „Vali andmeväljad…".';
+      empty.textContent = 'Pole veel lisatud. Vajuta „Vali lisainfo väljad…".';
       list.appendChild(empty);
       return;
     }
