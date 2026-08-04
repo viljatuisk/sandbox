@@ -1437,21 +1437,24 @@
       tbody.querySelectorAll('tr.data[data-grp]').forEach(r => {
         if (!r.dataset.unsettled) r.classList.add('saldeerub');
       });
+      // Bruto esitus: saldo jagatakse dr/cr → Deebet (col19) ja Kreedit (col20).
+      const splitToDrCr = (row, labelText, dr, cr) => {
+        const cells = row.querySelectorAll('td');
+        let li = -1;
+        cells.forEach((c, i) => { if (c.textContent.trim() === labelText) li = i; });
+        if (li < 0) return;
+        row.dataset.origHtml = row.innerHTML;
+        while (row.children.length > li + 1) row.removeChild(row.lastElementChild);
+        row.insertAdjacentHTML('beforeend',
+          '<td class="r" style="font-weight:600">' + fmtNum(dr) + '</td>' +   // col19 Deebet
+          '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td>' +   // col20 Kreedit
+          '<td colspan="9"></td>');                                          // col21-29
+      };
       tbody.querySelectorAll('.grp-header[data-algsaldo-dr]').forEach(h => {
-        const dr = parseFloat(h.dataset.algsaldoDr);
-        const cr = parseFloat(h.dataset.algsaldoCr);
-        h.dataset.origHtml = h.innerHTML;
-        const tds = h.querySelectorAll('td');
-        tds[5].textContent = fmtNum(dr);
-        tds[6].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
+        splitToDrCr(h, 'Algsaldo', parseFloat(h.dataset.algsaldoDr), parseFloat(h.dataset.algsaldoCr));
       });
       tbody.querySelectorAll('.grp-sub[data-loppsaldo-dr]').forEach(row => {
-        const dr = parseFloat(row.dataset.loppsaldoDr);
-        const cr = parseFloat(row.dataset.loppsaldoCr);
-        row.dataset.origHtml = row.innerHTML;
-        const tds = row.querySelectorAll('td');
-        tds[4].textContent = fmtNum(dr);
-        tds[5].outerHTML = '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td><td colspan="9"></td>';
+        splitToDrCr(row, 'Lõppsaldo', parseFloat(row.dataset.loppsaldoDr), parseFloat(row.dataset.loppsaldoCr));
       });
     }
 
@@ -2660,6 +2663,29 @@
     applyColStyles();
   }
 
+  // Detailvaade: Algsaldo (grupipäis) ja Lõppsaldo (kokkuvõte) väärtus Deebeti tulbast → Saldo tulpa (märgiga).
+  // Saldo (balance) on tulp nr 27; Deebet=19, Kreedit=20. Saldeerimata vaade jagab need eraldi dr/cr tulpadesse.
+  function normalizeDetailSaldo() {
+    const move = (row, labelText, valStyle) => {
+      const cells = row.querySelectorAll('td');
+      let li = -1;
+      cells.forEach((c, i) => { if (c.textContent.trim() === labelText) li = i; });
+      if (li < 0) return;
+      const valCell = cells[li + 1];
+      if (!valCell) return;
+      const val = valCell.textContent.trim();
+      // hoia lahtrid kuni sildini (kaasa arvatud), eemalda vana väärtus + saba
+      while (row.children.length > li + 1) row.removeChild(row.lastElementChild);
+      row.insertAdjacentHTML('beforeend',
+        '<td colspan="8"></td>' +                                    // col19-26 (Deebet..Muutus tühjad)
+        '<td class="r"' + (valStyle || '') + '>' + val + '</td>' +    // col27 Saldo
+        '<td colspan="2"></td>');                                     // col28-29
+    };
+    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => move(h, 'Algsaldo', ''));
+    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => move(r, 'Lõppsaldo', ' style="font-weight:600;"'));
+  }
+
+  normalizeDetailSaldo();
   buildColPicker();
   buildColFieldsList();
   buildFieldPicker();
