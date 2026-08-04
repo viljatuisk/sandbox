@@ -2685,6 +2685,26 @@
     document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => move(r, 'Lõppsaldo', ' style="font-weight:600;"'));
   }
 
+  // Täida igal andmereal Konto (col1) ja Konto nimi (col2) grupi kontokoodi ja nimega.
+  function fillKontoColumns() {
+    document.querySelectorAll('#mainTbody tr.grp-header[data-konto]').forEach(h => {
+      const konto = h.dataset.konto;
+      const grp = h.dataset.group;
+      const nameCell = h.querySelectorAll('td')[1];
+      const name = nameCell ? nameCell.textContent.trim() : '';
+      if (!grp) return;
+      document.querySelectorAll('#mainTbody tr.data[data-grp="' + grp + '"]').forEach(r => {
+        const tds = r.querySelectorAll('td');
+        if (tds.length < 2) return;
+        tds[0].textContent = konto;
+        tds[0].className = 'muted';
+        tds[1].textContent = name;
+        tds[1].className = 'muted';
+      });
+    });
+  }
+
+  fillKontoColumns();
   normalizeDetailSaldo();
   buildColPicker();
   buildColFieldsList();
