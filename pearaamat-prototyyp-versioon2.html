@@ -601,6 +601,32 @@
       </div>
     </div>
 
+    <div class="sidebar-section">
+      <div class="sidebar-head">Kontsern <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf">
+          <div class="mc-wrap" id="mcWrap">
+            <div class="mc-trigger" id="mcTrigger" onclick="toggleMc()" style="background:#fff;border-color:#9ab8d4;color:#1a2a3a;height:20px;">
+              <span id="mcLabel" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&nbsp;</span>
+              <span class="mc-arrow" style="color:#2a4a6a;">▼</span>
+            </div>
+            <div class="mc-dropdown" id="mcDropdown">
+              <div class="mc-clear" onclick="clearMc()">Tühjenda</div>
+              <label class="mc-item"><input type="checkbox" value="Kete" onchange="mcChange()"> Kete</label>
+              <label class="mc-item"><input type="checkbox" value="Lambi OÜ" onchange="mcChange()"> Lambi OÜ</label>
+              <label class="mc-item"><input type="checkbox" value="IMG_1 EUR" onchange="mcChange()"> IMG_1 EUR</label>
+              <label class="mc-item"><input type="checkbox" value="IMG_2 GBP" onchange="mcChange()"> IMG_2 GBP</label>
+              <label class="mc-item"><input type="checkbox" value="FIRMA3" onchange="mcChange()"> FIRMA3</label>
+              <label class="mc-item"><input type="checkbox" value="FIRMA4" onchange="mcChange()"> FIRMA4</label>
+              <label class="mc-item"><input type="checkbox" value="GBP" onchange="mcChange()"> GBP</label>
+              <label class="mc-item"><input type="checkbox" value="FIRMA6" onchange="mcChange()"> FIRMA6</label>
+              <label class="mc-item"><input type="checkbox" value="DIR_KON" onchange="mcChange()"> DIR_KON</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <button class="sidebar-btn">▶ Näita</button>
   </div>
 
@@ -631,26 +657,6 @@
         <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
       </div>
       <div class="table-options">
-        <label style="display:flex;align-items:center;gap:5px;">Firma
-          <div class="mc-wrap" id="mcWrap" style="width:140px;">
-            <div class="mc-trigger" id="mcTrigger" onclick="toggleMc()" style="background:#fff;border-color:#b8c4d0;color:#2a4a6a;">
-              <span id="mcLabel" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;">&nbsp;</span>
-              <span class="mc-arrow" style="color:#2a4a6a;">▼</span>
-            </div>
-            <div class="mc-dropdown" id="mcDropdown">
-              <div class="mc-clear" onclick="clearMc()">Tühjenda</div>
-              <label class="mc-item"><input type="checkbox" value="Kete" onchange="mcChange()"> Kete</label>
-              <label class="mc-item"><input type="checkbox" value="Lambi OÜ" onchange="mcChange()"> Lambi OÜ</label>
-              <label class="mc-item"><input type="checkbox" value="IMG_1 EUR" onchange="mcChange()"> IMG_1 EUR</label>
-              <label class="mc-item"><input type="checkbox" value="IMG_2 GBP" onchange="mcChange()"> IMG_2 GBP</label>
-              <label class="mc-item"><input type="checkbox" value="FIRMA3" onchange="mcChange()"> FIRMA3</label>
-              <label class="mc-item"><input type="checkbox" value="FIRMA4" onchange="mcChange()"> FIRMA4</label>
-              <label class="mc-item"><input type="checkbox" value="GBP" onchange="mcChange()"> GBP</label>
-              <label class="mc-item"><input type="checkbox" value="FIRMA6" onchange="mcChange()"> FIRMA6</label>
-              <label class="mc-item"><input type="checkbox" value="DIR_KON" onchange="mcChange()"> DIR_KON</label>
-            </div>
-          </div>
-        </label>
         <div class="col-picker-wrap" id="colPickerWrap">
           <button class="col-picker-btn" id="colPickerBtn" title="Vali tulbad" onclick="toggleColPicker()">🔧</button>
           <div class="col-picker-panel" id="colPickerPanel">
