@@ -1441,28 +1441,25 @@
       tbody.querySelectorAll('tr.data[data-grp]').forEach(r => {
         if (!r.dataset.unsettled) r.classList.add('saldeerub');
       });
-      // Bruto esitus: saldo jagatakse dr/cr → Deebet (col19) ja Kreedit (col20).
-      const splitToDrCr = (row, labelText, dr, cr) => {
-        const cells = row.querySelectorAll('td');
-        let li = -1;
-        cells.forEach((c, i) => { if (c.textContent.trim() === labelText) li = i; });
-        if (li < 0) return;
+      // Bruto esitus: saldo jagatakse dr/cr → Deebet (col19) ja Kreedit (col20); Saldo (col27) tühjaks.
+      // Read on veerg-veerult, seega paneme väärtused otse õigetesse lahtritesse (indeks 18/19/26).
+      const splitToDrCr = (row, dr, cr) => {
         row.dataset.origHtml = row.innerHTML;
-        while (row.children.length > li + 1) row.removeChild(row.lastElementChild);
-        row.insertAdjacentHTML('beforeend',
-          '<td class="r" style="font-weight:600">' + fmtNum(dr) + '</td>' +   // col19 Deebet
-          '<td class="r" style="font-weight:600">' + fmtNum(cr) + '</td>' +   // col20 Kreedit
-          '<td colspan="9"></td>');                                          // col21-29
+        const cells = row.querySelectorAll('td');
+        if (cells[18]) { cells[18].textContent = fmtNum(dr); cells[18].className = 'r'; cells[18].style.fontWeight = '600'; } // col19
+        if (cells[19]) { cells[19].textContent = fmtNum(cr); cells[19].className = 'r'; cells[19].style.fontWeight = '600'; } // col20
+        if (cells[26]) { cells[26].textContent = ''; }                                                                       // col27 Saldo tühjaks
       };
       tbody.querySelectorAll('.grp-header[data-algsaldo-dr]').forEach(h => {
-        splitToDrCr(h, 'Algsaldo', parseFloat(h.dataset.algsaldoDr), parseFloat(h.dataset.algsaldoCr));
+        splitToDrCr(h, parseFloat(h.dataset.algsaldoDr), parseFloat(h.dataset.algsaldoCr));
       });
       tbody.querySelectorAll('.grp-sub[data-loppsaldo-dr]').forEach(row => {
-        splitToDrCr(row, 'Lõppsaldo', parseFloat(row.dataset.loppsaldoDr), parseFloat(row.dataset.loppsaldoCr));
+        splitToDrCr(row, parseFloat(row.dataset.loppsaldoDr), parseFloat(row.dataset.loppsaldoCr));
       });
     }
 
     if (name !== 'vaheldumisi-kontod') applyDetailFilters();
+    if (name === 'detailvaade' || name === 'saldeerimata') positionSummaryLabels();
   }
 
   let _currentTab = 'detailvaade';
@@ -1941,20 +1938,19 @@
 
   function applyColStyles() {
     let css = '';
+    // Peidame veeru ÜHTMOODI kõigil ridadel (päis + kõik #mainTbody read), et summaread
+    // püsiksid andmeridadega joondatud (Deebet/Kreedit ei nihku).
+    const hideCol = (n) => 'thead th:nth-child(' + n + '),#mainTbody tr > td:nth-child(' + n + '){display:none}\n';
     COL_DEFS.forEach(c => {
       if (c.locked) return; // kohustuslikke veerge kunagi ei peideta
       if (c.group) {
-        if (!colVisible[c.key]) {
-          c.dimNths.forEach(n => {
-            css += 'thead th:nth-child(' + n + '),tr.data td:nth-child(' + n + '){display:none}\n';
-          });
-          css += 'td.dim-span{display:none}\n';
-        }
+        if (!colVisible[c.key]) c.dimNths.forEach(n => { css += hideCol(n); });
       } else if (!colVisible[c.key] && c.nth) {
-        css += 'thead th:nth-child(' + c.nth + '),tr.data td:nth-child(' + c.nth + '){display:none}\n';
+        css += hideCol(c.nth);
       }
     });
     document.getElementById('colHideStyles').textContent = css;
+    if (typeof positionSummaryLabels === 'function' && !_summaOn) positionSummaryLabels();
   }
 
   function filterColItems(q) {
@@ -2679,37 +2675,77 @@
 
   // Detailvaade: Algsaldo (grupipäis) ja Lõppsaldo (kokkuvõte) väärtus Deebeti tulbast → Saldo tulpa (märgiga).
   // Saldo (balance) on tulp nr 27; Deebet=19, Kreedit=20. Saldeerimata vaade jagab need eraldi dr/cr tulpadesse.
+  // Summaread (Algsaldo/Kokku/Lõppsaldo) ehitatakse VEERG-VEERULT (nagu andmeread, ilma colspanita),
+  // et veergude peitmine (nth-child) toimiks ühtmoodi kõigil ridadel → Deebet/Kreedit ei nihku kunagi.
+  // Silt paigutatakse dünaamiliselt (positionSummaryLabels) viimasesse nähtavasse lahtrisse enne Deebetit.
   function normalizeDetailSaldo() {
-    // Algsaldo (grupipäis) & Lõppsaldo: silt paremjoondatud colspan-lahtris, mis LÕPEB col18 —
-    // ehk vahetult enne Deebet (col19). Kuna Deebet/Kreedit on kohustuslikud (ei peideta), jääb
-    // silt alati nende ette, ükskõik mis keskmise veeru peidad. Väärtus Saldo tulpa (col27).
-    const moveToSaldo = (row, labelText, valStyle) => {
+    const EMPTY = (from, to) => { let s = ''; for (let c = from; c <= to; c++) s += '<td></td>'; return s; };
+    // Algsaldo (grupipäis): col1=kood, col2=nimi, väärtus Saldo tulpa (col27)
+    document.querySelectorAll('#mainTbody tr.grp-header').forEach(row => {
       const cells = Array.from(row.querySelectorAll('td'));
-      const li = cells.findIndex(c => c.textContent.trim() === labelText);
-      if (li < 1) return;
+      const li = cells.findIndex(c => c.textContent.trim() === 'Algsaldo');
+      if (li < 0) return;
+      const col1 = cells[0].innerHTML;
+      const name = cells[1] ? cells[1].textContent.trim() : '';
       const val = cells[li + 1] ? cells[li + 1].textContent.trim() : '';
-      const prev = cells[li - 1]; // eelnev tühi colspan-lahter (col14-17)
-      const labelSpan = (parseInt(prev.getAttribute('colspan') || '1')) + (parseInt(cells[li].getAttribute('colspan') || '1'));
-      while (row.children.length > li - 1) row.removeChild(row.lastElementChild); // eemalda prev + silt + saba
-      row.insertAdjacentHTML('beforeend',
-        '<td colspan="' + labelSpan + '" style="text-align:right;">' + labelText + '</td>' + // col14-18 silt (lõpeb enne Deebet)
-        '<td colspan="8"></td>' +                                            // col19-26 (Deebet..Muutus tühjad)
-        '<td class="r"' + (valStyle || '') + '>' + val + '</td>' +            // col27 Saldo
-        '<td colspan="2"></td>');                                            // col28-29
-    };
-    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => moveToSaldo(h, 'Algsaldo', ''));
-    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => moveToSaldo(r, 'Lõppsaldo', ' style="font-weight:600;"'));
-    // Kokku (periood): liida silt eelneva tühja colspan-lahtriga (col14-18), paremjoondatud — nii ei kao
-    // ega nihku silt keskmise veeru peitmisel; Deebet/Kreedit/Muutus/Saldo jäävad omadesse tulpadesse.
-    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => {
-      const cells = Array.from(r.querySelectorAll('td'));
-      const li = cells.findIndex(c => c.textContent.trim() === 'Kokku (periood)');
-      if (li < 1) return;
-      const prev = cells[li - 1];
-      const span = (parseInt(prev.getAttribute('colspan') || '1')) + (parseInt(cells[li].getAttribute('colspan') || '1'));
-      prev.remove();
-      cells[li].setAttribute('colspan', String(span));
-      cells[li].style.textAlign = 'right';
+      row.innerHTML =
+        '<td>' + col1 + '</td>' +                            // col1 (kood + nool)
+        '<td>' + name + '</td>' +                            // col2 (nimi)
+        EMPTY(3, 26) +                                       // col3-26
+        '<td class="r">' + val + '</td>' +                   // col27 Saldo
+        EMPTY(28, 29);                                       // col28-29
+      row.dataset.summaryLabel = 'Algsaldo';
+    });
+    // grp-sub: Kokku (periood) ja Lõppsaldo
+    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(row => {
+      const cells = Array.from(row.querySelectorAll('td'));
+      const kIdx = cells.findIndex(c => c.textContent.trim() === 'Kokku (periood)');
+      const lIdx = cells.findIndex(c => c.textContent.trim() === 'Lõppsaldo');
+      if (kIdx >= 0) {
+        const deebet = cells[kIdx + 1] ? cells[kIdx + 1].textContent.trim() : '';
+        const kreedit = cells[kIdx + 2] ? cells[kIdx + 2].textContent.trim() : '';
+        const muutus = cells[kIdx + 4] ? cells[kIdx + 4].textContent.trim() : '';
+        const saldo = cells[kIdx + 5] ? cells[kIdx + 5].textContent.trim() : '';
+        row.innerHTML =
+          EMPTY(1, 18) +
+          '<td class="r" style="font-weight:600;">' + deebet + '</td>' +   // col19 Deebet
+          '<td class="r" style="font-weight:600;">' + kreedit + '</td>' +  // col20 Kreedit
+          EMPTY(21, 25) +
+          '<td class="r" style="font-weight:600;">' + muutus + '</td>' +   // col26 Muutus
+          '<td class="r" style="font-weight:600;">' + saldo + '</td>' +    // col27 Saldo
+          EMPTY(28, 29);
+        row.dataset.summaryLabel = 'Kokku (periood)';
+      } else if (lIdx >= 0) {
+        const val = cells[lIdx + 1] ? cells[lIdx + 1].textContent.trim() : '';
+        row.innerHTML =
+          EMPTY(1, 26) +
+          '<td class="r" style="font-weight:600;">' + val + '</td>' +      // col27 Saldo
+          EMPTY(28, 29);
+        row.dataset.summaryLabel = 'Lõppsaldo';
+      }
+    });
+    positionSummaryLabels();
+  }
+
+  // Paigutab summarea sildi viimasesse NÄHTAVASSE lahtrisse enne Deebetit (col19). Silt on absoluutselt
+  // paremale positsioneeritud, et mitte laiendada veergu — nii jääb ta alati vahetult Deebeti ette.
+  function positionSummaryLabels() {
+    document.querySelectorAll('#mainTbody tr.grp-header, #mainTbody tr.grp-sub').forEach(row => {
+      const label = row.dataset.summaryLabel;
+      if (!label) return;
+      const cells = row.querySelectorAll('td');
+      // eemalda varasem silt
+      cells.forEach(c => { if (c.dataset.lbl) { c.innerHTML = ''; c.removeAttribute('data-lbl'); c.style.position = ''; } });
+      // otsi viimane nähtav lahter vahemikus col3..col18 (indeks 2..17) — grupipäisel col1-2 hõivab kood+nimi
+      let target = -1;
+      for (let i = 2; i <= 17; i++) {
+        if (cells[i] && getComputedStyle(cells[i]).display !== 'none') target = i;
+      }
+      if (target < 0) return; // kõik peidetud (haruldane) — kood/nimi identifitseerib rea
+      const c = cells[target];
+      c.style.position = 'relative';
+      c.dataset.lbl = '1';
+      c.innerHTML = '<span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);white-space:nowrap;font-weight:600;color:#1a3a5a;">' + label + '</span>';
     });
   }
 
