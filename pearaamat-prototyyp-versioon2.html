@@ -266,6 +266,9 @@
   .col-sec.collapsed .col-picker-list, .col-sec.collapsed .col-addfield { display: none; }
   .col-addfield { padding: 6px 10px; font-size: 11px; color: #3a6a9a; cursor: pointer; background: #f5f8fb; border-top: 1px solid #eef2f6; }
   .col-addfield:hover { background: #e4edf5; text-decoration: underline; }
+  .col-manage { padding: 6px 10px; font-size: 11px; color: #5a5a8a; cursor: pointer; background: #f0eefa; border-top: 1px dashed #c8c4e0; display: flex; align-items: center; gap: 6px; }
+  .col-manage:hover { background: #e6e2f6; }
+  .su-tag { margin-left: auto; font-size: 8px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #fff; background: #7a72b0; padding: 2px 5px; border-radius: 7px; }
   .col-fields-empty { padding: 5px 10px; font-size: 10px; color: #98a4b0; font-style: italic; }
   /* Andmeväljade valija (EFP-stiilis) */
   .field-picker-panel { display: none; position: absolute; right: 210px; top: 30px; width: 210px; background: #fff; border: 1px solid #aabccc; border-radius: 3px; z-index: 1002; box-shadow: 0 4px 14px rgba(0,0,0,.2); font-family: Arial, sans-serif; }
@@ -668,6 +671,7 @@
               <div class="col-sec-head" onclick="toggleColSec('colSecFields')"><span class="col-sec-arrow">▾</span> Vali lisainfo väljad</div>
               <div class="col-picker-list" id="colFieldsList"></div>
               <div class="col-addfield" onclick="openFieldPicker()">＋ Vali lisainfo väljad…</div>
+              <div class="col-manage" onclick="window.open('valitavad-valjad-prototyyp.html','_blank')" title="Super kasutaja: halda, millised väljad on selles aruandes üldse pakutavad">⚙ Halda välju… <span class="su-tag">super kasutaja</span></div>
             </div>
             <div class="col-picker-footer" onclick="resetCols()">↺ Taasta algseaded</div>
           </div>
