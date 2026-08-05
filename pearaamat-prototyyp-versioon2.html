@@ -477,7 +477,7 @@
             <div class="sf-lookup">
               <button class="lkp-btn" type="button" title="Otsingu abi / sümbolid" onclick="toggleObjLegend()" style="border-left:1px solid #9ab8d4;border-right:none;border-radius:2px 0 0 2px;">⊞</button>
               <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off" style="border-radius:0;">
-              <button class="lkp-btn" type="button" title="Nimekiri-asetaja" onclick="toggleObjPicker()">🔍</button>
+              <button class="lkp-btn" type="button" title="Matrix-asetaja (vali objekt taseme kaupa)" onclick="openObjMatrix()">🔍</button>
             </div>
             <div class="obj-picker" id="objPicker">
               <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
@@ -490,7 +490,6 @@
               <div class="kl-quick" onclick="pickObjSym('#')"><b>#</b><span>Ainult täitmata objektiga read</span></div>
               <div class="kl-hint"><span class="kl-sym">+</span>Vähemalt üks objekt (VÕI), nt LADU+MÜÜK</div>
               <div class="kl-hint"><span class="kl-sym">,</span>Kõik objektid korraga (JA), nt LADU,TLN</div>
-              <div class="kl-action" onclick="openObjMatrixFromLegend()">⊞ Matrix-asetaja — vali objekt taseme kaupa…</div>
             </div>
           </div>
           <div class="obj-mode-note" id="objModeNote"></div>
@@ -1733,11 +1732,6 @@
     document.getElementById('objLegend').classList.remove('open');
     refreshObjMode();
   }
-  function openObjMatrixFromLegend() {
-    document.getElementById('objLegend').classList.remove('open');
-    openObjMatrix();
-  }
-
   function toggleObjPicker() {
     document.getElementById('objLegend').classList.remove('open');
     const p = document.getElementById('objPicker');
@@ -1812,6 +1806,7 @@
   function openObjMatrix() {
     buildObjMatrix();
     document.getElementById('objPicker').classList.remove('open');
+    document.getElementById('objLegend').classList.remove('open');
     updateMxPreview();
     document.getElementById('mxOverlay').classList.add('open');
   }
