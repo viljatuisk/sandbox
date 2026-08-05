@@ -110,6 +110,8 @@
   .konto-legend .kl-quick span { font-size: 11px; color: #3a5a7a; }
   .konto-legend .kl-hint { display: flex; align-items: flex-start; gap: 8px; padding: 5px 10px; font-size: 10.5px; color: #55657a; line-height: 1.3; }
   .konto-legend .kl-hint .kl-sym { flex-shrink: 0; width: 16px; text-align: center; font-weight: 700; color: #2a4a6a; font-family: "Courier New", monospace; background: #eef2f6; border-radius: 2px; }
+  .konto-legend .kl-action { padding: 7px 10px; font-size: 11px; color: #2a4a6a; cursor: pointer; border-top: 1px solid #e0e8f0; background: #f5f8fb; }
+  .konto-legend .kl-action:hover { background: #e4edf5; text-decoration: underline; }
   .wiki-overlay { display: none; position: fixed; inset: 0; background: rgba(20,35,55,0.45); z-index: 5000; }
   .wiki-overlay.open { display: flex; align-items: center; justify-content: center; }
   .wiki-modal { background: #fff; width: 720px; max-width: 92vw; max-height: 88vh; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); display: flex; flex-direction: column; overflow: hidden; }
@@ -473,15 +475,22 @@
         <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: + = vähemalt üks (VÕI), , = kõik korraga (JA). % = ainult täidetud objektiga read, # = ainult täitmata objektiga read (tühja välja märk). Nt LADU,TLN+MÜÜK">Objekt <span class="help-i" onclick="openObjHelp('objekt')" title="Ava juhend">?</span></label>
           <div class="obj-wrap" id="objWrap">
             <div class="sf-lookup">
-              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK  •  % täidetud  •  # täitmata" autocomplete="off">
-              <button class="lkp-btn" type="button" title="Nimekiri-asetaja" onclick="toggleObjPicker()" style="border-radius:0;">🔍</button>
-              <button class="lkp-btn" type="button" title="Matrix-asetaja (vali objekt taseme kaupa)" onclick="openObjMatrix()">⊞</button>
+              <button class="lkp-btn" type="button" title="Otsingu abi / sümbolid" onclick="toggleObjLegend()" style="border-left:1px solid #9ab8d4;border-right:none;border-radius:2px 0 0 2px;">⊞</button>
+              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off" style="border-radius:0;">
+              <button class="lkp-btn" type="button" title="Nimekiri-asetaja" onclick="toggleObjPicker()">🔍</button>
             </div>
             <div class="obj-picker" id="objPicker">
               <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
                 <input type="text" id="objPickerSearch" placeholder="Otsi objekti..." oninput="filterObjPicker(this.value)" style="width:100%;height:22px;border:1px solid #b8c4d0;border-radius:2px;padding:0 6px;font-size:11px;font-family:Arial,sans-serif;box-sizing:border-box;">
               </div>
               <div class="obj-picker-list" id="objPickerList"></div>
+            </div>
+            <div class="obj-picker konto-legend" id="objLegend">
+              <div class="kl-quick" onclick="pickObjSym('%')"><b>%</b><span>Ainult täidetud objektiga read</span></div>
+              <div class="kl-quick" onclick="pickObjSym('#')"><b>#</b><span>Ainult täitmata objektiga read</span></div>
+              <div class="kl-hint"><span class="kl-sym">+</span>Vähemalt üks objekt (VÕI), nt LADU+MÜÜK</div>
+              <div class="kl-hint"><span class="kl-sym">,</span>Kõik objektid korraga (JA), nt LADU,TLN</div>
+              <div class="kl-action" onclick="openObjMatrixFromLegend()">⊞ Matrix-asetaja — vali objekt taseme kaupa…</div>
             </div>
           </div>
           <div class="obj-mode-note" id="objModeNote"></div>
@@ -1715,7 +1724,22 @@
     list.innerHTML = html;
   }
 
+  function toggleObjLegend() {
+    document.getElementById('objPicker').classList.remove('open');
+    document.getElementById('objLegend').classList.toggle('open');
+  }
+  function pickObjSym(v) {
+    document.getElementById('objInput').value = v;
+    document.getElementById('objLegend').classList.remove('open');
+    refreshObjMode();
+  }
+  function openObjMatrixFromLegend() {
+    document.getElementById('objLegend').classList.remove('open');
+    openObjMatrix();
+  }
+
   function toggleObjPicker() {
+    document.getElementById('objLegend').classList.remove('open');
     const p = document.getElementById('objPicker');
     const open = p.classList.toggle('open');
     if (open) {
@@ -1742,7 +1766,10 @@
 
   document.addEventListener('click', function(e) {
     const w = document.getElementById('objWrap');
-    if (w && !w.contains(e.target)) document.getElementById('objPicker').classList.remove('open');
+    if (w && !w.contains(e.target)) {
+      document.getElementById('objPicker').classList.remove('open');
+      document.getElementById('objLegend').classList.remove('open');
+    }
   });
 
   /* ── MATRIX ASETAJA ── */
