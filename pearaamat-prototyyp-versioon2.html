@@ -243,6 +243,10 @@
   .col-picker-item { display: flex; align-items: center; gap: 7px; padding: 4px 10px; cursor: pointer; font-size: 11px; color: #1a2a3a; user-select: none; }
   .col-picker-item:hover { background: #eef4fa; }
   .col-picker-item input[type=checkbox] { margin: 0; accent-color: #3a6a9a; flex-shrink: 0; }
+  .col-picker-item.locked { color: #a8b2be; cursor: default; }
+  .col-picker-item.locked:hover { background: transparent; }
+  .col-picker-item.locked input[type=checkbox] { accent-color: #a8b2be; }
+  .col-lock { margin-left: auto; font-size: 9px; opacity: .6; }
   .drag-handle { color: #c0c8d4; font-size: 11px; cursor: grab; flex-shrink: 0; }
   .col-picker-footer { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-top: 1px solid #dde3ea; font-size: 11px; color: #3a6a9a; cursor: pointer; background: #f5f8fb; }
   .col-picker-footer:hover { background: #e4edf5; }
@@ -1876,6 +1880,7 @@
 
   // ── COLUMN PICKER ──
   const COL_DEFS = [
+    { key: 'konto',          label: 'Konto',          nth: 1,  locked: true },
     { key: 'corrAccount',    label: 'corrAccount',    nth: 3  },
     { key: 'documentNumber', label: 'documentNumber', nth: 4  },
     { key: 'objekt',         label: 'Objekt',         nth: 5  },
@@ -1885,8 +1890,8 @@
     { key: 'lineExpl',       label: 'lineExplanation',nth: 16 },
     { key: 'transDesc',      label: 'transactionDesc',nth: 17 },
     { key: 'kmk',            label: 'kmk',            nth: 18 },
-    { key: 'deebet',         label: 'Deebet',         nth: 19 },
-    { key: 'kreedit',        label: 'Kreedit',        nth: 20 },
+    { key: 'deebet',         label: 'Deebet',         nth: 19, locked: true },
+    { key: 'kreedit',        label: 'Kreedit',        nth: 20, locked: true },
     { key: 'debitCurr',      label: 'debitCurrency',  nth: 21 },
     { key: 'creditCurr',     label: 'creditCurrency', nth: 22 },
     { key: 'valuuta',        label: 'Valuuta',        nth: 23 },
@@ -1908,15 +1913,23 @@
     list.innerHTML = '';
     COL_DEFS.forEach(c => {
       const item = document.createElement('label');
-      item.className = 'col-picker-item';
+      item.className = 'col-picker-item' + (c.locked ? ' locked' : '');
       item.dataset.label = c.label.toLowerCase();
       const extra = c.group ? ' <span style="font-size:10px;color:#888">(Pinnad..Erikord)</span>' : '';
-      item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="toggleCol(\'' + c.key + '\', this.checked)"> ' + c.label + extra;
+      if (c.locked) {
+        // Kohustuslik veerg — alati nähtav, linnukest ei saa maha võtta.
+        item.title = 'Kohustuslik veerg – alati nähtav';
+        item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" checked disabled> ' + c.label + ' <span class="col-lock">🔒</span>';
+      } else {
+        item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="toggleCol(\'' + c.key + '\', this.checked)"> ' + c.label + extra;
+      }
       list.appendChild(item);
     });
   }
 
   function toggleCol(key, checked) {
+    const def = COL_DEFS.find(c => c.key === key);
+    if (def && def.locked) return; // kohustuslikke veerge ei saa peita
     colVisible[key] = checked;
     // Koondvaates on fikseeritud 7 tulpa; ainult 'corrAccount' mõjutab (lülitab korr-kontode lahustuse).
     if (_summaOn) {
@@ -1929,6 +1942,7 @@
   function applyColStyles() {
     let css = '';
     COL_DEFS.forEach(c => {
+      if (c.locked) return; // kohustuslikke veerge kunagi ei peideta
       if (c.group) {
         if (!colVisible[c.key]) {
           c.dimNths.forEach(n => {
@@ -2666,23 +2680,37 @@
   // Detailvaade: Algsaldo (grupipäis) ja Lõppsaldo (kokkuvõte) väärtus Deebeti tulbast → Saldo tulpa (märgiga).
   // Saldo (balance) on tulp nr 27; Deebet=19, Kreedit=20. Saldeerimata vaade jagab need eraldi dr/cr tulpadesse.
   function normalizeDetailSaldo() {
-    const move = (row, labelText, valStyle) => {
-      const cells = row.querySelectorAll('td');
-      let li = -1;
-      cells.forEach((c, i) => { if (c.textContent.trim() === labelText) li = i; });
-      if (li < 0) return;
-      const valCell = cells[li + 1];
-      if (!valCell) return;
-      const val = valCell.textContent.trim();
-      // hoia lahtrid kuni sildini (kaasa arvatud), eemalda vana väärtus + saba
-      while (row.children.length > li + 1) row.removeChild(row.lastElementChild);
+    // Algsaldo (grupipäis) & Lõppsaldo: silt paremjoondatud colspan-lahtris, mis LÕPEB col18 —
+    // ehk vahetult enne Deebet (col19). Kuna Deebet/Kreedit on kohustuslikud (ei peideta), jääb
+    // silt alati nende ette, ükskõik mis keskmise veeru peidad. Väärtus Saldo tulpa (col27).
+    const moveToSaldo = (row, labelText, valStyle) => {
+      const cells = Array.from(row.querySelectorAll('td'));
+      const li = cells.findIndex(c => c.textContent.trim() === labelText);
+      if (li < 1) return;
+      const val = cells[li + 1] ? cells[li + 1].textContent.trim() : '';
+      const prev = cells[li - 1]; // eelnev tühi colspan-lahter (col14-17)
+      const labelSpan = (parseInt(prev.getAttribute('colspan') || '1')) + (parseInt(cells[li].getAttribute('colspan') || '1'));
+      while (row.children.length > li - 1) row.removeChild(row.lastElementChild); // eemalda prev + silt + saba
       row.insertAdjacentHTML('beforeend',
-        '<td colspan="8"></td>' +                                    // col19-26 (Deebet..Muutus tühjad)
-        '<td class="r"' + (valStyle || '') + '>' + val + '</td>' +    // col27 Saldo
-        '<td colspan="2"></td>');                                     // col28-29
+        '<td colspan="' + labelSpan + '" style="text-align:right;">' + labelText + '</td>' + // col14-18 silt (lõpeb enne Deebet)
+        '<td colspan="8"></td>' +                                            // col19-26 (Deebet..Muutus tühjad)
+        '<td class="r"' + (valStyle || '') + '>' + val + '</td>' +            // col27 Saldo
+        '<td colspan="2"></td>');                                            // col28-29
     };
-    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => move(h, 'Algsaldo', ''));
-    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => move(r, 'Lõppsaldo', ' style="font-weight:600;"'));
+    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => moveToSaldo(h, 'Algsaldo', ''));
+    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => moveToSaldo(r, 'Lõppsaldo', ' style="font-weight:600;"'));
+    // Kokku (periood): liida silt eelneva tühja colspan-lahtriga (col14-18), paremjoondatud — nii ei kao
+    // ega nihku silt keskmise veeru peitmisel; Deebet/Kreedit/Muutus/Saldo jäävad omadesse tulpadesse.
+    document.querySelectorAll('#mainTbody tr.grp-sub').forEach(r => {
+      const cells = Array.from(r.querySelectorAll('td'));
+      const li = cells.findIndex(c => c.textContent.trim() === 'Kokku (periood)');
+      if (li < 1) return;
+      const prev = cells[li - 1];
+      const span = (parseInt(prev.getAttribute('colspan') || '1')) + (parseInt(cells[li].getAttribute('colspan') || '1'));
+      prev.remove();
+      cells[li].setAttribute('colspan', String(span));
+      cells[li].style.textAlign = 'right';
+    });
   }
 
   // Täida igal andmereal Konto (col1) ja Konto nimi (col2) grupi kontokoodi ja nimega.
