@@ -1,0 +1,358 @@
+<meta charset="utf-8">
+<title>Valitavad väljad — aruandepõhine (prototüüp)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, "Segoe UI", sans-serif; font-size: 13px; color: #2a2a3a; background: #eceaf4; }
+  .topbar { background: #fff; border-bottom: 1px solid #d4d0e4; padding: 10px 18px; display: flex; align-items: center; gap: 16px; }
+  .topbar h1 { font-size: 18px; margin: 0; color: #2a2a4a; font-weight: 700; }
+  .topbar .search { margin-left: 8px; display: flex; gap: 0; }
+  .topbar select { height: 30px; border: 1px solid #c4c0d4; border-radius: 3px 0 0 3px; background: #fff; padding: 0 6px; font-size: 12px; }
+  .topbar input { height: 30px; border: 1px solid #c4c0d4; border-left: none; width: 320px; padding: 0 8px; font-size: 12px; }
+  .topbar .search-btn { height: 30px; width: 34px; border: 1px solid #4a5a9a; background: #4a5a9a; color: #fff; border-radius: 0 3px 3px 0; cursor: pointer; }
+
+  .layout { display: flex; min-height: calc(100vh - 51px); }
+  .sidebar { width: 210px; background: #e4e1f0; border-right: 1px solid #d4d0e4; padding: 8px 0; flex-shrink: 0; }
+  .sb-head { padding: 8px 16px; font-weight: 700; color: #3a3a5a; display: flex; align-items: center; gap: 6px; }
+  .sb-item { padding: 7px 16px 7px 22px; color: #45455f; cursor: pointer; font-size: 12.5px; }
+  .sb-item:hover { background: #d8d4ea; }
+  .sb-item.active { background: #b9b2e0; color: #1e1e3a; font-weight: 600; }
+  .sb-foot { padding: 9px 16px; margin-top: 6px; color: #45455f; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+
+  .content { flex: 1; padding: 16px 22px 40px; overflow-x: auto; }
+  .breadcrumb { color: #6a6a8a; font-size: 12px; margin-bottom: 6px; }
+  .breadcrumb b { color: #3a3a5a; }
+  .toolbar { display: flex; gap: 4px; border-top: 1px solid #d8d4e6; border-bottom: 1px solid #d8d4e6; padding: 7px 0; margin-bottom: 14px; }
+  .tb-btn { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: none; border: none; cursor: pointer; font-size: 12.5px; color: #3a3a5a; border-radius: 3px; }
+  .tb-btn:hover { background: #e0dcee; }
+  .tb-btn.primary { color: #2a7a3a; font-weight: 600; }
+
+  h2.title { font-size: 20px; margin: 4px 0 14px; color: #2a2a4a; }
+
+  .selectors { display: flex; gap: 26px; align-items: flex-end; margin-bottom: 18px; flex-wrap: wrap; }
+  .sel-field { display: flex; flex-direction: column; gap: 4px; }
+  .sel-field > label { font-size: 12px; color: #55556f; font-weight: 600; }
+  .sel-field select { height: 34px; min-width: 240px; border: 1px solid #b4b0c8; border-radius: 4px; background: #fff; padding: 0 10px; font-size: 13px; color: #2a2a4a; }
+  .sel-field.is-new { position: relative; }
+  .sel-field.is-new select { border: 2px solid #4a5ac8; box-shadow: 0 0 0 3px rgba(74,90,200,.12); }
+  .badge-new { position: absolute; top: -9px; right: -8px; background: #4a5ac8; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px; letter-spacing: .04em; }
+
+  .callout { background: #eef1fc; border: 1px solid #c8d0f0; border-left: 4px solid #4a5ac8; border-radius: 4px; padding: 11px 14px; margin: 0 0 18px; font-size: 12.5px; color: #33375a; max-width: 1100px; }
+  .callout b { color: #2a2f66; }
+
+  table.matrix { border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .matrix th, .matrix td { border: 1px solid #e0dcec; padding: 0; }
+  .matrix thead .band th { padding: 6px 8px; font-size: 11px; text-align: center; font-weight: 700; }
+  .matrix thead .band .band-doc { background: #eef0f5; color: #55607a; }
+  .matrix thead .band .band-report { background: #4a5ac8; color: #fff; }
+  .matrix thead .band .band-report .rep-name { font-weight: 800; }
+  .matrix thead .cols th { padding: 8px 6px; font-size: 11.5px; font-weight: 700; color: #3a3a5a; background: #f4f3f9; vertical-align: bottom; }
+  .matrix thead .cols th.field-name { text-align: left; padding-left: 12px; min-width: 200px; }
+  .matrix thead .cols th.col-report { background: #e7eafb; color: #2a2f66; }
+  .matrix thead .cols th.rot { white-space: nowrap; }
+
+  .matrix td.field-name { text-align: left; padding: 6px 12px; font-weight: 600; color: #33334a; min-width: 200px; }
+  .matrix td.cell { text-align: center; width: 118px; padding: 5px 4px; }
+  .matrix td.cell.col-report { background: #f5f7ff; }
+  .matrix tr.grp td { background: #dfe0ec; font-weight: 700; color: #3a3a5a; text-align: center; letter-spacing: .03em; padding: 5px; }
+  .matrix tr.grp.doc td { background: #cdd0e6; }
+  .matrix tr:hover td.cell { background: #eef1fc; }
+  .matrix tr:hover td.cell.col-report { background: #e4e9ff; }
+  .matrix input[type=checkbox] { width: 15px; height: 15px; accent-color: #4a5ac8; cursor: pointer; }
+  .matrix input[type=checkbox]:disabled { accent-color: #c4c4d4; cursor: not-allowed; }
+
+  .layout-2 { display: flex; gap: 22px; align-items: flex-start; }
+  .preview { width: 300px; flex-shrink: 0; position: sticky; top: 16px; }
+  .preview h3 { font-size: 13px; margin: 0 0 8px; color: #2a2a4a; }
+  .pv-card { background: #fff; border: 1px solid #d4d0e4; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.08); overflow: hidden; }
+  .pv-head { background: #2a3550; color: #fff; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 7px; }
+  .pv-sub { padding: 7px 12px 4px; font-size: 10.5px; color: #7a7a92; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: .04em; }
+  .pv-grp { padding: 6px 12px 2px; font-size: 10px; font-weight: 700; color: #5a7a9a; text-transform: uppercase; background: #f7f8fb; }
+  .pv-item { display: flex; align-items: center; gap: 8px; padding: 4px 12px; font-size: 12px; color: #2a2a3a; }
+  .pv-item input { accent-color: #3a6a9a; }
+  .pv-item .def { margin-left: auto; font-size: 9px; color: #4a5ac8; font-weight: 700; }
+  .pv-empty { padding: 10px 12px; font-size: 11px; color: #9898aa; font-style: italic; }
+  .pv-note { font-size: 11px; color: #6a6a84; margin-top: 8px; line-height: 1.4; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2a7a3a; color: #fff; padding: 10px 18px; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: all .25s; font-size: 13px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hint { font-size: 11px; color: #8a8aa0; margin-top: 3px; }
+  .legend { display: flex; gap: 16px; margin: 10px 0 4px; font-size: 11px; color: #55556f; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+</style>
+
+<div class="topbar">
+  <h1>Directo seadistused</h1>
+  <div class="search">
+    <select><option>Kõik</option></select>
+    <input value="valitavad väljad">
+    <button class="search-btn">🔍</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-head">Süsteemi seadistused ▾</div>
+    <div class="sb-item">Administraatori seadistused</div>
+    <div class="sb-item">Finantsi seadistused</div>
+    <div class="sb-item">Kliendi seadistused</div>
+    <div class="sb-item">Ostureskontro seadistused</div>
+    <div class="sb-item">Personali seadistused</div>
+    <div class="sb-item active">Valitavad väljad</div>
+    <div class="sb-item">Üldised seadistused</div>
+    <div class="sb-foot"><span>Üldine</span><span>▸</span></div>
+  </div>
+
+  <div class="content">
+    <div class="breadcrumb">Süsteemi seadistused &nbsp;›&nbsp; <b>Valitavad väljad</b></div>
+    <div class="toolbar">
+      <button class="tb-btn primary" onclick="save()">✔ Salvesta</button>
+      <button class="tb-btn" onclick="resetAll()">↻ Taasta algseaded</button>
+      <button class="tb-btn">✕ Jäta</button>
+    </div>
+
+    <h2 class="title">Väljade nähtavus</h2>
+
+    <div class="callout" id="conceptNote">
+      <b>Ettepanek — aruandepõhine seadistus.</b> Praegu rakendub väljade nähtavus <b>kõikidele aruannetele</b> korraga.
+      Lisatud on mõõde <b>„Seadistatav aruanne"</b>: super kasutaja saab iga aruande jaoks kureerida, millised
+      lisainfo väljad on selles aruandes <b>pakutavad</b> (ja mis vaikimisi näidatud). Sinised veerud kehtivad
+      valitud aruandele; hallid veerud on dokumendi/registri tasemel (aruandest sõltumatud).
+    </div>
+
+    <div class="selectors">
+      <div class="sel-field">
+        <label>Seadistatav vaade</label>
+        <select id="docSel" onchange="render()">
+          <option value="hankija">Hankijad</option>
+          <option value="klient">Kliendid</option>
+          <option value="projekt">Projektid</option>
+          <option value="konto">Kontod</option>
+        </select>
+        <div class="hint">Dokument / register</div>
+      </div>
+      <div class="sel-field is-new">
+        <span class="badge-new">UUS</span>
+        <label>Seadistatav aruanne</label>
+        <select id="repSel" onchange="render()">
+          <option value="all">(kõik aruanded) — globaalne vaikeväärtus</option>
+          <option value="pearaamat" selected>Pearaamat</option>
+          <option value="kaibeandmik">Käibeandmik</option>
+          <option value="ostureskontro">Ostureskontro</option>
+          <option value="muugireskontro">Müügireskontro</option>
+        </select>
+        <div class="hint">Seadistus rakendub sellele aruandele</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="sw" style="background:#eef0f5;border:1px solid #d0d0dc;"></span> Dokumendi/registri tase (kõigile ühine)</span>
+      <span><span class="sw" style="background:#4a5ac8;"></span> Aruandepõhine — kehtib valitud aruandele</span>
+    </div>
+
+    <div class="layout-2">
+      <div style="overflow-x:auto;">
+        <table class="matrix" id="matrix"></table>
+      </div>
+
+      <div class="preview">
+        <h3>Eelvaade: kuidas kasutaja seda näeb</h3>
+        <div class="pv-card">
+          <div class="pv-head">🔧 <span id="pvReport">Pearaamat</span> — Vali lisainfo väljad</div>
+          <div class="pv-sub" id="pvDoc">Hankija</div>
+          <div id="pvBody"></div>
+        </div>
+        <div class="pv-note">
+          Aruande mutrivõtme all näeb kasutaja <b>ainult</b> siin „Pakutav aruandes" märgitud väljad.
+          <b>Vaikimisi näidatud</b> väljad on juba linnutatud. Kõik muu on peidetud — nii ei uju
+          sadu dokumendivälju aruande valikusse.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Salvestatud</div>
+
+<script>
+  // ── Dokumendid ja nende väljad (grupeeritud) ──
+  const DOCS = {
+    hankija: { label: 'Hankija', groups: [
+      { title: null,      fields: ['Kood', 'Nimi', 'Klass', 'Objekt', 'Tüüp', 'Suletud'] },
+      { title: 'Aadress', fields: ['Aadress', 'Maakond', 'Riik', 'Indeks'] },
+      { title: 'Kontakt', fields: ['Esindaja', 'Telefon', 'Faks', 'E-post'] },
+      { title: 'Info',    fields: ['Reg nr', 'KM reg nr', 'Haldur', 'Läh. tingimus', 'Makse saaja', 'Pangakonto'] },
+    ]},
+    klient: { label: 'Klient', groups: [
+      { title: null,      fields: ['Kood', 'Nimi', 'Klass', 'Objekt', 'Tüüp', 'Suletud'] },
+      { title: 'Aadress', fields: ['Aadress', 'Maakond', 'Riik'] },
+      { title: 'Kontakt', fields: ['Esindaja', 'Telefon', 'E-post'] },
+      { title: 'Info',    fields: ['Reg nr', 'KM reg nr', 'Haldur', 'Hinnavalem', 'Krediidilimiit', 'Maksetähtaeg'] },
+    ]},
+    projekt: { label: 'Projekt', groups: [
+      { title: null,   fields: ['Kood', 'Nimi', 'Klass', 'Staatus'] },
+      { title: 'Info', fields: ['Juht', 'Algus', 'Lõpp', 'Objekt', 'Klient'] },
+    ]},
+    konto: { label: 'Konto', groups: [
+      { title: null,   fields: ['Kood', 'Nimi', 'Klass', 'Tüüp'] },
+      { title: 'Info', fields: ['KM kood', 'Objekt', 'Suletud'] },
+    ]},
+  };
+
+  const REPORTS = { all: '(kõik aruanded)', pearaamat: 'Pearaamat', kaibeandmik: 'Käibeandmik', ostureskontro: 'Ostureskontro', muugireskontro: 'Müügireskontro' };
+
+  // Dokumendi/registri tasemel veerud (aruandest sõltumatud)
+  const DOC_COLS = [
+    { key: 'nahtavDok',  label: 'Nähtav dokumendil' },
+    { key: 'valitavDok', label: 'Valitav dokumendil' },
+    { key: 'nahtavReg',  label: 'Nähtav registris' },
+  ];
+  // Aruandepõhised veerud (kehtivad valitud aruandele)
+  const REPORT_COLS = [
+    { key: 'pakutav',     label: 'Pakutav aruandes' },
+    { key: 'vaikimisi',   label: 'Vaikimisi näidatud' },
+    { key: 'filtreeritav',label: 'Filtreeritav aruandes' },
+    { key: 'tukeldatav',  label: 'Tükeldatav aruandes' },
+  ];
+
+  // Olek: docState[doc][field] = {doc-cols}; repState[doc][report][field] = {report-cols}
+  const docState = {}, repState = {};
+  function ensure(doc, report) {
+    if (!docState[doc]) {
+      docState[doc] = {};
+      DOCS[doc].groups.forEach(g => g.fields.forEach(f => {
+        docState[doc][f] = { nahtavDok: ['Kood','Nimi'].includes(f), valitavDok: ['Kood','Nimi'].includes(f), nahtavReg: ['Kood','Nimi','Klass'].includes(f) };
+      }));
+    }
+    if (!repState[doc]) repState[doc] = {};
+    if (!repState[doc][report]) {
+      repState[doc][report] = {};
+      DOCS[doc].groups.forEach(g => g.fields.forEach(f => {
+        repState[doc][report][f] = { pakutav: false, vaikimisi: false, filtreeritav: false, tukeldatav: false };
+      }));
+      seedDefaults(doc, report);
+    }
+  }
+  // Näidis-kuraatorseaded, et eri aruanded näeksid erinevad välja
+  function seedDefaults(doc, report) {
+    const set = (f, o) => { if (repState[doc][report][f]) Object.assign(repState[doc][report][f], o); };
+    if (doc === 'hankija' && report === 'pearaamat') {
+      set('Reg nr',    { pakutav: true, vaikimisi: true, filtreeritav: true });
+      set('KM reg nr', { pakutav: true, vaikimisi: true });
+      set('Klass',     { pakutav: true, filtreeritav: true });
+      set('Haldur',    { pakutav: true });
+    }
+    if (doc === 'hankija' && report === 'ostureskontro') {
+      set('Reg nr',        { pakutav: true, vaikimisi: true });
+      set('Läh. tingimus', { pakutav: true, vaikimisi: true, filtreeritav: true });
+      set('Makse saaja',   { pakutav: true });
+      set('Pangakonto',    { pakutav: true });
+    }
+    if (doc === 'klient' && report === 'pearaamat') {
+      set('Reg nr', { pakutav: true, vaikimisi: true });
+      set('Klass',  { pakutav: true, filtreeritav: true });
+      set('Haldur', { pakutav: true });
+    }
+    if (doc === 'projekt' && report === 'pearaamat') {
+      set('Juht',  { pakutav: true });
+      set('Klass', { pakutav: true, filtreeritav: true });
+    }
+  }
+
+  function render() {
+    const doc = document.getElementById('docSel').value;
+    const report = document.getElementById('repSel').value;
+    ensure(doc, report);
+    const isAll = report === 'all';
+
+    // Header
+    let html = '<thead>';
+    html += '<tr class="band">' +
+      '<th class="band-doc" rowspan="2">Välja nimi</th>' +
+      '<th class="band-doc" colspan="' + DOC_COLS.length + '">Dokument / register</th>' +
+      '<th class="band-report" colspan="' + REPORT_COLS.length + '">' +
+        (isAll ? 'Aruannetes (globaalne vaikeväärtus)' : 'Kehtib aruandele: <span class="rep-name">' + REPORTS[report] + '</span>') +
+      '</th>' +
+      '<th class="band-doc" rowspan="2">Jälgija</th></tr>';
+    html += '<tr class="cols">';
+    DOC_COLS.forEach(c => html += '<th class="rot">' + c.label + '</th>');
+    REPORT_COLS.forEach(c => html += '<th class="col-report rot">' + c.label + '</th>');
+    html += '</tr></thead><tbody>';
+
+    // Rows
+    DOCS[doc].groups.forEach((g, gi) => {
+      if (gi === 0) html += '<tr class="grp doc"><td colspan="' + (2 + DOC_COLS.length + REPORT_COLS.length) + '">' + DOCS[doc].label.toUpperCase() + '</td></tr>';
+      if (g.title) html += '<tr class="grp"><td colspan="' + (2 + DOC_COLS.length + REPORT_COLS.length) + '">' + g.title + '</td></tr>';
+      g.fields.forEach(f => {
+        html += '<tr><td class="field-name">' + f + '</td>';
+        DOC_COLS.forEach(c => {
+          html += '<td class="cell"><input type="checkbox" ' + (docState[doc][f][c.key] ? 'checked' : '') +
+            ' onchange="setDoc(\'' + doc + '\',\'' + f + '\',\'' + c.key + '\',this.checked)"></td>';
+        });
+        REPORT_COLS.forEach(c => {
+          // "vaikimisi/filtreeritav/tükeldatav" mõttekas ainult kui väli on pakutav
+          const st = repState[doc][report][f];
+          const dependent = c.key !== 'pakutav';
+          const dis = dependent && !st.pakutav;
+          html += '<td class="cell col-report"><input type="checkbox" ' + (st[c.key] ? 'checked' : '') +
+            (dis ? ' disabled' : '') +
+            ' onchange="setRep(\'' + doc + '\',\'' + report + '\',\'' + f + '\',\'' + c.key + '\',this.checked)"></td>';
+        });
+        html += '<td class="cell"><input type="checkbox"></td></tr>';
+      });
+    });
+    html += '</tbody>';
+    document.getElementById('matrix').innerHTML = html;
+
+    renderPreview(doc, report);
+  }
+
+  function setDoc(doc, f, key, val) { docState[doc][f][key] = val; }
+  function setRep(doc, report, f, key, val) {
+    repState[doc][report][f][key] = val;
+    if (key === 'pakutav' && !val) { // pole enam pakutav → nulli sõltuvad
+      repState[doc][report][f].vaikimisi = false;
+      repState[doc][report][f].filtreeritav = false;
+      repState[doc][report][f].tukeldatav = false;
+    }
+    if (key === 'vaikimisi' && val) repState[doc][report][f].pakutav = true;
+    render();
+  }
+
+  function renderPreview(doc, report) {
+    document.getElementById('pvReport').textContent = REPORTS[report];
+    document.getElementById('pvDoc').textContent = DOCS[doc].label;
+    const body = document.getElementById('pvBody');
+    if (report === 'all') {
+      body.innerHTML = '<div class="pv-empty">„(kõik aruanded)" on globaalne vaikeväärtus. Vali konkreetne aruanne, et näha selle kureeritud valikut.</div>';
+      return;
+    }
+    let html = '';
+    let any = false;
+    DOCS[doc].groups.forEach(g => {
+      const offered = g.fields.filter(f => repState[doc][report][f].pakutav);
+      if (!offered.length) return;
+      any = true;
+      if (g.title) html += '<div class="pv-grp">' + g.title + '</div>';
+      offered.forEach(f => {
+        const def = repState[doc][report][f].vaikimisi;
+        html += '<div class="pv-item"><input type="checkbox" ' + (def ? 'checked' : '') + '> ' + f +
+          (def ? '<span class="def">vaikimisi</span>' : '') + '</div>';
+      });
+    });
+    body.innerHTML = any ? html : '<div class="pv-empty">Selle aruande jaoks pole veel ühtegi ' + DOCS[doc].label + ' välja pakutavaks märgitud.</div>';
+  }
+
+  function save() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
+  }
+  function resetAll() {
+    for (const k in repState) delete repState[k];
+    for (const k in docState) delete docState[k];
+    render();
+  }
+
+  render();
+</script>
