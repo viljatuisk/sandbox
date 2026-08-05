@@ -1,0 +1,95 @@
+====== Pearaamatu aruanne ======
+
+Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud perioodil. Aruanne tarnitakse kasutajatele **kahes faasis**:
+
+  * **Faas I** (~oktoobri algus) — toimiv pearaamatuaruanne, millega kasutaja saab teha päringuid, tulemusi filtreerida (saldo, muutused, konto, objekt), valida vaate tüüpi (detail, koond, kronoloogiline, vahesumma) ja andmeid eksportida.
+  * **Faas II** (~aasta lõpp) — sama aruanne täiendatuna paindlikuma tabelihaldusega (veergude valimine, sortimine, väljatrükk, kogused), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
+
+//See wiki on töös ja täieneb: kui prototüüpi lisandub uusi funktsioone, lisatakse need siia vastava faasi alla.//
+
+
+====== Faas I — toimiv aruanne ======
+
+Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, valida vaate ja eksportida andmed.
+
+===== Filtrid (Faas I) =====
+
+^ Filter ^ Kirjeldus ^
+| **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
+| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust, ''%'' metamärk, ''!'' eitus. |
+| **Korr. konto** | Korrespondeeriva konto filter. |
+| **Objekt** | Objektifilter tasemete kaupa (Nimekiri-asetaja, Matrix-asetaja). Režiim: Kõik / Täidetud / Täitmata. |
+| **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
+| **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
+| **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
+| **Selgitus / Viide / KM kood / Valuuta** | Täiendavad kanderea filtrid. |
+
+===== Vaated (Faas I) =====
+
+  * **Detailvaade** — kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
+  * **Koondvaade** — üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. Toetab korrespondeerivate kontode lahustust (konto → korr-kontode Deebet/Kreedit).
+  * **Kronoloogiline** — kõik kanded ajalises järjekorras (kontode üleselt), koos algsaldo ja lõppsaldo raamnumbritega.
+  * **Vahesumma** — grupeering valitud dimensiooni (nt Objekt, Projekt) järgi.
+
+==== Saldode kuva (Faas I) ====
+
+  * **Algsaldo** ja **Lõppsaldo** kuvatakse **märgiga arvuna Saldo tulbas** (mitte Deebet/Kreedit tulpades). Aktivakonto negatiivne saldo = kreeditsaldo (miinusmärgiga).
+  * **Deebet ja Kreedit** tulbad näitavad **perioodi käivet**, mitte saldosid.
+  * Summaridade sildid (Algsaldo / Kokku (periood) / Lõppsaldo) on alati vahetult Deebeti ees ega kao ega nihku, kui mõni veerg peita.
+
+===== Eksport (Faas I) =====
+
+  * **Excel** (andmete eksport)
+  * **CSV** (andmete eksport)
+  * **PDF** (andmete eksport)
+
+//Märkus: vormindatud //väljatrükk// (trükivaade) tuleb Faas II-s. Faas I-s on andmete eksport.//
+
+
+====== Faas II — täiendused ======
+
+Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
+
+===== Tabelihaldus (Faas II) =====
+
+  * **Vali tulbad** — aruande veergude näitamine/peitmine. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita).
+  * **Numbri täpsus** — ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
+  * **Vali lisainfo väljad** — lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
+  * **Sortimine** — Sort1 / Sort2.
+  * **Väljatrükk** — vormindatud trükivaade.
+  * **Kogused** — koguste veerud.
+
+===== Laiendatud filtrid (Faas II) =====
+
+  * **Kontoklass** — filtreerimine kontoklasside järgi.
+  * **Hankija / Klient** — koos nende andmeväljade valikuga (vali lisaväljad).
+  * **Kasutaja** — kasutajapõhine filter.
+  * **Simulatsioon** — simulatsioonikannete kaasamine/välistamine.
+  * **Kontsern** — kontserni/firmade valik.
+  * **Oma / Riigi konto** — kontonumbri tüübi valik.
+
+===== Saldeerimata vaade (Faas II) =====
+
+Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (proovibilansi loogika, loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
+
+===== Aruandepõhine „Valitavad väljad" (Faas II) ===== {{anchor:aruandepohine_valitavad_valjad}}
+
+Ettepanek muuta „Valitavad väljad" seadistus **aruande-teadlikuks** (praegu globaalne):
+
+  * **Tasand 1 — juurdepääs (globaalne):** administraator määrab, mis väljad on üldse aruannetes lubatud.
+  * **Tasand 2 — aruande kuraator (super kasutaja):** määrab, millised lubatud väljad on **selles aruandes** pakutavad / vaikimisi näidatud.
+  * **Tasand 3 — isiklik valik (lõppkasutaja):** valib pakutavatest väljadest need, mida veergudena näeb.
+
+Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (väli on kohe veeruna ees, saab peita). Super kasutaja pääseb seadistusse ka otse aruande mutrivõtme „Vali lisainfo väljad" → „Halda välju…" lingi kaudu.
+
+
+====== Mida Faas I kasutajale EI näita ======
+
+Järgnev on kavandatud **Faas II-s** ja Faas I-s kasutajale ei kuvata:
+
+  * **Simulatsiooni filter**
+  * **Kontsern filter**
+  * **Kontoklass filter**
+  * **Oma või Riigi konto** valik
+  * **Filtrite „Vali lisaväljad" funktsionaalsus** (nt Projekt, Klient, Hankija jne andmeväljad)
+  * **Saldeerimata vaade**
