@@ -470,10 +470,10 @@
           <option>Osakond</option>
           <option>Pinnad</option>
         </select></div>
-        <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: + = vähemalt üks (VÕI), , = kõik korraga (JA). Nt LADU,TLN+MÜÜK">Objekt <span class="help-i" onclick="openObjHelp('objekt')" title="Ava juhend">?</span></label>
+        <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: + = vähemalt üks (VÕI), , = kõik korraga (JA). % = ainult täidetud objektiga read, # = ainult täitmata objektiga read (tühja välja märk). Nt LADU,TLN+MÜÜK">Objekt <span class="help-i" onclick="openObjHelp('objekt')" title="Ava juhend">?</span></label>
           <div class="obj-wrap" id="objWrap">
             <div class="sf-lookup">
-              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off">
+              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK  •  % täidetud  •  # täitmata" autocomplete="off">
               <button class="lkp-btn" type="button" title="Nimekiri-asetaja" onclick="toggleObjPicker()" style="border-radius:0;">🔍</button>
               <button class="lkp-btn" type="button" title="Matrix-asetaja (vali objekt taseme kaupa)" onclick="openObjMatrix()">⊞</button>
             </div>
@@ -483,11 +483,6 @@
               </div>
               <div class="obj-picker-list" id="objPickerList"></div>
             </div>
-          </div>
-          <div class="obj-mode" id="objMode">
-            <button type="button" class="obj-mode-btn active" data-mode="all" onclick="setObjMode('all')">Kõik</button>
-            <button type="button" class="obj-mode-btn" data-mode="filled" onclick="setObjMode('filled')" title="Ainult täidetud objektiga kanderead">Täidetud</button>
-            <button type="button" class="obj-mode-btn" data-mode="empty" onclick="setObjMode('empty')" title="Ainult täitmata objektiga kanderead">Täitmata</button>
           </div>
           <div class="obj-mode-note" id="objModeNote"></div>
         </div>
@@ -1737,9 +1732,11 @@
   function pickObj(code) {
     const inp = document.getElementById('objInput');
     let v = inp.value.trim();
+    if (v === '%' || v === OBJ_EMPTY_MARK) v = ''; // asenda sümbol-režiim valitud objektiga
     if (v && !/[+,]\s*$/.test(v)) v += '+';
     inp.value = v + code;
     document.getElementById('objPicker').classList.remove('open');
+    refreshObjMode();
     inp.focus();
   }
 
@@ -1802,34 +1799,36 @@
     const combo = collectMatrix().join(',');
     if (!combo) { closeObjMatrix(); return; }
     const inp = document.getElementById('objInput');
-    if (inp.disabled) setObjMode('all'); // lülita Täidetud/Täitmata režiimist tagasi
     let v = inp.value.trim();
+    if (v === '%' || v === OBJ_EMPTY_MARK) v = ''; // asenda sümbol-režiim asetatud objektidega
     if (v && !/[+,]\s*$/.test(v)) v += '+';
     inp.value = v + combo;
     clearObjMatrix();
     closeObjMatrix();
+    refreshObjMode();
     inp.focus();
   }
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeObjMatrix(); });
 
-  // Täidetud / Täitmata objekt — vana Pearaamatu loogika.
-  // 'empty' kasutab süsteemiseadistuses määratud tühja välja märki.
-  const OBJ_EMPTY_MARK = ':'; // NB! prototüübi näidisväärtus — päris väärtus tuleb süsteemiseadistusest
-  function setObjMode(mode) {
-    document.querySelectorAll('#objMode .obj-mode-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.mode === mode));
-    const inp = document.getElementById('objInput');
+  // Täidetud / Täitmata objekt sümbolite kaudu (vana Pearaamatu loogika):
+  //   %  = ainult täidetud objektiga read
+  //   #  = ainult täitmata objektiga read (tühja välja märk süsteemiseadistusest)
+  const OBJ_EMPTY_MARK = '#'; // NB! prototüübi näidisväärtus — päris väärtus tuleb süsteemiseadistusest
+  // Tuletab režiimi Objekt-välja väärtusest: '%' = täidetud, '#' = täitmata, muidu = kõik.
+  function objSymbolMode() {
+    const v = document.getElementById('objInput').value.trim();
+    if (v === '%') return 'filled';
+    if (v === OBJ_EMPTY_MARK) return 'empty';
+    return 'all';
+  }
+  // Rakendab objekti täidetuse filtri + uuendab vihjeteksti (kutsutakse iga muudatuse järel).
+  function refreshObjMode() {
+    const mode = objSymbolMode();
     const note = document.getElementById('objModeNote');
-    if (mode === 'filled') {
-      inp.value = ''; inp.disabled = true; inp.placeholder = '— kõik täidetud objektid —';
-      note.textContent = 'Kuvatakse ainult read, millel objekt on täidetud.';
-    } else if (mode === 'empty') {
-      inp.value = OBJ_EMPTY_MARK; inp.disabled = true; inp.placeholder = '';
-      note.textContent = 'Kuvatakse ainult read, millel objekt on TÄITMATA (tühja välja märk „' + OBJ_EMPTY_MARK + '” süsteemiseadistusest).';
-    } else {
-      inp.disabled = false; inp.placeholder = 'nt LADU,TLN+MÜÜK';
-      if (inp.value === OBJ_EMPTY_MARK) inp.value = '';
-      note.textContent = '';
+    if (note) {
+      if (mode === 'filled')      note.textContent = 'Kuvatakse ainult read, millel objekt on täidetud (%).';
+      else if (mode === 'empty')  note.textContent = 'Kuvatakse ainult read, millel objekt on TÄITMATA (tühja välja märk „' + OBJ_EMPTY_MARK + '“).';
+      else                        note.textContent = '';
     }
     applyObjModeFilter(mode);
   }
@@ -1856,13 +1855,10 @@
         .forEach(sr => { if (!anyVisible) sr.classList.add('objhide'); else sr.classList.remove('objhide'); });
     });
   }
-  // Käsitsi kirjutamine või asetajast valimine lülitab režiimi tagasi „Kõik“ peale
+  // Iga käsitsi muudatus uuendab režiimi (% / # / kõik) ja filtrit.
   (function(){
     const inp = document.getElementById('objInput');
-    if (inp) inp.addEventListener('input', function(){
-      const active = document.querySelector('#objMode .obj-mode-btn.active');
-      if (active && active.dataset.mode !== 'all' && !inp.disabled) setObjMode('all');
-    });
+    if (inp) inp.addEventListener('input', refreshObjMode);
   })();
 
 

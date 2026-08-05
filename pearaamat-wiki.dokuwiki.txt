@@ -18,7 +18,7 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
 | **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust, ''%'' metamärk, ''!'' eitus. |
 | **Korr. konto** | Korrespondeeriva konto filter. |
-| **Objekt** | Objektifilter tasemete kaupa (Nimekiri-asetaja, Matrix-asetaja). Režiim: Kõik / Täidetud / Täitmata. |
+| **Objekt** | Objektifilter tasemete kaupa (Nimekiri-asetaja, Matrix-asetaja). Objekti täidetuse otsing sümbolitega: ''%'' = ainult täidetud objektiga read, ''#'' = ainult täitmata objektiga read (tühja välja märk süsteemiseadistusest). |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
