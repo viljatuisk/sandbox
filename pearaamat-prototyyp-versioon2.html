@@ -2332,7 +2332,20 @@
     { konto: '111204', nimetus: 'Pangakonto SEK',   algsaldo: 2580.00, deebet: 0.00,    kreedit: 411.20,  muutus: -411.20,  loppsaldo: 2168.80 },
     { konto: '211000', nimetus: 'Ostjate arved',    algsaldo: 4200.00, deebet: 5400.00, kreedit: 3600.00, muutus: 1800.00,  loppsaldo: 6000.00 },
     { konto: '521000', nimetus: 'Palgakulu',        algsaldo: 0.00,    deebet: 6800.00, kreedit: 0.00,    muutus: 6800.00,  loppsaldo: 6800.00 },
+    { konto: '525812', nimetus: 'Koolituskulud',              algsaldo: 0.00, deebet: 1200.00, kreedit: 0.00, muutus: 1200.00, loppsaldo: 1200.00 },
+    { konto: '525832', nimetus: 'Töötajate tervisekulud',     algsaldo: 0.00, deebet: 850.00,  kreedit: 0.00, muutus: 850.00,  loppsaldo: 850.00  },
+    { konto: '528101', nimetus: 'Äripartnerite vastuvõtukulud', algsaldo: 0.00, deebet: 640.00, kreedit: 0.00, muutus: 640.00,  loppsaldo: 640.00  },
   ];
+  // Konto kaardi ERISOODUSTUS väli — TSD lisa 4/5 kood. Määrab, mille lõikes 'Vahesumma = Erisoodustus' grupeerib.
+  const ERISOODUSTUS = {
+    '525812': { kood: '4110', nimi: 'Tasemeõppe ja täienduskoolituse kulude katmine' },
+    '525832': { kood: '4120', nimi: 'Töötajate tervise edendamise kulud' },
+    '528101': { kood: '5100', nimi: 'Äripartnerite vastuvõtukulud' },
+  };
+  function erisoodustusKey(konto) {
+    const e = ERISOODUSTUS[konto];
+    return e ? e.kood + ' – ' + e.nimi : '(määramata)';
+  }
   const ALGSALDO_DIM = {
     byObject: {
       'OBJ001':        { '111201': 1200,    '211000': 2500    },
@@ -2696,7 +2709,22 @@
       return;
     }
 
-    if (vahesummaVal) {
+    if (vahesummaVal === 'bySpecialDiscount') {
+      // Grupeeri konto ERISOODUSTUS koodi (TSD lisa 4/5) järgi; (määramata) viimasena.
+      const grpKeys = [], grpMap = new Map();
+      data.forEach(r => {
+        const key = erisoodustusKey(r.konto);
+        if (!grpMap.has(key)) { grpMap.set(key, []); grpKeys.push(key); }
+        grpMap.get(key).push(r);
+      });
+      grpKeys.sort((a, b) => (a === '(määramata)') ? 1 : (b === '(määramata)') ? -1 : a.localeCompare(b, 'et'));
+      grpKeys.forEach(key => {
+        const grpRows = grpMap.get(key);
+        html += '<tr class="grp-sub" style="background:#d8e8f4;"><td colspan="7" style="font-weight:700;padding-left:6px;">Erisoodustus: ' + key + '</td></tr>';
+        grpRows.forEach(r => { html += _summaAccountBlock(r); });
+        html += _summaSubtotalRow(grpRows, key + ' kokku');
+      });
+    } else if (vahesummaVal) {
       const grpKeys = [], grpMap = new Map();
       data.forEach(r => {
         const key = r.konto.substring(0, 3);
