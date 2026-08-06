@@ -37,7 +37,7 @@ Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa —
 
   * **Detailvaade** (tehingute kaupa): kanded grupeeritud erisoodustuse koodi sektsioonide alla, iga koodi vahesumma.
   * **Koondvaade** (ainult summa): kontod erisoodustuse koodi kaupa, iga koodi vahesumma + üldkokku.
-  * Ilma koodita kontod koondatakse rühma //(määramata)//.
+  * Kuvatakse **ainult kontod, millele on erisoodustuse kood määratud** — koodita kontosid selles vaates ei näidata.
 
 ==== Saldode kuva (Faas I) ====
 

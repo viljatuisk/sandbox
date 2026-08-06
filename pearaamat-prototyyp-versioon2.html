@@ -1644,9 +1644,14 @@
     const tbody = document.getElementById('mainTbody');
     tbody.querySelectorAll('.eri-row').forEach(r => r.remove());
     const headers = [...tbody.querySelectorAll('tr.grp-header')];
-    // Grupeeri järjestikused sama erisoodustuse koodiga grupid sektsioonideks.
+    // Ainult erisoodustuse koodiga kontod; (määramata) grupid peidetakse.
     const sections = [];
     headers.forEach(h => {
+      if (!ERISOODUSTUS[h.dataset.konto]) {
+        h.style.display = 'none';
+        tbody.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.style.display = 'none');
+        return;
+      }
       const key = erisoodustusKey(h.dataset.konto);
       const last = sections[sections.length - 1];
       if (last && last.key === key) last.headers.push(h);
@@ -2763,20 +2768,29 @@
     }
 
     if (vahesummaVal === 'bySpecialDiscount') {
-      // Grupeeri konto ERISOODUSTUS koodi (TSD lisa 4/5) järgi; (määramata) viimasena.
+      // Ainult kontod, millel on erisoodustuse kood määratud; (määramata) ei kuvata.
+      const eriData = data.filter(r => ERISOODUSTUS[r.konto]);
       const grpKeys = [], grpMap = new Map();
-      data.forEach(r => {
+      eriData.forEach(r => {
         const key = erisoodustusKey(r.konto);
         if (!grpMap.has(key)) { grpMap.set(key, []); grpKeys.push(key); }
         grpMap.get(key).push(r);
       });
-      grpKeys.sort((a, b) => (a === '(määramata)') ? 1 : (b === '(määramata)') ? -1 : a.localeCompare(b, 'et'));
+      grpKeys.sort((a, b) => a.localeCompare(b, 'et'));
       grpKeys.forEach(key => {
         const grpRows = grpMap.get(key);
         html += '<tr class="grp-sub" style="background:#d8e8f4;"><td colspan="7" style="font-weight:700;padding-left:6px;">Erisoodustus: ' + key + '</td></tr>';
         grpRows.forEach(r => { html += _summaAccountBlock(r); });
         html += _summaSubtotalRow(grpRows, key + ' kokku');
       });
+      const tA = eriData.reduce((s, r) => s + r.algsaldo, 0), tD = eriData.reduce((s, r) => s + r.deebet, 0), tK = eriData.reduce((s, r) => s + r.kreedit, 0);
+      const tM = tD - tK, tL = tA + tM;
+      html += '<tr class="grp-total"><td colspan="2">Kontod kokku</td>' +
+        '<td class="r">' + fmtNum(tA) + '</td><td class="r">' + fmtNum(tD) + '</td><td class="r">' + fmtNum(tK) + '</td>' +
+        '<td class="r"' + (tM < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(tM) + '</td>' +
+        '<td class="r"' + (tL < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(tL) + '</td></tr>';
+      tbody.innerHTML = html;
+      return;
     } else if (vahesummaVal) {
       const grpKeys = [], grpMap = new Map();
       data.forEach(r => {
