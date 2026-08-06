@@ -1433,6 +1433,7 @@
     if (_vaheObjOn) { tbody.innerHTML = _origTbodyVahe; _vaheObjOn = false; _origTbodyVahe = null; }
     tbody.querySelectorAll('[data-orig-html]').forEach(r => { r.innerHTML = r.dataset.origHtml; delete r.dataset.origHtml; });
     tbody.querySelectorAll('[data-vaheldumisi-row]').forEach(r => r.remove());
+    tbody.querySelectorAll('.eri-row').forEach(r => r.remove());
 
     if (name === 'vaheldumisi-kontod') {
       const selVahe = document.getElementById('selVahesumma');
@@ -1627,8 +1628,60 @@
   function modVahesummaChange(val) {
     const cb = document.getElementById('cbVaheldumisi');
     if (_currentTab === 'koondvaade') { summaFilterChange(); return; }
+    if (val === 'bySpecialDiscount') {
+      // Erisoodustus: grupeeri Detailvaade konto erisoodustuse koodi kaupa (mitte kronoloogiliselt).
+      if (cb) cb.checked = false;
+      showTab('detailvaade');
+      applyErisoodustusDetail();
+      return;
+    }
     if (val) { if (cb) cb.checked = true; showTab('vaheldumisi-kontod'); }
     else { if (cb) cb.checked = false; showTab('detailvaade'); }
+  }
+
+  // Detailvaade: lisab erisoodustuse koodi sektsioonipäised + koodipõhised vahesummad.
+  function applyErisoodustusDetail() {
+    const tbody = document.getElementById('mainTbody');
+    tbody.querySelectorAll('.eri-row').forEach(r => r.remove());
+    const headers = [...tbody.querySelectorAll('tr.grp-header')];
+    // Grupeeri järjestikused sama erisoodustuse koodiga grupid sektsioonideks.
+    const sections = [];
+    headers.forEach(h => {
+      const key = erisoodustusKey(h.dataset.konto);
+      const last = sections[sections.length - 1];
+      if (last && last.key === key) last.headers.push(h);
+      else sections.push({ key, headers: [h] });
+    });
+    sections.forEach(sec => {
+      // Sektsioonipäis esimese grupi ette
+      const secRow = document.createElement('tr');
+      secRow.className = 'eri-row';
+      secRow.innerHTML = '<td colspan="29" style="background:#cdd9e8;font-weight:700;color:#1a3a5a;padding:6px 8px;border-top:2px solid #8aa8c8;">Erisoodustus: ' + sec.key + '</td>';
+      sec.headers[0].parentNode.insertBefore(secRow, sec.headers[0]);
+      // Sektsiooni vahesumma viimase grupi järele
+      let sumD = 0, sumK = 0, sumLopp = 0;
+      sec.headers.forEach(h => {
+        const g = h.dataset.group;
+        const subs = [...tbody.querySelectorAll('tr.grp-sub[data-grp="' + g + '"]')];
+        const kokku = subs.find(r => r.textContent.includes('Kokku (periood)'));
+        const lopp  = subs.find(r => r.textContent.includes('Lõppsaldo'));
+        if (kokku) { const c = kokku.querySelectorAll('td'); sumD += _parseNum(c[18]); sumK += _parseNum(c[19]); }
+        if (lopp)  { const c = lopp.querySelectorAll('td');  sumLopp += _parseNum(c[26]); }
+      });
+      const lastG = sec.headers[sec.headers.length - 1].dataset.group;
+      const grpRows = [...tbody.querySelectorAll('[data-grp="' + lastG + '"]')];
+      const anchor = grpRows[grpRows.length - 1];
+      const subRow = document.createElement('tr');
+      subRow.className = 'eri-row';
+      subRow.innerHTML =
+        '<td colspan="18" style="text-align:right;font-weight:700;color:#1a3a5a;background:#eef4fa;border-top:1px solid #b8c8dc;">Erisoodustus ' + sec.key + ' kokku</td>' +
+        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumD) + '</td>' +
+        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumK) + '</td>' +
+        '<td colspan="6" style="background:#eef4fa;border-top:1px solid #b8c8dc;"></td>' +
+        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumLopp) + '</td>' +
+        '<td colspan="2" style="background:#eef4fa;border-top:1px solid #b8c8dc;"></td>';
+      if (anchor) anchor.parentNode.insertBefore(subRow, anchor.nextSibling);
+    });
   }
 
   let _kontoNrType = 'oma';
@@ -2874,6 +2927,57 @@
     });
   }
 
+  // Lisab erisoodustuse kontode (525812/525832/528101) näidiskanded Detailvaatesse (algsaldo 0).
+  function injectErisoodustusGroups() {
+    const tbody = document.getElementById('mainTbody');
+    const GROUPS = [
+      { g: 'g7', konto: '525812', nimi: 'Koolituskulud', rows: [
+        { corr: '111201', doc: 'KULUTUS.30010', obj: 'TALLINN', aeg: '12.02.2025', desc: 'Projektijuhtimise koolitus', d: 800 },
+        { corr: '111201', doc: 'KULUTUS.30011', obj: 'TARTU',   aeg: '20.02.2025', desc: 'Exceli koolitus',            d: 400 },
+      ]},
+      { g: 'g8', konto: '525832', nimi: 'Töötajate tervisekulud', rows: [
+        { corr: '111201', doc: 'KULUTUS.30020', obj: 'TALLINN', aeg: '05.02.2025', desc: 'Töötajate tervisekontroll',  d: 850 },
+      ]},
+      { g: 'g9', konto: '528101', nimi: 'Äripartnerite vastuvõtukulud', rows: [
+        { corr: '111201', doc: 'KULUTUS.30030', obj: '',        aeg: '18.02.2025', desc: 'Äripartnerite vastuvõtt',    d: 640 },
+      ]},
+    ];
+    let html = '';
+    GROUPS.forEach(grp => {
+      const total = grp.rows.reduce((s, r) => s + r.d, 0);
+      html += '<tr class="grp-header" data-group="' + grp.g + '" data-konto="' + grp.konto + '" data-has-change="true" data-has-balance="true" data-algsaldo-dr="0.00" data-algsaldo-cr="0.00" onclick="toggleGroup(\'' + grp.g + '\', this)" style="cursor:pointer;">' +
+        '<td><span class="grp-toggle">▾</span> ' + grp.konto + '</td>' +
+        '<td colspan="4">' + grp.nimi + '</td>' +
+        '<td class="dim-span" colspan="8"></td><td colspan="4"></td>' +
+        '<td style="text-align:right;">Algsaldo</td><td class="r">0,00</td><td colspan="10"></td></tr>';
+      let bal = 0;
+      grp.rows.forEach(r => {
+        bal += r.d;
+        html += '<tr class="data" data-grp="' + grp.g + '">' +
+          '<td class="muted">' + grp.nimi + '</td><td></td>' +
+          '<td class="muted">' + r.corr + '</td><td class="link">' + r.doc + '</td>' +
+          '<td>' + r.obj + '</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+          '<td></td><td>' + r.aeg + '</td><td>Pangakonto</td><td>' + r.desc + '</td><td></td>' +
+          '<td class="r">' + fmtNum(r.d) + '</td><td class="r">0,00</td>' +
+          '<td class="r">' + fmtNum(r.d) + '</td><td class="r">0,00</td><td>EUR</td>' +
+          '<td class="r">1,0000</td><td class="r">1,0000</td>' +
+          '<td class="r">' + fmtNum(r.d) + '</td><td class="r">' + fmtNum(bal) + '</td><td></td><td></td></tr>';
+      });
+      html += '<tr class="grp-sub" data-grp="' + grp.g + '">' +
+        '<td colspan="5"></td><td class="dim-span" colspan="8"></td><td colspan="4"></td>' +
+        '<td style="text-align:right;font-style:normal;">Kokku (periood)</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(total) + '</td><td class="r" style="font-weight:600;">0,00</td>' +
+        '<td colspan="5"></td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(total) + '</td><td class="r" style="font-weight:600;">' + fmtNum(total) + '</td><td colspan="2"></td></tr>';
+      html += '<tr class="grp-sub" data-grp="' + grp.g + '" data-loppsaldo-dr="' + total.toFixed(2) + '" data-loppsaldo-cr="0.00">' +
+        '<td colspan="5"></td><td class="dim-span" colspan="8"></td><td colspan="4"></td>' +
+        '<td style="text-align:right;font-style:normal;">Lõppsaldo</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(total) + '</td><td colspan="10"></td></tr>';
+    });
+    tbody.insertAdjacentHTML('beforeend', html);
+  }
+
+  injectErisoodustusGroups();
   fillKontoColumns();
   normalizeDetailSaldo();
   buildColPicker();
