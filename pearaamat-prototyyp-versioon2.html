@@ -1906,7 +1906,7 @@
 
   (function() {
     const sel = document.getElementById('selVahesumma');
-    const VAHESUMMA_LABELS = { byObject: 'Objekt', byProject: 'Projekt', byCustomer: 'Klient', bySupplier: 'Hankija', byVatCode: 'KM kood', byCurrency: 'Valuuta', bySpecialDiscount: 'Eriallahindlus' };
+    const VAHESUMMA_LABELS = { byObject: 'Objekt', byProject: 'Projekt', byCustomer: 'Klient', bySupplier: 'Hankija', byVatCode: 'KM kood', byCurrency: 'Valuuta', bySpecialDiscount: 'Erisoodustus' };
     if (sel) sel.innerHTML = '<option value=""></option>' + VAHESUMMA_OPTS.map(o => '<option value="' + o + '">' + (VAHESUMMA_LABELS[o] || o) + '</option>').join('');
   })();
 
