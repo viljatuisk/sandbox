@@ -29,7 +29,15 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
   * **Detailvaade** — kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
   * **Koondvaade** — üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. Toetab korrespondeerivate kontode lahustust (konto → korr-kontode Deebet/Kreedit).
   * **Kronoloogiline** — kõik kanded ajalises järjekorras (kontode üleselt), koos algsaldo ja lõppsaldo raamnumbritega.
-  * **Vahesumma** — grupeering valitud dimensiooni (nt Objekt, Projekt) järgi.
+  * **Vahesumma** — grupeering valitud dimensiooni (nt Objekt, Projekt, Erisoodustus) järgi. Toimib nii Detailvaates (tehingute kaupa) kui Koondvaates (ainult summa).
+
+==== Vahesumma erisoodustuse lõikes ====
+
+Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa — mõeldud EMTA-sse saadetava TSD andmestiku kontrollimiseks. Erisoodustuse kood on määratud **konto kaardil** (väli ERISOODUSTUS), seega seos on konto tasemel, mitte kande tasemel.
+
+  * **Detailvaade** (tehingute kaupa): kanded grupeeritud erisoodustuse koodi sektsioonide alla, iga koodi vahesumma.
+  * **Koondvaade** (ainult summa): kontod erisoodustuse koodi kaupa, iga koodi vahesumma + üldkokku.
+  * Ilma koodita kontod koondatakse rühma //(määramata)//.
 
 ==== Saldode kuva (Faas I) ====
 
