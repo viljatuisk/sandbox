@@ -2,13 +2,13 @@
 
 Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud perioodil. Aruanne tarnitakse kasutajatele **kahes faasis**:
 
-  * **Faas I** (~oktoobri algus) — toimiv pearaamatuaruanne, millega kasutaja saab teha päringuid, tulemusi filtreerida (saldo, muutused, konto, objekt), valida vaate tüüpi (detail, koond, kronoloogiline, vahesumma) ja andmeid eksportida.
-  * **Faas II** (~aasta lõpp) — sama aruanne täiendatuna paindlikuma tabelihaldusega (veergude valimine, sortimine, väljatrükk, kogused), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
+  * **Faas I** (~oktoobri algus) - toimiv pearaamatuaruanne, millega kasutaja saab teha päringuid, tulemusi filtreerida (saldo, muutused, konto, objekt), valida vaate tüüpi (detail, koond, kronoloogiline, vahesumma) ja andmeid eksportida.
+  * **Faas II** (~aasta lõpp) - sama aruanne täiendatuna paindlikuma tabelihaldusega (veergude valimine, sortimine, väljatrükk, kogused), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
 
 //See wiki on töös ja täieneb: kui prototüüpi lisandub uusi funktsioone, lisatakse need siia vastava faasi alla.//
 
 
-====== Faas I — toimiv aruanne ======
+====== Faas I - toimiv aruanne ======
 
 Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, valida vaate ja eksportida andmed.
 
@@ -16,9 +16,9 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 
 ^ Filter ^ Kirjeldus ^
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
-| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010–1011, välja arvatud konto 1000"). |
+| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010-1011, välja arvatud konto 1000"). |
 | **Korr. konto** | Korrespondeeriva konto filter. |
-| **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Täpne käitumine (eraldajad ''+'' / '','' , täidetud/täitmata ''%'' / ''#'' , tase + objekt koostoime) — vt jaotis //Objekt ja Objekti tase — väljade käitumine//. |
+| **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Täpne käitumine (eraldajad ''+'' / '','' , täidetud/täitmata ''%'' / ''#'' , tase + objekt koostoime) - vt jaotis //Objekt ja Objekti tase - väljade käitumine//. |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
@@ -26,21 +26,21 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 
 ==== Konto otsingu süntaks ja näited ====
 
-Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse **elav tõlge** — sisestuse tavakeelne selgitus.
+Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse **elav tõlge** - sisestuse tavakeelne selgitus.
 
-=== 0:Z — kõik kontod ===
+=== 0:Z - kõik kontod ===
 
 ^ Sisestus ^ Tähendus ^
 | ''0:Z'' | kõik kontod |
 
-=== : — vahemik ===
+=== : - vahemik ===
 
 ^ Sisestus ^ Tähendus ^
-| ''1000:1999'' | kontod 1000–1999 |
-| ''010:1011'' | kontod 010–1011 |
-| ''4000:4999'' | kontod 4000–4999 |
+| ''1000:1999'' | kontod 1000-1999 |
+| ''010:1011'' | kontod 010-1011 |
+| ''4000:4999'' | kontod 4000-4999 |
 
-=== , — mitu väärtust (VÕI) ===
+=== , - mitu väärtust (VÕI) ===
 
 Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
 
@@ -49,7 +49,7 @@ Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
 | ''10101,111201,521000'' | kontod 10101, 111201 või 521000 |
 | ''10%,52%'' | kontod, mis algavad „10" või „52" |
 
-=== & — kõik tingimused (JA) ===
+=== & - kõik tingimused (JA) ===
 
 Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega.
 
@@ -58,23 +58,23 @@ Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõtt
 | ''5%&!52%'' | kontod, mis algavad „5", kuid mitte „52" |
 | ''4%&%0'' | kontod, mis algavad „4" ning sisaldavad „0" |
 
-=== % — metamärk (asendab tähti/numbreid) ===
+=== % - metamärk (asendab tähti/numbreid) ===
 
 ^ Sisestus ^ Tähendus ^
 | ''10%'' | kontod, mis algavad „10" |
 | ''%5'' | kontod, mis lõpevad „5" |
 | ''%50%'' | kontod, mis sisaldavad „50" |
 
-=== ! — eitus (välistus) ===
+=== ! - eitus (välistus) ===
 
 ''!'' eemaldab vastavad kontod tulemusest.
 
 ^ Sisestus ^ Tähendus ^
 | ''!1000'' | kõik kontod, välja arvatud konto 1000 |
-| ''010:1011,!1000'' | kontod 010–1011, välja arvatud konto 1000 |
+| ''010:1011,!1000'' | kontod 010-1011, välja arvatud konto 1000 |
 | ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
 
-===== Objekt ja Objekti tase — väljade käitumine =====
+===== Objekt ja Objekti tase - väljade käitumine =====
 
 Aruande filtriväljad **Objekt** ja **Objekti tase** piiravad, milliseid kanderidu aruandes kuvatakse. Väljad toimivad nii eraldi kui koos.
 
@@ -85,8 +85,8 @@ Käsitsi sisestatav tekstiväli, mille kõrval on asetaja (''🔍'', Matrix-aset
 Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:
 
 ^ Eraldaja ^ Tähendus ^ Näide ^ Tulemus ^
-| ''+'' (pluss) | **VÕI** — vähemalt üks valitud objektidest | ''MÜÜK+TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
-| '','' (koma) | **JA** — kõik valitud objektid korraga (kombinatsioon) | ''LADU,TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
+| ''+'' (pluss) | **VÕI** - vähemalt üks valitud objektidest | ''MÜÜK+TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
+| '','' (koma) | **JA** - kõik valitud objektid korraga (kombinatsioon) | ''LADU,TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
 
 ''+'' ja '','' saab omavahel kombineerida:
 
@@ -95,7 +95,7 @@ Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:
 
 ==== Väli „Objekti tase" ====
 
-**Ainuvalik** (rippmenüü) — korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).
+**Ainuvalik** (rippmenüü) - korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).
 
 Kui tase on valitud, kuvatakse **ainult sellel tasemel olevate objektidega seotud read**. Kõik muude tasemete objektidega read jäetakse automaatselt välja.
 
@@ -132,18 +132,18 @@ Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetus
 
 ===== Vaated (Faas I) =====
 
-  * **Detailvaade** — kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
-  * **Koondvaade** — üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. Toetab korrespondeerivate kontode lahustust (konto → korr-kontode Deebet/Kreedit).
-  * **Kronoloogiline** — kõik kanded ajalises järjekorras (kontode üleselt), koos algsaldo ja lõppsaldo raamnumbritega.
-  * **Vahesumma** — grupeering valitud dimensiooni (nt Objekt, Projekt, Erisoodustus) järgi. Toimib nii Detailvaates (tehingute kaupa) kui Koondvaates (ainult summa).
+  * **Detailvaade** - kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
+  * **Koondvaade** - üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. Toetab korrespondeerivate kontode lahustust (konto → korr-kontode Deebet/Kreedit).
+  * **Kronoloogiline** - kõik kanded ajalises järjekorras (kontode üleselt), koos algsaldo ja lõppsaldo raamnumbritega.
+  * **Vahesumma** - grupeering valitud dimensiooni (nt Objekt, Projekt, Erisoodustus) järgi. Toimib nii Detailvaates (tehingute kaupa) kui Koondvaates (ainult summa).
 
 ==== Vahesumma erisoodustuse lõikes ====
 
-Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa — mõeldud EMTA-sse saadetava TSD andmestiku kontrollimiseks. Erisoodustuse kood on määratud **konto kaardil** (väli ERISOODUSTUS), seega seos on konto tasemel, mitte kande tasemel.
+Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa - mõeldud EMTA-sse saadetava TSD andmestiku kontrollimiseks. Erisoodustuse kood on määratud **konto kaardil** (väli ERISOODUSTUS), seega seos on konto tasemel, mitte kande tasemel.
 
   * **Detailvaade** (tehingute kaupa): kanded grupeeritud erisoodustuse koodi sektsioonide alla, iga koodi vahesumma.
   * **Koondvaade** (ainult summa): kontod erisoodustuse koodi kaupa, iga koodi vahesumma + üldkokku.
-  * Kuvatakse **ainult kontod, millele on erisoodustuse kood määratud** — koodita kontosid selles vaates ei näidata.
+  * Kuvatakse **ainult kontod, millele on erisoodustuse kood määratud** - koodita kontosid selles vaates ei näidata.
 
 ==== Saldode kuva (Faas I) ====
 
@@ -160,27 +160,27 @@ Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa —
 //Märkus: vormindatud //väljatrükk// (trükivaade) tuleb Faas II-s. Faas I-s on andmete eksport.//
 
 
-====== Faas II — täiendused ======
+====== Faas II - täiendused ======
 
 Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
 ===== Tabelihaldus (Faas II) =====
 
-  * **Vali tulbad** — aruande veergude näitamine/peitmine. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita).
-  * **Numbri täpsus** — ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
-  * **Vali lisainfo väljad** — lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
-  * **Sortimine** — Sort1 / Sort2.
-  * **Väljatrükk** — vormindatud trükivaade.
-  * **Kogused** — koguste veerud.
+  * **Vali tulbad** - aruande veergude näitamine/peitmine. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita).
+  * **Numbri täpsus** - ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
+  * **Vali lisainfo väljad** - lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
+  * **Sortimine** - Sort1 / Sort2.
+  * **Väljatrükk** - vormindatud trükivaade.
+  * **Kogused** - koguste veerud.
 
 ===== Laiendatud filtrid (Faas II) =====
 
-  * **Kontoklass** — filtreerimine kontoklasside järgi.
-  * **Hankija / Klient** — koos nende andmeväljade valikuga (vali lisaväljad).
-  * **Kasutaja** — kasutajapõhine filter.
-  * **Simulatsioon** — simulatsioonikannete kaasamine/välistamine.
-  * **Kontsern** — kontserni/firmade valik.
-  * **Oma / Riigi konto** — kontonumbri tüübi valik.
+  * **Kontoklass** - filtreerimine kontoklasside järgi.
+  * **Hankija / Klient** - koos nende andmeväljade valikuga (vali lisaväljad).
+  * **Kasutaja** - kasutajapõhine filter.
+  * **Simulatsioon** - simulatsioonikannete kaasamine/välistamine.
+  * **Kontsern** - kontserni/firmade valik.
+  * **Oma / Riigi konto** - kontonumbri tüübi valik.
 
 ===== Saldeerimata vaade (Faas II) =====
 
@@ -190,9 +190,9 @@ Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreed
 
 Ettepanek muuta „Valitavad väljad" seadistus **aruande-teadlikuks** (praegu globaalne):
 
-  * **Tasand 1 — juurdepääs (globaalne):** administraator määrab, mis väljad on üldse aruannetes lubatud.
-  * **Tasand 2 — aruande kuraator (super kasutaja):** määrab, millised lubatud väljad on **selles aruandes** pakutavad / vaikimisi näidatud.
-  * **Tasand 3 — isiklik valik (lõppkasutaja):** valib pakutavatest väljadest need, mida veergudena näeb.
+  * **Tasand 1 - juurdepääs (globaalne):** administraator määrab, mis väljad on üldse aruannetes lubatud.
+  * **Tasand 2 - aruande kuraator (super kasutaja):** määrab, millised lubatud väljad on **selles aruandes** pakutavad / vaikimisi näidatud.
+  * **Tasand 3 - isiklik valik (lõppkasutaja):** valib pakutavatest väljadest need, mida veergudena näeb.
 
 Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (väli on kohe veeruna ees, saab peita). Super kasutaja pääseb seadistusse ka otse aruande mutrivõtme „Vali lisainfo väljad" → „Halda välju…" lingi kaudu.
 
