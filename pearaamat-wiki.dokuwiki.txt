@@ -18,7 +18,7 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
 | **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010–1011, välja arvatud konto 1000"). |
 | **Korr. konto** | Korrespondeeriva konto filter. |
-| **Objekt** | Objektifilter tasemete kaupa (Nimekiri-asetaja, Matrix-asetaja). Objekti täidetuse otsing sümbolitega: ''%'' = ainult täidetud objektiga read, ''#'' = ainult täitmata objektiga read (tühja välja märk süsteemiseadistusest). |
+| **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Täpne käitumine (eraldajad ''+'' / '','' , täidetud/täitmata ''%'' / ''#'' , tase + objekt koostoime) — vt jaotis //Objekt ja Objekti tase — väljade käitumine//. |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
@@ -73,6 +73,62 @@ Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõtt
 | ''!1000'' | kõik kontod, välja arvatud konto 1000 |
 | ''010:1011,!1000'' | kontod 010–1011, välja arvatud konto 1000 |
 | ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
+
+===== Objekt ja Objekti tase — väljade käitumine =====
+
+Aruande filtriväljad **Objekt** ja **Objekti tase** piiravad, milliseid kanderidu aruandes kuvatakse. Väljad toimivad nii eraldi kui koos.
+
+==== Väli „Objekt" ====
+
+Käsitsi sisestatav tekstiväli, mille kõrval on asetaja (''🔍'', Matrix-asetaja) objektide valimiseks. Kes objektikoode peast teab, saab need otse sisestada; ülejäänud saavad avada asetaja, kus objektid on grupeeritud objekti taseme kaupa.
+
+Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:
+
+^ Eraldaja ^ Tähendus ^ Näide ^ Tulemus ^
+| ''+'' (pluss) | **VÕI** — vähemalt üks valitud objektidest | ''MÜÜK+TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
+| '','' (koma) | **JA** — kõik valitud objektid korraga (kombinatsioon) | ''LADU,TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
+
+''+'' ja '','' saab omavahel kombineerida:
+
+> **Objekt:** ''LADU,TLN+MÜÜK,TLN'' \\
+> Kuvatakse read, millel on korraga **LADU ja TLN**, või korraga **MÜÜK ja TLN**.
+
+==== Väli „Objekti tase" ====
+
+**Ainuvalik** (rippmenüü) — korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).
+
+Kui tase on valitud, kuvatakse **ainult sellel tasemel olevate objektidega seotud read**. Kõik muude tasemete objektidega read jäetakse automaatselt välja.
+
+==== Väljade koostoimimine ====
+
+Kui täidetud on ainult üks väli, kehtib vastavalt kas objekti- või tasemefilter üksi.
+
+Kui täidetud on **mõlemad** väljad, peab rida vastama **mõlemale tingimusele korraga**:
+
+  - real olev objekt peab kuuluma valitud **tasemele**, ja
+  - see objekt peab olema üks väljal „Objekt" loetletud objektidest.
+
+Kui väljale „Objekt" on sisestatud objekt, mis **ei kuulu** valitud tasemele, siis selle objektiga ridu ei kuvata.
+
+=== Näide ===
+
+> **Objekti tase:** Osakond (tase 3) \\
+> **Objekt:** ''MÜÜK+TOOTMINE''
+>
+> Kuvatakse ainult read, mis on seotud **taseme 3 (Osakond)** objektidega **ning** mille objekt on kas **MÜÜK** või **TOOTMINE**.
+>
+> Kui väljale „Objekt" oleks lisatud objekt mõnest muust tasemest (nt linn TLN), siis selle objektiga ridu ei kuvata, sest valitud tase on Osakond.
+
+==== Täidetud ja täitmata objekt ====
+
+Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetuse järgi piiramiseks kasutatakse **sümboleid** otse „Objekt" väljal (Objekt-välja legendis, ⊞ nupp):
+
+^ Sisestus ^ Tulemus ^
+| //(tühi)// | Kõik read (nii objektiga kui ilma) |
+| ''%'' | Ainult read, millel objekt **on täidetud** |
+| ''#'' | Ainult read, millel objekt **on täitmata** |
+
+''#'' on **süsteemiseadistustes määratud tühja välja märk**.
 
 ===== Vaated (Faas I) =====
 
