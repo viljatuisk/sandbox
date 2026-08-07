@@ -24,6 +24,56 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
 | **Selgitus / Viide / KM kood / Valuuta** | Täiendavad kanderea filtrid. |
 
+==== Konto otsingu süntaks ja näited ====
+
+Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse **elav tõlge** — sisestuse tavakeelne selgitus.
+
+=== 0:Z — kõik kontod ===
+
+^ Sisestus ^ Tähendus ^
+| ''0:Z'' | kõik kontod |
+
+=== : — vahemik ===
+
+^ Sisestus ^ Tähendus ^
+| ''1000:1999'' | kontod 1000–1999 |
+| ''010:1011'' | kontod 010–1011 |
+| ''4000:4999'' | kontod 4000–4999 |
+
+=== , — mitu väärtust (VÕI) ===
+
+Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
+
+^ Sisestus ^ Tähendus ^
+| ''1000,2000'' | konto 1000 või konto 2000 |
+| ''10101,111201,521000'' | kontod 10101, 111201 või 521000 |
+| ''10%,52%'' | kontod, mis algavad „10" või „52" |
+
+=== & — kõik tingimused (JA) ===
+
+Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega.
+
+^ Sisestus ^ Tähendus ^
+| ''10%&%5'' | kontod, mis algavad „10" ning sisaldavad „5" |
+| ''5%&!52%'' | kontod, mis algavad „5", kuid mitte „52" |
+| ''4%&%0'' | kontod, mis algavad „4" ning sisaldavad „0" |
+
+=== % — metamärk (asendab tähti/numbreid) ===
+
+^ Sisestus ^ Tähendus ^
+| ''10%'' | kontod, mis algavad „10" |
+| ''%5'' | kontod, mis lõpevad „5" |
+| ''%50%'' | kontod, mis sisaldavad „50" |
+
+=== ! — eitus (välistus) ===
+
+''!'' eemaldab vastavad kontod tulemusest.
+
+^ Sisestus ^ Tähendus ^
+| ''!1000'' | kõik kontod, välja arvatud konto 1000 |
+| ''010:1011,!1000'' | kontod 010–1011, välja arvatud konto 1000 |
+| ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
+
 ===== Vaated (Faas I) =====
 
   * **Detailvaade** — kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
