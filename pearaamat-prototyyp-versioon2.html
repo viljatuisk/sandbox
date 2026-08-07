@@ -115,6 +115,7 @@
   .konto-legend .kl-quick span { font-size: 11px; color: #3a5a7a; }
   .konto-legend .kl-hint { display: flex; align-items: flex-start; gap: 8px; padding: 5px 10px; font-size: 10.5px; color: #55657a; line-height: 1.3; }
   .konto-legend .kl-hint .kl-sym { flex-shrink: 0; width: 16px; text-align: center; font-weight: 700; color: #2a4a6a; font-family: "Courier New", monospace; background: #eef2f6; border-radius: 2px; }
+  .konto-xlate { font-size: 10px; color: #2a6a4a; margin-top: 3px; line-height: 1.35; min-height: 12px; font-style: italic; }
   .konto-legend .kl-action { padding: 7px 10px; font-size: 11px; color: #2a4a6a; cursor: pointer; border-top: 1px solid #e0e8f0; background: #f5f8fb; }
   .konto-legend .kl-action:hover { background: #e4edf5; text-decoration: underline; }
   .wiki-overlay { display: none; position: fixed; inset: 0; background: rgba(20,35,55,0.45); z-index: 5000; }
@@ -401,7 +402,7 @@
             <div class="sf-lookup">
               <button class="lkp-btn" type="button" title="Otsingu abi / vali kõik kontod" onclick="toggleKontoLegend()" style="border-left:1px solid #9ab8d4;border-right:none;border-radius:2px 0 0 2px;">⊞</button>
               <span class="inp-clear-wrap has-value" id="kontoClearWrap">
-                <input type="text" id="kontoInput" value="0:Z" placeholder="nt 0:Z, 1033%, 2410,7000" autocomplete="off" oninput="updateClearX('kontoClearWrap','kontoInput')" style="border-radius:0;">
+                <input type="text" id="kontoInput" value="0:Z" placeholder="nt 0:Z, 1033%, 2410,7000" autocomplete="off" oninput="onKontoInput()" style="border-radius:0;">
                 <span class="clear-x" title="Tühjenda" onclick="clearInputField('kontoClearWrap','kontoInput')">✕</span>
               </span>
               <button class="lkp-btn" type="button" title="Nimekiri" onclick="toggleKontoLegend()">🔍</button>
@@ -411,9 +412,11 @@
               <div class="kl-hint"><span class="kl-sym">%</span>Sümbol asendab tähti sõna alguses, keskel või lõpus</div>
               <div class="kl-hint"><span class="kl-sym">:</span>Vahemik (nt 1000:1999)</div>
               <div class="kl-hint"><span class="kl-sym">!</span>Sümbol alguses otsib kõike, mis ei vasta tingimusele</div>
-              <div class="kl-hint"><span class="kl-sym">,</span>Otsib mitut väärtust</div>
+              <div class="kl-hint"><span class="kl-sym">,</span>Otsib mitut väärtust (VÕI)</div>
+              <div class="kl-hint"><span class="kl-sym">&</span>Kitsendab otsingut, kõik tingimused peavad kehtima (JA)</div>
             </div>
           </div>
+          <div class="konto-xlate" id="kontoXlate"></div>
         </div>
         <div class="sf"><label>Korr. konto</label><select><option value=""></option><option>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
         <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
@@ -1680,6 +1683,51 @@
     document.getElementById('kontoInput').value = val;
     document.getElementById('kontoLegend').classList.remove('open');
     updateClearX('kontoClearWrap', 'kontoInput');
+    updateKontoXlate();
+  }
+
+  // Konto välja sisendi käitleja: tühjenda-ristike + elav tõlge.
+  function onKontoInput() {
+    updateClearX('kontoClearWrap', 'kontoInput');
+    updateKontoXlate();
+  }
+
+  // Elav tõlge — teisendab otsingusüntaksi tavakeelseks selgituseks.
+  function updateKontoXlate() {
+    const el = document.getElementById('kontoXlate');
+    if (!el) return;
+    const s = translateKonto(document.getElementById('kontoInput').value);
+    el.textContent = s ? '↳ Näitab: ' + s : '';
+  }
+  function _kontoTerm(t) {
+    t = t.trim();
+    if (!t) return '';
+    if (t[0] === '!') return 'mitte ' + _kontoTerm(t.slice(1));
+    if (t.indexOf('&') >= 0) return t.split('&').map(_kontoTerm).filter(Boolean).join(' ning ');
+    if (t.indexOf(':') >= 0) {
+      const p = t.split(':'), a = p[0].trim(), b = (p[1] || '').trim();
+      if ((a === '0' || a === '') && b.toUpperCase() === 'Z') return 'kõik kontod';
+      return 'kontod ' + a + '–' + b;
+    }
+    if (t.indexOf('%') >= 0) {
+      const bare = t.replace(/%/g, '');
+      if (t[0] === '%' && t[t.length - 1] === '%') return 'kontod, mis sisaldavad „' + bare + '"';
+      if (t[t.length - 1] === '%') return 'kontod, mis algavad „' + bare + '"';
+      if (t[0] === '%') return 'kontod, mis lõpevad „' + bare + '"';
+    }
+    return 'konto ' + t;
+  }
+  function translateKonto(raw) {
+    const v = (raw || '').trim();
+    if (!v) return '';
+    const pos = [], neg = [];
+    v.split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
+      if (t[0] === '!') { const d = _kontoTerm(t.slice(1)); if (d) neg.push(d); }
+      else { const d = _kontoTerm(t); if (d) pos.push(d); }
+    });
+    let s = pos.length ? pos.join(' või ') : (neg.length ? 'kõik kontod' : '');
+    if (neg.length) s += ', välja arvatud ' + neg.join(' ja ');
+    return s;
   }
 
   // Väljasisese „tühjenda" ristikese loogika (kuvatakse ainult kui väljal on sisu).
@@ -2969,6 +3017,7 @@
   }
 
   injectErisoodustusGroups();
+  updateKontoXlate();
   fillKontoColumns();
   normalizeDetailSaldo();
   buildColPicker();
