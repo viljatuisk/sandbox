@@ -1658,34 +1658,11 @@
       else sections.push({ key, headers: [h] });
     });
     sections.forEach(sec => {
-      // Sektsioonipäis esimese grupi ette
+      // Ainult sektsioonipäis esimese grupi ette (konto oma Kokku/Lõppsaldo jäävad alles).
       const secRow = document.createElement('tr');
       secRow.className = 'eri-row';
       secRow.innerHTML = '<td colspan="29" style="background:#cdd9e8;font-weight:700;color:#1a3a5a;padding:6px 8px;border-top:2px solid #8aa8c8;">Erisoodustus: ' + sec.key + '</td>';
       sec.headers[0].parentNode.insertBefore(secRow, sec.headers[0]);
-      // Sektsiooni vahesumma viimase grupi järele
-      let sumD = 0, sumK = 0, sumLopp = 0;
-      sec.headers.forEach(h => {
-        const g = h.dataset.group;
-        const subs = [...tbody.querySelectorAll('tr.grp-sub[data-grp="' + g + '"]')];
-        const kokku = subs.find(r => r.textContent.includes('Kokku (periood)'));
-        const lopp  = subs.find(r => r.textContent.includes('Lõppsaldo'));
-        if (kokku) { const c = kokku.querySelectorAll('td'); sumD += _parseNum(c[18]); sumK += _parseNum(c[19]); }
-        if (lopp)  { const c = lopp.querySelectorAll('td');  sumLopp += _parseNum(c[26]); }
-      });
-      const lastG = sec.headers[sec.headers.length - 1].dataset.group;
-      const grpRows = [...tbody.querySelectorAll('[data-grp="' + lastG + '"]')];
-      const anchor = grpRows[grpRows.length - 1];
-      const subRow = document.createElement('tr');
-      subRow.className = 'eri-row';
-      subRow.innerHTML =
-        '<td colspan="18" style="text-align:right;font-weight:700;color:#1a3a5a;background:#eef4fa;border-top:1px solid #b8c8dc;">Erisoodustus ' + sec.key + ' kokku</td>' +
-        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumD) + '</td>' +
-        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumK) + '</td>' +
-        '<td colspan="6" style="background:#eef4fa;border-top:1px solid #b8c8dc;"></td>' +
-        '<td class="r" style="font-weight:700;background:#eef4fa;border-top:1px solid #b8c8dc;">' + fmtNum(sumLopp) + '</td>' +
-        '<td colspan="2" style="background:#eef4fa;border-top:1px solid #b8c8dc;"></td>';
-      if (anchor) anchor.parentNode.insertBefore(subRow, anchor.nextSibling);
     });
   }
 
