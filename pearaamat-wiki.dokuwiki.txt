@@ -38,7 +38,6 @@ Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse
 ^ Sisestus ^ Tähendus ^
 | ''1000:1999'' | kontod 1000-1999 |
 | ''010:1011'' | kontod 010-1011 |
-| ''4000:4999'' | kontod 4000-4999 |
 
 === , - mitu väärtust (VÕI) ===
 
