@@ -1735,11 +1735,25 @@
     const s = translateKonto(document.getElementById('kontoInput').value);
     el.textContent = s ? '↳ Näitab: ' + s : '';
   }
+  // Lühikuju (kuid mitte „52") — muster ilma „kontod, mis…" eesliiteta.
+  function _kontoBare(t) {
+    t = t.trim();
+    if (t.indexOf(':') >= 0) { const p = t.split(':'); return (p[0] || '') + '-' + (p[1] || ''); }
+    if (t.indexOf('%') >= 0) return '„' + t.replace(/%/g, '') + '"';
+    return '„' + t + '"';
+  }
   function _kontoTerm(t) {
     t = t.trim();
     if (!t) return '';
     if (t[0] === '!') return 'mitte ' + _kontoTerm(t.slice(1));
-    if (t.indexOf('&') >= 0) return t.split('&').map(_kontoTerm).filter(Boolean).join(' ning ');
+    if (t.indexOf('&') >= 0) {
+      const parts = t.split('&').map(x => x.trim()).filter(Boolean);
+      const pos = [], neg = [];
+      parts.forEach(p => { if (p[0] === '!') neg.push(p.slice(1)); else pos.push(p); });
+      let s = pos.map(_kontoTerm).join(' ning ');
+      if (neg.length) s += (s ? ', kuid mitte ' : 'mitte ') + neg.map(_kontoBare).join(' ega ');
+      return s;
+    }
     if (t.indexOf(':') >= 0) {
       const p = t.split(':'), a = p[0].trim(), b = (p[1] || '').trim();
       if ((a === '0' || a === '') && b.toUpperCase() === 'Z') return 'kõik kontod';
