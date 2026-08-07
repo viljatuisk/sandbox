@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<title>Pearaamat — prototüüp</title>
+<title>Pearaamat - prototüüp</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; font-size: 12px; background: #e8ecf0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -345,7 +345,7 @@
           <div class="kkk-a">
             Vahesumma „hankija lõikes" kuvab alg- ja lõppsaldona ainult nende hankijate summa, kellel on valitud <b>perioodis kandeid</b>. Liikumiseta, kuid konto algsaldot mõjutavad hankijad jäetakse välja → saldod on väiksemad kui vaates ilma vahesummata. Muutus (käive) on mõlemas sama, erinevad ainult alg- ja lõppsaldo.
             <br><b>Õige:</b> algsaldo peab hõlmama <b>kõiki</b> hankijaid; lõikes kuvatud saldode kokkusumma peab ühtima vaatega ilma vahesummata. Sama kontrollida ka teistes vahesumma-lõigetes (klient, objekt jne).
-            <br><b>Testida (baas ocra_emta):</b> Pearaamat, 01.01.2025–30.04.2025, konto 20100000, objekt 800699 — võrdle vaadet ilma vahesummata (õige) vs vahesumma hankija lõikes (vale).
+            <br><b>Testida (baas ocra_emta):</b> Pearaamat, 01.01.2025-30.04.2025, konto 20100000, objekt 800699 - võrdle vaadet ilma vahesummata (õige) vs vahesumma hankija lõikes (vale).
             <br><span class="kkk-status">⏳ Lahendus prototüübis veel tegemata</span>
           </div>
         </div>
@@ -353,13 +353,13 @@
           <div class="kkk-q">Filter „Tasemeta" ei tööta mitmerealiste kannete puhul reapõhiselt</div>
           <div class="kkk-a">
             Filter „Tasemeta" rakendub praegu <b>kande (dokumendi) tasemel</b>, mitte rea tasemel. Kui mitmerealisel kandel on osal ridadel objekti tase täidetud ja osal mitte, jätab aruanne <b>terve kande</b> sisse (leiab ≥1 filtrile vastava rea). Nii satuvad tulemusse ka täidetud tasemega read → valed summad ja alg-/lõppsaldode erinevused perioodide vahel.
-            <br><b>Õige:</b> „Tasemeta" rakendub <b>reapõhiselt</b> — välistatakse üksikud kande read, millel vastava taseme objekt on täidetud; alles jäävad ainult tasemeta read.
+            <br><b>Õige:</b> „Tasemeta" rakendub <b>reapõhiselt</b> - välistatakse üksikud kande read, millel vastava taseme objekt on täidetud; alles jäävad ainult tasemeta read.
             <br><b>Testida:</b> mitmerealine kanne, kus osal ridadel tase 0 olemas ja osal puudub; lisaks periood, kontod, „ainult saldoga", „muutustega kontod", Kanne → Arve. Kontrolli, et täidetud tasemega read ei kuvata ja perioodide alg-/lõppsaldod klapivad.
             <br><span class="kkk-status">⏳ Lahendus prototüübis veel tegemata</span>
           </div>
         </div>
       </div>
-      <div class="kkk-foot">Märkmed testimiseks — ei ole osa aruande funktsioonist.</div>
+      <div class="kkk-foot">Märkmed testimiseks - ei ole osa aruande funktsioonist.</div>
     </div>
   </span>
 </div>
@@ -773,7 +773,7 @@
             <td colspan="10"></td>
           </tr>
           <tr class="corr-sub" data-grp="g1" data-corr-sub style="display:none; background:#e8f0f8;">
-            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111202 — Pangakonto EUR</td>
+            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111202 - Pangakonto EUR</td>
           </tr>
           <tr class="data" data-grp="g1" data-unsettled="true">
             <td class="muted">Pangakonto EUR</td>
@@ -881,7 +881,7 @@
             <td></td><td></td>
           </tr>
           <tr class="corr-sub" data-grp="g1" data-corr-sub style="display:none; background:#e8f0f8;">
-            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111204 — Bank Demo</td>
+            <td colspan="29" style="padding-left:18px; font-style:italic; font-size:10px; color:#1a3a5a;">↳ Korr. konto: 111204 - Bank Demo</td>
           </tr>
           <tr class="data" data-grp="g1" data-unsettled="true">
             <td class="muted">Pangakonto EUR</td>
@@ -998,7 +998,7 @@
             <td colspan="10"></td>
           </tr>
 
-          <!-- 111202 group — no changes, no balance (demo for filtering tabs) -->
+          <!-- 111202 group - no changes, no balance (demo for filtering tabs) -->
           <tr class="grp-header" data-group="g3" data-konto="111202" data-has-change="false" data-has-balance="false" onclick="toggleGroup('g3', this)" style="cursor:pointer;">
             <td><span class="grp-toggle">▾</span> 111202</td>
             <td colspan="4">Pangakonto USD</td>
@@ -1321,7 +1321,7 @@
 <div class="wiki-overlay" id="wikiOverlay" onclick="if(event.target===this)closeObjHelp()">
   <div class="wiki-modal">
     <div class="wiki-modal-head">
-      <span class="wm-title">Objekt ja Objekti tase — juhend</span>
+      <span class="wm-title">Objekt ja Objekti tase - juhend</span>
       <button class="wm-close" onclick="closeObjHelp()" title="Sulge">&times;</button>
     </div>
     <div class="wiki-body" id="wikiBody">
@@ -1330,15 +1330,15 @@
       <p>Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:</p>
       <table>
         <tr><th>Eraldaja</th><th>Tähendus</th><th>Näide</th><th>Tulemus</th></tr>
-        <tr><td><code>+</code> (pluss)</td><td><b>VÕI</b> — vähemalt üks valitud objektidest</td><td><code>MÜÜK+TOOTMINE</code></td><td>Read, millel on objekt MÜÜK <i>või</i> TOOTMINE</td></tr>
-        <tr><td><code>,</code> (koma)</td><td><b>JA</b> — kandel peavad olema olemas kõik loetletud objektid (lisaks võib olla ka muid objekte)</td><td><code>LADU,TLN</code></td><td>Read, millel on korraga olemas <i>nii</i> LADU <i>kui</i> TLN</td></tr>
+        <tr><td><code>+</code> (pluss)</td><td><b>VÕI</b> - vähemalt üks valitud objektidest</td><td><code>MÜÜK+TOOTMINE</code></td><td>Read, millel on objekt MÜÜK <i>või</i> TOOTMINE</td></tr>
+        <tr><td><code>,</code> (koma)</td><td><b>JA</b> - kandel peavad olema olemas kõik loetletud objektid (lisaks võib olla ka muid objekte)</td><td><code>LADU,TLN</code></td><td>Read, millel on korraga olemas <i>nii</i> LADU <i>kui</i> TLN</td></tr>
       </table>
       <p><code>+</code> ja <code>,</code> saab omavahel kombineerida:</p>
       <blockquote><b>Objekt:</b> <code>LADU,TLN+MÜÜK,TLN</code><br>Kuvatakse read, millel on korraga <b>LADU ja TLN</b>, või korraga <b>MÜÜK ja TLN</b>.</blockquote>
-      <div class="wnote">Koma (JA) nõuab, et loetletud objektid oleksid real <b>olemas</b> — see ei tähenda „täpselt ainult need". Kandel tohib lisaks olla ka teiste tasemete objekte. Näiteks kanne, millel on objektid <code>LADU</code>, <code>TLN</code> <b>ja</b> <code>PROJ2025</code>, vastab filtrile <code>LADU,TLN</code>, sest mõlemad nõutud objektid on olemas.</div>
+      <div class="wnote">Koma (JA) nõuab, et loetletud objektid oleksid real <b>olemas</b> - see ei tähenda „täpselt ainult need". Kandel tohib lisaks olla ka teiste tasemete objekte. Näiteks kanne, millel on objektid <code>LADU</code>, <code>TLN</code> <b>ja</b> <code>PROJ2025</code>, vastab filtrile <code>LADU,TLN</code>, sest mõlemad nõutud objektid on olemas.</div>
 
       <h2 id="wiki-tase">Väli „Objekti tase"</h2>
-      <p><b>Ainuvalik</b> (rippmenüü) — korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).</p>
+      <p><b>Ainuvalik</b> (rippmenüü) - korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).</p>
       <p>Kui tase on valitud, kuvatakse <b>ainult sellel tasemel olevate objektidega seotud read</b>. Kõik muude tasemete objektidega read jäetakse automaatselt välja.</p>
 
       <h2 id="wiki-koos">Väljade koostoimimine</h2>
@@ -1368,7 +1368,7 @@
 <div class="mx-overlay" id="mxOverlay" onclick="if(event.target===this)closeObjMatrix()">
   <div class="mx-modal">
     <div class="mx-head">
-      <span class="mx-title">⊞ Aseta objektid — Matrix</span>
+      <span class="mx-title">⊞ Aseta objektid - Matrix</span>
       <button class="mx-close" onclick="closeObjMatrix()" title="Sulge">&times;</button>
     </div>
     <div class="mx-hint">Vali igalt tasemelt objekt. Valitud objektid asetatakse Objekt-välja komadega (kombinatsioon = JA). Iga uus ASETA lisab olemasolevale <code>+</code>-ga (VÕI).</div>
@@ -1447,11 +1447,11 @@
         _renderVaheldumisiByObj(tbody);
         return;
       }
-      // flat list — swap Konto col to show corrAccount
+      // flat list - swap Konto col to show corrAccount
       let lastCorrName = '';
       tbody.querySelectorAll('tr[data-grp]').forEach(row => {
         if (row.classList.contains('corr-sub')) {
-          const m = row.textContent.trim().match(/Korr\. konto: \S+ — (.+)/);
+          const m = row.textContent.trim().match(/Korr\. konto: \S+ - (.+)/);
           lastCorrName = m ? m[1] : '';
         } else if (row.classList.contains('data')) {
           const tds = row.querySelectorAll('td');
@@ -1464,7 +1464,7 @@
           tds[2].textContent = '';
         }
       });
-      // flat list — hide group headers and sub-rows
+      // flat list - hide group headers and sub-rows
       tbody.querySelectorAll('.grp-header, .grp-sub').forEach(r => r.style.display = 'none');
       // add algsaldo and lõppsaldo rows
       const _totAlg = SUMMA_DATA.reduce((s, r) => s + r.algsaldo, 0);
@@ -1692,7 +1692,7 @@
     updateKontoXlate();
   }
 
-  // Elav tõlge — teisendab otsingusüntaksi tavakeelseks selgituseks.
+  // Elav tõlge - teisendab otsingusüntaksi tavakeelseks selgituseks.
   function updateKontoXlate() {
     const el = document.getElementById('kontoXlate');
     if (!el) return;
@@ -1707,7 +1707,7 @@
     if (t.indexOf(':') >= 0) {
       const p = t.split(':'), a = p[0].trim(), b = (p[1] || '').trim();
       if ((a === '0' || a === '') && b.toUpperCase() === 'Z') return 'kõik kontod';
-      return 'kontod ' + a + '–' + b;
+      return 'kontod ' + a + '-' + b;
     }
     if (t.indexOf('%') >= 0) {
       const bare = t.replace(/%/g, '');
@@ -1725,7 +1725,9 @@
       if (t[0] === '!') { const d = _kontoTerm(t.slice(1)); if (d) neg.push(d); }
       else { const d = _kontoTerm(t); if (d) pos.push(d); }
     });
-    let s = pos.length ? pos.join(' või ') : (neg.length ? 'kõik kontod' : '');
+    // Ainult välistus (nt !1000) ei tööta — ette peab tulema kontode hulk (nt 0:Z).
+    if (!pos.length && neg.length) return 'lisa ette kontode hulk (nt 0:Z), et välistus toimiks';
+    let s = pos.length ? pos.join(' või ') : '';
     if (neg.length) s += ', välja arvatud ' + neg.join(' ja ');
     return s;
   }
@@ -1880,7 +1882,7 @@
     { lvl: 5, tyyp: 'Haldusala',                 objs: [{k:'E100',n:'Haldusala E100'},{k:'E300',n:'Haldusala E300'}] },
     { lvl: 6, tyyp: 'Osakond',                   objs: [{k:'MÜÜK',n:'Müügiosakond'},{k:'TOOTMINE',n:'Tootmisosakond'},{k:'IT',n:'IT-osakond'},{k:'LADU',n:'Ladu'}] },
     { lvl: 7, tyyp: 'Objekt osakonnas',          objs: [{k:'TLN',n:'Tallinn'},{k:'TARTU',n:'Tartu'}] },
-    { lvl: 8, tyyp: 'Lisatase – seotud osapooled', objs: [{k:'OBJ001',n:'Objekt 001'},{k:'OBJ002',n:'Objekt 002'}] },
+    { lvl: 8, tyyp: 'Lisatase - seotud osapooled', objs: [{k:'OBJ001',n:'Objekt 001'},{k:'OBJ002',n:'Objekt 002'}] },
   ];
 
   function buildObjMatrix() {
@@ -1888,7 +1890,7 @@
     if (tb.childElementCount) return; // ehita üks kord
     tb.innerHTML = MATRIX_LEVELS.map(L => {
       const opts = '<option value=""></option>' + L.objs.map(o =>
-        '<option value="' + o.k + '">' + o.k + ' — ' + o.n + '</option>').join('');
+        '<option value="' + o.k + '">' + o.k + ' - ' + o.n + '</option>').join('');
       const cell = L.objs.length
         ? '<select data-lvl="' + L.lvl + '" onchange="updateMxPreview()">' + opts + '</select>'
         : '<span style="color:#aab;">(asetajata tase)</span>';
@@ -1938,7 +1940,7 @@
   // Täidetud / Täitmata objekt sümbolite kaudu (vana Pearaamatu loogika):
   //   %  = ainult täidetud objektiga read
   //   #  = ainult täitmata objektiga read (tühja välja märk süsteemiseadistusest)
-  const OBJ_EMPTY_MARK = '#'; // NB! prototüübi näidisväärtus — päris väärtus tuleb süsteemiseadistusest
+  const OBJ_EMPTY_MARK = '#'; // NB! prototüübi näidisväärtus - päris väärtus tuleb süsteemiseadistusest
   // Tuletab režiimi Objekt-välja väärtusest: '%' = täidetud, '#' = täitmata, muidu = kõik.
   function objSymbolMode() {
     const v = document.getElementById('objInput').value.trim();
@@ -2075,8 +2077,8 @@
       item.dataset.label = c.label.toLowerCase();
       const extra = c.group ? ' <span style="font-size:10px;color:#888">(Pinnad..Erikord)</span>' : '';
       if (c.locked) {
-        // Kohustuslik veerg — alati nähtav, linnukest ei saa maha võtta.
-        item.title = 'Kohustuslik veerg – alati nähtav';
+        // Kohustuslik veerg - alati nähtav, linnukest ei saa maha võtta.
+        item.title = 'Kohustuslik veerg - alati nähtav';
         item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" checked disabled> ' + c.label + ' <span class="col-lock">🔒</span>';
       } else {
         item.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible[c.key] ? 'checked' : '') + ' onchange="toggleCol(\'' + c.key + '\', this.checked)"> ' + c.label + extra;
@@ -2145,7 +2147,7 @@
     }
   }
 
-  // ── ANDMEVÄLJAD (lisaväljad seotud olemitelt — nagu 'Valitavad väljad' seadistus) ──
+  // ── ANDMEVÄLJAD (lisaväljad seotud olemitelt - nagu 'Valitavad väljad' seadistus) ──
   const EXTRA_FIELD_DEFS = [
     { entity: 'Hankija', fields: [
       { key: 'h_regnr',   label: 'Reg nr',        col: 'Hankija reg nr',       sample: '10823456' },
@@ -2218,7 +2220,7 @@
       list.appendChild(empty);
       return;
     }
-    // Grupeeritud allika (andmekaardi) kaupa — sama struktuur nagu väljavalija hüpikus.
+    // Grupeeritud allika (andmekaardi) kaupa - sama struktuur nagu väljavalija hüpikus.
     EXTRA_FIELD_DEFS.forEach(g => {
       const active = g.fields.filter(f => _extraActive.has(f.key));
       if (active.length === 0) return;
@@ -2419,7 +2421,7 @@
     { konto: '525832', nimetus: 'Töötajate tervisekulud',     algsaldo: 0.00, deebet: 850.00,  kreedit: 0.00, muutus: 850.00,  loppsaldo: 850.00  },
     { konto: '528101', nimetus: 'Äripartnerite vastuvõtukulud', algsaldo: 0.00, deebet: 640.00, kreedit: 0.00, muutus: 640.00,  loppsaldo: 640.00  },
   ];
-  // Konto kaardi ERISOODUSTUS väli — TSD lisa 4/5 kood. Määrab, mille lõikes 'Vahesumma = Erisoodustus' grupeerib.
+  // Konto kaardi ERISOODUSTUS väli - TSD lisa 4/5 kood. Määrab, mille lõikes 'Vahesumma = Erisoodustus' grupeerib.
   const ERISOODUSTUS = {
     '525812': { kood: '4110', nimi: 'Tasemeõppe ja täienduskoolituse kulude katmine' },
     '525832': { kood: '4120', nimi: 'Töötajate tervise edendamise kulud' },
@@ -2427,7 +2429,7 @@
   };
   function erisoodustusKey(konto) {
     const e = ERISOODUSTUS[konto];
-    return e ? e.kood + ' – ' + e.nimi : '(määramata)';
+    return e ? e.kood + ' - ' + e.nimi : '(määramata)';
   }
   const ALGSALDO_DIM = {
     byObject: {
@@ -2463,7 +2465,7 @@
         return;
       }
       if (row.classList.contains('corr-sub')) {
-        const m = row.textContent.trim().match(/Korr\. konto:\s*(\S+)\s*—\s*(.+)/);
+        const m = row.textContent.trim().match(/Korr\. konto:\s*(\S+)\s*-\s*(.+)/);
         if (m) names.set(m[1], m[2].trim());
         return;
       }
@@ -2628,7 +2630,7 @@
       '</tr>';
   }
 
-  // Taandatud korr-konto alamread (Deebet/Kreedit summeeritud), Algsaldo/Muutus/Lõppsaldo tühjad — nagu vanas 'ainult summa' + 'näita korr. kontosid'.
+  // Taandatud korr-konto alamread (Deebet/Kreedit summeeritud), Algsaldo/Muutus/Lõppsaldo tühjad - nagu vanas 'ainult summa' + 'näita korr. kontosid'.
   function _summaCorrRows(konto) {
     if (!colVisible.corrAccount || !_corrByAccount) return '';
     const cm = _corrByAccount.get(konto);
@@ -2926,7 +2928,7 @@
   }
 
   // Paigutab summarea sildi viimasesse NÄHTAVASSE lahtrisse enne Deebetit (col19). Silt on absoluutselt
-  // paremale positsioneeritud, et mitte laiendada veergu — nii jääb ta alati vahetult Deebeti ette.
+  // paremale positsioneeritud, et mitte laiendada veergu - nii jääb ta alati vahetult Deebeti ette.
   function positionSummaryLabels() {
     document.querySelectorAll('#mainTbody tr.grp-header, #mainTbody tr.grp-sub').forEach(row => {
       const label = row.dataset.summaryLabel;
@@ -2934,12 +2936,12 @@
       const cells = row.querySelectorAll('td');
       // eemalda varasem silt
       cells.forEach(c => { if (c.dataset.lbl) { c.innerHTML = ''; c.removeAttribute('data-lbl'); c.style.position = ''; } });
-      // otsi viimane nähtav lahter vahemikus col3..col18 (indeks 2..17) — grupipäisel col1-2 hõivab kood+nimi
+      // otsi viimane nähtav lahter vahemikus col3..col18 (indeks 2..17) - grupipäisel col1-2 hõivab kood+nimi
       let target = -1;
       for (let i = 2; i <= 17; i++) {
         if (cells[i] && getComputedStyle(cells[i]).display !== 'none') target = i;
       }
-      if (target < 0) return; // kõik peidetud (haruldane) — kood/nimi identifitseerib rea
+      if (target < 0) return; // kõik peidetud (haruldane) - kood/nimi identifitseerib rea
       const c = cells[target];
       c.style.position = 'relative';
       c.dataset.lbl = '1';

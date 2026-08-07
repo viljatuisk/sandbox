@@ -67,10 +67,10 @@ Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõtt
 
 === ! - eitus (välistus) ===
 
-''!'' eemaldab vastavad kontod tulemusest.
+''!'' eemaldab vastavad kontod tulemusest. **NB!** ''!'' üksi ei tööta - ette peab tulema kontode hulk (vahemik, ''0:Z'' vms), millest välistatakse.
 
 ^ Sisestus ^ Tähendus ^
-| ''!1000'' | kõik kontod, välja arvatud konto 1000 |
+| ''0:Z,!1000'' | kõik kontod, välja arvatud konto 1000 |
 | ''010:1011,!1000'' | kontod 010-1011, välja arvatud konto 1000 |
 | ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
 
