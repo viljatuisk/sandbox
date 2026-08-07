@@ -16,7 +16,7 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 
 ^ Filter ^ Kirjeldus ^
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
-| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust, ''%'' metamärk, ''!'' eitus. |
+| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010–1011, välja arvatud konto 1000"). |
 | **Korr. konto** | Korrespondeeriva konto filter. |
 | **Objekt** | Objektifilter tasemete kaupa (Nimekiri-asetaja, Matrix-asetaja). Objekti täidetuse otsing sümbolitega: ''%'' = ainult täidetud objektiga read, ''#'' = ainult täitmata objektiga read (tühja välja märk süsteemiseadistusest). |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
