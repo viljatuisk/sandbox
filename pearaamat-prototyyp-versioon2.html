@@ -105,6 +105,7 @@
   .obj-mode-btn.active { background: #2d4f72; color: #fff; border-color: #2d4f72; }
   .obj-mode-note { font-size: 9px; color: #6a7a8a; margin-top: 2px; min-height: 11px; }
   tr.objhide { display: none !important; }
+  .riigi-hidden { display: none !important; }
 
   /* ── VÄLJA JUHEND (?) + MODAAL ── */
   .help-i { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border-radius: 50%; background: #5a9fd4; color: #fff; font-size: 9px; font-weight: 700; cursor: pointer; vertical-align: middle; margin-left: 2px; }
@@ -1742,6 +1743,24 @@
     _kontoNrType = type;
     document.getElementById('btnOmaKonto').classList.toggle('active', type === 'oma');
     document.getElementById('btnRiigiKonto').classList.toggle('active', type === 'riigi');
+    const inp = document.getElementById('kontoInput');
+    // Demo: Riigi peale vaikeväärtus 551103 (majanduskulud, 3 oma kontot); Oma peale tagasi 0:Z.
+    inp.value = (type === 'riigi') ? '551103' : '0:Z';
+    updateClearX('kontoClearWrap', 'kontoInput');
+    updateKontoXlate();
+    applyKontoNrFilter();
+  }
+
+  // Riigi režiimis: peida kontogrupid, mille Riigi konto ei vasta sisestatud riigi kontole.
+  function applyKontoNrFilter() {
+    const riigi = (_kontoNrType === 'riigi');
+    const val = riigi ? document.getElementById('kontoInput').value.trim() : '';
+    document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => {
+      const match = !riigi || !val || (RIIGI_KONTO[h.dataset.konto] === val);
+      h.classList.toggle('riigi-hidden', !match);
+      document.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.classList.toggle('riigi-hidden', !match));
+    });
+    if (_summaOn) summaFilterChange();
   }
 
   function toggleKontoLegend() {
@@ -1758,23 +1777,37 @@
   function renderKontoPicker(q) {
     const lq = (q || '').toLowerCase();
     const list = document.getElementById('kontoPickerList');
+    if (_kontoNrType === 'riigi') {
+      // Riigi režiimis: loend riigi kontodest.
+      const codes = [...new Set(Object.values(RIIGI_KONTO))];
+      const filtered = codes.filter(c => c.toLowerCase().includes(lq) || (RIIGI_KONTO_NIMI[c] || '').toLowerCase().includes(lq));
+      list.innerHTML = filtered.length
+        ? filtered.map(c => '<div class="obj-picker-row" onclick="pickKontoCode(\'' + c + '\')"><span class="opc">' + c + '</span><span class="opn">' + (RIIGI_KONTO_NIMI[c] || '') + '</span></div>').join('')
+        : '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>';
+      return;
+    }
     const filtered = SUMMA_DATA.filter(r => r.konto.toLowerCase().includes(lq) || r.nimetus.toLowerCase().includes(lq));
     if (!filtered.length) { list.innerHTML = '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>'; return; }
     list.innerHTML = filtered.map(r =>
       '<div class="obj-picker-row" onclick="pickKontoCode(\'' + r.konto + '\')">' +
       '<span class="opc">' + r.konto + '</span><span class="opn">' + r.nimetus + '</span></div>').join('');
   }
-  // Nimekirjast valimine: tühja/„0:Z" välja korral asendab, muidu lisab komaga (VÕI-loend).
+  // Nimekirjast valimine. Riigi režiimis asendab (üks riigi konto). Oma režiimis: tühja/„0:Z" asendab, muidu lisab komaga.
   function pickKontoCode(code) {
     const inp = document.getElementById('kontoInput');
-    let v = inp.value.trim();
-    if (v === '' || v === '0:Z') v = code;
-    else if (/,\s*$/.test(v)) v = v + code;
-    else v = v + ',' + code;
-    inp.value = v;
+    if (_kontoNrType === 'riigi') {
+      inp.value = code;
+    } else {
+      let v = inp.value.trim();
+      if (v === '' || v === '0:Z') v = code;
+      else if (/,\s*$/.test(v)) v = v + code;
+      else v = v + ',' + code;
+      inp.value = v;
+    }
     document.getElementById('kontoPicker').classList.remove('open');
     updateClearX('kontoClearWrap', 'kontoInput');
     updateKontoXlate();
+    applyKontoNrFilter();
     inp.focus();
   }
   function pickKonto(val) {
@@ -1784,17 +1817,29 @@
     updateKontoXlate();
   }
 
-  // Konto välja sisendi käitleja: tühjenda-ristike + elav tõlge.
+  // Konto välja sisendi käitleja: tühjenda-ristike + elav tõlge + riigi filter.
   function onKontoInput() {
     updateClearX('kontoClearWrap', 'kontoInput');
     updateKontoXlate();
+    applyKontoNrFilter();
   }
 
   // Elav tõlge - teisendab otsingusüntaksi tavakeelseks selgituseks.
   function updateKontoXlate() {
     const el = document.getElementById('kontoXlate');
     if (!el) return;
-    const s = translateKonto(document.getElementById('kontoInput').value);
+    const inp = document.getElementById('kontoInput');
+    const v = inp.value.trim();
+    if (_kontoNrType === 'riigi') {
+      if (!v) { el.textContent = '↳ Näitab: kõik riigi kontod'; return; }
+      const own = Object.keys(RIIGI_KONTO).filter(k => RIIGI_KONTO[k] === v);
+      const nm = RIIGI_KONTO_NIMI[v] ? ' (' + RIIGI_KONTO_NIMI[v] + ')' : '';
+      el.textContent = own.length
+        ? '↳ Näitab: riigi konto ' + v + nm + ' → oma kontod ' + own.join(', ')
+        : '↳ Riigi kontot „' + v + '" ei leitud';
+      return;
+    }
+    const s = translateKonto(v);
     el.textContent = s ? '↳ Näitab: ' + s : '';
   }
   // Lühikuju (kuid mitte „52") — muster ilma „kontod, mis…" eesliiteta.
@@ -2182,10 +2227,17 @@
   const colVisible = {};
   COL_DEFS.forEach(c => colVisible[c.key] = true);
   colVisible.tasemed = false;
+  colVisible.riigikonto = false;
 
   function buildColPicker() {
     const list = document.getElementById('colPickerList');
     list.innerHTML = '';
+    // Eriveerg: Riigi konto (lisaveerg konto kaardi vaste järgi).
+    const ri = document.createElement('label');
+    ri.className = 'col-picker-item';
+    ri.dataset.label = 'riigi konto';
+    ri.innerHTML = '<span class="drag-handle">⠿</span><input type="checkbox" ' + (colVisible.riigikonto ? 'checked' : '') + ' onchange="toggleRiigiKontoCol(this.checked)"> Riigi konto';
+    list.appendChild(ri);
     COL_DEFS.forEach(c => {
       const item = document.createElement('label');
       item.className = 'col-picker-item' + (c.locked ? ' locked' : '');
@@ -2387,6 +2439,33 @@
     document.querySelectorAll('[data-field-col="' + key + '"]').forEach(el => el.remove());
   }
 
+  // Riigi konto lisaveerg - konto kaardi vaste iga konto kohta (grupipäis + andmeread).
+  function toggleRiigiKontoCol(on) {
+    colVisible.riigikonto = on;
+    if (on) addRiigiKontoColumn(); else removeFieldColumn('riigikonto');
+  }
+  function addRiigiKontoColumn() {
+    const theadRow = document.querySelector('table thead tr');
+    if (theadRow.querySelector('th[data-field-col="riigikonto"]')) return;
+    const th = document.createElement('th');
+    th.dataset.fieldCol = 'riigikonto';
+    th.style.width = '90px';
+    th.textContent = 'Riigi konto';
+    theadRow.appendChild(th);
+    document.querySelectorAll('#mainTbody tr').forEach(tr => {
+      const td = document.createElement('td');
+      td.dataset.fieldCol = 'riigikonto';
+      let konto = '';
+      if (tr.classList.contains('grp-header') && tr.dataset.konto) konto = tr.dataset.konto;
+      else if (tr.classList.contains('data') && tr.getAttribute('data-grp')) {
+        const c0 = tr.querySelector('td');
+        konto = c0 ? c0.textContent.trim() : '';
+      }
+      if (konto && RIIGI_KONTO[konto]) { td.className = 'muted'; td.textContent = RIIGI_KONTO[konto]; }
+      tr.appendChild(td);
+    });
+  }
+
   // ── ENTITY FIELD PICKER (Klient / Hankija) ──
   const EFP_FIELDS = {
     muugitellimus: [
@@ -2546,6 +2625,18 @@
     const e = ERISOODUSTUS[konto];
     return e ? e.kood + ' - ' + e.nimi : '(määramata)';
   }
+  // Konto kaardi "Riigi konto" vaste (riigi kontoplaan). Üks riigi konto <- mitu oma kontot.
+  const RIIGI_KONTO = {
+    '10101': '100000', '111201': '100000', '111202': '100000', '111204': '100000',
+    '211000': '202000', '521000': '500000',
+    '525812': '551103', '525832': '551103', '528101': '551103',
+  };
+  const RIIGI_KONTO_NIMI = {
+    '100000': 'Raha ja pangakontod',
+    '202000': 'Nõuded ostjate vastu',
+    '500000': 'Tööjõukulud',
+    '551103': 'Majanduskulud',
+  };
   const ALGSALDO_DIM = {
     byObject: {
       'OBJ001':        { '111201': 1200,    '211000': 2500    },
@@ -2968,9 +3059,11 @@
     const muutusega = document.getElementById('cbMuutusega');
     const saldoga   = document.getElementById('cbSaldoga');
     const vahe      = document.getElementById('selVahesumma');
+    const riigiVal = (_kontoNrType === 'riigi') ? document.getElementById('kontoInput').value.trim() : '';
     const data = SUMMA_DATA.filter(r => {
       if (muutusega && muutusega.checked && r.muutus === 0) return false;
       if (saldoga   && saldoga.checked   && r.loppsaldo === 0) return false;
+      if (riigiVal && RIIGI_KONTO[r.konto] !== riigiVal) return false;
       return true;
     });
     _renderSummaRows(data, vahe ? vahe.value : '');
