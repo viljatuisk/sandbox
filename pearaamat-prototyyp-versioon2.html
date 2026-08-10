@@ -393,11 +393,6 @@
     <div class="sidebar-section">
       <div class="sidebar-head">Kontod <span class="arrow">▾</span></div>
       <div class="sidebar-body">
-        <div class="konto-nr-toggle">
-          <span class="knt-lbl">Konto nr:</span>
-          <button class="knt-btn active" id="btnOmaKonto" onclick="setKontoNrType('oma')">Oma</button>
-          <button class="knt-btn" id="btnRiigiKonto" onclick="setKontoNrType('riigi')">Riigi</button>
-        </div>
         <div class="sf"><label>Konto <span class="help-i" onclick="openKontoHelp()" title="Ava juhend">?</span></label>
           <div class="obj-wrap" id="kontoWrap">
             <div class="sf-lookup">
@@ -426,6 +421,24 @@
           <div class="konto-xlate" id="kontoXlate"></div>
         </div>
         <div class="sf"><label>Korr. konto</label><select><option value=""></option><option>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
+        <div class="sf"><label>Riigi konto</label>
+          <div class="obj-wrap" id="riigiWrap">
+            <div class="sf-lookup">
+              <span class="inp-clear-wrap" id="riigiClearWrap">
+                <input type="text" id="riigiInput" placeholder="nt 551103" autocomplete="off" oninput="onRiigiInput()" style="border-radius:2px 0 0 2px;">
+                <span class="clear-x" title="Tühjenda" onclick="clearRiigiFilter()">✕</span>
+              </span>
+              <button class="lkp-btn" type="button" title="Riigi kontode nimekiri" onclick="toggleRiigiPicker()">🔍</button>
+            </div>
+            <div class="obj-picker" id="riigiPicker">
+              <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
+                <input type="text" id="riigiPickerSearch" placeholder="Otsi riigi kontot..." oninput="filterRiigiPicker(this.value)" style="width:100%;height:22px;border:1px solid #b8c4d0;border-radius:2px;padding:0 6px;font-size:11px;font-family:Arial,sans-serif;box-sizing:border-box;">
+              </div>
+              <div class="obj-picker-list" id="riigiPickerList"></div>
+            </div>
+          </div>
+          <div class="konto-xlate" id="riigiXlate"></div>
+        </div>
         <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
         <label class="sf-check"><input type="checkbox" id="cbSaldoga" onchange="sidebarFilterChange()"> Ainult saldoga</label>
       </div>
@@ -1738,25 +1751,53 @@
     });
   }
 
-  let _kontoNrType = 'oma';
-  function setKontoNrType(type) {
-    _kontoNrType = type;
-    document.getElementById('btnOmaKonto').classList.toggle('active', type === 'oma');
-    document.getElementById('btnRiigiKonto').classList.toggle('active', type === 'riigi');
-    const inp = document.getElementById('kontoInput');
-    // Demo: Riigi peale vaikeväärtus 551103 (majanduskulud, 3 oma kontot); Oma peale tagasi 0:Z.
-    inp.value = (type === 'riigi') ? '551103' : '0:Z';
-    updateClearX('kontoClearWrap', 'kontoInput');
-    updateKontoXlate();
-    applyKontoNrFilter();
+  // ── RIIGI KONTO FILTER (eraldi väli, kombineerub Konto filtriga) ──
+  // Tühi = ei piira. Väärtusega: näita ainult kontosid, mille kaardi Riigi konto vastab.
+  function onRiigiInput() {
+    updateClearX('riigiClearWrap', 'riigiInput');
+    updateRiigiXlate();
+    applyRiigiFilter();
   }
-
-  // Riigi režiimis: peida kontogrupid, mille Riigi konto ei vasta sisestatud riigi kontole.
-  function applyKontoNrFilter() {
-    const riigi = (_kontoNrType === 'riigi');
-    const val = riigi ? document.getElementById('kontoInput').value.trim() : '';
+  function clearRiigiFilter() {
+    document.getElementById('riigiInput').value = '';
+    updateClearX('riigiClearWrap', 'riigiInput');
+    updateRiigiXlate();
+    applyRiigiFilter();
+  }
+  function updateRiigiXlate() {
+    const el = document.getElementById('riigiXlate'); if (!el) return;
+    const v = document.getElementById('riigiInput').value.trim();
+    if (!v) { el.textContent = ''; return; }
+    const own = Object.keys(RIIGI_KONTO).filter(k => RIIGI_KONTO[k] === v);
+    const nm = RIIGI_KONTO_NIMI[v] ? ' (' + RIIGI_KONTO_NIMI[v] + ')' : '';
+    el.textContent = own.length ? '↳ Näitab: kontod ' + own.join(', ') + nm : '↳ Riigi kontot „' + v + '" ei leitud';
+  }
+  function toggleRiigiPicker() {
+    const p = document.getElementById('riigiPicker');
+    const open = p.classList.toggle('open');
+    if (open) { renderRiigiPicker(''); const s = document.getElementById('riigiPickerSearch'); s.value = ''; s.focus(); }
+  }
+  function filterRiigiPicker(q) { renderRiigiPicker(q); }
+  function renderRiigiPicker(q) {
+    const lq = (q || '').toLowerCase();
+    const list = document.getElementById('riigiPickerList');
+    const codes = [...new Set(Object.values(RIIGI_KONTO))].filter(c => c.toLowerCase().includes(lq) || (RIIGI_KONTO_NIMI[c] || '').toLowerCase().includes(lq));
+    list.innerHTML = codes.length
+      ? codes.map(c => '<div class="obj-picker-row" onclick="pickRiigi(\'' + c + '\')"><span class="opc">' + c + '</span><span class="opn">' + (RIIGI_KONTO_NIMI[c] || '') + '</span></div>').join('')
+      : '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>';
+  }
+  function pickRiigi(code) {
+    document.getElementById('riigiInput').value = code;
+    document.getElementById('riigiPicker').classList.remove('open');
+    updateClearX('riigiClearWrap', 'riigiInput');
+    updateRiigiXlate();
+    applyRiigiFilter();
+  }
+  // Peida kontogrupid, mille Riigi konto ei vasta filtrile (Detailvaade); Koondvaade filtreerib SUMMA_DATA.
+  function applyRiigiFilter() {
+    const val = document.getElementById('riigiInput').value.trim();
     document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => {
-      const match = !riigi || !val || (RIIGI_KONTO[h.dataset.konto] === val);
+      const match = !val || (RIIGI_KONTO[h.dataset.konto] === val);
       h.classList.toggle('riigi-hidden', !match);
       document.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.classList.toggle('riigi-hidden', !match));
     });
@@ -1777,37 +1818,23 @@
   function renderKontoPicker(q) {
     const lq = (q || '').toLowerCase();
     const list = document.getElementById('kontoPickerList');
-    if (_kontoNrType === 'riigi') {
-      // Riigi režiimis: loend riigi kontodest.
-      const codes = [...new Set(Object.values(RIIGI_KONTO))];
-      const filtered = codes.filter(c => c.toLowerCase().includes(lq) || (RIIGI_KONTO_NIMI[c] || '').toLowerCase().includes(lq));
-      list.innerHTML = filtered.length
-        ? filtered.map(c => '<div class="obj-picker-row" onclick="pickKontoCode(\'' + c + '\')"><span class="opc">' + c + '</span><span class="opn">' + (RIIGI_KONTO_NIMI[c] || '') + '</span></div>').join('')
-        : '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>';
-      return;
-    }
     const filtered = SUMMA_DATA.filter(r => r.konto.toLowerCase().includes(lq) || r.nimetus.toLowerCase().includes(lq));
     if (!filtered.length) { list.innerHTML = '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>'; return; }
     list.innerHTML = filtered.map(r =>
       '<div class="obj-picker-row" onclick="pickKontoCode(\'' + r.konto + '\')">' +
       '<span class="opc">' + r.konto + '</span><span class="opn">' + r.nimetus + '</span></div>').join('');
   }
-  // Nimekirjast valimine. Riigi režiimis asendab (üks riigi konto). Oma režiimis: tühja/„0:Z" asendab, muidu lisab komaga.
+  // Nimekirjast valimine: tühja/„0:Z" asendab, muidu lisab komaga (VÕI-loend).
   function pickKontoCode(code) {
     const inp = document.getElementById('kontoInput');
-    if (_kontoNrType === 'riigi') {
-      inp.value = code;
-    } else {
-      let v = inp.value.trim();
-      if (v === '' || v === '0:Z') v = code;
-      else if (/,\s*$/.test(v)) v = v + code;
-      else v = v + ',' + code;
-      inp.value = v;
-    }
+    let v = inp.value.trim();
+    if (v === '' || v === '0:Z') v = code;
+    else if (/,\s*$/.test(v)) v = v + code;
+    else v = v + ',' + code;
+    inp.value = v;
     document.getElementById('kontoPicker').classList.remove('open');
     updateClearX('kontoClearWrap', 'kontoInput');
     updateKontoXlate();
-    applyKontoNrFilter();
     inp.focus();
   }
   function pickKonto(val) {
@@ -1817,29 +1844,17 @@
     updateKontoXlate();
   }
 
-  // Konto välja sisendi käitleja: tühjenda-ristike + elav tõlge + riigi filter.
+  // Konto välja sisendi käitleja: tühjenda-ristike + elav tõlge.
   function onKontoInput() {
     updateClearX('kontoClearWrap', 'kontoInput');
     updateKontoXlate();
-    applyKontoNrFilter();
   }
 
   // Elav tõlge - teisendab otsingusüntaksi tavakeelseks selgituseks.
   function updateKontoXlate() {
     const el = document.getElementById('kontoXlate');
     if (!el) return;
-    const inp = document.getElementById('kontoInput');
-    const v = inp.value.trim();
-    if (_kontoNrType === 'riigi') {
-      if (!v) { el.textContent = '↳ Näitab: kõik riigi kontod'; return; }
-      const own = Object.keys(RIIGI_KONTO).filter(k => RIIGI_KONTO[k] === v);
-      const nm = RIIGI_KONTO_NIMI[v] ? ' (' + RIIGI_KONTO_NIMI[v] + ')' : '';
-      el.textContent = own.length
-        ? '↳ Näitab: riigi konto ' + v + nm + ' → oma kontod ' + own.join(', ')
-        : '↳ Riigi kontot „' + v + '" ei leitud';
-      return;
-    }
-    const s = translateKonto(v);
+    const s = translateKonto(document.getElementById('kontoInput').value.trim());
     el.textContent = s ? '↳ Näitab: ' + s : '';
   }
   // Lühikuju (kuid mitte „52") — muster ilma „kontod, mis…" eesliiteta.
@@ -1905,6 +1920,8 @@
       document.getElementById('kontoLegend').classList.remove('open');
       document.getElementById('kontoPicker').classList.remove('open');
     }
+    const rw = document.getElementById('riigiWrap');
+    if (rw && !rw.contains(e.target)) document.getElementById('riigiPicker').classList.remove('open');
   });
 
   function sidebarFilterChange() {
@@ -3059,7 +3076,8 @@
     const muutusega = document.getElementById('cbMuutusega');
     const saldoga   = document.getElementById('cbSaldoga');
     const vahe      = document.getElementById('selVahesumma');
-    const riigiVal = (_kontoNrType === 'riigi') ? document.getElementById('kontoInput').value.trim() : '';
+    const riigiInp = document.getElementById('riigiInput');
+    const riigiVal = riigiInp ? riigiInp.value.trim() : '';
     const data = SUMMA_DATA.filter(r => {
       if (muutusega && muutusega.checked && r.muutus === 0) return false;
       if (saldoga   && saldoga.checked   && r.loppsaldo === 0) return false;
