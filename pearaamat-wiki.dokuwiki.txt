@@ -194,7 +194,25 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
   * **Kasutaja** - kasutajapõhine filter.
   * **Simulatsioon** - simulatsioonikannete kaasamine/välistamine.
   * **Kontsern** - kontserni/firmade valik.
-  * **Oma / Riigi konto** - kontonumbri tüübi valik.
+  * **Konto lisa filter (Riigikonto jne)** - Konto filtri kõrval „+" (mutrivõti), mille kaudu saab lisada täiendava filtri **konto kaardi väljade** järgi. Esimene väli: **Riigikonto** (konto kaardi standardväli). Kombineerub Konto filtriga (JA) ja toetab sama süntaksit nagu Konto - eelkõige **vahemikku** (nt ''550000:559999''). Vt allpool „Riigikonto filter".
+
+===== Riigikonto filter (Konto + lisa filter) (Faas II) =====
+
+Avaliku sektori asutused kasutavad riigi kontoplaani: igal oma kontol on konto kaardil vaste **Riigi konto**, kusjuures ühe riigi kontoga võib olla seotud MITU oma kontot (nt riigi konto ''551103'' <- oma kontod 525812, 525832, 528101).
+
+Konto filtri kõrval on **„+" (mutrivõti)**, mis avab paneeli „Lisa filter". Sealt saab linnukesega lisada filtri konto kaardi välja järgi; esimene väli on **Riigikonto**. Linnu märkimisel tekib Konto alla „Riigikonto" filtriväli.
+
+  * **Mehhanism on universaalne** - sama „+" kaudu saab tulevikus lisada filtreid ka teiste konto kaardi väljade järgi.
+  * **Kasutab konto kaardi standardvälja** „Riigi konto" (mitte lisavälja).
+  * **Riigi konto väärtused** valitakse samast Kontode registrist (eraldi riigikontode registrit ei ole).
+  * **Kombineerub Konto filtriga (JA):**
+    * Tühi Riigikonto filter ei piira midagi (tavaline aruanne).
+    * ''Kontod: 0:Z'' + ''Riigi konto: 551103'' -> ainult kontod, mille kaardi Riigi konto = 551103.
+  * **Toetab vahemikku** (nagu Konto filter): ''Riigi konto: 550000:559999'' -> kõik kontod, mille Riigi konto jääb vahemikku. Samuti üksikväärtus ja loend (''551103,100000'').
+
+**NB!** Praegu on osal juurutustest riigi konto lisatud ka konto kaardi *lisaväljale* (workaround) ja filtreeritud selle kaudu. Uus lahendus kasutab konto kaardi päris „Riigi konto" vastet, seega lisavälja dubleerimist pole vaja.
+
+Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Riigi konto"); veerg kuvab iga konto riigi konto vaste.
 
 ===== Saldeerimata vaade (Faas II) =====
 

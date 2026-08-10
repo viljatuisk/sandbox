@@ -402,6 +402,7 @@
                 <span class="clear-x" title="Tühjenda" onclick="clearInputField('kontoClearWrap','kontoInput')">✕</span>
               </span>
               <button class="lkp-btn" type="button" title="Kontode nimekiri" onclick="toggleKontoPicker()">🔍</button>
+              <button class="lkp-btn" type="button" title="Lisa filter (konto kaardi väljad)" onclick="toggleKontoFilterFields()" style="border-left:none;">🔧</button>
             </div>
             <div class="obj-picker" id="kontoPicker">
               <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
@@ -417,15 +418,21 @@
               <div class="kl-hint"><span class="kl-sym">,</span>Otsib mitut väärtust (VÕI)</div>
               <div class="kl-hint"><span class="kl-sym">&</span>Kitsendab otsingut, kõik tingimused peavad kehtima (JA)</div>
             </div>
+            <div class="col-picker-panel" id="kontoFilterFieldsPanel" style="top:26px;width:180px;">
+              <div class="col-picker-title">Lisa filter</div>
+              <div class="col-picker-list">
+                <label class="col-picker-item"><input type="checkbox" id="cbFilterRiigikonto" onchange="toggleRiigiFilterField(this.checked)"> Riigikonto</label>
+              </div>
+              <div class="col-picker-footer" onclick="resetKontoFilterFields()">↺ Taasta algseaded</div>
+            </div>
           </div>
           <div class="konto-xlate" id="kontoXlate"></div>
         </div>
-        <div class="sf"><label>Korr. konto</label><select><option value=""></option><option>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
-        <div class="sf"><label>Riigi konto</label>
+        <div class="sf" id="riigiFilterRow" style="display:none;"><label>Riigikonto <span class="help-i" title="Konto kaardi standardväli. Toetab vahemikku, nt 550000:559999">i</span></label>
           <div class="obj-wrap" id="riigiWrap">
             <div class="sf-lookup">
               <span class="inp-clear-wrap" id="riigiClearWrap">
-                <input type="text" id="riigiInput" placeholder="nt 551103" autocomplete="off" oninput="onRiigiInput()" style="border-radius:2px 0 0 2px;">
+                <input type="text" id="riigiInput" placeholder="nt 550010 või 550000:559999" autocomplete="off" oninput="onRiigiInput()" style="border-radius:2px 0 0 2px;">
                 <span class="clear-x" title="Tühjenda" onclick="clearRiigiFilter()">✕</span>
               </span>
               <button class="lkp-btn" type="button" title="Riigi kontode nimekiri" onclick="toggleRiigiPicker()">🔍</button>
@@ -439,6 +446,7 @@
           </div>
           <div class="konto-xlate" id="riigiXlate"></div>
         </div>
+        <div class="sf"><label>Korr. konto</label><select><option value=""></option><option>111201</option><option>111202</option><option>111204</option><option>10101</option><option>211000</option><option>521006</option></select></div>
         <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
         <label class="sf-check"><input type="checkbox" id="cbSaldoga" onchange="sidebarFilterChange()"> Ainult saldoga</label>
       </div>
@@ -1751,8 +1759,25 @@
     });
   }
 
-  // ── RIIGI KONTO FILTER (eraldi väli, kombineerub Konto filtriga) ──
+  // ── RIIGI KONTO FILTER (lisatakse "+"/mutrivõtme kaudu; kombineerub Konto filtriga JA) ──
+  // Universaalne konto-kaardi-välja filter, esimene väli = Riigi konto (konto kaardi standardväli).
   // Tühi = ei piira. Väärtusega: näita ainult kontosid, mille kaardi Riigi konto vastab.
+  // Toetab sama süntaksit nagu Konto: üksikväärtus, vahemik (550000:559999), loend (a,b), wildcard %.
+  function riigiMatch(rk, filter) {
+    if (!filter) return true;
+    if (!rk) return false;
+    return filter.split(',').map(t => t.trim()).filter(Boolean).some(term => {
+      const c = term.indexOf(':');
+      if (c > 0) { const a = term.slice(0, c).trim(), b = term.slice(c + 1).trim(); return rk >= a && rk <= b; }
+      if (term.indexOf('%') >= 0) {
+        const bare = term.replace(/%/g, '');
+        if (term.startsWith('%') && term.endsWith('%')) return rk.includes(bare);
+        if (term.endsWith('%')) return rk.startsWith(bare);
+        if (term.startsWith('%')) return rk.endsWith(bare);
+      }
+      return rk === term;
+    });
+  }
   function onRiigiInput() {
     updateClearX('riigiClearWrap', 'riigiInput');
     updateRiigiXlate();
@@ -1768,9 +1793,13 @@
     const el = document.getElementById('riigiXlate'); if (!el) return;
     const v = document.getElementById('riigiInput').value.trim();
     if (!v) { el.textContent = ''; return; }
-    const own = Object.keys(RIIGI_KONTO).filter(k => RIIGI_KONTO[k] === v);
-    const nm = RIIGI_KONTO_NIMI[v] ? ' (' + RIIGI_KONTO_NIMI[v] + ')' : '';
-    el.textContent = own.length ? '↳ Näitab: kontod ' + own.join(', ') + nm : '↳ Riigi kontot „' + v + '" ei leitud';
+    const own = [...new Set(Object.keys(RIIGI_KONTO).filter(k => riigiMatch(RIIGI_KONTO[k], v)))];
+    if (!own.length) { el.textContent = '↳ Ühtki riigi kontot „' + v + '" ei leitud'; return; }
+    const rks = [...new Set(own.map(k => RIIGI_KONTO[k]))].sort();
+    const rkLabel = rks.length === 1
+      ? 'riigi konto ' + rks[0] + (RIIGI_KONTO_NIMI[rks[0]] ? ' (' + RIIGI_KONTO_NIMI[rks[0]] + ')' : '')
+      : 'riigi kontod ' + rks.join(', ');
+    el.textContent = '↳ Näitab: ' + rkLabel + ' -> kontod ' + own.join(', ');
   }
   function toggleRiigiPicker() {
     const p = document.getElementById('riigiPicker');
@@ -1797,11 +1826,28 @@
   function applyRiigiFilter() {
     const val = document.getElementById('riigiInput').value.trim();
     document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => {
-      const match = !val || (RIIGI_KONTO[h.dataset.konto] === val);
+      const match = !val || riigiMatch(RIIGI_KONTO[h.dataset.konto], val);
       h.classList.toggle('riigi-hidden', !match);
       document.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.classList.toggle('riigi-hidden', !match));
     });
     if (_summaOn) summaFilterChange();
+  }
+
+  // ── "+"/mutrivõtme paneel: lisa filter konto kaardi väljade järgi (universaalne) ──
+  function toggleKontoFilterFields() {
+    document.getElementById('kontoLegend').classList.remove('open');
+    document.getElementById('kontoPicker').classList.remove('open');
+    document.getElementById('kontoFilterFieldsPanel').classList.toggle('open');
+  }
+  function toggleRiigiFilterField(on) {
+    document.getElementById('riigiFilterRow').style.display = on ? '' : 'none';
+    if (!on) { clearRiigiFilter(); }
+    else { const i = document.getElementById('riigiInput'); if (i) i.focus(); }
+  }
+  function resetKontoFilterFields() {
+    document.getElementById('cbFilterRiigikonto').checked = false;
+    toggleRiigiFilterField(false);
+    document.getElementById('kontoFilterFieldsPanel').classList.remove('open');
   }
 
   function toggleKontoLegend() {
@@ -1919,6 +1965,7 @@
     if (w && !w.contains(e.target)) {
       document.getElementById('kontoLegend').classList.remove('open');
       document.getElementById('kontoPicker').classList.remove('open');
+      document.getElementById('kontoFilterFieldsPanel').classList.remove('open');
     }
     const rw = document.getElementById('riigiWrap');
     if (rw && !rw.contains(e.target)) document.getElementById('riigiPicker').classList.remove('open');
@@ -2287,7 +2334,11 @@
     let css = '';
     // Peidame veeru ÜHTMOODI kõigil ridadel (päis + kõik #mainTbody read), et summaread
     // püsiksid andmeridadega joondatud (Deebet/Kreedit ei nihku).
-    const hideCol = (n) => 'thead th:nth-child(' + n + '),#mainTbody tr > td:nth-child(' + n + '){display:none}\n';
+    // Kui Riigi konto veerg on lisatud positsioonile RIIGI_COL_POS, nihkuvad kõik selle
+    // järel olevad fikseeritud veerud +1 võrra - arvesta seda peitmise nth-child indeksites.
+    const off = colVisible.riigikonto ? 1 : 0;
+    const adj = (n) => (off && n >= RIIGI_COL_POS) ? n + off : n;
+    const hideCol = (n) => 'thead th:nth-child(' + adj(n) + '),#mainTbody tr > td:nth-child(' + adj(n) + '){display:none}\n';
     COL_DEFS.forEach(c => {
       if (c.locked) return; // kohustuslikke veerge kunagi ei peideta
       if (c.group) {
@@ -2456,10 +2507,34 @@
     document.querySelectorAll('[data-field-col="' + key + '"]').forEach(el => el.remove());
   }
 
-  // Riigi konto lisaveerg - konto kaardi vaste iga konto kohta (grupipäis + andmeread).
+  // Riigi konto lisaveerg - kuvatakse Konto nimi JÄREL (visuaalne veerg 3), nagu "Vali tulbad" all.
+  // Tabel on fikseeritud 29-veeruline (grupipäised/summaread kasutavad colspan-i), seega lisame
+  // veeru colspan-teadlikult ja nihutame nth-child peitmisloogikat (vt applyColStyles).
+  const RIIGI_COL_POS = 3; // Konto=1, Konto nimi=2, Riigi konto=3
+  // Lisa lahter visuaalsele positsioonile `pos`. Kui pos langeb colspan-lahtri sisse, laienda seda
+  // (blank), muidu lisa uus lahter ette. Tagastab 'inserted' | 'widened' | 'appended'.
+  function _insertCellAtPos(tr, pos, newTd) {
+    let acc = 0;
+    const cells = tr.children;
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const span = cell.colSpan || 1;
+      const start = acc + 1, end = acc + span;
+      if (pos >= start && pos <= end) {
+        if (start === pos) { tr.insertBefore(newTd, cell); return 'inserted'; }
+        cell.colSpan = span + 1;
+        cell.dataset.riigiWidened = (parseInt(cell.dataset.riigiWidened || '0', 10) + 1);
+        return 'widened';
+      }
+      acc = end;
+    }
+    tr.appendChild(newTd);
+    return 'appended';
+  }
   function toggleRiigiKontoCol(on) {
     colVisible.riigikonto = on;
-    if (on) addRiigiKontoColumn(); else removeFieldColumn('riigikonto');
+    if (on) addRiigiKontoColumn(); else removeRiigiKontoColumn();
+    if (!_summaOn) applyColStyles();
   }
   function addRiigiKontoColumn() {
     const theadRow = document.querySelector('table thead tr');
@@ -2468,18 +2543,25 @@
     th.dataset.fieldCol = 'riigikonto';
     th.style.width = '90px';
     th.textContent = 'Riigi konto';
-    theadRow.appendChild(th);
+    _insertCellAtPos(theadRow, RIIGI_COL_POS, th);
     document.querySelectorAll('#mainTbody tr').forEach(tr => {
-      const td = document.createElement('td');
-      td.dataset.fieldCol = 'riigikonto';
       let konto = '';
-      if (tr.classList.contains('grp-header') && tr.dataset.konto) konto = tr.dataset.konto;
-      else if (tr.classList.contains('data') && tr.getAttribute('data-grp')) {
+      if (tr.classList.contains('data') && tr.getAttribute('data-grp')) {
         const c0 = tr.querySelector('td');
         konto = c0 ? c0.textContent.trim() : '';
       }
+      const td = document.createElement('td');
+      td.dataset.fieldCol = 'riigikonto';
       if (konto && RIIGI_KONTO[konto]) { td.className = 'muted'; td.textContent = RIIGI_KONTO[konto]; }
-      tr.appendChild(td);
+      _insertCellAtPos(tr, RIIGI_COL_POS, td);
+    });
+  }
+  function removeRiigiKontoColumn() {
+    document.querySelectorAll('[data-field-col="riigikonto"]').forEach(el => el.remove());
+    document.querySelectorAll('[data-riigi-widened]').forEach(cell => {
+      const w = parseInt(cell.dataset.riigiWidened, 10) || 1;
+      cell.colSpan = (cell.colSpan || 1) - w;
+      delete cell.dataset.riigiWidened;
     });
   }
 
@@ -3081,7 +3163,7 @@
     const data = SUMMA_DATA.filter(r => {
       if (muutusega && muutusega.checked && r.muutus === 0) return false;
       if (saldoga   && saldoga.checked   && r.loppsaldo === 0) return false;
-      if (riigiVal && RIIGI_KONTO[r.konto] !== riigiVal) return false;
+      if (riigiVal && !riigiMatch(RIIGI_KONTO[r.konto], riigiVal)) return false;
       return true;
     });
     _renderSummaRows(data, vahe ? vahe.value : '');
