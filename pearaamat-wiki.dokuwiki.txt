@@ -17,7 +17,7 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 ^ Filter ^ Kirjeldus ^
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
 | **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA, märk seadistatav), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010-1011, välja arvatud konto 1000"). |
-| **Korr. konto** | Korrespondeeriva konto filter. |
+| **Korr. konto** (KANDED) | Kande **vastaskonto** filter - piirab kandeid vastaskonto järgi. Kuulub **KANDED** sektsiooni (kanderea tunnus), mitte KONTOD alla. NB! Erineb konto kaardi „Korr. konto" väljast; viimane tuleb II faasis KONTOD „+" filtrina (vt //Konto lisa filter//). |
 | **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Täpne käitumine (eraldajad ''+'' / '','' , täidetud/täitmata ''%'' / ''#'' , tase + objekt koostoime) - vt jaotis //Objekt ja Objekti tase - väljade käitumine//. |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
@@ -213,6 +213,15 @@ Konto filtri kõrval on **„+" (mutrivõti)**, mis avab paneeli „Lisa filter"
 **NB!** Praegu on osal juurutustest riigi konto lisatud ka konto kaardi *lisaväljale* (workaround) ja filtreeritud selle kaudu. Uus lahendus kasutab konto kaardi päris „Riigi konto" vastet, seega lisavälja dubleerimist pole vaja.
 
 Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Riigi konto"); veerg kuvab iga konto riigi konto vaste.
+
+==== Filtrite loogiline jaotus: KONTOD vs KANDED ====
+
+„+" filter teeb selgeks kahe filtrigrupi erineva rolli:
+
+  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''+ Riigi konto'', tulevikus ''+ Korr. konto'' jne). Vastab küsimusele: //milliste kontode tehinguid näitan?//
+  * **KANDED** - **kanderea omaduste** filtrid (''Korr. konto'' ehk kande vastaskonto, Objekt, Kande tüüp, Selgitus jne). Vastab küsimusele: //milliseid kandeid näitan?//
+
+**Korr. konto kahetähenduslikkus.** Konto kaardil on väli „Korr. konto" (konto vaikimisi vastaskonto) - see kuulub KONTOD „+" filtri alla (Faas II). Kanderea „Korr. konto" (konkreetse kande vastaskonto) kuulub KANDED alla. Segaduse vältimiseks on aruande praegune „Korr. konto" filter (kande vastaskonto) juba **KANDED** sektsioonis; kaardi-põhine „+ Korr. konto" lisandub eraldi KONTOD „+" alla.
 
 ===== Saldeerimata vaade (Faas II) =====
 
