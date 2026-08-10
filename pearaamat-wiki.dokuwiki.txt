@@ -140,9 +140,7 @@ Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetus
 
 Nii kajastavad nii saldod kui liikumised **sama objektidimensiooni** ja aruanne klapib (Algsaldo + Muutus = Lõppsaldo).
 
-<WRAP tip>
 **NB - erinevus vanast pearaamatust.** Vanas aruandes objekti taseme filter **ei mõjunud** saldodele - näidati konto kogusaldot üle kõigi objektide, kuigi kanded olid filtreeritud. See oli eksitav: kuvatud saldo ei vastanud kuvatud kannetele, ja "filtreeri taseme järgi" andis teistsuguse tulemuse kui "filtreeri konkreetse objekti järgi" (kuigi tasemel oli sama objekt). Uus loogika on dimensiooniliselt järjekindel ja õige.
-</WRAP>
 
 **Eeldus:** objektipõhised algsaldod peavad olema usaldusväärselt jälgitavad (algsaldo-kanded objektiga märgitud). Kui ajalooliselt on algsaldosid ilma objektita, võib objekti-filtreeritud algsaldo olla puudulik.
 
