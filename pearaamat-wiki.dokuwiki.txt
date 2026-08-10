@@ -189,7 +189,7 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
 ===== Laiendatud filtrid (Faas II) =====
 
-  * **Kontoklass** - filtreerimine kontoklasside järgi.
+  * **Kontoklass** - filtreerimine kontoklasside järgi. Paikneb **KONTOD** sektsioonis (kontoklass on konto kaardi omadus), mitte eraldi filtrigrupina.
   * **Hankija / Klient** - koos nende andmeväljade valikuga (vali lisaväljad).
   * **Kasutaja** - kasutajapõhine filter.
   * **Simulatsioon** - simulatsioonikannete kaasamine/välistamine.
@@ -218,7 +218,7 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 „+" filter teeb selgeks kahe filtrigrupi erineva rolli:
 
-  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''+ Riigi konto'', tulevikus ''+ Korr. konto'' jne). Vastab küsimusele: //milliste kontode tehinguid näitan?//
+  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''Kontoklass'', ''+ Riigi konto'', ''+ Korr. konto'', ''+ lisaväljad'' jne). Vastab küsimusele: //milliste kontode tehinguid näitan?//
   * **KANDED** - **kanderea omaduste** filtrid (''Korr. konto'' ehk kande vastaskonto, Objekt, Kande tüüp, Selgitus jne). Vastab küsimusele: //milliseid kandeid näitan?//
 
 **Korr. konto kahetähenduslikkus.** Konto kaardil on väli „Korr. konto" (konto vaikimisi vastaskonto) - see kuulub KONTOD „+" filtri alla (Faas II). Kanderea „Korr. konto" (konkreetse kande vastaskonto) kuulub KANDED alla. Segaduse vältimiseks on aruande praegune „Korr. konto" filter (kande vastaskonto) juba **KANDED** sektsioonis; kaardi-põhine „+ Korr. konto" lisandub eraldi KONTOD „+" alla.
