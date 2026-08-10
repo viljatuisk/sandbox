@@ -223,6 +223,10 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 **Korr. konto kahetähenduslikkus.** Konto kaardil on väli „Korr. konto" (konto vaikimisi vastaskonto) - see kuulub KONTOD „+" filtri alla (Faas II). Kanderea „Korr. konto" (konkreetse kande vastaskonto) kuulub KANDED alla. Segaduse vältimiseks on aruande praegune „Korr. konto" filter (kande vastaskonto) juba **KANDED** sektsioonis; kaardi-põhine „+ Korr. konto" lisandub eraldi KONTOD „+" alla.
 
+**Konto kaardi lisaväljad kuuluvad samuti KONTOD „+" alla.** Lisaväli on konto kaardi omadus, seega järgib sama loogikat - lisaväljade järgi filtreerimine käib KONTOD „+" mehhanismi kaudu (nt lisaväli „Consolidation group"), mitte eraldi „Lisaväljad" sektsioonina. Prototüübis on „+" all näiteks Riigikonto, Korr. konto ja lisaväli „Consolidation group"; eraldi „Lisaväljad" sektsioon on eemaldatud.
+
+**NB! Lisavälja objekt.** „Lisaväljad" on objekti-mõttes mitmetähenduslik (lisavälju on nii konto kaardil kui kanderea/vautšeri tasemel). Väli läheb sinna sektsiooni, mille objektile ta kuulub: **konto kaardi** lisaväli → KONTOD „+"; **kande** lisaväli → KANDED. Aruande praeguse lisaväljade filtri objekti-tase tuleb arendajaga üle kontrollida.
+
 ===== Saldeerimata vaade (Faas II) =====
 
 Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (proovibilansi loogika, loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
