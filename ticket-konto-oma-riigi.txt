@@ -48,12 +48,16 @@ NOUE
 3. Tulemus: koik oma kontod, mille Riigi konto vastab filtrile, oma
    ridadena (Detailvaade: kanded konto kaupa; Koondvaade: rida konto kohta).
 
-UI ettepanek (prototuubis olemas):
-   KONTOD sektsioonis luliti  Konto nr: [ Oma ] [ Riigi ]
-   - "Oma" (vaikimisi): Konto filter = oma kontod (nagu tana).
-   - "Riigi": Konto filter tolgendatakse RIIGI kontode koodidena; aruanne
-     naitab oma kontosid, mille Riigi konto vastab sisestusele.
-   (Alternatiiv: eraldi "Riigikonto" filtri vaLi Konto valja korval.)
+LAHENDUS (arendaja plaan): Konto + eraldi Riigi konto filter
+   KONTOD sektsioonis on Konto valja korval eraldi "Riigi konto" filtri vali
+   (piltlikult nagu Hankija lisainfo valja filter).
+   - Molemad filtrid on VALIKULISED ja kombineeruvad (JA):
+       Konto (nt 0:Z) + Riigi konto (nt 551103) -> ainult need oma kontod,
+       millel on see riigi konto.
+   - Tuhi Riigi konto filter ei piira midagi (tavaline aruanne).
+   - Ainult Riigi konto taidetud (Konto 0:Z) = koik selle riigi kontoga
+     seotud oma kontod.
+   - EI kasuta enam "Oma/Riigi" lulitit.
 
 
 =========================================================================
@@ -101,11 +105,10 @@ LAHTISED KUSIMUSED (kinnitada tootejuht / raamatupidaja)
 =========================================================================
 PROTOTUUP
 =========================================================================
-pearaamat-prototyyp-versioon2.html - TOIMIV demo:
-- KONTOD sektsioonis luliti "Konto nr: Oma / Riigi".
-- Riigi peale: Konto filter = riigi konto (551103 <- 525812/525832/528101;
-  100000 <- 10101/111201/111202/111204 jne). Kuvatakse ainult seotud oma
-  kontod (Detail + Koond). Konto picker loetleb riigi kontod; elav tolge
-  selgitab seose.
+pearaamat-prototyyp-versioon2.html - TOIMIV demo (arendaja plaan):
+- KONTOD sektsioonis eraldi "Riigi konto" filtri vali (Konto + Riigi konto
+  kombineeruvad). Nt Riigi konto 551103 -> kuvab 525812/525832/528101.
+  Demo vasted: 551103<-3 kontot, 100000<-4 kontot jne. Toimib Detail+Koond.
+  Filtri picker loetleb riigi kontod; elav tolge naitab seotud oma kontod.
 - "Vali tulbad" all "Riigi konto" veeru linnuke.
 Faas II.
