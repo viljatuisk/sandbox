@@ -397,7 +397,7 @@
           <button class="knt-btn active" id="btnOmaKonto" onclick="setKontoNrType('oma')">Oma</button>
           <button class="knt-btn" id="btnRiigiKonto" onclick="setKontoNrType('riigi')">Riigi</button>
         </div>
-        <div class="sf"><label>Konto</label>
+        <div class="sf"><label>Konto <span class="help-i" onclick="openKontoHelp()" title="Ava juhend">?</span></label>
           <div class="obj-wrap" id="kontoWrap">
             <div class="sf-lookup">
               <button class="lkp-btn" type="button" title="Otsingu abi / vali kõik kontod" onclick="toggleKontoLegend()" style="border-left:1px solid #9ab8d4;border-right:none;border-radius:2px 0 0 2px;">⊞</button>
@@ -1371,6 +1371,66 @@
   </div>
 </div>
 
+<div class="wiki-overlay" id="kontoHelpOverlay" onclick="if(event.target===this)closeKontoHelp()">
+  <div class="wiki-modal">
+    <div class="wiki-modal-head">
+      <span class="wm-title">Konto otsing - juhend</span>
+      <button class="wm-close" onclick="closeKontoHelp()" title="Sulge">&times;</button>
+    </div>
+    <div class="wiki-body">
+      <p>Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse <b>elav tõlge</b> - sisestuse tavakeelne selgitus.</p>
+
+      <h3><code>0:Z</code> - kõik kontod</h3>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>0:Z</code></td><td>kõik kontod</td></tr>
+      </table>
+
+      <h3><code>:</code> - vahemik</h3>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>1000:1999</code></td><td>kontod 1000-1999</td></tr>
+        <tr><td><code>010:1011</code></td><td>kontod 010-1011</td></tr>
+      </table>
+
+      <h3><code>,</code> - mitu väärtust (VÕI)</h3>
+      <p>Konto vastab <b>vähemalt ühele</b> loetletud väärtusele (laiendab tulemust).</p>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>1000,2000</code></td><td>konto 1000 või konto 2000</td></tr>
+        <tr><td><code>10101,111201,521000</code></td><td>kontod 10101, 111201 või 521000</td></tr>
+        <tr><td><code>10%,52%</code></td><td>kontod, mis algavad „10" või „52"</td></tr>
+      </table>
+
+      <h3><code>&</code> - kõik tingimused (JA)</h3>
+      <p>Konto peab vastama <b>kõigile</b> tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega. Märk on seadistatav (süsteemiseadistus „Mitme teksti korraga otsingu märk": <code>&</code>, <code>+</code>, <code>|</code> või tühi).</p>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>10%&%5</code></td><td>kontod, mis algavad „10" ning sisaldavad „5"</td></tr>
+        <tr><td><code>5%&!52%</code></td><td>kontod, mis algavad „5", kuid mitte „52"</td></tr>
+        <tr><td><code>4%&%0</code></td><td>kontod, mis algavad „4" ning sisaldavad „0"</td></tr>
+      </table>
+
+      <h3><code>%</code> - metamärk (asendab tähti/numbreid)</h3>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>10%</code></td><td>kontod, mis algavad „10"</td></tr>
+        <tr><td><code>%5</code></td><td>kontod, mis lõpevad „5"</td></tr>
+        <tr><td><code>%50%</code></td><td>kontod, mis sisaldavad „50"</td></tr>
+      </table>
+
+      <h3><code>!</code> - eitus (välistus)</h3>
+      <p><code>!</code> eemaldab vastavad kontod tulemusest. <b>NB!</b> <code>!</code> üksi ei tööta - ette peab tulema kontode hulk (vahemik, <code>0:Z</code> vms), millest välistatakse.</p>
+      <table>
+        <tr><th>Sisestus</th><th>Tähendus</th></tr>
+        <tr><td><code>0:Z,!1000</code></td><td>kõik kontod, välja arvatud konto 1000</td></tr>
+        <tr><td><code>010:1011,!1000</code></td><td>kontod 010-1011, välja arvatud konto 1000</td></tr>
+        <tr><td><code>4%,!42%</code></td><td>kontod, mis algavad „4", välja arvatud need, mis algavad „42"</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
 <div class="mx-overlay" id="mxOverlay" onclick="if(event.target===this)closeObjMatrix()">
   <div class="mx-modal">
     <div class="mx-head">
@@ -1408,7 +1468,9 @@
     } else { body.scrollTop = 0; }
   }
   function closeObjHelp() { document.getElementById('wikiOverlay').classList.remove('open'); }
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeObjHelp(); });
+  function openKontoHelp() { document.getElementById('kontoHelpOverlay').classList.add('open'); }
+  function closeKontoHelp() { document.getElementById('kontoHelpOverlay').classList.remove('open'); }
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { closeObjHelp(); closeKontoHelp(); } });
 
   function toggleKkk() {
     document.getElementById('kkkPanel').classList.toggle('open');
