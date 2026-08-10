@@ -422,6 +422,7 @@
               <div class="col-picker-title">Lisa filter</div>
               <div class="col-picker-list">
                 <label class="col-picker-item"><input type="checkbox" id="cbFilterRiigikonto" onchange="toggleRiigiFilterField(this.checked)"> Riigikonto</label>
+                <label class="col-picker-item" title="Konto kaardi vaikimisi vastaskonto (erineb KANDED all olevast kande vastaskontost)"><input type="checkbox" id="cbFilterKorrkonto" onchange="toggleKorrFilterField(this.checked)"> Korr. konto</label>
               </div>
               <div class="col-picker-footer" onclick="resetKontoFilterFields()">↺ Taasta algseaded</div>
             </div>
@@ -445,6 +446,24 @@
             </div>
           </div>
           <div class="konto-xlate" id="riigiXlate"></div>
+        </div>
+        <div class="sf" id="korrFilterRow" style="display:none;"><label>Korr. konto (kaardilt) <span class="help-i" title="Konto kaardi vaikimisi vastaskonto. Erineb KANDED all olevast Korr. konto (kande vastaskonto) filtrist. Toetab vahemikku, nt 212000:212999">i</span></label>
+          <div class="obj-wrap" id="korrCardWrap">
+            <div class="sf-lookup">
+              <span class="inp-clear-wrap" id="korrCardClearWrap">
+                <input type="text" id="korrCardInput" placeholder="nt 212211 või 212000:212999" autocomplete="off" oninput="onKorrCardInput()" style="border-radius:2px 0 0 2px;">
+                <span class="clear-x" title="Tühjenda" onclick="clearKorrCardFilter()">✕</span>
+              </span>
+              <button class="lkp-btn" type="button" title="Konto kaardi korr. kontode nimekiri" onclick="toggleKorrCardPicker()">🔍</button>
+            </div>
+            <div class="obj-picker" id="korrCardPicker">
+              <div style="padding:4px 8px;border-bottom:1px solid #e0e8f0;background:#f5f8fb;">
+                <input type="text" id="korrCardPickerSearch" placeholder="Otsi korr. kontot..." oninput="filterKorrCardPicker(this.value)" style="width:100%;height:22px;border:1px solid #b8c4d0;border-radius:2px;padding:0 6px;font-size:11px;font-family:Arial,sans-serif;box-sizing:border-box;">
+              </div>
+              <div class="obj-picker-list" id="korrCardPickerList"></div>
+            </div>
+          </div>
+          <div class="konto-xlate" id="korrCardXlate"></div>
         </div>
         <label class="sf-check"><input type="checkbox" id="cbMuutusega" onchange="sidebarFilterChange()"> Ainult muutusega</label>
         <label class="sf-check"><input type="checkbox" id="cbSaldoga" onchange="sidebarFilterChange()"> Ainult saldoga</label>
@@ -1822,15 +1841,69 @@
     updateRiigiXlate();
     applyRiigiFilter();
   }
-  // Peida kontogrupid, mille Riigi konto ei vasta filtrile (Detailvaade); Koondvaade filtreerib SUMMA_DATA.
-  function applyRiigiFilter() {
-    const val = document.getElementById('riigiInput').value.trim();
+  // Peida kontogrupid, mis ei vasta AKTIIVSETELE konto-kaardi-välja filtritele (Riigikonto JA Korr. konto).
+  // Kõik lisatud filtrid peavad kehtima (JA). Detailvaade peidab grupid; Koondvaade filtreerib SUMMA_DATA.
+  function cardFiltersMatch(konto) {
+    const rv = (document.getElementById('riigiInput') || {}).value ? document.getElementById('riigiInput').value.trim() : '';
+    const kv = (document.getElementById('korrCardInput') || {}).value ? document.getElementById('korrCardInput').value.trim() : '';
+    if (rv && !riigiMatch(RIIGI_KONTO[konto], rv)) return false;
+    if (kv && !riigiMatch(KAARDI_KORR[konto], kv)) return false;
+    return true;
+  }
+  function applyCardFilters() {
     document.querySelectorAll('#mainTbody tr.grp-header').forEach(h => {
-      const match = !val || riigiMatch(RIIGI_KONTO[h.dataset.konto], val);
+      const match = cardFiltersMatch(h.dataset.konto);
       h.classList.toggle('riigi-hidden', !match);
       document.querySelectorAll('[data-grp="' + h.dataset.group + '"]').forEach(r => r.classList.toggle('riigi-hidden', !match));
     });
     if (_summaOn) summaFilterChange();
+  }
+  function applyRiigiFilter() { applyCardFilters(); }
+
+  // ── KORR. KONTO (konto kaardilt) - II faasi "+" filtri teine väli (universaalne mehhanism) ──
+  function onKorrCardInput() {
+    updateClearX('korrCardClearWrap', 'korrCardInput');
+    updateKorrCardXlate();
+    applyCardFilters();
+  }
+  function clearKorrCardFilter() {
+    document.getElementById('korrCardInput').value = '';
+    updateClearX('korrCardClearWrap', 'korrCardInput');
+    updateKorrCardXlate();
+    applyCardFilters();
+  }
+  function updateKorrCardXlate() {
+    const el = document.getElementById('korrCardXlate'); if (!el) return;
+    const v = document.getElementById('korrCardInput').value.trim();
+    if (!v) { el.textContent = ''; return; }
+    const own = [...new Set(Object.keys(KAARDI_KORR).filter(k => riigiMatch(KAARDI_KORR[k], v)))];
+    if (!own.length) { el.textContent = '↳ Ühtki konto kaardi korr. kontot „' + v + '" ei leitud'; return; }
+    const ks = [...new Set(own.map(k => KAARDI_KORR[k]))].sort();
+    const kLabel = ks.length === 1
+      ? 'korr. konto ' + ks[0] + (KAARDI_KORR_NIMI[ks[0]] ? ' (' + KAARDI_KORR_NIMI[ks[0]] + ')' : '')
+      : 'korr. kontod ' + ks.join(', ');
+    el.textContent = '↳ Näitab: kontod, mille kaardil ' + kLabel + ' -> ' + own.join(', ');
+  }
+  function toggleKorrCardPicker() {
+    const p = document.getElementById('korrCardPicker');
+    const open = p.classList.toggle('open');
+    if (open) { renderKorrCardPicker(''); const s = document.getElementById('korrCardPickerSearch'); s.value = ''; s.focus(); }
+  }
+  function filterKorrCardPicker(q) { renderKorrCardPicker(q); }
+  function renderKorrCardPicker(q) {
+    const lq = (q || '').toLowerCase();
+    const list = document.getElementById('korrCardPickerList');
+    const codes = [...new Set(Object.values(KAARDI_KORR))].filter(c => c.toLowerCase().includes(lq) || (KAARDI_KORR_NIMI[c] || '').toLowerCase().includes(lq));
+    list.innerHTML = codes.length
+      ? codes.map(c => '<div class="obj-picker-row" onclick="pickKorrCard(\'' + c + '\')"><span class="opc">' + c + '</span><span class="opn">' + (KAARDI_KORR_NIMI[c] || '') + '</span></div>').join('')
+      : '<div style="padding:8px;color:#889;font-size:11px;">Vasteid pole</div>';
+  }
+  function pickKorrCard(code) {
+    document.getElementById('korrCardInput').value = code;
+    document.getElementById('korrCardPicker').classList.remove('open');
+    updateClearX('korrCardClearWrap', 'korrCardInput');
+    updateKorrCardXlate();
+    applyCardFilters();
   }
 
   // ── "+"/mutrivõtme paneel: lisa filter konto kaardi väljade järgi (universaalne) ──
@@ -1844,9 +1917,16 @@
     if (!on) { clearRiigiFilter(); }
     else { const i = document.getElementById('riigiInput'); if (i) i.focus(); }
   }
+  function toggleKorrFilterField(on) {
+    document.getElementById('korrFilterRow').style.display = on ? '' : 'none';
+    if (!on) { clearKorrCardFilter(); }
+    else { const i = document.getElementById('korrCardInput'); if (i) i.focus(); }
+  }
   function resetKontoFilterFields() {
     document.getElementById('cbFilterRiigikonto').checked = false;
     toggleRiigiFilterField(false);
+    document.getElementById('cbFilterKorrkonto').checked = false;
+    toggleKorrFilterField(false);
     document.getElementById('kontoFilterFieldsPanel').classList.remove('open');
   }
 
@@ -1969,6 +2049,8 @@
     }
     const rw = document.getElementById('riigiWrap');
     if (rw && !rw.contains(e.target)) document.getElementById('riigiPicker').classList.remove('open');
+    const kw = document.getElementById('korrCardWrap');
+    if (kw && !kw.contains(e.target)) document.getElementById('korrCardPicker').classList.remove('open');
   });
 
   function sidebarFilterChange() {
@@ -2736,6 +2818,17 @@
     '500000': 'Tööjõukulud',
     '551103': 'Majanduskulud',
   };
+  // Konto kaardi vaikimisi vastaskonto ("Korr. konto" konto kaardil) - demo. NB! erineb kande vastaskontost.
+  const KAARDI_KORR = {
+    '525812': '212211', '525832': '212211', '528101': '212211',
+    '111201': '510000', '111204': '510000',
+    '10101': '400000', '211000': '400000',
+  };
+  const KAARDI_KORR_NIMI = {
+    '212211': 'Võlad tarnijatele',
+    '510000': 'Müügitulu',
+    '400000': 'Ostjatelt laekumata',
+  };
   const ALGSALDO_DIM = {
     byObject: {
       'OBJ001':        { '111201': 1200,    '211000': 2500    },
@@ -3158,12 +3251,10 @@
     const muutusega = document.getElementById('cbMuutusega');
     const saldoga   = document.getElementById('cbSaldoga');
     const vahe      = document.getElementById('selVahesumma');
-    const riigiInp = document.getElementById('riigiInput');
-    const riigiVal = riigiInp ? riigiInp.value.trim() : '';
     const data = SUMMA_DATA.filter(r => {
       if (muutusega && muutusega.checked && r.muutus === 0) return false;
       if (saldoga   && saldoga.checked   && r.loppsaldo === 0) return false;
-      if (riigiVal && !riigiMatch(RIIGI_KONTO[r.konto], riigiVal)) return false;
+      if (!cardFiltersMatch(r.konto)) return false; // Riigikonto JA Korr. konto (kaardilt) filtrid
       return true;
     });
     _renderSummaRows(data, vahe ? vahe.value : '');

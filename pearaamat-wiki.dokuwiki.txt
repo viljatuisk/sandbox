@@ -202,7 +202,7 @@ Avaliku sektori asutused kasutavad riigi kontoplaani: igal oma kontol on konto k
 
 Konto filtri kõrval on **„+" (mutrivõti)**, mis avab paneeli „Lisa filter". Sealt saab linnukesega lisada filtri konto kaardi välja järgi; esimene väli on **Riigikonto**. Linnu märkimisel tekib Konto alla „Riigikonto" filtriväli.
 
-  * **Mehhanism on universaalne** - sama „+" kaudu saab tulevikus lisada filtreid ka teiste konto kaardi väljade järgi.
+  * **Mehhanism on universaalne** - sama „+" kaudu saab lisada filtreid ka teiste konto kaardi väljade järgi. Prototüübis on demona lisaks Riigikontole ka **Korr. konto (kaardilt)** - konto kaardi vaikimisi vastaskonto (erineb KANDED all olevast kande vastaskontost). Mõlemad kombineeruvad Konto filtriga ja omavahel (JA).
   * **Kasutab konto kaardi standardvälja** „Riigi konto" (mitte lisavälja).
   * **Riigi konto väärtused** valitakse samast Kontode registrist (eraldi riigikontode registrit ei ole).
   * **Kombineerub Konto filtriga (JA):**
