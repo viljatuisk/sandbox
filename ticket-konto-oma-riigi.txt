@@ -1,0 +1,111 @@
+TICKET: Pearaamat > Riigikonto filter (Konto nr: Oma / Riigi)
+Faas: II
+
+=========================================================================
+TAUST / MIKS
+=========================================================================
+Avaliku sektori asutused kasutavad riigi kontoplaani (koondplaani). Igal
+oma kontol on konto kaardil vaste "Riigi konto" - uhe Riigi kontoga voib
+olla seotud MITU oma kontot (nt riigi konto 551103 <- oma kontod 522201,
+522202, 522203, 522301, 522303, 522401, 533401, 537001).
+
+Soov: Pearaamatus saada voimalus filtreerida RIIGI KONTO jargi.
+
+
+=========================================================================
+SOOV / KASUTUSLUGU
+=========================================================================
+Kasutaja maarab Riigikonto filtri (nt 551103). Aruandesse kuvatakse KOIK
+selle Riigi kontoga seotud oma kontode tehingud/saldod.
+
+Oma kontod kuvatakse ERALDI RIDADENA (nagu tavaliselt), lihtsalt piirdutakse
+nende kontodega, mille Riigi konto vastab filtrile. St see on FILTER, mitte
+kontode koondamine uheks Riigi konto reaks.
+
+Naide (vt pilt): Riigikonto = 551103 -> aruandes read 522201 Koristusvahendid,
+522202 Puhastusvahendid, 522203, 522301, 522303, 522401, 533401, 537001 -
+koik oma kontod, mille Riigi konto = 551103, oma saldode/kaibega + Kontod
+kokku.
+
+
+=========================================================================
+PRAEGUNE AJUTINE LAHENDUS (workaround)
+=========================================================================
+Hetkel on see lahendatud nii, et Riigi konto on kontokaardile margitud
+LISAKS ka LISAVALJALE, ja kasutaja filtreerib selle lisavalja kaudu.
+
+Uus lahendus peaks kasutama kontokaardi PARIS "Riigi konto" vastet (mitte
+lisavalja workaround'i), et see oleks korrektne ja hallatav.
+
+
+=========================================================================
+NOUE
+=========================================================================
+1. Pearaamatus peab saama filtreerida Riigi konto jargi (uks voi mitu
+   riigi kontot; toetada sama otsingusuntaksit nagu Konto vaLi - vahemik,
+   loend jne).
+2. Filter kasutab kontokaardi "Riigi konto" vastet.
+3. Tulemus: koik oma kontod, mille Riigi konto vastab filtrile, oma
+   ridadena (Detailvaade: kanded konto kaupa; Koondvaade: rida konto kohta).
+
+UI ettepanek (prototuubis olemas):
+   KONTOD sektsioonis luliti  Konto nr: [ Oma ] [ Riigi ]
+   - "Oma" (vaikimisi): Konto filter = oma kontod (nagu tana).
+   - "Riigi": Konto filter tolgendatakse RIIGI kontode koodidena; aruanne
+     naitab oma kontosid, mille Riigi konto vastab sisestusele.
+   (Alternatiiv: eraldi "Riigikonto" filtri vaLi Konto valja korval.)
+
+
+=========================================================================
+KAITUMINE DETAILVAATES
+=========================================================================
+- Kuvatakse ainult oma kontod, mille Riigi konto vastab filtrile.
+- Iga oma konto tavalisel kujul: grupipais + kanded + Kokku (periood) +
+  Loppsaldo. (Kontosid EI koondata Riigi konto alla - jaavad eraldi.)
+
+
+=========================================================================
+KAITUMINE KOONDVAATES
+=========================================================================
+- Uks rida iga oma konto kohta (Algsaldo/Deebet/Kreedit/Muutus/Loppsaldo),
+  piirdudes kontodega, mille Riigi konto vastab filtrile.
+- Lopus "Kontod kokku".
+
+
+=========================================================================
+TESTID
+=========================================================================
+1. Vaikimisi "Oma": aruanne toimib nagu tana.
+2. "Riigi" + Riigikonto filter = 551103 -> kuvatakse KOIK selle riigi
+   kontoga seotud oma kontod (522201, 522202, ... 537001), igauks oma
+   real; mitte ainult uks.
+3. Konto, mille Riigi konto EI vasta filtrile, ei kuvata.
+4. Detailvaade: iga konto grupp + kanded + Kokku (periood) + Loppsaldo.
+   Koondvaade: rida konto kohta + Kontod kokku.
+5. Summade klappivus: Kontod kokku = kuvatud kontode summade summa.
+6. Filtri saab tuhjendada / luliti "Oma" peale -> taastub tavavaade.
+
+
+=========================================================================
+LAHTISED KUSIMUSED (kinnitada tootejuht / raamatupidaja)
+=========================================================================
+- Riigi konto VEERG aruandes: prototuubis on see nuud "Vali tulbad" all
+  linnukesega valitav (naitab iga konto riigi konto vastet). Kinnitada, kas
+  jaab nii voi peaks olema alati nahtav riigi mode's.
+- Kas soovitakse ka VOIMALUST kuvada koondatult Riigi konto kaupa (uks
+  rida riigi konto kohta)? (Praegune soov on FILTER + oma kontode read.)
+- Kas Riigi konto vasteta kontode kaitumine (kui filter tuhi, siis koik;
+  aga kui keegi otsib vasteta - eraldi juht?).
+
+
+=========================================================================
+PROTOTUUP
+=========================================================================
+pearaamat-prototyyp-versioon2.html - TOIMIV demo:
+- KONTOD sektsioonis luliti "Konto nr: Oma / Riigi".
+- Riigi peale: Konto filter = riigi konto (551103 <- 525812/525832/528101;
+  100000 <- 10101/111201/111202/111204 jne). Kuvatakse ainult seotud oma
+  kontod (Detail + Koond). Konto picker loetleb riigi kontod; elav tolge
+  selgitab seose.
+- "Vali tulbad" all "Riigi konto" veeru linnuke.
+Faas II.
