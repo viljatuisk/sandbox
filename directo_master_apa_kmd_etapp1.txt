@@ -1,0 +1,36 @@
+DIRECTO MASTER SUNDMUS
+
+PEALKIRI:
+Andmepohine KMD (APA KMD 2027) aruanne - I etapp (baaslahendus, andmete kuvamine)
+
+EESMARK
+
+Maksu- ja Tolliamet votab 2027. aastal kasutusele andmepohise kaibemaksuaruandluse (APA KMD), kus KMD andmed edastatakse XBRL GL formaadis tehingute ja toimingute kaupa. I etapi eesmark on koige baasilisem lahendus: aruandetabel, mis naitab Directo tehingute andmeid andmepohise KMD struktuuris. Selles etapis EI ole veel e-MTA-le saatmist, valideerimist, kinnitamist ega XML genereerimist - eesmark on saada andmed aruandesse nahtavaks, et loogikat ja andmete oigsust saaks kontrollima hakata.
+
+MIS SELLES ETAPIS VALMIB (kokkuvote)
+
+1. Andmete kogumine + KMD tuubi tuletamine (KM koodi kaardi uutest valjadest).
+2. Aruandetabel - Tehingupaevik (kolmetasandiline grupeering, vaikeveerud; KMK% ei kuvata).
+3. "Vali tulbad" veergude valija (linnutamine, otsing, taasta algseaded; ilma umberjarjestamiseta).
+4. Filtrid - periood (kalender + Directo kiirsisestus + suvaline vahemik), otsing, KM tuup.
+5. Aruandetabeli juhtnupud - sulge koik / ava koik / alamgrupid.
+6. Kokku KM maarade loikes - arvutab tasuda / tagasi saada (ilma bilansi vordluseta).
+
+SKOOBIST VALJAS (I etapis EI tehta)
+
+- e-MTA-le saatmine, tagasisideraporti kontroll, kinnitamine (PIN2).
+- XBRL GL XML genereerimine ja allalaadimine.
+- Vordlus bilansiga.
+- Kirjete lisamine/muutmine aruandes.
+
+TOO KORRALDUS
+
+- Detailne kirjeldus, veergude andmeallikad ja testid: ticket_apa_kmd_etapp1.txt
+- Uksikud arendustaskid on Notionis (vt notion_taskid_apa_kmd_etapp1.md). Iga task on eraldi Notioni kirje.
+- Arendaja markib Notionis taskid valmis.
+- Kogu selle etapi arendus commititakse SELLE uhe Directo master sundmuse raames (uks sundmus, mitme Notioni taski tulemus).
+
+PROTOTUUP
+
+- Fail: apa_kmd.html
+- GitHub: viljatuisk/sandbox
