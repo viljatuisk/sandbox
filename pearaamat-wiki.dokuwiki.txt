@@ -218,14 +218,14 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 „+" filter teeb selgeks kahe filtrigrupi erineva rolli:
 
-  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''Kontoklass'', ''+ Riigi konto'', ''+ Korr. konto'', ''+ lisaväljad'' jne). Vastab küsimusele: //milliste kontode tehinguid näitan?//
+  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''Kontoklass'', ''+ Riigi konto'', ''+ Korr. konto'' jne) ning vahetult järgnev grupp **Kontode lisaväljad** (konto kaardi lisaväljad). Vastab küsimusele: //milliste kontode tehinguid näitan?//
   * **KANDED** - **kanderea omaduste** filtrid (''Korr. konto'' ehk kande vastaskonto, Objekt, Kande tüüp, Selgitus jne). Vastab küsimusele: //milliseid kandeid näitan?//
 
 **Korr. konto kahetähenduslikkus.** Konto kaardil on väli „Korr. konto" (konto vaikimisi vastaskonto) - see kuulub KONTOD „+" filtri alla (Faas II). Kanderea „Korr. konto" (konkreetse kande vastaskonto) kuulub KANDED alla. Segaduse vältimiseks on aruande praegune „Korr. konto" filter (kande vastaskonto) juba **KANDED** sektsioonis; kaardi-põhine „+ Korr. konto" lisandub eraldi KONTOD „+" alla.
 
-**Konto kaardi lisaväljad kuuluvad samuti KONTOD „+" alla.** Lisaväli on konto kaardi omadus, seega järgib sama loogikat - lisaväljade järgi filtreerimine käib KONTOD „+" mehhanismi kaudu (nt lisaväli „Consolidation group"), mitte eraldi „Lisaväljad" sektsioonina. Prototüübis on „+" all näiteks Riigikonto, Korr. konto ja lisaväli „Consolidation group"; eraldi „Lisaväljad" sektsioon on eemaldatud.
+**Konto kaardi lisaväljad - eraldi grupp „Kontode lisaväljad".** Lisaväli on konto kaardi omadus, seega kuulub KONTOD juurde. Prototüübis on selleks eraldi filtrigrupp **„Kontode lisaväljad"** vahetult **KONTOD sektsiooni järel** (mitte „+" mehhanismi all). Grupis saab valida konto kaardi lisavälja (nt „Consolidation group") ja sisestada otsitava väärtuse.
 
-**NB! Lisavälja objekt.** „Lisaväljad" on objekti-mõttes mitmetähenduslik (lisavälju on nii konto kaardil kui kanderea/vautšeri tasemel). Väli läheb sinna sektsiooni, mille objektile ta kuulub: **konto kaardi** lisaväli → KONTOD „+"; **kande** lisaväli → KANDED. Aruande praeguse lisaväljade filtri objekti-tase tuleb arendajaga üle kontrollida.
+**NB! Lisavälja objekt.** „Lisaväljad" on objekti-mõttes mitmetähenduslik (lisavälju on nii konto kaardil kui kanderea/vautšeri tasemel). Väli läheb sinna sektsiooni, mille objektile ta kuulub: **konto kaardi** lisaväli → grupp „Kontode lisaväljad" (KONTOD juures); **kande** lisaväli → KANDED. Aruande praeguse lisaväljade filtri objekti-tase tuleb arendajaga üle kontrollida.
 
 ===== Saldeerimata vaade (Faas II) =====
 
