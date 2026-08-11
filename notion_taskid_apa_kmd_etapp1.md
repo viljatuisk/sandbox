@@ -55,7 +55,7 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tüübi. KM% (maksumäär)
 - Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lähe)
 - Riik -> ostja riigi tunnus (EL riigid, ühendusesiseste tehingute puhul)
 - Riigi täps. -> riigi roll (RR_ostja)
-- Arve nr -> dokumendi (arve) number
+- Arve nr -> dokumendi (arve) number. ERAND: lootusetu nõude korral käsitsi täidetav real (vt allpool)
 - Ettemaks nr -> ettemaksuarve number
 - Kuupäev -> arve või ettemaksuarve kuupäev
 - Arve kogusumma km/ta -> arve kogusumma ilma käibemaksuta
@@ -80,6 +80,9 @@ Arveridade koondamine:
 Segaarve reegel (kasvõi üks maksustatav rida arvel):
 - Kogu arve read tuleb esitada detailselt. Nt juriidiline, 22% käive 1000 EUR + maksuvaba 3000 EUR -> M_101 1000 EUR (104) + M_301 3000 EUR (104). Maksuvaba (M_301) tuleb detailselt segaarve tõttu.
 - Sama kehtib, kui partneri MÕNE TEISE arve tõttu on perioodi kogusumma >= 1000 EUR.
+
+**Lootusetu nõue - arve number (käsitsi täidetav real):**
+Lootusetu nõude real peab olema algse arve number, kuid seda ei ole võimalik Directost automaatselt tuvastada. Seetõttu on see väli kasutajale käsitsi täidetav otse tehingupäeviku real (Arve nr veerg). See on erand reeglist, et aruanne on selles etapis ainult kuvamiseks - lootusetu nõude arve number on ainus real muudetav väli.
 
 ---
 

@@ -100,7 +100,7 @@ Iga tabeli veeru sisu paritolu (vasakul veerg, paremal Directo andmeallikas):
 - Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lahe)
 - Riik -> ostja riigi tunnus (EL riigid, uhendusesiseste tehingute puhul)
 - Riigi taps. -> riigi roll (RR_ostja)
-- Arve nr -> dokumendi (arve) number
+- Arve nr -> dokumendi (arve) number. ERAND: lootusetu nõude korral vt jaotis 5 (käsitsi täidetav real).
 - Ettemaks nr -> ettemaksuarve number
 - Kuupaev -> arve voi ettemaksuarve kuupaev
 - Arve kogusumma km/ta -> arve kogusumma ilma kaibemaksuta
@@ -130,12 +130,16 @@ Segaarve reegel (kui arvel kasvoi uks maksustatav rida):
 
 Read grupeeritakse KMD tuubi jargi kolmele tasandile: KM sektsioon (nt "Standard- voi soodusmaaraga maksustatavad tehingud") -> alagrupp -> KMD tuup (M_101 jne). Sama KMD tuubi tehingud on uhe grupi all.
 
+5. Lootusetu nõue - arve number (käsitsi täidetav real)
+
+Lootusetu nõude real peab olema algse arve number, kuid seda ei ole võimalik Directost automaatselt tuvastada. Seetõttu on see väli kasutajale käsitsi täidetav otse tehingupäeviku real (Arve nr veerg). See on erand reeglist, et aruanne on selles etapis ainult kuvamiseks - lootusetu nõude arve number on ainus real muudetav väli.
+
 SKOOBIST VALJAS (I etapis EI tehta)
 
 - e-MTA-le saatmine, tagasisideraporti kontroll, kinnitamine (PIN2) - koik saatmisnupud puuduvad.
 - XBRL GL XML genereerimine ja allalaadimine.
 - Vordlus bilansiga (KM-kontode saldode vordlus aruande summadega).
-- Kirjete lisamine/muutmine aruandes (aruanne on selles etapis kuvamiseks; "+ Lisa kirje" ei ole).
+- Kirjete lisamine/muutmine aruandes (aruanne on selles etapis kuvamiseks; "+ Lisa kirje" ei ole). ERAND: lootusetu nõude arve number on real käsitsi täidetav (vt ANDMETE PÄRITOLU jaotis 5).
 
 PROTOTUUP
 
@@ -161,6 +165,7 @@ TESTID
 13. Kokku KM maarade loikes: summad on KM maarade loikes oiged, tasuda/tagasi saada arvutus klapib ridade summaga.
 14. KMK% veerg ja filter aruandes puuduvad.
 15. Saatmis-/kinnitamisnuppe ega XML-i aruandes ei ole.
+16. Lootusetu nõue: Arve nr veerg on real käsitsi täidetav; sisestatud algse arve number salvestub real. Muud veerud jäävad kuvamiseks (ei ole muudetavad).
 
 LAHTISED KUSIMUSED
 
