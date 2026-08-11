@@ -57,6 +57,12 @@
   .sf-row .sf { flex: 1; min-width: 0; }
   /* "+" kaudu lisatud alamfilter (nt Riigikonto, Korr. konto) - visuaalselt Konto alamfiltrina, vasakult taandega */
   .sf.sub-filter { margin-left: 12px; padding-left: 10px; border-left: 2px solid #b8cde0; }
+  /* Kontode lisaväljad - dünaamiline ridade lisamine (nii palju kui vaja) */
+  .lisavali-row { align-items: flex-end; }
+  .lisavali-remove { height: 20px; width: 20px; flex-shrink: 0; background: #fff; border: 1px solid #c8b0b0; border-radius: 2px; color: #a05050; font-size: 11px; cursor: pointer; padding: 0; line-height: 1; }
+  .lisavali-remove:hover { background: #f6e8e8; }
+  .add-field-btn { margin-top: 5px; align-self: flex-start; background: #e4edf5; border: 1px solid #b8cde0; border-radius: 3px; color: #2a5a8a; font-size: 11px; padding: 3px 9px; cursor: pointer; font-family: Arial, sans-serif; }
+  .add-field-btn:hover { background: #d4e3f0; }
   .sidebar-body.collapsed { display: none; }
   .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #2a4a6a; cursor: pointer; font-size: 10px; }
   .sf-check input[type=checkbox] { accent-color: #3a7abf; }
@@ -490,14 +496,8 @@
     <div class="sidebar-section">
       <div class="sidebar-head" title="Konto kaardi lisaväljad">Kontode lisaväljad <span class="arrow">▾</span></div>
       <div class="sidebar-body">
-        <div class="sf-row">
-          <div class="sf" style="flex:1.6"><select><option value="">(lisaväli)</option><option>Consolidation group</option><option>Lisaväli 2</option><option>Lisaväli 3</option></select></div>
-          <div class="sf" style="flex:1"><input type="text" placeholder=""></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf" style="flex:1.6"><select><option value="">(lisaväli)</option><option>Consolidation group</option><option>Lisaväli 2</option><option>Lisaväli 3</option></select></div>
-          <div class="sf" style="flex:1"><input type="text" placeholder=""></div>
-        </div>
+        <div id="lisavaljadRows"></div>
+        <button class="add-field-btn" type="button" onclick="addLisavaliRow()" title="Lisa nii palju lisavälju kui vaja">+ Lisa väli</button>
       </div>
     </div>
 
@@ -3413,6 +3413,29 @@
     });
     tbody.insertAdjacentHTML('beforeend', html);
   }
+
+  // ── KONTODE LISAVÄLJAD - dünaamiline ridade lisamine (nii palju kui vaja) ──
+  // Vanas Pearaamatus sai valida ainult 3 lisavälja; uues saab lisada piiramatult.
+  const LISAVALI_VALIKUD = ['Consolidation group', 'Lisaväli 2', 'Lisaväli 3', 'Lisaväli 4', 'Lisaväli 5'];
+  function _lisavaliRowHtml() {
+    const opts = '<option value="">(lisaväli)</option>' + LISAVALI_VALIKUD.map(o => '<option>' + o + '</option>').join('');
+    return '<div class="sf-row lisavali-row">' +
+      '<div class="sf" style="flex:1.6"><select>' + opts + '</select></div>' +
+      '<div class="sf" style="flex:1"><input type="text" placeholder=""></div>' +
+      '<button class="lisavali-remove" type="button" title="Eemalda väli" onclick="removeLisavaliRow(this)">✕</button>' +
+      '</div>';
+  }
+  function addLisavaliRow() {
+    const box = document.getElementById('lisavaljadRows');
+    box.insertAdjacentHTML('beforeend', _lisavaliRowHtml());
+  }
+  function removeLisavaliRow(btn) {
+    const row = btn.closest('.lisavali-row');
+    if (row) row.remove();
+    // jäta alati vähemalt üks tühi rida alles
+    if (!document.querySelectorAll('#lisavaljadRows .lisavali-row').length) addLisavaliRow();
+  }
+  addLisavaliRow(); // esimene rida vaikimisi
 
   injectErisoodustusGroups();
   updateKontoXlate();

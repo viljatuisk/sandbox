@@ -225,6 +225,8 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 **Konto kaardi lisaväljad - eraldi grupp „Kontode lisaväljad".** Lisaväli on konto kaardi omadus, seega kuulub KONTOD juurde. Prototüübis on selleks eraldi filtrigrupp **„Kontode lisaväljad"** vahetult **KONTOD sektsiooni järel** (mitte „+" mehhanismi all). Grupis saab valida konto kaardi lisavälja (nt „Consolidation group") ja sisestada otsitava väärtuse.
 
+**Piiramatu arv lisavälju.** Vanas Pearaamatus sai valida ainult **kolm** lisavälja. Uues saab lisada **nii palju kui vaja** - nupp „+ Lisa väli" lisab uue rea (lisavälja valik + väärtus), iga rea saab ✕ nupuga eemaldada. Vähemalt üks rida jääb alati alles.
+
 **NB! Lisavälja objekt.** „Lisaväljad" on objekti-mõttes mitmetähenduslik (lisavälju on nii konto kaardil kui kanderea/vautšeri tasemel). Väli läheb sinna sektsiooni, mille objektile ta kuulub: **konto kaardi** lisaväli → grupp „Kontode lisaväljad" (KONTOD juures); **kande** lisaväli → KANDED. Aruande praeguse lisaväljade filtri objekti-tase tuleb arendajaga üle kontrollida.
 
 ===== Saldeerimata vaade (Faas II) =====
