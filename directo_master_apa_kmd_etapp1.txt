@@ -1,36 +1,36 @@
-DIRECTO MASTER SUNDMUS
+DIRECTO MASTER SÜNDMUS
 
 PEALKIRI:
-Andmepohine KMD (APA KMD 2027) aruanne - I etapp (baaslahendus, andmete kuvamine)
+Andmepõhine KMD (APA KMD 2027) aruanne - I etapp (baaslahendus, andmete kuvamine)
 
-EESMARK
+EESMÄRK
 
-Maksu- ja Tolliamet votab 2027. aastal kasutusele andmepohise kaibemaksuaruandluse (APA KMD), kus KMD andmed edastatakse XBRL GL formaadis tehingute ja toimingute kaupa. I etapi eesmark on koige baasilisem lahendus: aruandetabel, mis naitab Directo tehingute andmeid andmepohise KMD struktuuris. Selles etapis EI ole veel e-MTA-le saatmist, valideerimist, kinnitamist ega XML genereerimist - eesmark on saada andmed aruandesse nahtavaks, et loogikat ja andmete oigsust saaks kontrollima hakata.
+Maksu- ja Tolliamet võtab 2027. aastal kasutusele andmepõhise käibemaksuaruandluse (APA KMD), kus KMD andmed edastatakse XBRL GL formaadis tehingute ja toimingute kaupa. I etapi eesmärk on kõige baasilisem lahendus: aruandetabel, mis näitab Directo tehingute andmeid andmepõhise KMD struktuuris. Selles etapis EI ole veel e-MTA-le saatmist, valideerimist, kinnitamist ega XML genereerimist - eesmärk on saada andmed aruandesse nähtavaks, et loogikat ja andmete õigsust saaks kontrollima hakata.
 
-MIS SELLES ETAPIS VALMIB (kokkuvote)
+MIS SELLES ETAPIS VALMIB (kokkuvõte)
 
-1. Andmete kogumine + KMD tuubi tuletamine (KM koodi kaardi uutest valjadest).
-2. Aruandetabel - Tehingupaevik (kolmetasandiline grupeering, vaikeveerud; KMK% ei kuvata).
-3. "Vali tulbad" veergude valija (linnutamine, otsing, taasta algseaded; ilma umberjarjestamiseta).
-4. Filtrid - periood (kalender + Directo kiirsisestus + suvaline vahemik), otsing, KM tuup.
-5. Aruandetabeli juhtnupud - sulge koik / ava koik / alamgrupid.
-6. Kokku KM maarade loikes - arvutab tasuda / tagasi saada (ilma bilansi vordluseta).
+1. Andmete kogumine + KMD tüübi tuletamine (KM koodi kaardi uutest väljadest).
+2. Aruandetabel - Tehingupäevik (kolmetasandiline grupeering, vaikeveerud; KMK% ei kuvata).
+3. "Vali tulbad" veergude valija (linnutamine, otsing, taasta algseaded; ilma ümberjärjestamiseta).
+4. Filtrid - periood (kalender + Directo kiirsisestus + suvaline vahemik), otsing, KM tüüp.
+5. Aruandetabeli juhtnupud - sulge kõik / ava kõik / alamgrupid.
+6. Kokku KM määrade lõikes - arvutab tasuda / tagasi saada (ilma bilansi võrdluseta).
 
-SKOOBIST VALJAS (I etapis EI tehta)
+SKOOBIST VÄLJAS (I etapis EI tehta)
 
 - e-MTA-le saatmine, tagasisideraporti kontroll, kinnitamine (PIN2).
 - XBRL GL XML genereerimine ja allalaadimine.
-- Vordlus bilansiga.
+- Võrdlus bilansiga.
 - Kirjete lisamine/muutmine aruandes.
 
-TOO KORRALDUS
+TÖÖ KORRALDUS
 
 - Detailne kirjeldus, veergude andmeallikad ja testid: ticket_apa_kmd_etapp1.txt
-- Uksikud arendustaskid on Notionis (vt notion_taskid_apa_kmd_etapp1.md). Iga task on eraldi Notioni kirje.
-- Arendaja markib Notionis taskid valmis.
-- Kogu selle etapi arendus commititakse SELLE uhe Directo master sundmuse raames (uks sundmus, mitme Notioni taski tulemus).
+- Üksikud arendustaskid on Notionis (vt notion_taskid_apa_kmd_etapp1.md). Iga task on eraldi Notioni kirje.
+- Arendaja märgib Notionis taskid valmis.
+- Kogu selle etapi arendus commititakse SELLE ühe Directo master sündmuse raames (üks sündmus, mitme Notioni taski tulemus).
 
-PROTOTUUP
+PROTOTÜÜP
 
 - Fail: apa_kmd.html
 - GitHub: viljatuisk/sandbox
