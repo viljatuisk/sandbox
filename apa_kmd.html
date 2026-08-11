@@ -334,7 +334,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         </optgroup>
       </select>
     </div>
-    <div class="fg"><label>D KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
+    <div class="fg"><label title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help;text-decoration:underline dotted">KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
     <div class="fg"><label>Otsing</label><input class="fp-i" id="search" placeholder="Partneri, arve, koodi..." oninput="renderTable()"/></div>
     <button class="fp-show" onclick="applyFilters()">Näita</button>
     <button class="fp-clr" onclick="clearFilters()">Tühjenda filtrid</button>
@@ -426,7 +426,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <tr>
         <th title="Rea sektsioonisisene järjekorranumber" style="cursor:help">#</th><th style="min-width:72px">KMD tüüp</th>
         <th class="col-desc col-desc-hidden" style="min-width:200px">KMD tüübi kommentaar</th>
-        <th style="min-width:280px;white-space:normal">KMD tüübi sisu</th><th>KM%</th><th title="Directo käibemaksukood" style="cursor:help">D KMK%</th>
+        <th style="min-width:280px;white-space:normal">KMD tüübi sisu</th><th>KM%</th><th title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help">KMK%</th>
         <th style="min-width:110px;text-align:right;cursor:help" title="Deklareeritav summa (maksustatav v&#228;&#228;rtus/sisendkäibemaks)">Deklareeritav summa</th>
         <th style="min-width:70px;text-align:right">KM (&#8364;)</th>
         <th title="Tehingupartneri ja arve erisuse tunnus" style="min-width:60px;cursor:help">TP/Arve tunnus</th>
@@ -1651,7 +1651,7 @@ const KMDNAMES={
     html+='<tr style="background:var(--blue)">'
       +'<th style="color:#fff">KMD tüüp</th>'
       +'<th style="color:#fff;white-space:normal">KMD tüübi kommentaar</th>'
-      +'<th style="color:#fff">D KMK%</th>'
+      +'<th style="color:#fff" title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)">KMK%</th>'
       +'<th style="color:#fff;text-align:center">Kirjeid</th>'
       +'<th style="color:#fff;text-align:right">Dekl. summa</th>'
       +'<th style="color:#fff;text-align:right">KM (&euro;)</th>'
