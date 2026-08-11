@@ -239,7 +239,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <div class="settings-panel" id="settingsPanel">
         <div class="sp-title">XML seaded</div>
         <div class="fg"><label>Tarkvara</label><input id="xml-src-app" value="Directo" oninput="saveSettings()"/></div>
-        <input type="hidden" id="xml-creator"/>
+        <input type="hidden" id="xml-creator" value="Testfirma OÜ"/>
         <div class="fg"><label>Allika ID</label><input id="xml-src-id" value="ERP-01" oninput="saveSettings()"/></div>
         <div class="fg"><label>Allikate arv</label><input id="xml-src-cnt" type="number" min="1" value="3" oninput="saveSettings()"/></div>
         <input type="hidden" id="xml-pankrot"/>
@@ -255,8 +255,8 @@ td.ec:hover{background:var(--blue-lt)!important}
     <div class="fg"><label>Periood algus</label><input class="fp-i" id="flt-from" value="01.03.2026" placeholder="pp.kk.aaaa"/></div>
     <div class="fg"><label>Periood lõpp</label><input class="fp-i" id="flt-to" value="30.03.2026" placeholder="pp.kk.aaaa"/></div>
     <div class="fg" style="display:flex;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="flt-pankrot" onchange="onPankrotChange()" style="margin:0;width:auto;cursor:pointer"/><label for="flt-pankrot" title="Märgi, kui see periood on pankrotiperiood (KMS § 38).&#10;Lisab XML-i gl-ext:periodExtraIdentifier elemendi." style="cursor:pointer;margin:0;font-weight:normal;font-size:11px;text-transform:none;text-decoration:underline dotted"> pankrotiperiood</label></div>
-    <div class="fg"><label>Saatja nimi</label><input class="fp-i" id="flt-creator" value="Testfirma OÜ" oninput="document.getElementById('xml-creator').value=this.value;saveSettings()"/></div>
-    <div class="fg"><label>Registrikood</label><input class="fp-i" id="flt-reg" value="10000001"/></div>
+    <!-- Saatja nimi ja Registrikood ei ole filtreeritavad, kuid vajalikud XML-i jaoks -> peidetud, tulevad ettevotte seadistusest -->
+    <input type="hidden" id="flt-reg" value="10000001"/>
     <div class="fg"><label>KM tüüp</label>
       <select id="filterSec" onchange="renderTable()">
         <option value="">Kõik tüübid</option>
