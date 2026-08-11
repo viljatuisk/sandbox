@@ -187,6 +187,20 @@ td.ec{cursor:pointer;position:relative}
 .col-desc-hidden{display:none}
 .col-toggle-btn{font-size:10px;padding:1px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-family:Arial,sans-serif;color:var(--text2);white-space:nowrap}
 .col-toggle-btn:hover{background:var(--bg3)}
+/* Vali tulbad (veergude valija) */
+.col-picker-wrap{position:relative;display:inline-block}
+.col-picker-panel{display:none;position:absolute;top:100%;right:0;margin-top:3px;z-index:60;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.18);width:230px;padding:6px 0;font-family:Arial,sans-serif}
+.col-picker-panel.open{display:block}
+.cpp-title{text-align:center;font-size:11px;color:var(--text3);padding:2px 10px 6px}
+.cpp-search{padding:0 10px 6px}
+.cpp-search input{width:100%;box-sizing:border-box;font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--r);font-family:Arial,sans-serif}
+.cpp-list{max-height:340px;overflow-y:auto;padding:0 4px}
+.cpp-item{display:flex;align-items:center;gap:7px;padding:3px 8px;font-size:12px;color:var(--text);cursor:pointer;border-radius:var(--r);user-select:none}
+.cpp-item:hover{background:var(--bg2)}
+.cpp-item input{margin:0;cursor:pointer;width:auto}
+.cpp-item.cpp-hide{display:none}
+.cpp-footer{border-top:1px solid var(--border);margin-top:5px;padding:6px 12px 2px;font-size:12px;color:var(--blue-dk);cursor:pointer;display:flex;align-items:center;gap:5px}
+.cpp-footer:hover{text-decoration:underline}
 .bilan-wrap{padding:8px 0;display:flex;flex-direction:column;gap:12px}
 .bilan-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
 .bilan-card-hdr{background:var(--blue);color:#fff;padding:5px 10px;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:space-between}
@@ -418,10 +432,18 @@ td.ec:hover{background:var(--blue-lt)!important}
     <button class="col-toggle-btn" onclick="foldAll(false)" title="Ava kõik voldikud">&#9658;&#9658; Ava kõik</button>
     <button class="col-toggle-btn" onclick="foldLevel('mid',true)" title="Sulge alamgrupid">&#9660; Sulge alamgrupid</button>
     <button class="col-toggle-btn" onclick="foldLevel('mid',false)" title="Ava alamgrupid">&#9658; Ava alamgrupid</button>
-    <button class="col-toggle-btn" onclick="toggleKomCol()"  title="Peida/näita KMD tüübi kommentaar veerg" id="descToggleBtn" style="opacity:0.5">&#128065; KMD tüübi kommentaar</button>
+    <div class="col-picker-wrap" style="margin-left:auto">
+      <button class="col-toggle-btn" id="colPickerBtn" onclick="toggleColPicker(event)" title="Vali tulbad">&#128295; Vali tulbad</button>
+      <div class="col-picker-panel" id="colPickerPanel" onclick="event.stopPropagation()">
+        <div class="cpp-title">Vali tulbad</div>
+        <div class="cpp-search"><input type="text" id="colSearch" placeholder="Otsi" oninput="filterColItems(this.value)"></div>
+        <div class="cpp-list" id="colPickerList"></div>
+        <div class="cpp-footer" onclick="resetCols()">&#8635; Taasta algseaded</div>
+      </div>
+    </div>
   </div>
   <div class="tbl-wrap">
-    <table>
+    <table id="mainTbl">
       <thead>
       <tr>
         <th title="Rea sektsioonisisene järjekorranumber" style="cursor:help">#</th><th style="min-width:72px">KMD tüüp</th>
@@ -1179,7 +1201,87 @@ let descColVisible=false;
 function toggleKomCol(){
   descColVisible=!descColVisible;
   document.querySelectorAll('.col-desc').forEach(el=>el.classList.toggle('col-desc-hidden',!descColVisible));
-  document.getElementById('descToggleBtn').style.opacity=descColVisible?'1':'0.5';
+  const _b=document.getElementById('descToggleBtn');if(_b)_b.style.opacity=descColVisible?'1':'0.5';
+}
+
+/* ===== Vali tulbad (veergude nähtavus; ei võimalda ümberjärjestamist) ===== */
+/* n = veeru DOM-positsioon (1-põhine). # (1) ja tegevused (25) on alati nähtavad. */
+const TBL_COLS=[
+  {n:2, label:'KMD tüüp'},
+  {n:3, label:'KMD tüübi kommentaar', kom:true, def:false},
+  {n:4, label:'KMD tüübi sisu'},
+  {n:5, label:'KM%'},
+  {n:6, label:'KMK%'},
+  {n:7, label:'Deklareeritav summa'},
+  {n:8, label:'KM (€)'},
+  {n:9, label:'TP/Arve tunnus'},
+  {n:10, label:'Partneri reg/KMKR'},
+  {n:11, label:'Partneri nimi'},
+  {n:12, label:'Koodi täps.'},
+  {n:13, label:'Grupp kat'},
+  {n:14, label:'Grupi liikme reg'},
+  {n:15, label:'Grupi liikme koodi täps.'},
+  {n:16, label:'Grupi liikme nimi'},
+  {n:17, label:'Riik'},
+  {n:18, label:'Riigi täps.'},
+  {n:19, label:'Arve nr'},
+  {n:20, label:'Ettemaks nr'},
+  {n:21, label:'Kuupäev'},
+  {n:22, label:'Arve kogusumma km/ta'},
+  {n:23, label:'Kreeditkp'},
+  {n:24, label:'e-MTA staatus'},
+];
+let hiddenCols=new Set();
+function applyColVis(){
+  let st=document.getElementById('colHideStyle');
+  if(!st){st=document.createElement('style');st.id='colHideStyle';document.head.appendChild(st);}
+  let css='';
+  hiddenCols.forEach(n=>{css+='#mainTbl>thead>tr>th:nth-child('+n+'),#mainTbl>tbody>tr>td:nth-child('+n+'){display:none}';});
+  st.textContent=css;
+}
+function colChecked(c){return c.kom?descColVisible:!hiddenCols.has(c.n);}
+function buildColPickerList(){
+  const list=document.getElementById('colPickerList');if(!list)return;
+  list.innerHTML=TBL_COLS.map(c=>'<label class="cpp-item" data-lbl="'+c.label.toLowerCase()+'"><input type="checkbox" '+(colChecked(c)?'checked':'')+' onchange="onColToggle('+c.n+',this.checked)">'+c.label+'</label>').join('');
+}
+function onColToggle(n,on){
+  const c=TBL_COLS.find(x=>x.n===n);if(!c)return;
+  if(c.kom){ if(on!==descColVisible)toggleKomCol(); }
+  else { if(on)hiddenCols.delete(n); else hiddenCols.add(n); applyColVis(); }
+  saveColPrefs();
+}
+function filterColItems(q){
+  q=(q||'').trim().toLowerCase();
+  document.querySelectorAll('#colPickerList .cpp-item').forEach(el=>{
+    el.classList.toggle('cpp-hide', !!q && !el.getAttribute('data-lbl').includes(q));
+  });
+}
+function resetCols(){
+  hiddenCols=new Set();
+  if(descColVisible)toggleKomCol(); /* vaikimisi peidetud */
+  applyColVis();buildColPickerList();saveColPrefs();
+}
+function toggleColPicker(e){
+  if(e)e.stopPropagation();
+  const p=document.getElementById('colPickerPanel');
+  const open=p.classList.toggle('open');
+  if(open){buildColPickerList();const s=document.getElementById('colSearch');if(s){s.value='';filterColItems('');}}
+}
+document.addEventListener('click',function(e){
+  const w=document.querySelector('.col-picker-wrap');
+  if(w&&!w.contains(e.target)){const p=document.getElementById('colPickerPanel');if(p)p.classList.remove('open');}
+});
+function saveColPrefs(){
+  try{localStorage.setItem('apaKmdCols',JSON.stringify({hidden:[...hiddenCols],kom:descColVisible}));}catch(_){}
+}
+function loadColPrefs(){
+  try{
+    const raw=localStorage.getItem('apaKmdCols');if(!raw){applyColVis();return;}
+    const s=JSON.parse(raw);
+    hiddenCols=new Set(s.hidden||[]);
+    if(!!s.kom!==descColVisible)toggleKomCol();
+    applyColVis();
+  }catch(_){applyColVis();}
 }
 const KMDDESCS={'M_101':'standard- või soodusmääraga maksustatav käive, sh ettemaks','M_102':'standard- või soodusmääraga maksustatav käive, kassapõhine käibemaksuarvestus','M_103':'kasuminormi maksustamise kord — kasutatud kauba, originaalkunstiteose ning kollektsiooni- ja antiikeseme edasimüük','M_104':'kasuminormi maksustamise kord — reisibürood','M_105':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','M_201':'Kauba ühendusesisene käive','M_202':'0% määraga maksustatav teise liikmesriigi maksukohustuslasele osutatud teenuste käive, sh ettemaks','M_203':'kauba ühendusesisene käive, võõrandaja kolmnurktehingus','M_204':'Kauba ühendusesisene käive, edasimüüja kolmnurktehingus','M_205':'Kauba ühendusesisene käive, uus transpordivahend','M_206':'Kauba ühendusesisene käive, aktsiisikaup','M_207':'Kauba ühendusesisene käive, tolliagentuur','M_208':'Teises liikmesriigis paigaldatava või kokkupandava kauba maksustatav väärtus','M_209':'kauba eksport, sh ettemaks','M_210':'kauba eksport, käibemaksutagastusega müük reisijale (tax-free)','M_211':'0% määraga maksustatavad muud kaubad, sh ettemaks','M_212':'0% määraga maksustatavad muud teenused, sh ettemaks','M_301':'maksuvaba käive','M_302':'ei ole käive','S_101':'kauba ühendusesisene soetamine','S_102':'teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'kolmnurktehingu tingimustel kauba soetamine','S_104':'muu kauba soetamine ja teenuse saamine','S_105':'erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','S_106':'kauba ühendusesisene maksuvaba soetamine','O_101':'sisendkäibemaksu summa, mis on seadusega lubatud maha arvata','O_102':'sisendkäibemaksu mahaarvamine osakaupa','O_103':'sisendkäibemaksu osaline mahaarvamine (KMS § 29, § 32, § 33)','O_104':'sisendkäibemaks, arve infot kajastamata','O_106':'impordilt tasutud või tasumisele kuuluv sisendkäibemaks','O_201':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks','O_202':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks, osaline mahaarvamine','O_203':'Imporditud põhivara sisendkäibemaks','O_204':'ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara','O_301':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (Eestist soetatud)','O_302':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (import)','O_303':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_304':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_305':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, import)','O_306':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_307':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (Eestist soetatud)','O_308':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_309':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_310':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_401':'sisendkäibemaks, kauba ühendusesisene soetamine, v.a põhivara ja sõiduautode soetamine','O_402':'sisendkäibemaks, teise liikmesriigi maksukohustuslaselt saadud teenused','O_404':'sisendkäibemaks, muu kauba soetamine ja teenuse saamine','O_405':'sisendkäibemaks, erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','O_501':'sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta, ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'sisendkäibemaksu korrigeerimise tulemusel sisendkäibemaksu vähenemine/suurenemine','A_101':'standard- või soodusmääraga arvestuslikud kanded'};
 const KMDKOMS={'M_101':'Tavapärane 22% käibe deklareerimine, kus arve saajaks Eesti juriidiline isik','M_102':'Käive on tekkinud osaliselt tasutud ettemaksuarve alusel, st käive on tekkinud 2500 euro ulatuses','M_103':'Kassapõhise käibemaksuarvestuse rakendajale on arve eest osaliselt tasutud 500 eurot, st käive on tekkinud 500 euro ulatuses','M_104':'Kasutatud kauba edasimüük soetusmaksumusega 1500 eurot (marginaal 500 eurot)','M_105':'Reisiteenuse müük füüsilisele isikule marginaliga 45 eurot','M_201':'Kauba ühendusesisese käibe deklareerimine','M_202':'Ühendusesisese teenuse käibe deklareerimine','M_203':'Kolmnurktehingus võõrandaja poolt kauba ühendusesisese käibe deklareerimine','M_204':'Kolmnurktehingus edasimüüja poolt käibe deklareerimine kolmnurktehinguna','M_205':'Uue transpordivahendi võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_206':'Aktsiisikauba võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_207':'Tolliagentuuri poolt deklareeritav kauba ühendusesisene käive kauba importja eest (tolliprotseduuri kood 42)','M_208':'Teises liikmesriigis võõrandaja poolt või eest paigaldatava või kokkupandava kauba võõrandamisel ja paigaldamisel või kokku panemisel tekkinud kauba käive, mis kuulub maksustamisele kauba sihtriigis','M_209':'Kauba eksport','M_210':'Tax free müük reisijale (käibemaksutagastusega müük). Käibemaksutagastuse müügi kviitungile on käibe deklareerimiseks kinnitus saadud.','M_211':'Eestisisene 0% määraga maksustatav kauba käive, kus arve saajaks on Eesti juriidiline isik','M_212':'Eestisisene 0% määraga maksustatav teenuse käive, kus arve saajaks on Eesti juriidiline isik','M_301':'Maksuvaba käive Eesti juriidilisele isikule','M_302':'Arve sisaldab muu hulgas käibena mittekäsitatavaid tehinguid','S_101':'Kauba ühendusesisene soetamine','S_102':'Teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'Kolmnurktehingu tingimustel kauba soetamine','S_104':'Muu kauba soetamine ja teenuse saamine','S_105':'Erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine (KMS § 411)','S_106':'Kauba ühendusesisene maksuvaba soetamine','O_101':'Sisendkäibemaks, mis on seadusega lubatud maha arvata','O_102':'Sisendkäibemaksu mahaarvamine tasumise ulatuses (50%)','O_103':'Sisendkäibemaksu osaline mahaarvamine proportsiooniga 50%','O_104':'Sisendkäibemaks mahaarvamine arve alusel, millele laieneb kutse- ja ametisaladuse hoidmise kohustus','O_106':'Tollideklaratsiooni alusel tasutud impordi käibemaks','O_201':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks','O_202':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks (osaline mahaarvamine 50%)','O_203':'Imporditud põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_204':'Ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_301':'Eestist soetatud nn 100% sõiduauto sisendkäibemaks','O_302':'Imporditud nn 100% sõiduauto sisendkäibemaks','O_303':'Ühendusesiseselt soetatud, sh komnurktehingu tingimustel nn 100% sõiduauto sisendkäibemaks','O_304':'Eestist soetatud nn 50% sõiduauto sisendkäibemaks','O_305':'Imporditud nn 50% sõiduauto sisendkäibemaks','O_306':'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto sisendkäibemaks','O_307':'Eestist soetatud nn 100% sõiduaoto varuosad sisendkäibemaks','O_308':'Imporditud nn 100% sõiduauto varuosad sisendkäibemaks','O_309':'Eestist soetatud nn 50% sõiduaoto varuosad sisendkäibemaks','O_310':'Imporditud nn 50% sõiduauto varuosad sisendkäibemaks','O_401':'Kauba (v.a põhivara ja sõiduautod) ühendusesisese soetamise sisendkäibemaks','O_402':'Teise liikmesriigi maksukohustuslaselt saadud teenuste sisendkäibemaks','O_404':'Muu teenuse saamise sisendkäibemaks','O_405':'Siseriikliku pöörmaksu sisendkäibemaks','O_501':'Sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'Sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta; ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'Korrigeerimise tulemusel sisendkäibemaks suureneb','A_101':'22% määraga maksustatav arvestuslik kanne seoses imporditud kauba maksustatava väärtuse muutmisega käibedeklaratsioonil'};
@@ -2071,6 +2173,7 @@ document.addEventListener('click',function(e){
 });
 loadSettings();
 buildKmkAll();buildKmkForm();renderTable();setWorkflowState('idle');
+loadColPrefs();buildColPickerList();
 </script>
 </body>
 </html>
