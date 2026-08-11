@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasumistingimus — Firma deebetkaart (näidis)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background: #ffffff; color: #000; font-size: 13px;
+    padding: 0;
+  }
+  .wrap { max-width: 880px; }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: #f2f2f2; border-bottom: 1px solid #d8d8d8;
+    padding: 6px 12px; font-size: 12px; color: #333;
+  }
+  .breadcrumb a { color: #15c; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { color: #999; margin: 0 5px; }
+
+  /* Toolbar */
+  .toolbar {
+    background: #cfdcf0;
+    border-bottom: 1px solid #a9bcd8;
+    display: flex; align-items: center; gap: 2px;
+    padding: 5px 8px; font-size: 12px; color: #1a3b6b;
+    flex-wrap: wrap;
+  }
+  .tb-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px; cursor: default; white-space: nowrap; border-radius: 2px;
+  }
+  .tb-btn .ic { font-size: 13px; opacity: .8; }
+  .tb-btn.disabled { color: #8a9cbb; }
+  .tb-save {
+    background: #2f5aa8; color: #fff; padding: 5px 14px; border-radius: 3px;
+    font-weight: 600; margin-left: 6px;
+  }
+  .tb-spacer { flex: 1; }
+  .tb-state { color: #1a3b6b; padding: 4px 9px; }
+  .tb-log { color: #2f5aa8; padding: 4px 9px; }
+
+  /* Body */
+  .body { padding: 14px 18px 40px; }
+  .doc-title { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px; }
+  .subttl { color: #2f5aa8; font-size: 12px; margin: 4px 0 12px; }
+
+  .grid { display: grid; grid-template-columns: 190px 320px; row-gap: 7px; column-gap: 10px; align-items: center; }
+  .lbl { color: #8a2222; font-weight: 700; font-size: 11.5px; letter-spacing: .2px; }
+  .fld {
+    border: 1px solid #b9b9b9; background: #fff; height: 24px;
+    display: flex; align-items: center; padding: 0 7px; font-size: 12.5px; color: #111;
+    width: 100%;
+  }
+  .fld.select { justify-content: space-between; }
+  .fld.select::after { content: "\25BC"; font-size: 8px; color: #666; }
+  .fld.withbtn { padding-right: 0; position: relative; }
+  .fld .go { margin-left: auto; width: 22px; height: 22px; border-left: 1px solid #cfcfcf;
+    display: flex; align-items: center; justify-content: center; color: #555; font-size: 11px; }
+  .fld.empty { color: #999; }
+
+  /* Uus väli esile */
+  .row-new .lbl { color: #8a2222; }
+  .row-new .fld { border: 2px solid #e0a000; background: #fffbe6; height: 26px; }
+  .badge-new {
+    display: inline-block; margin-left: 8px; vertical-align: middle;
+    background: #e0a000; color: #fff; font-size: 9.5px; font-weight: 700;
+    padding: 1px 6px; border-radius: 8px; letter-spacing: .3px;
+  }
+  .callout {
+    grid-column: 1 / -1; margin-top: 10px;
+    background: #fffbe6; border: 1px dashed #e0a000; border-radius: 5px;
+    padding: 9px 11px; font-size: 11.5px; color: #6b5200; line-height: 1.5;
+  }
+  .callout b { color: #7d3908; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="#">Süsteemi seadistused</a><span class="sep">&#8250;</span>
+    <a href="#">Tasumistingimused</a><span class="sep">&#8250;</span>
+    <span>FIRMA_DBT</span>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span class="tb-btn"><span class="ic">&#8592;</span>Tagasi</span>
+    <span class="tb-btn"><span class="ic">&#128459;</span>Uus</span>
+    <span class="tb-btn"><span class="ic">&#10697;</span>Koopia</span>
+    <span class="tb-btn"><span class="ic">&#128465;</span>Kustuta</span>
+    <span class="tb-save">Salvesta</span>
+    <span class="tb-spacer"></span>
+    <span class="tb-state">Olek: Vaata</span>
+    <span class="tb-log">&#8635; Vaata muudatuste logi</span>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+    <div class="doc-title">Firma deebetkaart</div>
+    <div class="subttl">Maksegraafik</div>
+
+    <div class="grid">
+      <div class="lbl">KOOD</div>            <div class="fld">FIRMA_DBT</div>
+      <div class="lbl">NIMI</div>            <div class="fld">Firma deebetkaart</div>
+      <div class="lbl">TÜÜP</div>            <div class="fld select">Kulutus - ettevõtte maksevahend</div>
+      <div class="lbl">NETOPÄEVI</div>       <div class="fld">0</div>
+      <div class="lbl">MÕJUB KUUD</div>      <div class="fld select empty">&nbsp;</div>
+      <div class="lbl">PÄEV</div>            <div class="fld empty">&nbsp;</div>
+      <div class="lbl">KASSAKONTO</div>      <div class="fld withbtn"><span class="go">&#187;</span></div>
+      <div class="lbl">ALATI SEE KONTO</div> <div class="fld select empty">&nbsp;</div>
+      <div class="lbl">KLASS</div>           <div class="fld empty">&nbsp;</div>
+      <div class="lbl">KÜSIB TRÜKKI</div>    <div class="fld select empty">&nbsp;</div>
+      <div class="lbl">ÜMARDUS</div>         <div class="fld select empty">&nbsp;</div>
+      <div class="lbl">KASSA SOODUSTUS</div> <div class="fld empty">&nbsp;</div>
+      <div class="lbl">KASSA SOODUSTUS PÄEVI</div> <div class="fld empty">&nbsp;</div>
+      <div class="lbl">FISKAAL GRUPP</div>   <div class="fld empty">&nbsp;</div>
+      <div class="lbl">ISETEENINDUSE KOOD</div> <div class="fld empty">&nbsp;</div>
+      <div class="lbl">KEELATUD TASUDA ARTIKLIKLASSID</div> <div class="fld empty">&nbsp;</div>
+      <div class="lbl">MYDIRECTO</div>       <div class="fld select">Jah</div>
+
+      <!-- UUS VÄLI -->
+      <div class="lbl row-new">LOODAV DOKUMENT MYDIRECTO TŠEKIST <span class="badge-new">UUS</span></div>
+      <div class="fld select row-new">Ostuarve</div>
+
+      <div class="callout">
+        <b>Uus väli „Loodav dokument MyDirecto tšekist"</b> — määrab, mis dokument selle tasumistingimusega tšekist automaatselt luuakse.
+        Valikud: <b>(tühi)</b> = ei looda automaatselt (kasutaja loob ise) &nbsp;·&nbsp; <b>Kulutus</b> &nbsp;·&nbsp; <b>Ostuarve</b>.
+        Aktiivne, kui <b>MYDIRECTO = Jah</b>.
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
