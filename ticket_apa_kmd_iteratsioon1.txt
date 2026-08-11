@@ -57,6 +57,54 @@ I iteratsioonis ehitatakse jargmine funktsionaalsus (vt prototuup apa_kmd.html).
 - Arvutab kokku tasuda / tagasi saada summa.
 - Vordlus bilansiga EI tule selles iteratsioonis - see jaab jargmisse iteratsiooni.
 
+ANDMETE PARITOLU (KUIDAS TEHINGUD TABELISSE TULEVAD)
+
+Aruanne kogub valitud perioodi tehingud ja toimingud Directost (muugi- ja ostuarved, kreedit- ja ettemaksuarved, poordmaksustatavad soetused, arvestuslikud kanded) ning grupeerib need KMD tuubi (KMDTYYP2026ap) jargi. Iga tehingurida laheb tabelisse uhe KMD tuubi reana.
+
+1. KMD tuubi maaramine (kaibemaksukoodi kaardilt)
+
+Arendaja on lisanud kaibemaksukoodi (KM kood) kaardile 4 uut valja, mille asetajaks on KM klassifikaatorite nimekiri (KMDTYYP2026ap: M_101, O_101, S_101, A_101 jne):
+- Muugi KM tuup
+- Ostu KM tuup
+- Soetuse KM tuup
+- Arvestusliku kande KM tuup
+
+Tehingurea KMD tuup tuletatakse tehingu kaibemaksukoodist, votes tehingu konteksti jargi vastava valja:
+- Muugidokument (muugiarve, kreeditarve, ettemaksuarve) -> "Muugi KM tuup" -> M_xxx
+- Ostudokument (ostuarve, ostu kreeditarve) -> "Ostu KM tuup" -> O_xxx
+- Poordmaksustatav soetus -> "Soetuse KM tuup" -> S_xxx
+- Arvestuslik kanne -> "Arvestusliku kande KM tuup" -> A_xxx
+
+Nii saab sama KM kood eri kontekstis anda erineva KMD tuubi. KM% (maksumaar) tuleb samuti KM koodilt.
+
+2. Veergude andmeallikad
+
+Iga tabeli veeru sisu paritolu (vasakul veerg, paremal Directo andmeallikas):
+- KMD tuup -> tehingu KM koodi kaardi vastav valja vaartus (Muugi/Ostu/Soetuse/Arvestusliku kande KM tuup)
+- KMD tuubi sisu -> KMDTYYP2026ap klassifikaatori kirjeldus (staatiline, tuubi jargi)
+- KM% -> tehingurea maksumaar (KM koodilt)
+- Deklareeritav summa -> tehingurea maksustatav vaartus (muugil kaibe summa; ostul/soetusel sisendkaibemaksu summa voi maksustatav vaartus vastavalt tuubile)
+- KM (EUR) -> kaibemaksu summa (maksustatav vaartus x maar; voi tehingult)
+- TP/Arve tunnus (identifierCategory) -> tuletatakse: 100 = Eesti jur. isik / teise LR KM-kohustuslane, 200 = fuusiline isik / mittekohustuslane, 300 = KM-grupi liige, 101 = salastatud arve, 102 = lihtsustatud arve, 103 = kogusumma alla 1000 EUR, 104 = segaarve
+- Partneri reg/KMKR -> tehingupartneri (klient/hankija) registrikood voi KMKR number
+- Partneri nimi -> partneri nimi (ainult kuvamiseks; XML-i EI lahe)
+- Koodi taps. -> partneri koodi liik: ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD
+- Grupp kat -> 300, kui partner on KM-grupi liige
+- Grupi liikme reg -> KM-grupi liikme registrikood voi mitteresidendi kood
+- Grupi liikme koodi taps. -> grupi liikme koodi liik (ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD)
+- Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lahe)
+- Riik -> ostja riigi tunnus (EL riigid, uhendusesiseste tehingute puhul)
+- Riigi taps. -> riigi roll (RR_ostja)
+- Arve nr -> dokumendi (arve) number
+- Ettemaks nr -> ettemaksuarve number
+- Kuupaev -> arve voi ettemaksuarve kuupaev
+- Arve kogusumma km/ta -> arve kogusumma ilma kaibemaksuta
+- Kreeditkp -> kreeditarve esialgse arve kuupaev
+
+3. Grupeerimine tabelis
+
+Read grupeeritakse KMD tuubi jargi kolmele tasandile: KM sektsioon (nt "Standard- voi soodusmaaraga maksustatavad tehingud") -> alagrupp -> KMD tuup (M_101 jne). Sama KMD tuubi tehingud on uhe grupi all.
+
 SKOOBIST VALJAS (I iteratsioonis EI tehta)
 
 - e-MTA-le saatmine, tagasisideraporti kontroll, kinnitamine (PIN2) - koik saatmisnupud puuduvad.
@@ -96,3 +144,7 @@ LAHTISED KUSIMUSED
 3. Kas "Kokku KM maarade loikes" koondis peab olema alati avatud voi kokkupandav (nagu prototuubis "Ava read")?
 4. Numbri tapsus / umardamine koondsummades - kas jargida MTA nouet (2 kohta) ka vaates?
 5. LAHENDATUD: periood on alguse + lopu kuupaev (suvaline vahemik, nt 10 paeva). Lisaks Directo kiirsisestus (kuu number = terve kuu; !N = eelmine aasta) ja kalendrivalik.
+6. Kui tehingu KM koodi kaardil on vastav KMD tuubi vali (nt Muugi KM tuup) taitmata - kas rida jaetakse aruandest valja, kuvatakse eraldi "maaramata" grupis voi antakse hoiatus?
+7. TP/Arve tunnus (identifierCategory) - kas see tuletatakse automaatselt (partneri liik + arve omadused) voi votame mone valja otse dokumendilt? Kust tuleb 101/102/104 (salastatud/lihtsustatud/segaarve) info?
+8. Partneri koodi taps. (ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD) - kas tuletatakse partneri kaardilt automaatselt (registrikood vs KMKR vs mitteresidendi kood)?
+9. Kas uks tehingu KM kood saab korraga taidetud olla mitme KMD tuubi valjaga (nt nii Muugi kui Ostu tuup) ja kas kontekst valib alati uheselt oige?
