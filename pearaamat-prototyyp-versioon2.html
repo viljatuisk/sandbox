@@ -55,6 +55,8 @@
   .sf input:focus, .sf select:focus { outline: none; border-color: #3a7abf; }
   .sf-row { display: flex; gap: 4px; align-items: flex-end; }
   .sf-row .sf { flex: 1; min-width: 0; }
+  /* "+" kaudu lisatud alamfilter (nt Riigikonto, Korr. konto) - visuaalselt Konto alamfiltrina, vasakult taandega */
+  .sf.sub-filter { margin-left: 12px; padding-left: 10px; border-left: 2px solid #b8cde0; }
   .sidebar-body.collapsed { display: none; }
   .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #2a4a6a; cursor: pointer; font-size: 10px; }
   .sf-check input[type=checkbox] { accent-color: #3a7abf; }
@@ -429,7 +431,7 @@
           </div>
           <div class="konto-xlate" id="kontoXlate"></div>
         </div>
-        <div class="sf" id="riigiFilterRow" style="display:none;"><label>Riigikonto <span class="help-i" title="Konto kaardi standardväli. Toetab vahemikku, nt 550000:559999">i</span></label>
+        <div class="sf sub-filter" id="riigiFilterRow" style="display:none;"><label>Riigikonto <span class="help-i" title="Konto kaardi standardväli. Toetab vahemikku, nt 550000:559999">i</span></label>
           <div class="obj-wrap" id="riigiWrap">
             <div class="sf-lookup">
               <span class="inp-clear-wrap" id="riigiClearWrap">
@@ -447,7 +449,7 @@
           </div>
           <div class="konto-xlate" id="riigiXlate"></div>
         </div>
-        <div class="sf" id="korrFilterRow" style="display:none;"><label>Korr. konto (kaardilt) <span class="help-i" title="Konto kaardi vaikimisi vastaskonto. Erineb KANDED all olevast Korr. konto (kande vastaskonto) filtrist. Toetab vahemikku, nt 212000:212999">i</span></label>
+        <div class="sf sub-filter" id="korrFilterRow" style="display:none;"><label>Korr. konto (kaardilt) <span class="help-i" title="Konto kaardi vaikimisi vastaskonto. Erineb KANDED all olevast Korr. konto (kande vastaskonto) filtrist. Toetab vahemikku, nt 212000:212999">i</span></label>
           <div class="obj-wrap" id="korrCardWrap">
             <div class="sf-lookup">
               <span class="inp-clear-wrap" id="korrCardClearWrap">
