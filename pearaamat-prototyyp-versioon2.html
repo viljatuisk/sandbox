@@ -1913,11 +1913,14 @@
     document.getElementById('riigiFilterRow').style.display = on ? '' : 'none';
     if (!on) { clearRiigiFilter(); }
     else { const i = document.getElementById('riigiInput'); if (i) i.focus(); }
+    // Sulge "Lisa filter" paneel valiku järel (kasutaja näeb kohe lisatud/eemaldatud välja)
+    document.getElementById('kontoFilterFieldsPanel').classList.remove('open');
   }
   function toggleKorrFilterField(on) {
     document.getElementById('korrFilterRow').style.display = on ? '' : 'none';
     if (!on) { clearKorrCardFilter(); }
     else { const i = document.getElementById('korrCardInput'); if (i) i.focus(); }
+    document.getElementById('kontoFilterFieldsPanel').classList.remove('open');
   }
   function resetKontoFilterFields() {
     document.getElementById('cbFilterRiigikonto').checked = false;
