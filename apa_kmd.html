@@ -185,6 +185,8 @@ thead tr:nth-child(2) th{background:#1e3f6a !important;z-index:4;top:22px}
 td.ec{cursor:pointer;position:relative}
 .col-desc{transition:all .2s}
 .col-desc-hidden{display:none}
+/* KMK% veerg (6.) PEIDETUD - arendusse andmiseks, Directo-sisene moiste. Taasta: kustuta see reegel + TBL_COLS {n:6} tagasi + filtri display:none maha. */
+#mainTbl>thead>tr>th:nth-child(6),#mainTbl>tbody>tr>td:nth-child(6){display:none}
 .col-toggle-btn{font-size:10px;padding:1px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-family:Arial,sans-serif;color:var(--text2);white-space:nowrap}
 .col-toggle-btn:hover{background:var(--bg3)}
 /* Vali tulbad (veergude valija) */
@@ -348,7 +350,8 @@ td.ec:hover{background:var(--blue-lt)!important}
         </optgroup>
       </select>
     </div>
-    <div class="fg"><label title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help;text-decoration:underline dotted">KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
+    <!-- KMK% filter PEIDETUD (arendusse andmiseks, Directo-sisene mõiste). Taastamiseks eemalda style="display:none". -->
+    <div class="fg" style="display:none"><label title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help;text-decoration:underline dotted">KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
     <div class="fg"><label>Otsing</label><input class="fp-i" id="search" placeholder="Partneri, arve, koodi..." oninput="renderTable()"/></div>
     <button class="fp-show" onclick="applyFilters()">Näita</button>
     <button class="fp-clr" onclick="clearFilters()">Tühjenda filtrid</button>
@@ -1211,7 +1214,7 @@ const TBL_COLS=[
   {n:3, label:'KMD tüübi kommentaar', kom:true, def:false},
   {n:4, label:'KMD tüübi sisu'},
   {n:5, label:'KM%'},
-  {n:6, label:'KMK%'},
+  /* {n:6, label:'KMK%'} - KMK% veerg peidetud (arendusse andmiseks). Taasta koos CSS-reegli ja filtriga. */
   {n:7, label:'Deklareeritav summa'},
   {n:8, label:'KM (€)'},
   {n:9, label:'TP/Arve tunnus'},
