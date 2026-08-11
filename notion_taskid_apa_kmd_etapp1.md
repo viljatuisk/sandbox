@@ -20,11 +20,11 @@ Arendaja on lisanud kaibemaksukoodi (KM kood) kaardile 4 uut valja, mille asetaj
 - Soetuse KM tuup
 - Arvestusliku kande KM tuup
 
-Tehingurea KMD tuup tuletatakse tehingu kaibemaksukoodist, votes tehingu konteksti jargi vastava valja:
-- Muugidokument (muugiarve, kreeditarve, ettemaksuarve) -> "Muugi KM tuup" -> M_xxx
-- Ostudokument (ostuarve, ostu kreeditarve) -> "Ostu KM tuup" -> O_xxx
-- Poordmaksustatav soetus -> "Soetuse KM tuup" -> S_xxx
-- Arvestuslik kanne -> "Arvestusliku kande KM tuup" -> A_xxx
+Igale dokumendile (muugiarve, ostuarve, kulutus, kanne) lisatakse vali KM tuup. Vaartus asetub automaatselt KMK kaardi kaudu, kuid kasutaja saab seda vajadusel dokumendil kasitsi muuta. KM tuup asetub jargmiselt (esitlus lk 9):
+- Muugiarve -> KMK kaardi "Muugi KM tuup" -> nt M_101
+- Ostuarve ja Kulutus -> KMK kaardi "Ostu KM tuup" -> nt O_101
+- Ostuarve ja Kulutus (poordmaksustatav) -> KMK kaardi "Soetuse KM tuup" -> nt S_101
+- Kanne (konto tuubi jargi): "Muugi KM tuup" (nt sularaha muugi koondkanne -> M_101), "Ostu KM tuup" (nt kulukanne -> O_101), "Arvestusliku kande KM tuup" (nt impordi maksustatava vaartuse muutmine -> A_101)
 
 Nii saab sama KM kood eri kontekstis anda erineva KMD tuubi. KM% (maksumaar) tuleb samuti KM koodilt.
 
@@ -34,10 +34,10 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tuubi. KM% (maksumaar) tul
 - KM% -> tehingurea maksumaar (KM koodilt)
 - Deklareeritav summa -> tehingurea maksustatav vaartus (muugil kaibe summa; ostul/soetusel sisendkaibemaksu summa voi maksustatav vaartus vastavalt tuubile)
 - KM (EUR) -> kaibemaksu summa (maksustatav vaartus x maar; voi tehingult)
-- TP/Arve tunnus (identifierCategory) -> tuletatakse: 100 = Eesti jur. isik / teise LR KM-kohustuslane, 200 = fuusiline isik / mittekohustuslane, 300 = KM-grupi liige, 101 = salastatud arve, 102 = lihtsustatud arve, 103 = kogusumma alla 1000 EUR, 104 = segaarve
-- Partneri reg/KMKR -> tehingupartneri (klient/hankija) registrikood voi KMKR number
+- TP/Arve tunnus (identifierCategory) -> EI ole lihtne otsing, vaid tuletatakse loogika alusel (vt allpool "TP/Arve tunnuse ja agregeerimise loogika"). Vaartused: 100 / 101 / 103 / 104 (juriidiline), 200 (fuusiline), 300 (KM-grupi liige)
+- Partneri reg/KMKR -> tehingupartneri (klient/hankija) registrikood voi KMKR number (kliendi-/hankijakaardilt)
 - Partneri nimi -> partneri nimi (ainult kuvamiseks; XML-i EI lahe)
-- Koodi taps. -> partneri koodi liik: ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD
+- Koodi taps. -> partneri koodi liik: ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD (tuletatakse kliendi-/hankijakaardilt)
 - Grupp kat -> 300, kui partner on KM-grupi liige
 - Grupi liikme reg -> KM-grupi liikme registrikood voi mitteresidendi kood
 - Grupi liikme koodi taps. -> grupi liikme koodi liik (ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD)
@@ -49,6 +49,26 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tuubi. KM% (maksumaar) tul
 - Kuupaev -> arve voi ettemaksuarve kuupaev
 - Arve kogusumma km/ta -> arve kogusumma ilma kaibemaksuta
 - Kreeditkp -> kreeditarve esialgse arve kuupaev
+
+**TP/Arve tunnuse (identifierCategory) ja agregeerimise loogika (esitlus lk 10-11):**
+
+Partneri andmed tulevad kliendi-/hankijakaardilt (olemasolevad valjad, kaarti sisuliselt muuta ei tule):
+- Isiku tuup (juriidiline / fuusiline) -> maarab 100 vs 200
+- KMKR -> naitab, kas tegemist valismaa isikuga (uhendusesisesed tehingud)
+- "Salastatud" (uus vaartus Tuup valjas, arvel muudetav) -> 101 (partner esitatakse anonuumselt)
+
+1000 EUR piirmaar - tehingupartneri PERIOODI kogusumma jargi:
+- Fuusiline isik -> ALATI agregeeritult -> 200
+- Juriidiline, partneri perioodi kogusumma < 1000 EUR -> agregeeritult, partneri andmeid ei esitata -> 103
+- Juriidiline, kogusumma >= 1000 EUR -> detailselt arve kaupa, registrikood kohustuslik -> 100
+- Segaarve (mitu KM kasitlust uhel arvel) -> lisatunnus 104, piirmaar kehtib endiselt
+
+Arveridade koondamine:
+- Sama KMD tuubiga read samalt arvelt summeeritakse uhte kirjesse (nt 10-realine arve 5x24% + 5x9% -> 2 kirjet).
+
+Segaarve reegel (kasvoi uks maksustatav rida arvel):
+- Kogu arve read tuleb esitada detailselt. Nt juriidiline, 22% kaive 1000 EUR + maksuvaba 3000 EUR -> M_101 1000 EUR (104) + M_301 3000 EUR (104). Maksuvaba (M_301) tuleb detailselt segaarve tottu.
+- Sama kehtib, kui partneri MONE TEISE arve tottu on perioodi kogusumma >= 1000 EUR.
 
 ---
 
@@ -103,7 +123,7 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tuubi. KM% (maksumaar) tul
 ## Lahtised kusimused (enne arendust ule vaadata)
 
 1. Kust I etapis andmed tulevad - kas reaalsest Directo tehingute/kannete baasist reaalajas, voi eeldame esialgu piiratud andmehulka (nt uks maksustamisperiood)?
-2. Kuidas kaitleda kirjeid, mis ei mappu uheselt uhe KMD tuubi alla (nt segaarved) - kas jagatakse ridadeks juba andmete kogumisel?
+2. Kas kogu agregeerimisloogika (1000 EUR piirmaar partneri perioodi kogusumma jargi, arveridade koondamine, segaarve detailselt) tuleb juba selles etapis, voi alles XML-i etapis? (Loogika ise: vt T1 ja esitlus lk 11.)
 3. Kui tehingu KM koodi kaardil on vastav KMD tuubi vali (nt Muugi KM tuup) taitmata - kas rida jaetakse aruandest valja, kuvatakse eraldi "maaramata" grupis voi antakse hoiatus?
-4. TP/Arve tunnus (identifierCategory) - kas see tuletatakse automaatselt (partneri liik + arve omadused) voi votame mone valja otse dokumendilt? Kust tuleb 101/102/104 (salastatud/lihtsustatud/segaarve) info?
-5. Partneri koodi taps. (ARIREGISTRIKOOD / KMKR_NUMBER / MRR_KOOD) - kas tuletatakse partneri kaardilt automaatselt?
+4. LAHENDATUD (esitlus lk 10-11): identifierCategory tuletatakse automaatselt (isiku tuup 100/200, Salastatud 101, 1000 EUR piirmaar 103/100, segaarve 104). Lahtine: kas 102 (lihtsustatud arve) on selles etapis kasutusel ja kust see tuleb?
+5. LAHENDATUD (esitlus lk 10): partneri andmed ja koodi taps. tulevad kliendi-/hankijakaardilt (isiku tuup + KMKR). Lahtine: tapne eristus ARIREGISTRIKOOD vs KMKR_NUMBER vs MRR_KOOD.
