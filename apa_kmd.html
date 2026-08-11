@@ -185,6 +185,12 @@ thead tr:nth-child(2) th{background:#1e3f6a !important;z-index:4;top:22px}
 td.ec{cursor:pointer;position:relative}
 .col-desc{transition:all .2s}
 .col-desc-hidden{display:none}
+/* Perioodivali: tekstivali (kiirsisestus) + kalendrinupp */
+.period-inp{display:flex;align-items:center;gap:2px;position:relative}
+.period-inp .fp-i{flex:1;min-width:0}
+.cal-btn{border:1px solid var(--border);background:var(--bg2);border-radius:var(--r);cursor:pointer;font-size:12px;padding:1px 5px;line-height:1.2}
+.cal-btn:hover{background:var(--bg3)}
+.cal-hidden{position:absolute;right:0;bottom:-2px;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
 /* KMK% veerg (6.) PEIDETUD - arendusse andmiseks, Directo-sisene moiste. Taasta: kustuta see reegel + TBL_COLS {n:6} tagasi + filtri display:none maha. */
 #mainTbl>thead>tr>th:nth-child(6),#mainTbl>tbody>tr>td:nth-child(6){display:none}
 .col-toggle-btn{font-size:10px;padding:1px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-family:Arial,sans-serif;color:var(--text2);white-space:nowrap}
@@ -274,8 +280,12 @@ td.ec:hover{background:var(--blue-lt)!important}
 <div class="fp" id="filterPanel">
   <div class="fp-hdr">Filtrid</div>
   <div class="fp-body">
-    <div class="fg"><label>Periood algus</label><input class="fp-i" id="flt-from" value="01.03.2026" placeholder="pp.kk.aaaa"/></div>
-    <div class="fg"><label>Periood lõpp</label><input class="fp-i" id="flt-to" value="30.03.2026" placeholder="pp.kk.aaaa"/></div>
+    <div class="fg"><label title="Kiirsisestus (nagu Directos): kuu number, nt 3 => 01.03-31.03 jooksev aasta; !3 => eelmise aasta marts. Voi tavaline kuupaev pp.kk.aaaa. Kalendri jaoks vajuta ikooni." style="cursor:help;text-decoration:underline dotted">Periood algus</label>
+      <div class="period-inp"><input class="fp-i" id="flt-from" value="01.03.2026" placeholder="pp.kk.aaaa / nt 3 / !1" onchange="parsePeriod('from')"><button type="button" class="cal-btn" title="Vali kalendrist" onclick="pickDate('from')">&#128197;</button><input type="date" id="flt-from-cal" class="cal-hidden" onchange="calPicked('from',this.value)"></div>
+    </div>
+    <div class="fg"><label title="Kiirsisestus (nagu Directos): kuu number, nt 3 => 01.03-31.03 jooksev aasta; !3 => eelmise aasta marts. Voi tavaline kuupaev pp.kk.aaaa. Kalendri jaoks vajuta ikooni." style="cursor:help;text-decoration:underline dotted">Periood lõpp</label>
+      <div class="period-inp"><input class="fp-i" id="flt-to" value="30.03.2026" placeholder="pp.kk.aaaa / nt 3 / !1" onchange="parsePeriod('to')"><button type="button" class="cal-btn" title="Vali kalendrist" onclick="pickDate('to')">&#128197;</button><input type="date" id="flt-to-cal" class="cal-hidden" onchange="calPicked('to',this.value)"></div>
+    </div>
     <!-- Saatja nimi ja Registrikood ei ole filtreeritavad, kuid vajalikud XML-i jaoks -> peidetud, tulevad ettevotte seadistusest -->
     <input type="hidden" id="flt-reg" value="10000001"/>
     <div class="fg"><label>KM tüüp</label>
@@ -1102,7 +1112,7 @@ function confirmSend(){
   const lsEl=document.getElementById('lastSentTxt');
   const f=(document.getElementById('flt-from').value||activeFilters.from||'').trim();
   const t=(document.getElementById('flt-to').value||activeFilters.to||'').trim();
-  lastSentPeriod=(f&&t)?f+' – '+t:(f||t||'');
+  lastSentPeriod=(f&&t)?fmtEE(f)+' - '+fmtEE(t):(fmtEE(f)||fmtEE(t)||'');
   if(lsEl)lsEl.textContent=lastSent.toLocaleString('et-EE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+(lastSentPeriod?' ('+lastSentPeriod+')':'');
   rows=rows.filter(r=>r._h||r.diff!=='del');
   rows.filter(r=>!r._h).forEach(r=>{r.diff='sent';delete r.emtaErr;});
@@ -2105,7 +2115,7 @@ function closeKontrolliModal(){document.getElementById('kontrolliOvl').classList
 function openPin2Modal(){
   const from=document.getElementById('flt-from').value||'';
   const to=document.getElementById('flt-to').value||'';
-  document.getElementById('pin2-period').textContent=(from&&to)?from+' – '+to:'—';
+  document.getElementById('pin2-period').textContent=(from&&to)?fmtEE(from)+' - '+fmtEE(to):'—';
   const lsTxt=document.getElementById('lastSentTxt');document.getElementById('pin2-sent').textContent=lsTxt?lsTxt.textContent:'—';
   document.getElementById('pin2-status').textContent=workflowState==='kontrolli_ok'?'Vigu ei leitud ✓':'—';
   document.getElementById('pin2-input').value='';
@@ -2145,6 +2155,44 @@ function updateSettingsBar(){
   if(srcCnt)parts.push('<span><b>Allikaid:</b> '+srcCnt+'</span>');
   if(parts.length){bar.innerHTML=parts.join('<span style="color:var(--border)">·</span>');bar.style.display='flex';}
   else{bar.innerHTML='';bar.style.display='none';}
+}
+/* ── Periood: kiirsisestus (Directo-stiilis) + kalender ──────────────────── */
+function pad2(n){return String(n).padStart(2,'0');}
+function isoToEE(iso){if(!iso)return'';const p=iso.split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:iso;}
+function fmtEE(v){return isoToEE(v);} /* varasem nimi; kui sisend on juba pp.kk.aaaa, tagastab muutmata */
+function eeToIsoDate(ee){if(!ee)return'';const p=ee.split('.');if(p.length!==3)return'';let y=p[2];if(y.length===2)y='20'+y;if(!/^\d{4}$/.test(y))return'';return y+'-'+pad2(p[1])+'-'+pad2(p[0]);}
+function monthRange(mo,yr){const last=new Date(yr,mo,0).getDate();return['01.'+pad2(mo)+'.'+yr, pad2(last)+'.'+pad2(mo)+'.'+yr];}
+/* Kiirsisestus: kuu number (nt 3 => jooksva aasta marts, terve kuu), !3 => eelmise aasta marts. */
+function parsePeriod(which){
+  const el=document.getElementById('flt-'+which);
+  let v=(el.value||'').trim();
+  if(!v){renderTable();return;}
+  const m=v.match(/^(!?)(\d{1,2})$/);
+  if(m){
+    const mo=parseInt(m[2],10);
+    if(mo>=1&&mo<=12){
+      const yr=new Date().getFullYear()-(m[1]==='!'?1:0);
+      const r=monthRange(mo,yr);
+      document.getElementById('flt-from').value=r[0];
+      document.getElementById('flt-to').value=r[1];
+      renderTable();return;
+    }
+  }
+  const iso=eeToIsoDate(v);
+  if(iso)el.value=isoToEE(iso); /* normaliseeri pp.kk.aa -> pp.kk.aaaa */
+  renderTable();
+}
+function pickDate(which){
+  const cal=document.getElementById('flt-'+which+'-cal');
+  const cur=eeToIsoDate(document.getElementById('flt-'+which).value);
+  if(cur)cal.value=cur;
+  if(cal.showPicker){try{cal.showPicker();return;}catch(e){}}
+  cal.focus();cal.click();
+}
+function calPicked(which,iso){
+  if(!iso)return;
+  document.getElementById('flt-'+which).value=isoToEE(iso);
+  renderTable();
 }
 function onPankrotChange(){
   const cb=document.getElementById('flt-pankrot');
