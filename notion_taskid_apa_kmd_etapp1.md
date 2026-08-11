@@ -6,9 +6,20 @@
 
 Iga alljargnev task on eraldi Notioni kirje. Arendaja markib staatuse (Tegemata / Toos / Valmis) Notionis. Kogu etapi arendus commititakse Directo master sundmuse raames.
 
+Iga taski paises on "Notioni valjad" plokk (Kuupaev, Lisas, Lisatud, Prioriteet, Staatus, Sundmuse link, Teema), et Notioni AI saaks kirje omadused automaatselt taita. Sundmuse link viitab koigil Directo master sundmusele.
+
 ---
 
 ## T1. Andmete kogumine ja KMD tuubi tuletamine
+
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Korge
+- Teema: Andmed ja KMD tuup
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
 
 Aruanne kogub valitud perioodi tehingud ja toimingud Directost (muugi- ja ostuarved, kreedit- ja ettemaksuarved, poordmaksustatavad soetused, arvestuslikud kanded) ning grupeerib need KMD tuubi (KMDTYYP2026ap) jargi. Iga tehingurida laheb tabelisse uhe KMD tuubi reana.
 
@@ -74,6 +85,15 @@ Segaarve reegel (kasvoi uks maksustatav rida arvel):
 
 ## T2. Aruandetabel - Tehingupaevik
 
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Korge
+- Teema: Aruandetabel
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
+
 - Tehingute nimekiri kolmetasandilise grupeeringuga: KM sektsioon (nt "Standard- voi soodusmaaraga maksustatavad tehingud") -> alagrupp -> KMD tuup (M_101, O_101 jne).
 - Iga rida kuvab tehingu andmed KMD tuupide loikes.
 - Vaikeveerud: #, KMD tuup, KMD tuubi sisu, KM%, Deklareeritav summa, KM (EUR), TP/Arve tunnus, Partneri reg/KMKR, Partneri nimi, Koodi taps., Grupp kat, Grupi liikme reg, Grupi liikme koodi taps., Grupi liikme nimi, Riik, Riigi taps., Arve nr, Ettemaks nr, Kuupaev, Arve kogusumma km/ta, Kreeditkp.
@@ -82,6 +102,15 @@ Segaarve reegel (kasvoi uks maksustatav rida arvel):
 ---
 
 ## T3. "Vali tulbad" veergude valija
+
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Keskmine
+- Teema: Aruandetabel / veerud
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
 
 - Aruandetabeli tooriistareal kruvikeeraja nupp, mis avab veergude valija paneeli.
 - Paneelis: otsingukast ("Otsi"), veergude nimekiri linnukestega, "Taasta algseaded" nupp.
@@ -93,6 +122,15 @@ Segaarve reegel (kasvoi uks maksustatav rida arvel):
 ---
 
 ## T4. Filtrid
+
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Korge
+- Teema: Filtrid
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
 
 - Periood algus / Periood lopp: eraldi alguse ja lopu kuupaev, et saaks valida ka suvalise vahemiku (nt 10 paeva). Kaks sisestusviisi:
   a) Kalendrist valik (kalendriikoon vali).
@@ -106,6 +144,15 @@ Segaarve reegel (kasvoi uks maksustatav rida arvel):
 
 ## T5. Aruandetabeli juhtnupud (voldikud)
 
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Madal
+- Teema: Aruandetabel / voldikud
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
+
 - Sulge koik / Ava koik voldikud.
 - Sulge alamgrupid / Ava alamgrupid.
 - "KMD tuubi kommentaar" veeru naitamine/peitmine kaib "Vali tulbad" alt.
@@ -113,6 +160,15 @@ Segaarve reegel (kasvoi uks maksustatav rida arvel):
 ---
 
 ## T6. Kokku KM maarade loikes
+
+**Notioni valjad:**
+- Staatus: Tegemata
+- Prioriteet: Keskmine
+- Teema: Koondarvestus
+- Sundmuse link: https://login.directo.ee/ocra_gate/event.html?id=1270066
+- Kuupaev: (maarata)
+- Lisas: (taidab Notion)
+- Lisatud: (taidab Notion automaatselt)
 
 - Aruande ules kuvatakse koondrida KM maarade loikes (M - Muuk, A - Arv. kanded, S - Poordmaks, O - Sisend-KM jne).
 - Arvutab kokku tasuda / tagasi saada summa.
