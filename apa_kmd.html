@@ -225,6 +225,11 @@ td.ec:hover{background:var(--blue-lt)!important}
 </style>
 </head>
 <body>
+<datalist id="koodtaps-list">
+  <option value="ARIREGISTRIKOOD">Eesti äriregistri kood</option>
+  <option value="KMKR_NUMBER">Teise liikmesriigi KM-kohustuslase number</option>
+  <option value="MRR_KOOD">MTA mitteresidendi registri kood</option>
+</datalist>
 <div class="app">
 <!-- Täislaiusega tegevusriba -->
 <div class="top-action-bar" id="topActionBar">
@@ -512,7 +517,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       </select>
     </div>
     <div class="fld"><label>Registrikood / KMKR</label><input id="f-preg"/></div>
-    <div class="fld"><label>Koodi täpsustus</label><input id="f-pkoodtaps"/></div>
+    <div class="fld"><label>Koodi täpsustus</label><input id="f-pkoodtaps" list="koodtaps-list" title="Tehingupartneri koodi liik:&#10;• ARIREGISTRIKOOD — Eesti äriregistri kood&#10;• KMKR_NUMBER — teise liikmesriigi KM-kohustuslase number&#10;• MRR_KOOD — MTA mitteresidendi registri kood (isik on MTA-s mitteresidendina registreeritud, Eesti äriregistrikoodi pole)"/></div>
     <div class="fld"><label>Partneri nimi</label><input id="f-pnimi"/></div>
   </div>
   <div class="fsec">Käibemaksugrupp</div>
@@ -521,7 +526,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <select id="f-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
     </div>
     <div class="fld"><label>Grupi liikme registrikood</label><input id="f-grpreg"/></div>
-    <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="f-grpdesc" placeholder="nt ARIREGISTRIKOOD"/></div>
+    <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="f-grpdesc" list="koodtaps-list" placeholder="nt ARIREGISTRIKOOD" title="Käibemaksugrupi liikme koodi liik:&#10;• ARIREGISTRIKOOD — Eesti äriregistri kood&#10;• KMKR_NUMBER — teise liikmesriigi KM-kohustuslase number&#10;• MRR_KOOD — MTA mitteresidendi registri kood"/></div>
     <div class="fld"><label>Grupi liikme nimi</label><input id="f-grpnimi"/></div>
   </div>
   <div class="fsec">Riik ja muud</div>
@@ -679,7 +684,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         <select id="e-pkat"><option value="100">100 - Eesti juriidiline isik / teise LR KM-kohustuslane</option><option value="200">200 - Füüsiline isik / mittekohustuslane</option><option value="300">300 - KM-grupi liige</option><option value="101">101 - Salastatud arve</option><option value="102">102 - Lihtsustatud arve</option><option value="103">103 - Kogusumma &lt; 1000 €</option><option value="104">104 - Segaarve</option></select>
       </div>
       <div class="fld"><label>Registrikood / KMKR</label><input id="e-preg"/></div>
-      <div class="fld"><label>Koodi täpsustus</label><input id="e-pkoodtaps"/></div>
+      <div class="fld"><label>Koodi täpsustus</label><input id="e-pkoodtaps" list="koodtaps-list" title="Tehingupartneri koodi liik:&#10;• ARIREGISTRIKOOD — Eesti äriregistri kood&#10;• KMKR_NUMBER — teise liikmesriigi KM-kohustuslase number&#10;• MRR_KOOD — MTA mitteresidendi registri kood (isik on MTA-s mitteresidendina registreeritud, Eesti äriregistrikoodi pole)"/></div>
       <div class="fld"><label>Partneri nimi</label><input id="e-pnimi"/></div>
     </div>
     <div class="fgrid g4" style="margin-bottom:7px">
@@ -693,7 +698,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         <select id="e-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
       </div>
       <div class="fld"><label>Grupi liikme registrikood</label><input id="e-grpreg"/></div>
-      <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="e-grpdesc" placeholder="nt ARIREGISTRIKOOD"/></div>
+      <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="e-grpdesc" list="koodtaps-list" placeholder="nt ARIREGISTRIKOOD" title="Käibemaksugrupi liikme koodi liik:&#10;• ARIREGISTRIKOOD — Eesti äriregistri kood&#10;• KMKR_NUMBER — teise liikmesriigi KM-kohustuslase number&#10;• MRR_KOOD — MTA mitteresidendi registri kood"/></div>
       <div class="fld"><label>Grupi liikme nimi</label><input id="e-grpnimi"/></div>
     </div>
     <div class="modal-btns" style="margin-top:10px;border-top:1px solid var(--border2);padding-top:10px">
@@ -795,6 +800,17 @@ const PKAT_LABELS={
   '200':'200 — Füüsiline isik (v.a FIE), teise LR mittekäibemaksukohustuslane või ilma Eesti registrikoodita välisriigi isik',
   '300':'300 — Käibemaksugrupi liige (sh grupi esindusisik)',
 };
+const KOODTAPS_LABELS={
+  'ARIREGISTRIKOOD':'ARIREGISTRIKOOD — Eesti äriregistri kood',
+  'KMKR_NUMBER':'KMKR_NUMBER — Teise liikmesriigi käibemaksukohustuslase number (KMKR)',
+  'MRR_KOOD':'MRR_KOOD — MTA mitteresidendi registri- või isikukood.\nAntakse isikule/ettevõttele, kes on MTA-s mitteresidendina registreeritud ja kellel puudub Eesti äriregistrikood (nt välisriigi juriidiline isik).',
+};
+function koodTapsCell(v){
+  if(!v)return '<td class="muted"></td>';
+  const t=KOODTAPS_LABELS[v];
+  if(!t)return '<td class="muted">'+v+'</td>';
+  return '<td class="muted"><span title="'+t.replace(/"/g,'&quot;')+'" style="text-decoration:underline dotted;cursor:help">'+v+'</span></td>';
+}
 const TYPES={M_101:'M_1',M_102:'M_1',M_103:'M_1',M_104:'M_1',M_105:'M_1',M_201:'M_2',M_202:'M_2',M_203:'M_2',M_204:'M_2',M_205:'M_2',M_206:'M_2',M_207:'M_2',M_208:'M_2',M_209:'M_2',M_210:'M_2',M_211:'M_2',M_212:'M_2',M_301:'M_3',M_302:'M_3',M_303:'M_3',M_304:'M_3',S_101:'S_',S_102:'S_',S_103:'S_',S_104:'S_',S_105:'S_',S_106:'S_',O_101:'O_',O_102:'O_',O_103:'O_',O_104:'O_',O_106:'O_',O_201:'O_',O_202:'O_',O_203:'O_',O_204:'O_',O_301:'O_',O_302:'O_',O_303:'O_',O_304:'O_',O_305:'O_',O_306:'O_',O_307:'O_',O_308:'O_',O_309:'O_',O_310:'O_',O_401:'O_',O_402:'O_',O_403:'O_',O_404:'O_',O_405:'O_',O_501:'O_',O_502:'O_',O_601:'O_',A_101:'A_'};
 const KMK=[
   {kood:'0',sel:'0 — Ei ole käive'},
@@ -1347,10 +1363,10 @@ function rowHtml(r,mId,mdId,tId){
     +'<td>'+(r.pkat?'<span title="'+(PKAT_LABELS[r.pkat]||r.pkat)+'" style="font-size:11px">'+r.pkat+'</span>':'')+'</td>'
     +'<td class="muted">'+(r.preg||'')+'</td>'
     +'<td title="'+(r.pnimi||'')+'">'+(r.pnimi||'')+'</td>'
-    +'<td class="muted">'+(r.pkoodtaps||'')+'</td>'
+    +koodTapsCell(r.pkoodtaps)
     +'<td>'+(d(r.grpkat))+'</td>'
     +'<td class="muted">'+(r.grpreg||'')+'</td>'
-    +'<td class="muted">'+(r.grpdesc||'')+'</td>'
+    +koodTapsCell(r.grpdesc)
     +'<td title="'+(r.grpnimi||'')+'">'+(r.grpnimi||'')+'</td>'
     +'<td style="text-align:center">'+(r.riik?'<span class="cat-b">'+r.riik+'</span>':'')+'</td>'
     +'<td class="muted">'+(r.riiktaps||'')+'</td>'
