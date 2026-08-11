@@ -1,0 +1,95 @@
+PEALKIRI:
+Andmepohine KMD (APA KMD 2027) aruanne - I iteratsioon (baaslahendus, ainult andmete kuvamine)
+
+KIRJELDUS:
+
+NOW
+
+Maksu- ja Tolliamet votab 2027. aastal kasutusele andmepohise kaibemaksuaruandluse (APA KMD), kus KMD andmed edastatakse XBRL GL formaadis tehingute ja toimingute kaupa. Directos puudub aruanne, mis need andmed KMD tuupide (KMDTYYP2026ap: M_/O_/S_/A_) loikes kokku kogub ja kasutajale kuvab.
+
+I iteratsiooni eesmark on koige baasilisem lahendus: ehitada aruandetabel, mis naitab Directo tehingute andmeid andmepohise KMD struktuuris. Selles iteratsioonis EI ole veel e-MTA-le saatmist, valideerimist, kinnitamist ega XML genereerimist - eesmark on lihtsalt saada andmed aruandesse nahtavaks, et loogikat ja andmete oigsust saaks kontrollima hakata.
+
+WHY & WHO
+
+- Raamatupidaja: naeb esimest korda, kuidas Directo andmed andmepohise KMD tuupide loikes reastuvad, saab kontrollida kirjete oigsust ja summade kokkulangevust enne, kui saatmisfunktsionaalsus valmib.
+- Directo: saab varakult andmete kogumise ja grupeerimise loogika toimima ning testida reaalsete andmetega. Saatmise/XML osa ehitatakse jargmis(t)es iteratsioonis stabiilse andmealuse peale.
+- Kliendid: aruanne annab ulevaate tulevasest APA KMD-st juba enne 2027. aasta uleminekut.
+
+WHAT
+
+I iteratsioonis ehitatakse jargmine funktsionaalsus (vt prototuup apa_kmd.html).
+
+1. Aruandetabel - Tehingupaevik
+
+- Tehingute nimekiri kolmetasandilise grupeeringuga: KM sektsioon (nt "Standard- voi soodusmaaraga maksustatavad tehingud") -> alagrupp -> KMD tuup (M_101, O_101 jne).
+- Iga rida kuvab tehingu andmed KMD tuupide loikes.
+- Vaikeveerud: #, KMD tuup, KMD tuubi sisu, KM%, Deklareeritav summa, KM (EUR), TP/Arve tunnus, Partneri reg/KMKR, Partneri nimi, Koodi taps., Grupp kat, Grupi liikme reg, Grupi liikme koodi taps., Grupi liikme nimi, Riik, Riigi taps., Arve nr, Ettemaks nr, Kuupaev, Arve kogusumma km/ta, Kreeditkp.
+- NB! KMK% (Directo kaibemaksukood) veergu selles aruandes EI kuvata (Directo-sisene moiste, MTA mudelis on ainult KM%/maksumaar).
+
+2. "Vali tulbad" veergude valija
+
+- Aruandetabeli tooriistareal kruvikeeraja nupp, mis avab veergude valija paneeli.
+- Paneelis: otsingukast ("Otsi"), veergude nimekiri linnukestega, "Taasta algseaded" nupp.
+- Kasutaja saab veerge nahtavaks teha / peita linnukesega.
+- Veergude asukohti EI SAA umber jarjestada (lohistamist ei ole). Jarjekord on fikseeritud.
+- Otsing filtreerib veergude nimekirja nime jargi.
+- Valik jaab kasutajale meelde (pusiv seade).
+
+3. Filtrid
+
+- Periood algus / Periood lopp: kuupaevavalik kalendrist (date picker).
+- Rippmenuud (nt KM tuup): avanevad ja kaituvad nagu prototuubis.
+- Otsing: vabatekstiotsing partneri, arve numbri, koodi jm jargi.
+- Saatja nimi ja Registrikood EI ole filtreeritavad - need tulevad ettevotte seadistusest (aruandes nahtamatud, kuid vajalikud hilisemas XML-i iteratsioonis).
+- Pankrotiperioodi tunnus asub Seadistuste all (mitte filtrites).
+
+4. Aruandetabeli juhtnupud (voldikud)
+
+- Sulge koik / Ava koik voldikud.
+- Sulge alamgrupid / Ava alamgrupid.
+- "KMD tuubi kommentaar" veeru naitamine/peitmine kaib "Vali tulbad" alt.
+
+5. Kokku KM maarade loikes
+
+- Aruande ules kuvatakse koondrida KM maarade loikes (M - Muuk, A - Arv. kanded, S - Poordmaks, O - Sisend-KM jne).
+- Arvutab kokku tasuda / tagasi saada summa.
+- Vordlus bilansiga EI tule selles iteratsioonis - see jaab jargmisse iteratsiooni.
+
+SKOOBIST VALJAS (I iteratsioonis EI tehta)
+
+- e-MTA-le saatmine, tagasisideraporti kontroll, kinnitamine (PIN2) - koik saatmisnupud puuduvad.
+- XBRL GL XML genereerimine ja allalaadimine.
+- Vordlus bilansiga (KM-kontode saldode vordlus aruande summadega).
+- Kirjete lisamine/muutmine aruandes (aruanne on selles iteratsioonis kuvamiseks; "+ Lisa kirje" ei ole).
+
+PROTOTUUP
+
+Interaktiivne prototuup demonstreerib kogu I iteratsiooni UI-d ja kaitumist.
+- Fail: apa_kmd.html
+- GitHub: viljatuisk/sandbox
+
+TESTID
+
+1. Aruande avamine: tehingud kuvatakse kolmetasandilise grupeeringuga (sektsioon -> alagrupp -> KMD tuup), read on nahtavad.
+2. Periood algus/lopp: kalendrivalik toimib, aruanne naitab ainult valitud perioodi kirjeid.
+3. Otsing: partneri/arve/koodi jargi otsides jaavad alles ainult vastavad read.
+4. KM tuubi filter: valitud tuubi korral kuvatakse ainult selle tuubi read.
+5. Vali tulbad - peida veerg: linnukese eemaldamisel kaob veerg tabelist, ulejaanud veerud jaavad oigesse jarjekorda.
+6. Vali tulbad - naita veerg: linnukese lisamisel ilmub veerg tagasi.
+7. Vali tulbad - veergude jarjekord: veerge EI SAA lohistades umber paigutada.
+8. Vali tulbad - otsing: veeru nime otsides filtreeritakse nimekiri.
+9. Vali tulbad - taasta algseaded: taastab vaikeveerud.
+10. Vali tulbad - pusivus: peale lehe uuendamist jaab valitud veergude komplekt alles.
+11. Sulge koik / Ava koik: koik grupitasandid sulguvad/avanevad.
+12. Sulge/Ava alamgrupid: ainult alamgrupi tasand sulgub/avaneb.
+13. Kokku KM maarade loikes: summad on KM maarade loikes oiged, tasuda/tagasi saada arvutus klapib ridade summaga.
+14. KMK% veerg ja filter aruandes puuduvad.
+15. Saatmis-/kinnitamisnuppe ega XML-i aruandes ei ole.
+
+LAHTISED KUSIMUSED
+
+1. Kust I iteratsioonis andmed tulevad - kas reaalsest Directo tehingute/kannete baasist reaalajas, voi eeldame esialgu piiratud andmehulka (nt uks maksustamisperiood)?
+2. Kuidas kaitleda kirjeid, mis ei mappu uheselt uhe KMD tuubi alla (nt segaarved) - kas jagatakse ridadeks juba andmete kogumisel?
+3. Kas "Kokku KM maarade loikes" koondis peab olema alati avatud voi kokkupandav (nagu prototuubis "Ava read")?
+4. Numbri tapsus / umardamine koondsummades - kas jargida MTA nouet (2 kohta) ka vaates?
+5. Kas periood valitakse alguse/lopu kuupaevadena voi kuu valikuna (aasta+kuu), arvestades et MTA aruanne on kuupohine?
