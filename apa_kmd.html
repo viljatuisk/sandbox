@@ -191,8 +191,8 @@ td.ec{cursor:pointer;position:relative}
 .cal-btn{border:1px solid var(--border);background:var(--bg2);border-radius:var(--r);cursor:pointer;font-size:12px;padding:1px 5px;line-height:1.2}
 .cal-btn:hover{background:var(--bg3)}
 .cal-hidden{position:absolute;right:0;bottom:-2px;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
-/* KMK% veerg (6.) PEIDETUD - arendusse andmiseks, Directo-sisene moiste. Taasta: kustuta see reegel + TBL_COLS {n:6} tagasi + filtri display:none maha. */
-#mainTbl>thead>tr>th:nth-child(6),#mainTbl>tbody>tr>td:nth-child(6){display:none}
+/* KMK% veerg (7.) PEIDETUD - arendusse andmiseks, Directo-sisene moiste. Taasta: kustuta see reegel + TBL_COLS {n:7} tagasi + filtri display:none maha. NB! Konto veeru lisamise jarel on KMK% DOM-positsioon 7. */
+#mainTbl>thead>tr>th:nth-child(7),#mainTbl>tbody>tr>td:nth-child(7){display:none}
 .col-toggle-btn{font-size:10px;padding:1px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-family:Arial,sans-serif;color:var(--text2);white-space:nowrap}
 .col-toggle-btn:hover{background:var(--bg3)}
 /* Vali tulbad (veergude valija) */
@@ -460,6 +460,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <thead>
       <tr>
         <th title="Rea sektsioonisisene järjekorranumber" style="cursor:help">#</th><th style="min-width:72px">KMD tüüp</th>
+        <th style="min-width:60px" title="Raamatupidamiskonto (müügikontod 4..., ostukontod 5...)">Konto</th>
         <th class="col-desc col-desc-hidden" style="min-width:200px">KMD tüübi kommentaar</th>
         <th style="min-width:280px;white-space:normal">KMD tüübi sisu</th><th>KM%</th><th title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help">KMK%</th>
         <th style="min-width:110px;text-align:right;cursor:help" title="Deklareeritav summa (maksustatav v&#228;&#228;rtus/sisendkäibemaks)">Deklareeritav summa</th>
@@ -947,6 +948,14 @@ const TYPE_LABELS={
   O_601:'O_601 — Sisend-KM korrigeerimine',
   A_101:'A_101 — Arvestuslik kanne',
 };
+/* Naidiskonto KMD tuubi jargi: muuk (M) 4..., ost/soetus (O/S) 5..., arvestuslik (A) 4... */
+function kontoFor(type){
+  if(!type)return'';
+  var p=type.charAt(0), num=type.replace(/^[A-Z]_?/,'');
+  if(p==='M'||p==='A')return '4'+num;
+  if(p==='O'||p==='S')return '5'+num;
+  return '';
+}
 function getKmk(k){return KMK.find(m=>m.kood===String(k));}
 function kmkDisp(m){if(!m)return'';const p=m.sel.match(/(\d+)%/);return(p?p[1]:'0')+'% ('+m.kood+')';}
 function pCls(t){const s=TYPES[t]||'';if(s==='M_1')return 'p-m1';if(s==='M_2')return 'p-m2';if(s==='M_3')return 'p-m3';if(s==='S_')return 'p-s';if(s==='O_')return 'p-o';return 'p-a';}
@@ -1221,28 +1230,29 @@ function toggleKomCol(){
 /* n = veeru DOM-positsioon (1-põhine). # (1) ja tegevused (25) on alati nähtavad. */
 const TBL_COLS=[
   {n:2, label:'KMD tüüp'},
-  {n:3, label:'KMD tüübi kommentaar', kom:true, def:false},
-  {n:4, label:'KMD tüübi sisu'},
-  {n:5, label:'KM%'},
-  /* {n:6, label:'KMK%'} - KMK% veerg peidetud (arendusse andmiseks). Taasta koos CSS-reegli ja filtriga. */
-  {n:7, label:'Deklareeritav summa'},
-  {n:8, label:'KM (€)'},
-  {n:9, label:'TP/Arve tunnus'},
-  {n:10, label:'Partneri reg/KMKR'},
-  {n:11, label:'Partneri nimi'},
-  {n:12, label:'Koodi täps.'},
-  {n:13, label:'Grupp kat'},
-  {n:14, label:'Grupi liikme reg'},
-  {n:15, label:'Grupi liikme koodi täps.'},
-  {n:16, label:'Grupi liikme nimi'},
-  {n:17, label:'Riik'},
-  {n:18, label:'Riigi täps.'},
-  {n:19, label:'Arve nr'},
-  {n:20, label:'Ettemaks nr'},
-  {n:21, label:'Kuupäev'},
-  {n:22, label:'Arve kogusumma km/ta'},
-  {n:23, label:'Kreeditkp'},
-  {n:24, label:'e-MTA staatus'},
+  {n:3, label:'Konto'},
+  {n:4, label:'KMD tüübi kommentaar', kom:true, def:false},
+  {n:5, label:'KMD tüübi sisu'},
+  {n:6, label:'KM%'},
+  /* {n:7, label:'KMK%'} - KMK% veerg peidetud (arendusse andmiseks). Taasta koos CSS-reegli ja filtriga. */
+  {n:8, label:'Deklareeritav summa'},
+  {n:9, label:'KM (€)'},
+  {n:10, label:'TP/Arve tunnus'},
+  {n:11, label:'Partneri reg/KMKR'},
+  {n:12, label:'Partneri nimi'},
+  {n:13, label:'Koodi täps.'},
+  {n:14, label:'Grupp kat'},
+  {n:15, label:'Grupi liikme reg'},
+  {n:16, label:'Grupi liikme koodi täps.'},
+  {n:17, label:'Grupi liikme nimi'},
+  {n:18, label:'Riik'},
+  {n:19, label:'Riigi täps.'},
+  {n:20, label:'Arve nr'},
+  {n:21, label:'Ettemaks nr'},
+  {n:22, label:'Kuupäev'},
+  {n:23, label:'Arve kogusumma km/ta'},
+  {n:24, label:'Kreeditkp'},
+  {n:25, label:'e-MTA staatus'},
 ];
 let hiddenCols=new Set();
 function applyColVis(){
@@ -1285,11 +1295,11 @@ document.addEventListener('click',function(e){
   if(w&&!w.contains(e.target)){const p=document.getElementById('colPickerPanel');if(p)p.classList.remove('open');}
 });
 function saveColPrefs(){
-  try{localStorage.setItem('apaKmdCols',JSON.stringify({hidden:[...hiddenCols],kom:descColVisible}));}catch(_){}
+  try{localStorage.setItem('apaKmdCols2',JSON.stringify({hidden:[...hiddenCols],kom:descColVisible}));}catch(_){}
 }
 function loadColPrefs(){
   try{
-    const raw=localStorage.getItem('apaKmdCols');if(!raw){applyColVis();return;}
+    const raw=localStorage.getItem('apaKmdCols2');if(!raw){applyColVis();return;}
     const s=JSON.parse(raw);
     hiddenCols=new Set(s.hidden||[]);
     if(!!s.kom!==descColVisible)toggleKomCol();
@@ -1469,6 +1479,7 @@ function rowHtml(r,mId,mdId,tId){
   return '<tr class="'+rc+'">'
     +'<td class="muted">'+(r._nr||r.nr||'')+'</td>'
     +'<td><span style="font-size:11px;font-weight:bold;font-family:monospace;color:var(--blue-dk)">'+r.type+'</span></td>'
+    +'<td class="muted" style="font-family:monospace">'+kontoFor(r.type)+'</td>'
     +'<td class="col-desc'+(descColVisible?'':' col-desc-hidden')+'" title="'+(KMDDESCS[r.type]||r.type)+'" style="white-space:normal;max-width:220px;font-size:11px">'+(KMDDESCS[r.type]||'')+'</td>'
     +'<td title="'+(r.kom||'')+'">'+(r.kom||'')+'</td>'
     +'<td style="text-align:center">'+(kmLbl||'')+'</td>'
@@ -1548,14 +1559,14 @@ function renderTable(){
           const st=mainStats[main]||{n:0,sum:0,vat:0};
           const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; Dekl. summa: '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
           html+='<tr class="hrow-main">'
-            +'<td colspan="23">'+HEADINGS[main]+summ+'</td></tr>';
+            +'<td colspan="24">'+HEADINGS[main]+summ+'</td></tr>';
         } else {
           curMid=r._h;curType=null;
           midId++;
           const st=midStats[r._h]||{n:0,sum:0,vat:0};
           const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; Dekl. summa: '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
           html+='<tr class="hrow-mid" onclick="foldClick(this)" data-fold="mid'+midId+'">'
-            +'<td colspan="23"><span class="fold-arrow open" id="arr-mid'+midId+'">&#9654;</span>'+HEADINGS[r._h]+summ+'</td></tr>';
+            +'<td colspan="24"><span class="fold-arrow open" id="arr-mid'+midId+'">&#9654;</span>'+HEADINGS[r._h]+summ+'</td></tr>';
         }
       } else {
         if(r.type!==curType){
@@ -1566,7 +1577,7 @@ function renderTable(){
           const lbl=TYPE_LABELS[r.type]||r.type;
           const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
           html+='<tr class="hrow-type fold-child fold-main'+mainId+' fold-mid'+midId+'" onclick="foldClick(this)" data-fold="type'+typeId+'">'
-            +'<td colspan="23"><span class="fold-arrow open" id="arr-type'+typeId+'">&#9654;</span>'+lbl+summ+'</td></tr>';
+            +'<td colspan="24"><span class="fold-arrow open" id="arr-type'+typeId+'">&#9654;</span>'+lbl+summ+'</td></tr>';
         }
         r._nr=++lineNr;html+=rowHtml(r,mainId,midId,typeId);cnt++;
       }
