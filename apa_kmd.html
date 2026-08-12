@@ -360,6 +360,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         </optgroup>
       </select>
     </div>
+    <div class="fg"><label title="Raamatupidamiskonto (müügikontod 4..., ostukontod 5...)">Konto</label><select id="flt-konto" onchange="renderTable()"><option value="">Kõik</option></select></div>
     <!-- KMK% filter PEIDETUD (arendusse andmiseks, Directo-sisene mõiste). Taastamiseks eemalda style="display:none". -->
     <div class="fg" style="display:none"><label title="Directo käibemaksukoodi käibemaksumäär (KM koodi nr)" style="cursor:help;text-decoration:underline dotted">KMK%</label><select id="flt-kmk" onchange="renderTable()"><option value="">Kõik</option></select></div>
     <div class="fg"><label>Otsing</label><input class="fp-i" id="search" placeholder="Partneri, arve, koodi..." oninput="renderTable()"/></div>
@@ -1096,7 +1097,7 @@ function applyFilters(){
 }
 function clearFilters(){
   ['flt-from','flt-to','flt-reg'].forEach(id=>document.getElementById(id).value='');
-  ['flt-kmk','filterSec'].forEach(id=>document.getElementById(id).value='');
+  ['flt-kmk','filterSec','flt-konto'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   activeFilters={from:'',to:'',reg:'',sec:'',kmk:''};
   renderTable();calcSummary();
 }
@@ -1450,12 +1451,19 @@ function buildKmkAll(){
 function buildKmkForm(){
   document.getElementById('f-kmk').innerHTML='<option value="">— vali KMK —</option>'+KMK.map(m=>'<option value="'+m.kood+'">'+m.kood+' — '+m.sel+'</option>').join('');
 }
+function buildKontoFilter(){
+  const used=[...new Set(rows.filter(r=>!r._h&&r.diff!=='del').map(r=>kontoFor(r.type)).filter(Boolean))].sort();
+  const el=document.getElementById('flt-konto');
+  if(el){const c=el.value;el.innerHTML='<option value="">Kõik</option>'+used.map(k=>'<option value="'+k+'">'+k+'</option>').join('');el.value=c;}
+}
 function matchRow(r){
   const q=(document.getElementById('search').value||'').toLowerCase();
   const sec=document.getElementById('filterSec').value,kmkF=document.getElementById('flt-kmk').value;
+  const kontoF=(document.getElementById('flt-konto')||{}).value||'';
   const s=TYPES[r.type]||'';
   if(sec&&r.type!==sec)return false;
   if(kmkF&&String(r.kmk)!==kmkF)return false;
+  if(kontoF&&kontoFor(r.type)!==kontoF)return false;
   if(q){const h=(r.type+r.preg+r.pnimi+r.arvenr+r.kom+(r.kmk||'')+r.riik).toLowerCase();if(!h.includes(q))return false;}
   return true;
 }
@@ -1521,7 +1529,7 @@ function fixStickyHeaders(){
   theadRows[1].querySelectorAll('th').forEach(th => { th.style.top = h1 + 'px'; });
 }
 function renderTable(){
-  const flt=document.getElementById('search').value||document.getElementById('filterSec').value||document.getElementById('flt-kmk').value;
+  const flt=document.getElementById('search').value||document.getElementById('filterSec').value||document.getElementById('flt-kmk').value||((document.getElementById('flt-konto')||{}).value||'');
   let html='',cnt=0,lineNr=0;
   if(flt){rows.filter(r=>!r._h&&matchRow(r)).forEach(r=>{r._nr=++lineNr;html+=rowHtml(r);cnt++;});}
   else{
@@ -1653,7 +1661,7 @@ function addRow(){
   rows.splice(insertIdx,0,{id:nextId++,nr:'',g:hkey,kmk:document.getElementById('f-kmk').value,type,km:sec==='O_'?'':document.getElementById('f-km').value,sum,vat:parseFloat(document.getElementById('f-vat').value)||0,pkat:document.getElementById('f-pkat').value,preg:document.getElementById('f-preg').value,pkoodtaps:document.getElementById('f-pkoodtaps').value,pnimi:document.getElementById('f-pnimi').value,grpkat:document.getElementById('f-grpkat').value,grpreg:document.getElementById('f-grpreg').value,grpdesc:document.getElementById('f-grpdesc')?document.getElementById('f-grpdesc').value:'',grpnimi:document.getElementById('f-grpnimi').value,riik:(document.getElementById('f-riik').value||'').toUpperCase(),riiktaps:document.getElementById('f-riiktaps').value,arvenr:document.getElementById('f-arvenr').value,ettemaks:document.getElementById('f-ettemaks').value,kp:document.getElementById('f-kp').value,arvesum:parseFloat(document.getElementById('f-arvesum').value)||0,kreeditkp:document.getElementById('f-kreeditkp').value,kom:document.getElementById('f-kom').value,diff:'sent'});
   document.getElementById('addMsg').style.display='block';
   setTimeout(()=>document.getElementById('addMsg').style.display='none',2000);
-  buildKmkAll();renderTable();clearForm();
+  buildKmkAll();buildKontoFilter();renderTable();clearForm();
 }
 function clearForm(){['f-sum','f-vat','f-arvesum','f-preg','f-pkoodtaps','f-pnimi','f-grpreg','f-grpnimi','f-riik','f-riiktaps','f-arvenr','f-ettemaks','f-kreeditkp','f-kom'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
 function calcVat(){
@@ -2234,7 +2242,7 @@ document.addEventListener('click',function(e){
   if(panel&&panel.classList.contains('open')&&!panel.closest('.settings-wrap').contains(e.target)){panel.classList.remove('open');}
 });
 loadSettings();
-buildKmkAll();buildKmkForm();renderTable();setWorkflowState('idle');
+buildKmkAll();buildKontoFilter();buildKmkForm();renderTable();setWorkflowState('idle');
 loadColPrefs();buildColPickerList();
 </script>
 </body>
