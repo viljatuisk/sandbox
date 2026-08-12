@@ -1,0 +1,246 @@
+<meta charset="utf-8">
+<title>KM tüübi kontroll · APA KMD</title>
+<style>
+:root{--blue:#2b5c9e;--blue-dk:#1e3a5f;--blue-lt:#eaf1fa;--bg:#fff;--bg2:#f4f7fb;--bg3:#e8eef6;--border:#c9d6e5;--border2:#e2e9f2;--text:#1f2d3d;--text2:#425068;--text3:#7a8aa0;--red:#c0392b;--red-lt:#fdeceb;--amber:#b7791f;--amber-lt:#fdf5e6;--green:#2e7d46;--green-lt:#eafaf0;--r:4px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;line-height:1.45}
+.wrap{max-width:1280px;margin:0 auto;padding:14px 18px 60px}
+h1{font-size:18px;color:var(--blue-dk);margin:0 0 2px}
+.sub{color:var(--text3);font-size:12px;margin-bottom:12px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:8px 16px;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--blue-dk)}
+.btn.sec{background:var(--bg3);color:var(--text2)}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--text2);flex-wrap:wrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.dot.err{background:var(--red)}.dot.warn{background:var(--amber)}.dot.ok{background:var(--green)}
+table{border-collapse:collapse;width:100%;background:var(--bg);font-size:12px}
+th,td{border:1px solid var(--border2);padding:4px 7px;text-align:left;vertical-align:top}
+thead th{background:var(--blue);color:#fff;font-weight:600;font-size:11px;position:sticky;top:0}
+tbody tr:nth-child(even){background:var(--bg2)}
+tr.row-err{background:var(--red-lt)!important}
+tr.row-warn{background:var(--amber-lt)!important}
+.mono{font-family:monospace}
+.badge{display:inline-block;font-size:10px;font-weight:bold;border-radius:10px;padding:1px 7px;white-space:nowrap}
+.badge.err{background:var(--red);color:#fff}
+.badge.warn{background:var(--amber);color:#fff}
+.badge.ok{background:var(--green);color:#fff}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r)}
+.res{margin-top:16px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);display:none}
+.res.show{display:block}
+.res-hd{padding:9px 14px;border-bottom:1px solid var(--border2);font-weight:bold;color:var(--blue-dk);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:bold;border-radius:12px;padding:2px 10px}
+.pill.err{background:var(--red-lt);color:var(--red)}
+.pill.warn{background:var(--amber-lt);color:var(--amber)}
+.pill.ok{background:var(--green-lt);color:var(--green)}
+.issue{display:flex;gap:9px;padding:8px 14px;border-bottom:1px solid var(--border2);font-size:12px}
+.issue:last-child{border-bottom:none}
+.issue .rulecode{font-family:monospace;font-size:10px;font-weight:bold;color:var(--text3);min-width:26px}
+.issue .body strong{color:var(--blue-dk)}
+.issue .sugg{color:var(--text2);font-style:italic}
+.grp-hd{background:var(--bg3);padding:5px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);font-weight:bold}
+.small{font-size:11px;color:var(--text3)}
+.ok-msg{padding:16px;color:var(--green);font-weight:bold}
+details{margin:12px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px}
+summary{cursor:pointer;font-weight:bold;color:var(--blue-dk);font-size:12px}
+details table{margin-top:8px}
+</style>
+
+<div class="wrap">
+  <h1>KM tüübi kontroll / valideerimine <span class="small">· APA KMD 2027 prototüüp</span></h1>
+  <div class="sub">Kontrollib, kas tehingul on kasutatud õige KM tüübiga käibemaksukoodi (reeglid R1-R6, vt analuus_km_tuup_kontroll.md). Read alt on tahtlikult osaliselt vigased, et demonstreerida kontrolle.</div>
+
+  <div class="bar">
+    <button class="btn" onclick="runChecks()">&#128269; Kontrolli KM tüüp</button>
+    <button class="btn sec" onclick="clearChecks()">Tühjenda</button>
+    <div class="legend">
+      <span><span class="dot err"></span>Viga (blokeerib saatmise)</span>
+      <span><span class="dot warn"></span>Hoiatus (lubab edasi)</span>
+      <span><span class="dot ok"></span>Korras</span>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table id="txtbl">
+      <thead><tr>
+        <th>#</th><th>Dokument</th><th>Arve nr</th><th>KM kood</th><th>KM tüüp</th><th>Konto</th><th>KM%</th>
+        <th>Partner</th><th>Isiku tüüp</th><th>Reg.nr</th><th>KM maa</th><th>KM asumaa</th><th>KMKR</th>
+        <th class="mono">Summa</th><th>Kontroll</th>
+      </tr></thead>
+      <tbody id="txbody"></tbody>
+    </table>
+  </div>
+
+  <div class="res" id="res"></div>
+
+  <details>
+    <summary>Käibemaksukoodide seadistus (KM tüüp väljad + määr)</summary>
+    <div class="tbl-wrap"><table id="kmtbl">
+      <thead><tr><th>KM kood</th><th>Määr</th><th>Müügi KM tüüp</th><th>Ostu KM tüüp</th><th>Soetuse KM tüüp</th><th>Arv. kande KM tüüp</th><th>Märkus</th></tr></thead>
+      <tbody id="kmbody"></tbody>
+    </table></div>
+  </details>
+</div>
+
+<script>
+/* ---- KM tüüpide metaandmed (perekond, tsoon, lubatud määrad, riik kohustuslik) ---- */
+var TYPEMETA={
+  M_101:{fam:'M',zone:'dom',   rates:[0.24,0.22,0.13,0.09], reqCountry:false},
+  M_201:{fam:'M',zone:'eu',    rates:[0],                   reqCountry:true},
+  M_208:{fam:'M',zone:'export',rates:[0],                   reqCountry:true},
+  M_211:{fam:'M',zone:'dom',   rates:[0],                   reqCountry:false},
+  M_301:{fam:'M',zone:'dom',   rates:['',0],                reqCountry:false},
+  O_101:{fam:'O',zone:'dom',   rates:[0.24,0.22,0.13,0.09], reqCountry:false},
+  O_401:{fam:'O',zone:'eu',    rates:[0.24,0.22,0.13,0.09], reqCountry:false},
+  S_101:{fam:'S',zone:'eu',    rates:[0.24,0.22,0.13,0.09], reqCountry:true},
+  A_101:{fam:'A',zone:'dom',   rates:[0.24,0.22,0.13,0.09], reqCountry:false}
+};
+/* ---- Käibemaksukoodid: iga KM tüüp väli + määr ---- */
+var KMCODES={
+  'KM24':   {rate:0.24, m:'M_101', o:'O_101', s:'',      a:'A_101', mark:'Universaalne 24% kood'},
+  'EU0':    {rate:0,    m:'M_201', o:'',      s:'',      a:'',      mark:'Ühendusesisene müük 0%'},
+  'SOET24': {rate:0.24, m:'',      o:'O_401', s:'S_101', a:'',      mark:'Ühendusesisene soetus (pöördmaks 24%)'},
+  'EXP0':   {rate:0,    m:'M_208', o:'',      s:'',      a:'',      mark:'Eksport 0%'},
+  'DOM0':   {rate:0,    m:'M_211', o:'',      s:'',      a:'',      mark:'0% siseriiklik'},
+  'VABA':   {rate:'',   m:'M_301', o:'',      s:'',      a:'',      mark:'Maksuvaba'},
+  'OST24':  {rate:0.24, m:'',      o:'O_101', s:'',      a:'',      mark:'Ainult ost (Müügi tüüp puudub)'},
+  'EU24BAD':{rate:0.24, m:'M_201', o:'',      s:'',      a:'',      mark:'VIGANE: ühendusesisene tüüp, aga 24% määr'},
+  'BADCFG': {rate:0.24, m:'O_101', o:'',      s:'',      a:'',      mark:'VIGANE seadistus: Müügi väljas on O_ tüüp'}
+};
+var DOCFIELD={'Müügiarve':'m','Ostuarve':'o','Kulutus':'o','Soetus':'s','Kanne':'a'};
+var FIELDPFX={m:'M_',o:'O_',s:'S_',a:'A_'};
+var FIELDNIMI={m:'Müügi KM tüüp',o:'Ostu KM tüüp',s:'Soetuse KM tüüp',a:'Arvestusliku kande KM tüüp'};
+var EU=['EE','FI','LV','LT','DE','SE','PL','FR','NL','BE','AT','IT','ES','DK','IE','LU','PT','CZ','SK','HU','RO','BG','HR','SI','GR','CY','MT'];
+var ZONEMAA={'Siseriiklik':'dom','EÜ':'eu','Väljaspool EÜ':'export'};
+var ZONENIMI={dom:'siseriiklik',eu:'ühendusesisene (EL)',export:'eksport (kolmas riik)'};
+
+/* ---- Näidistehingud (osa tahtlikult vigased) ---- */
+var TX=[
+ {doc:'Müügiarve', arvenr:'MA10001', kmCode:'KM24',   konto:'4101', partner:'Arve Esitaja OÜ',   isik:'Ettevõte',   regnr:'11111111', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:2400,  perTotal:2400, comment:'Korras siseriiklik 24% müük'},
+ {doc:'Müügiarve', arvenr:'MA10002', kmCode:'EU0',    konto:'4201', partner:'EU Kaup OY',        isik:'Ettevõte',   regnr:'',         kmMaa:'EÜ',           kmAsumaa:'FI', kmkr:'FI08611111',  sum:1200,  perTotal:1200, comment:'Korras ühendusesisene müük'},
+ {doc:'Müügiarve', arvenr:'MA10003', kmCode:'OST24',  konto:'4101', partner:'Vale Kood OÜ',      isik:'Ettevõte',   regnr:'11111112', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:800,   perTotal:800,  comment:'R1: ostukood müügiarvel'},
+ {doc:'Müügiarve', arvenr:'MA10004', kmCode:'BADCFG', konto:'4101', partner:'Segakood OÜ',       isik:'Ettevõte',   regnr:'11111113', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:500,   perTotal:500,  comment:'Tasand 1: vale KM koodi seadistus'},
+ {doc:'Müügiarve', arvenr:'MA10005', kmCode:'KM24',   konto:'5101', partner:'Konto Vale OÜ',     isik:'Ettevõte',   regnr:'11111114', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:900,   perTotal:900,  comment:'R2: müük kulukontol 5xxx'},
+ {doc:'Müügiarve', arvenr:'MA10006', kmCode:'EU24BAD',konto:'4201', partner:'Maar Vale OY',      isik:'Ettevõte',   regnr:'',         kmMaa:'EÜ',           kmAsumaa:'LV', kmkr:'LV41111111111',sum:1500, perTotal:1500, comment:'R3: ühendusesisene tüüp 24% määraga'},
+ {doc:'Müügiarve', arvenr:'MA10007', kmCode:'KM24',   konto:'4101', partner:'Peaks EÜ Olema OY', isik:'Ettevõte',   regnr:'11111119', kmMaa:'EÜ',           kmAsumaa:'SE', kmkr:'SE551111111111',sum:3000,perTotal:3000, comment:'R4a: KM maa EÜ, aga siseriiklik tüüp M_101'},
+ {doc:'Müügiarve', arvenr:'MA10008', kmCode:'EU0',    konto:'4201', partner:'KMKR Puudu OY',     isik:'Ettevõte',   regnr:'',         kmMaa:'EÜ',           kmAsumaa:'',   kmkr:'',            sum:1100,  perTotal:1100, comment:'R4b/R6: ühendusesisene ilma KM asumaa/KMKR-ta'},
+ {doc:'Müügiarve', arvenr:'MA10009', kmCode:'EU0',    konto:'4201', partner:'Prefiks Vale OY',   isik:'Ettevõte',   regnr:'',         kmMaa:'EÜ',           kmAsumaa:'FI', kmkr:'DE123456789', sum:700,   perTotal:700,  comment:'R4b: KMKR prefiks ei vasta KM asumaale'},
+ {doc:'Müügiarve', arvenr:'KR0001',  kmCode:'KM24',   konto:'4101', partner:'Kreedit OÜ',        isik:'Ettevõte',   regnr:'11111131', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:-1000, perTotal:-1000,kreeditkp:'', comment:'R6: kreeditarvel puudub algse arve kp'},
+ {doc:'Müügiarve', arvenr:'MA10011', kmCode:'KM24',   konto:'4101', partner:'Suur Klient OÜ',    isik:'Ettevõte',   regnr:'',         kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:5000,  perTotal:5000, comment:'R6: juriidiline >=1000 EUR ilma reg.nr-ta'},
+ {doc:'Ostuarve',  arvenr:'OA27001', kmCode:'KM24',   konto:'5101', partner:'Sisend OÜ',         isik:'Ettevõte',   regnr:'13000001', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:240,   perTotal:1000, comment:'Korras sisendkäibemaks'},
+ {doc:'Soetus',    arvenr:'OA45001', kmCode:'SOET24', konto:'5201', partner:'EE Pöördmaks OÜ',   isik:'Ettevõte',   regnr:'13000013', kmMaa:'EÜ',           kmAsumaa:'LT', kmkr:'LT100011111111',sum:1440,perTotal:6000, comment:'Korras ühendusesisene soetus'}
+];
+
+/* ---- Abifunktsioonid ---- */
+function pct(r){return r===''||r==null?'—':(r*100).toFixed(0)+'%';}
+function famOfKonto(k){return (k||'').charAt(0)==='4'?['M','A']:((k||'').charAt(0)==='5'?['O','S']:null);}
+function resolveTyyp(tx){var c=KMCODES[tx.kmCode];if(!c)return{code:null};var f=DOCFIELD[tx.doc];return{code:c,field:f,tyyp:c[f]||''};}
+
+/* ---- Kontrollimootor ---- */
+function validate(tx){
+  var out=[]; var r=resolveTyyp(tx); var c=r.code;
+  if(!c){out.push({sev:'error',rule:'—',msg:'Tundmatu KM kood '+tx.kmCode});return out;}
+  var field=r.field, tyyp=r.tyyp, fieldVal=c[field];
+
+  // Tasand 1: KM koodi seadistus - kasutatava välja prefiks peab vastama
+  if(fieldVal && FIELDPFX[field] && fieldVal.indexOf(FIELDPFX[field])!==0){
+    out.push({sev:'error',rule:'T1',msg:'KM koodi "'+FIELDNIMI[field]+'" väärtus peab algama '+FIELDPFX[field]+' (praegu '+fieldVal+')',sugg:'Paranda KM koodi '+tx.kmCode+' seadistus.'});
+  }
+  // R1: dokumendi kontekst - kasutataval väljal peab olema KM tüüp
+  if(!tyyp){
+    out.push({sev:'error',rule:'R1',msg:tx.doc+'-l kasutatud KM koodil "'+tx.kmCode+'" puudub '+FIELDNIMI[field]+' - kood on vales kontekstis',sugg:'Vali dokumendile õige KM kood.'});
+    return out; // ilma tüübita edasised reeglid ei kehti
+  }
+  var meta=TYPEMETA[tyyp]; if(!meta)return out;
+
+  // R2: konto klass vs KM tüüp perekond
+  var kf=famOfKonto(tx.konto);
+  if(kf && kf.indexOf(meta.fam)<0){
+    out.push({sev:'warning',rule:'R2',msg:'Konto '+tx.konto+' ('+(tx.konto.charAt(0)==='4'?'müügitulu':'kulu/sisend')+') ei sobi KM tüübi '+tyyp+' perekonnaga ('+meta.fam+')',sugg:'Kontrolli, kas KM kood või konto on õige.'});
+  }
+  // R3: määr vs KM tüüp lubatud määrad
+  if(meta.rates.indexOf(c.rate)<0){
+    out.push({sev:'warning',rule:'R3',msg:'KM% '+pct(c.rate)+' ei kuulu KM tüübi '+tyyp+' lubatud määrade hulka ('+meta.rates.map(pct).join(', ')+')',sugg:'Tõenäoliselt vale KM kood.'});
+  }
+  // R4a: KM maa vs KM tüüp tsoon
+  var zone=ZONEMAA[tx.kmMaa];
+  if(zone && zone!==meta.zone){
+    out.push({sev:'warning',rule:'R4a',msg:'Partneri KM maa "'+tx.kmMaa+'" ('+ZONENIMI[zone]+') ei sobi KM tüübiga '+tyyp+' (eeldab '+ZONENIMI[meta.zone]+')',sugg:'Tõenäoliselt vale KM kood - vali '+ZONENIMI[meta.zone==='dom'?'eu':meta.zone]+' vs kood.'});
+  }
+  // R4b: KM asumaa + KMKR vs tüüp
+  if(meta.zone==='eu'){
+    if(!tx.kmAsumaa){
+      out.push({sev:'error',rule:'R4b',msg:'Ühendusesisene tüüp '+tyyp+' - KM asumaa (ostja riigi tunnus) puudub',sugg:'Täida partneri KM asumaa.'});
+    } else if(EU.indexOf(tx.kmAsumaa)<0){
+      out.push({sev:'warning',rule:'R4b',msg:'KM asumaa '+tx.kmAsumaa+' ei ole EL riik, kuid tüüp '+tyyp+' on ühendusesisene',sugg:'Kontrolli KM asumaad või KM tüüpi.'});
+    }
+    if(!tx.kmkr){
+      out.push({sev:'error',rule:'R4b',msg:'Ühendusesisene tüüp '+tyyp+' - partneri KMKR number puudub',sugg:'Täida partneri KMKR.'});
+    } else if(tx.kmAsumaa && tx.kmkr.substr(0,2)!==tx.kmAsumaa){
+      out.push({sev:'warning',rule:'R4b',msg:'KMKR prefiks ('+tx.kmkr.substr(0,2)+') ei vasta KM asumaale ('+tx.kmAsumaa+')',sugg:'Kontrolli, kas KMKR ja KM asumaa käivad kokku.'});
+    }
+  }
+  if(meta.zone==='export' && tx.kmAsumaa && EU.indexOf(tx.kmAsumaa)>=0){
+    out.push({sev:'warning',rule:'R4b',msg:'Ekspordi tüüp '+tyyp+', kuid KM asumaa '+tx.kmAsumaa+' on EL riik',sugg:'Eksport eeldab kolmandat riiki.'});
+  }
+  // R6: kohustuslikud väljad
+  if(meta.reqCountry && !tx.kmAsumaa && meta.zone==='export'){
+    out.push({sev:'error',rule:'R6',msg:'Tüüp '+tyyp+' nõuab ostja riigi tunnust (KM asumaa)',sugg:'Täida KM asumaa.'});
+  }
+  if(tx.sum<0 && !tx.kreeditkp){
+    out.push({sev:'error',rule:'R6',msg:'Negatiivne summa (kreeditarve) - algse arve kuupäev puudub',sugg:'Lisa kreeditarve esialgse arve kuupäev.'});
+  }
+  if(meta.zone==='dom' && (tx.isik==='Ettevõte'||tx.isik==='Riigiasutus') && Math.abs(tx.perTotal)>=1000 && !tx.regnr){
+    out.push({sev:'error',rule:'R6',msg:'Juriidiline partner, perioodi kogusumma >= 1000 EUR - reg.nr puudub',sugg:'Täida partneri registrikood.'});
+  }
+  return out;
+}
+
+/* ---- Renderdus ---- */
+function renderKmCodes(){
+  document.getElementById('kmbody').innerHTML=Object.keys(KMCODES).map(function(k){
+    var c=KMCODES[k];var bad=/VIGANE/.test(c.mark);
+    return '<tr'+(bad?' class="row-warn"':'')+'><td class="mono">'+k+'</td><td>'+pct(c.rate)+'</td><td class="mono">'+(c.m||'—')+'</td><td class="mono">'+(c.o||'—')+'</td><td class="mono">'+(c.s||'—')+'</td><td class="mono">'+(c.a||'—')+'</td><td class="small">'+c.mark+'</td></tr>';
+  }).join('');
+}
+function renderTx(results){
+  document.getElementById('txbody').innerHTML=TX.map(function(tx,i){
+    var r=resolveTyyp(tx);var tyyp=r.tyyp||'<span class="small">(puudub)</span>';
+    var st='';var cls='';
+    if(results){
+      var iss=results[i];var errs=iss.filter(function(x){return x.sev==='error';}).length;var warns=iss.length-errs;
+      if(errs)     {st='<span class="badge err">&#9888; '+errs+' viga</span>';cls='row-err';}
+      else if(warns){st='<span class="badge warn">&#9888; '+warns+' hoiatus</span>';cls='row-warn';}
+      else         {st='<span class="badge ok">&#10003;</span>';}
+    }
+    return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+tx.doc+'</td><td>'+tx.arvenr+'</td><td class="mono">'+tx.kmCode+'</td><td class="mono">'+tyyp+'</td><td class="mono">'+tx.konto+'</td><td>'+pct(KMCODES[tx.kmCode]?KMCODES[tx.kmCode].rate:'')+'</td><td>'+tx.partner+'</td><td>'+tx.isik+'</td><td class="mono">'+(tx.regnr||'—')+'</td><td>'+tx.kmMaa+'</td><td class="mono">'+(tx.kmAsumaa||'—')+'</td><td class="mono">'+(tx.kmkr||'—')+'</td><td class="mono" style="text-align:right">'+tx.sum.toLocaleString('et-EE',{minimumFractionDigits:2})+'</td><td>'+st+'</td></tr>';
+  }).join('');
+}
+function runChecks(){
+  var results=TX.map(validate);
+  renderTx(results);
+  var allErr=[],allWarn=[];
+  results.forEach(function(iss,i){iss.forEach(function(x){var o={tx:TX[i],x:x};(x.sev==='error'?allErr:allWarn).push(o);});});
+  var res=document.getElementById('res');res.classList.add('show');
+  var okRows=results.filter(function(iss){return iss.length===0;}).length;
+  var head='<div class="res-hd"><span>Kontrolli tulemus:</span>'
+    +'<span class="pill err">'+allErr.length+' viga</span>'
+    +'<span class="pill warn">'+allWarn.length+' hoiatust</span>'
+    +'<span class="pill ok">'+okRows+' / '+TX.length+' rida korras</span>'
+    +'<span class="small" style="margin-left:auto">'+(allErr.length?'&#9940; Saatmine blokeeritud kuni vead parandatud':'&#10003; Vigu ei ole - võib saata')+'</span></div>';
+  function issueHtml(o){
+    return '<div class="issue"><span class="badge '+(o.x.sev==='error'?'err':'warn')+'">'+(o.x.sev==='error'?'VIGA':'HOIATUS')+'</span>'
+      +'<span class="rulecode">'+o.x.rule+'</span>'
+      +'<span class="body"><strong>'+o.tx.arvenr+'</strong> ('+o.tx.partner+') &mdash; '+o.x.msg+'<br><span class="sugg">&#8594; '+(o.x.sugg||'')+'</span></span></div>';
+  }
+  var body='';
+  if(allErr.length){body+='<div class="grp-hd">Vead ('+allErr.length+') &mdash; blokeerivad</div>'+allErr.map(issueHtml).join('');}
+  if(allWarn.length){body+='<div class="grp-hd">Hoiatused ('+allWarn.length+') &mdash; kontrolli üle</div>'+allWarn.map(issueHtml).join('');}
+  if(!allErr.length&&!allWarn.length){body='<div class="ok-msg">&#10003; Kõik read on korras - KM tüübid vastavad kontrollreeglitele.</div>';}
+  res.innerHTML=head+body;
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function clearChecks(){renderTx(null);var res=document.getElementById('res');res.classList.remove('show');res.innerHTML='';}
+
+renderKmCodes();renderTx(null);
+</script>
