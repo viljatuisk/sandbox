@@ -56,11 +56,36 @@ Iga tehingurea kohta võrreldakse määratud KM tüüpi sõltumatute tunnustega:
 | R1 | **Dokumendi kontekst vs KM tüüp** | Müügidokumendil kasutatud KM koodil peab olema "Müügi KM tüüp" täidetud (ost -> Ostu/Soetuse; kanne -> vastav). Kui puudub -> kood on vales kontekstis | Viga |
 | R2 | **Konto klass vs KM tüüp perekond** | Müügitulu konto (4...) real peab KM tüüp olema M_; kulu/sisend konto (5...) real O_/S_. Vastuolu -> tõenäoliselt vale kood | Hoiatus |
 | R3 | **Määr vs KM tüüp** | Rea KM% peab kuuluma KM tüübi lubatud määrade hulka (nt M_201/M_211/S_ = 0%; M_101 = 24/22/13/9%) | Hoiatus/Viga |
-| R4 | **Riik + KMKR vs KM tüüp** | Ühendusesisesed tüübid (M_201, M_202, M_203, M_204, M_205, M_206, M_207, S_101, S_102, S_103, O_401, O_402 jne) nõuavad EL riiki + partneri KMKR; eksport (M_208, M_209) nõuab kolmandat riiki; siseriiklik (M_101, M_301) partnerit ilma välisriigi tunnuseta | Hoiatus |
+| R4 | **KM maa + KM asumaa + KMKR vs KM tüüp** | KM käitlustüüp tuletatakse partneri **KM maa** väljast ja peab ühtima KM koodi KM tüübiga; **KM asumaa** + KMKR annavad aruande riigitunnuse ja peavad olema omavahel kooskõlas. Vt täpsustus allpool | Hoiatus |
 | R5 | **Summa suund vs KM tüüp** | Müük (M_) tavaliselt käive kreeditis; ost/sisend (O_) deebetis. Ootamatu suund -> kontrolli | Hoiatus |
 | R6 | **Kohustuslikud väljad tüübi kaupa** | Ühendusesisene -> ostja riik kohustuslik; kreeditarve (negatiivne) -> algse arve kuupäev; juriidiline partneri perioodi kogusumma >= 1000 EUR -> reg.nr kohustuslik | Viga |
 
 **Loogika:** kui KM tüüp on üksinda "otsustaja", siis need reeglid annavad talle **teised sõltumatud tunnistajad**. Kui KM tüüp läheb vastuollu konto, määra, riigi või konteksti signaaliga, on suure tõenäosusega kasutatud vale KM koodi.
+
+### R4 täpsustus: kolm riigivälja kliendi/hankija kaardil
+
+Kliendi/hankija kaardil on kolm eri "maad" ja igal on kontrollis oma roll. Vale välja kasutamine annaks valehäireid, seega on oluline eristada:
+
+| Väli | Tähendus | Roll R4 kontrollis |
+|---|---|---|
+| **Asumaa** | Partneri tegelik asukoha riik | EI kasutata KM kategoriseerimiseks. Ainult taust/info. Partner võib asuda ühes riigis, aga olla KM-kohustuslasena registreeritud teises |
+| **KM maa** | Käibemaksukäsitluse piirkond/tüüp (siseriiklik / EÜ / väljaspool EÜ) | **Peamine käitlustüübi signaal.** Ristvõrreldakse KM koodi KM tüübiga |
+| **KM asumaa** | Riik, kus partner on SELLE tehingu jaoks KM-kohustuslasena registreeritud | **Aruande "Riik" (ostja riigi tunnus) allikas** + KMKR prefiksi kontroll |
+
+**Kontrolli loogika kahes osas:**
+
+1. **Käitlustüüp: KM maa <-> KM tüüp** (peamine ristkontroll)
+   - KM maa = siseriiklik -> KM tüüp peab olema siseriiklik (M_101, M_301 ...); MITTE ühendusesisene ega eksport
+   - KM maa = EÜ (EL) -> KM tüüp peab olema ühendusesisene (M_201, M_202, M_203, M_204, M_205, M_206, M_207, S_101, S_102, S_103, O_401, O_402 ...)
+   - KM maa = väljaspool EÜ -> KM tüüp peab olema eksport (M_208, M_209)
+   - Kui KM maa ütleb üht ja KM koodi KM tüüp teist -> tõenäoliselt vale KM kood.
+
+2. **Riigitunnus ja KMKR: KM asumaa <-> KMKR <-> aruande Riik**
+   - Ühendusesiseste tüüpide korral: KM asumaa peab olema EL riik ja partneri KMKR täidetud; KMKR prefiks peab vastama KM asumaa riigikoodile (nt KM asumaa = FI -> KMKR algab "FI").
+   - Aruande "Riik" (ostja riigi tunnus) võetakse **KM asumaast**, MITTE Asumaast.
+   - Kui Asumaa ja KM asumaa erinevad (nt Asumaa väljaspool EL, aga KM asumaa EL riik), on see legitiimne (mitteresident, kes on EL-is KM-kohustuslasena registreeritud) - anda kõige rohkem nõrk info-hoiatus, mitte viga.
+
+**Kokkuvõte:** käitlustüübi õigsust kontrollib **KM maa vs KM tüüp**; riigitunnuse ja KMKR õigsust kontrollib **KM asumaa**. Asumaa jääb KM kontrollist välja.
 
 ---
 
@@ -89,4 +114,5 @@ Iga tehingurea kohta võrreldakse määratud KM tüüpi sõltumatute tunnustega:
 2. Konto klassi reegel (R2) - kas 4... = müük ja 5... = ost kehtib kliendi kontoplaanis alati, või on vaja seadistatavat vastavustabelit (konto -> lubatud KM tüüp perekond)?
 3. Kas lubatud (KM tüüp -> KM määr) ja (KM tüüp -> EL/kolmas riik) vastavused tulevad MTA klassifikaatorist (KMDTYYP2026ap) automaatselt, või peab Directo neid ise hooldama?
 4. Kas kontroll käib kõigi perioodi tehingute peal korraga (aruandes) või ka dokumendi salvestamisel (varajane hoiatus)?
+4b. R4: millised on kliendi/hankija kaardi **KM maa** väärtused kliendi seadistuses (siseriiklik / EÜ / väljaspool EÜ vms) ja kuidas need täpselt mäpivad KM tüüp perekondadesse? Kas "Riik" aruandes tuleb kindlalt **KM asumaast** (mitte Asumaast)?
 5. Millises etapis kontroll ehitatakse - see EI ole I etapp (kuvamine), vaid eraldi "Kontroll/valideerimine" etapp. Kas teha eraldi Directo master sündmus + Notioni taskid?
