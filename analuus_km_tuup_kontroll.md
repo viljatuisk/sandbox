@@ -57,6 +57,7 @@ Iga tehingurea kohta võrreldakse määratud KM tüüpi sõltumatute tunnustega:
 | R2 | **Konto klass vs KM tüüp perekond** | Müügitulu konto (4...) real peab KM tüüp olema M_; kulu/sisend konto (5...) real O_/S_. Vastuolu -> tõenäoliselt vale kood | Hoiatus |
 | R3 | **Määr vs KM tüüp** | Rea KM% peab kuuluma KM tüübi lubatud määrade hulka (nt M_201/M_211/S_ = 0%; M_101 = 24/22/13/9%) | Hoiatus/Viga |
 | R4 | **KM maa + KM asumaa + KMKR vs KM tüüp** | KM käitlustüüp tuletatakse partneri **KM maa** väljast ja peab ühtima KM koodi KM tüübiga; **KM asumaa** + KMKR annavad aruande riigitunnuse ja peavad olema omavahel kooskõlas. Vt täpsustus allpool | Hoiatus |
+| R4c | **KM maa = välisriik -> ei kuulu Eesti KMD-sse** | Kui KM maa on konkreetne välisriik (nt Soome), deklareeritakse müük seal, mitte Eesti KMD-s. Eesti KM tüüp (M_101 jne) real -> viga | Viga |
 | R5 | **Summa suund vs KM tüüp** | Müük (M_) tavaliselt käive kreeditis; ost/sisend (O_) deebetis. Ootamatu suund -> kontrolli | Hoiatus |
 | R6 | **Kohustuslikud väljad tüübi kaupa** | Ühendusesisene -> ostja riik kohustuslik; kreeditarve (negatiivne) -> algse arve kuupäev; juriidiline partneri perioodi kogusumma >= 1000 EUR -> reg.nr kohustuslik | Viga |
 
@@ -86,6 +87,14 @@ Kliendi/hankija kaardil on kolm eri "maad" ja igal on kontrollis oma roll. Vale 
    - Kui Asumaa ja KM asumaa erinevad (nt Asumaa väljaspool EL, aga KM asumaa EL riik), on see legitiimne (mitteresident, kes on EL-is KM-kohustuslasena registreeritud) - anda kõige rohkem nõrk info-hoiatus, mitte viga.
 
 **Kokkuvõte:** käitlustüübi õigsust kontrollib **KM maa vs KM tüüp**; riigitunnuse ja KMKR õigsust kontrollib **KM asumaa**. Asumaa jääb KM kontrollist välja.
+
+### R4c: KM maa = välisriik -> müük ei kuulu Eesti KMD-sse
+
+Eraldi (ja oluline) juht: kui kliendi/hankija kaardil on **KM maa = konkreetne välisriik** (nt "Soome"), tähendab see, et müük deklareeritakse **selles riigis** (ettevõttel on seal KM-registreering) ja see **ei tohiks Eesti APA KMD-s üldse olla**. Kui tehingul on kasutatud KM koodi, mis mäpib Eesti KMD tüüpi (nt M_101), satub rida siiski Eesti aruandesse - see on viga.
+
+- Tähtis eristus: **KM maa = "EÜ"** (ühendusesisene) -> deklareeritakse Eestis 0% määraga (M_201 jne). **KM maa = "Soome"** (konkreetne välisriik) -> deklareeritakse Soomes, EI kuulu Eesti KMD-sse.
+- Reegel R4c: kui KM maa on välisriigi KM-registreeringu maa ja real on Eesti KM tüüp -> **Viga** ("müük deklareeritakse [riik]-s, ei tohiks Eesti KMD-s olla").
+- Näide prototüübis: MA10012, KM maa "Soome", KM kood M_101 -> R4c viga.
 
 ---
 
