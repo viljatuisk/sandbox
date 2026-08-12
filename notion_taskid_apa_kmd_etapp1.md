@@ -55,6 +55,7 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tüübi. KM% (maksumäär)
 - Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lähe)
 - Riik -> ostja riigi tunnus (EL riigid, ühendusesiseste tehingute puhul)
 - Riigi täps. -> riigi roll (RR_ostja)
+- Konto -> tehingu/kande raamatupidamiskonto (müügikontod algavad 4..., ostukontod 5...). Prototüübis näidisväärtus tuletatud KMD tüübist; Directos tuleb tegelik raamatupidamiskonto tehingurealt
 - Arve nr -> dokumendi (arve) number. ERAND: lootusetu nõude korral käsitsi täidetav real (vt allpool)
 - Ettemaks nr -> ettemaksuarve number
 - Kuupäev -> arve või ettemaksuarve kuupäev
@@ -99,7 +100,7 @@ Lootusetu nõude real peab olema algse arve number, kuid seda ei ole võimalik D
 
 - Tehingute nimekiri kolmetasandilise grupeeringuga: KM sektsioon (nt "Standard- või soodusmääraga maksustatavad tehingud") -> alagrupp -> KMD tüüp (M_101, O_101 jne).
 - Iga rida kuvab tehingu andmed KMD tüüpide lõikes.
-- Vaikeveerud: #, KMD tüüp, KMD tüübi sisu, KM%, Deklareeritav summa, KM (EUR), TP/Arve tunnus, Partneri reg/KMKR, Partneri nimi, Koodi täps., Grupp kat, Grupi liikme reg, Grupi liikme koodi täps., Grupi liikme nimi, Riik, Riigi täps., Arve nr, Ettemaks nr, Kuupäev, Arve kogusumma km/ta, Kreeditkp.
+- Vaikeveerud: #, KMD tüüp, Konto (raamatupidamiskonto), KMD tüübi sisu, KM%, Deklareeritav summa, KM (EUR), TP/Arve tunnus, Partneri reg/KMKR, Partneri nimi, Koodi täps., Grupp kat, Grupi liikme reg, Grupi liikme koodi täps., Grupi liikme nimi, Riik, Riigi täps., Arve nr, Ettemaks nr, Kuupäev, Arve kogusumma km/ta, Kreeditkp.
 - NB! KMK% (Directo käibemaksukood) veergu selles aruandes EI kuvata (Directo-sisene mõiste, MTA mudelis on ainult KM%/maksumäär).
 
 ---
@@ -139,6 +140,7 @@ Lootusetu nõude real peab olema algse arve number, kuid seda ei ole võimalik D
   a) Kalendrist valik (kalendriikoon väli).
   b) Directo kiirsisestus tekstiväljal: kuu number, nt "3" => 01.03-31.03 jooksev aasta; "!3" => eelmise aasta märts; tavaline kuupäev pp.kk.aaaa sisestatakse otse.
 - Rippmenüüd (nt KM tüüp): avanevad ja käituvad nagu prototüübis.
+- Konto: rippmenüü (asetaja), millest avaneb kontode nimekiri; filtreerib tabeli valitud raamatupidamiskonto järgi. Nimekiri tuleb aruandes esinevatest kontodest.
 - Otsing: vabatekstiotsing partneri, arve numbri, koodi jm järgi.
 - Saatja nimi ja Registrikood EI ole filtreeritavad - need tulevad ettevõtte seadistusest (aruandes nähtamatud, kuid vajalikud hilisemas XML-i etapis).
 - Pankrotiperioodi tunnus asub Seadistuste all (mitte filtrites).
