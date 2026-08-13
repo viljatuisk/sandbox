@@ -730,40 +730,7 @@
     <div class="slide-foot" data-en="<span class='lg'>Part 4</span> · Examples"><span class="lg">Osa 4</span> · Näited</div>
   </section>
 
-  <!-- 20 · NÄIDE 8 finantsretsept kütusekaart (Neste) -->
-  <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 9</span><span class="theme-chip" data-en="Topic · Finance Recipe · fuel card">Teema · Finantsretsept · kütusekaart</span></div>
-    <h1 class="slide-title" style="font-size:24px" data-en="Fuel card invoice — fuel card users&#39; amounts are split by the finance recipe">Kütusekaardi arve — kütusekaardi kasutajate summad jagatakse finantsretsepti alusel</h1>
-    <p class="ex-desc" data-en="On a fuel invoice (e.g. Neste) purchases are grouped <b>by card</b> — each card belongs to one car/driver. The filter is the <b>card number in Content</b>, which routes the row to the right finance recipe. <b>Each card&#39;s object (car/driver) is written into the finance recipe.</b>">Kütusearvel (nt Neste) on ostud grupeeritud <b>kaardi kaupa</b> — iga kaart kuulub ühele autole/juhile. Filtriks on <b>kaardi number Sisalduses</b>, mis suunab rea õigesse finantsretsepti. <b>Iga kaardi objekt (auto/juht) on kirjutatud finantsretsepti sisse.</b></p>
-    <div class="cols" style="gap:16px">
-      <div class="col"><div class="card fill" style="padding:14px 16px">
-        <h3 style="font-size:15px" data-en="1 · Automation rules — filter by card number">1 · Automaatika reeglid — filter kaardi numbri järgi</h3>
-        <table class="rt">
-          <thead><tr><th>Sisaldus</th><th>Finantsretsept</th><th>Koond</th></tr></thead>
-          <tbody>
-            <tr class="hl"><td class="mono">Futura 95%…0001</td><td>KÜTUS-01</td><td>Rida</td></tr>
-            <tr><td class="mono">Autopuhastus%…0001</td><td>PESU-01</td><td>Rida</td></tr>
-            <tr class="hl"><td class="mono">Futura 95%…0002</td><td>KÜTUS-02</td><td>Rida</td></tr>
-            <tr><td class="mono">Autopuhastus%…0002</td><td>PESU-02</td><td>Rida</td></tr>
-          </tbody>
-        </table>
-        <div style="font-size:12px;color:var(--ink3);margin-top:8px">…0001 / …0002 = kütusekaardi number. Iga kaart + toode → oma reegel ja oma retsept.</div>
-      </div></div>
-      <div class="col"><div class="card fill" style="padding:14px 16px">
-        <h3 style="font-size:15px" data-en="2 · Finance Recipe &#39;KÜTUS-01&#39; (one car)">2 · Finantsretsept „KÜTUS-01" (üks auto)</h3>
-        <table class="rt">
-          <thead><tr><th>Rida</th><th>Valiku tüüp</th><th>Konto</th><th>Objekt</th><th>KM kood</th></tr></thead>
-          <tbody>
-            <tr><td>100</td><td>Parameeter</td><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td></tr>
-            <tr class="hl"><td>200</td><td>Konto</td><td class="mono">5130</td><td>AUTO-01</td><td>sõiduauto 50%</td></tr>
-          </tbody>
-        </table>
-        <div style="font-size:12px;color:var(--ink3);margin-top:8px">Objekt <b>AUTO-01</b> = selle kaardi auto/juht, kirjutatud retsepti sisse. KM kood = sõiduauto sisendkm 50%.</div>
-      </div></div>
-    </div>
-    <div class="tip"><span class="ti">💡</span><div data-en="The fuel card number is <b>a filter in Content</b> → routes to the right recipe. For each card create <b>its own finance recipe</b> with that car/driver&#39;s object written in. For a passenger car the <b>input VAT 50%</b> code applies.">Kütusekaardi number on <b>Sisalduses filtrina</b> → suunab õigesse retsepti. Iga kaardi jaoks tee <b>oma finantsretsept</b>, kuhu on kirjutatud selle auto/juhi objekt. Sõiduauto puhul rakendub <b>sisendkm 50%</b> KM kood.</div></div>
-    <div class="slide-foot" data-en="<span class='lg'>Part 4</span> · Examples"><span class="lg">Osa 4</span> · Näited</div>
-  </section>
+  
 
   <!-- 21 · NÄIDE 9 personal (kuulub personal) -->
   <section class="slide">
@@ -806,7 +773,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 10</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 9</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
       <h1 class="slide-title" style="font-size:29px" data-en="All to the same account">K&otilde;ik samale kontole</h1>
       <p class="ex-desc" data-en="Personnel Member = <b>Telefon</b> links each row to an employee by its number and puts all to the same account (522104). The object and user come from the employee card.">Kuulub personal = <b>Telefon</b> seob iga rea numbri j&auml;rgi t&ouml;&ouml;tajaga ja paneb k&otilde;ik samale kontole (522104). Objekt ja kasutaja tulevad t&ouml;&ouml;taja kaardilt.</p>
       <div class="shot-wrap">
@@ -829,7 +796,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 11</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 10</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Exception for one employee — the exception rule sets all fields">Erand &uuml;hele t&ouml;&ouml;tajale &mdash; erandreegel m&auml;&auml;rab k&otilde;ik v&auml;ljad</h1>
       <p class="ex-desc" data-en="Juta&#39;s Telia costs <b>to several fields at once</b>. The exception rule (first) sets for Juta <b>account 562901, VAT code 39, object HOOLDUS and project 771</b>. Other employees &rarr; the general rule (522104).">Juta Telia kulud <b>mitmele v&auml;ljale korraga</b>. Erandreegel (esimene) m&auml;&auml;rab Jutale <b>konto 562901, KM koodi 39, objekti HOOLDUS ja projekti 771</b>. Teised t&ouml;&ouml;tajad &rarr; &uuml;ldreegel (522104).</p>
       <div class="shot-wrap">
@@ -853,7 +820,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 12</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 11</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Exception for one employee — exception only on the account, the rest from the general rule">Erand &uuml;hele t&ouml;&ouml;tajale &mdash; erand ainult kontol, muu &uuml;ldreeglist</h1>
       <p class="ex-desc" data-en="Juta&#39;s costs to a separate account, but the <b>same object</b> as others. The exception rule gives <b>only the account</b> (562901); the object is left empty &rarr; the general rule fills the object (<span style='color:#2f6ab5'>HOOLDUS</span>) and VAT code on Juta&#39;s rows too.">Juta kulud eraldi kontole, aga <b>sama objekt</b> kui teistel. Erandireegel annab <b>ainult konto</b> (562901); objekt j&auml;etakse t&uuml;hjaks &rarr; &uuml;ldreegel t&auml;idab objekti (<span style="color:#2f6ab5">HOOLDUS</span>) ja KM koodi ka Juta ridadel.</p>
       <div class="shot-wrap">
@@ -877,7 +844,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 13</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 12</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
       <h1 class="slide-title" style="font-size:28px" data-en="Everyone to different accounts">K&otilde;ik erinevatele kontodele</h1>
       <p class="ex-desc" data-en="Each employee&#39;s costs <b>to a separate account</b>: Mati &rarr; 522104, Juta &rarr; 522106. <b>Accounts are distinguished by Content = %mobile number</b> (&#39;Personnel Member&#39; can&#39;t do this). By also adding <b>Personnel Member = Telefon</b> to the rule, the <b>User and object(s)</b> from the employee card are also filled on the purchase invoice.">Iga t&ouml;&ouml;taja kulud <b>eraldi kontole</b>: Mati &rarr; 522104, Juta &rarr; 522106. <b>Kontosid eristab Sisaldus = %mobiilinumber</b> (&bdquo;Kuulub personal&ldquo; seda ei suuda). Lisades reeglisse ka <b>Kuulub personal = Telefon</b>, t&auml;ituvad ostuarvel ka <b>Kasutaja ja objekt(id)</b> t&ouml;&ouml;taja kaardilt.</p>
       <div class="shot-wrap">
@@ -900,7 +867,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 14</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; % per user">Teema &middot; Personal &middot; % kasutaja kohta</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 13</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; % per user">Teema &middot; Personal &middot; % kasutaja kohta</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="% at the end of the user&#39;s section">% kasutaja sektsiooni l&otilde;pus</h1>
       <p class="ex-desc" data-en="Multiple users&#39; costs on a Telia invoice. Some services to a specific account, the user&#39;s <b>remaining</b> services to another. The key: <b>&#39;%mobile number&#39; at the end of each user&#39;s section</b> = all of that user&#39;s remaining rows.">Telia arvel mitme kasutaja kulud. Osad teenused kindlale kontole, kasutaja <b>&uuml;lej&auml;&auml;nud</b> teenused teisele. V&otilde;ti: <b>&bdquo;%mobiilinumber&ldquo; iga kasutaja sektsiooni l&otilde;pus</b> = selle kasutaja k&otilde;ik &uuml;lej&auml;&auml;nud read.</p>
       <div class="shot-wrap">
@@ -923,7 +890,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 15</span><span class="theme-chip" data-en="Topic &middot; &#39;Only&#39; &middot; correct Description">Teema &middot; &bdquo;Ainus&ldquo; &middot; &otilde;ige Sisu</span></div>
+      <div class="ex-head"><span class="ex-tag">N&auml;ide 14</span><span class="theme-chip" data-en="Topic &middot; &#39;Only&#39; &middot; correct Description">Teema &middot; &bdquo;Ainus&ldquo; &middot; &otilde;ige Sisu</span></div>
       <h1 class="slide-title" style="font-size:28px" data-en="Why does the wrong Description end up on the row? — the &#39;Only&#39; checkbox">Miks asetub reale vale Sisu? &mdash; &bdquo;Ainus&ldquo; linnuke</h1>
       <p class="ex-desc" data-en="If a row matches <b>several rules</b> and a lower rule fills the Description, the correct description may get overwritten. Solution: tick <b>&#39;Only&#39;</b> on the specific rule. Note: here &#39;Personnel Member&#39; <b>is not used</b>.">Kui rida vastab <b>mitmele reeglile</b> ja alumine reegel t&auml;idab Sisu, v&otilde;ib &otilde;ige kirjeldus &uuml;le kirjutatud saada. Lahendus: linnuta spetsiifilisel reeglil <b>&bdquo;Ainus&ldquo;</b>. NB: siin <b>ei kasutata</b> &bdquo;Kuulub personal&ldquo;.</p>
       <div class="shot-wrap">
@@ -944,6 +911,40 @@
       <div class="tip"><span class="ti">&#128161;</span><div data-en="Without &#39;Only&#39; the parking row would get the lower rule&#39;s Description (&#39;Employee costs&#39;). <b>&#39;Only&#39; &#9745;</b> keeps the row from being overwritten &rarr; the Description stays the e-invoice description. Alternative: fill the Description identically in all rules.">Ilma &bdquo;Ainus&ldquo; saaks parkimisrida alumise reegli Sisu (&bdquo;T&ouml;&ouml;taja kulud&ldquo;). <b>&bdquo;Ainus&ldquo; &#9745;</b> hoiab, et rida ei kirjutata &uuml;le &rarr; Sisuks j&auml;&auml;b e-arve kirjeldus. Alternatiiv: t&auml;ida k&otilde;igi reeglite Sisu &uuml;htemoodi.</div></div>
       <div class="slide-foot" data-en="<span class='lg'>Part 4</span> &middot; Examples"><span class="lg">Osa 4</span> &middot; N&auml;ited</div>
     </section>
+
+  <section class="slide">
+    <div class="ex-head"><span class="ex-tag">Näide 15</span><span class="theme-chip" data-en="Topic · Finance Recipe · fuel card">Teema · Finantsretsept · kütusekaart</span></div>
+    <h1 class="slide-title" style="font-size:24px" data-en="Fuel card invoice — fuel card users&#39; amounts are split by the finance recipe">Kütusekaardi arve — kütusekaardi kasutajate summad jagatakse finantsretsepti alusel</h1>
+    <p class="ex-desc" data-en="On a fuel invoice (e.g. Neste) purchases are grouped <b>by card</b> — each card belongs to one car/driver. The filter is the <b>card number in Content</b>, which routes the row to the right finance recipe. <b>Each card&#39;s object (car/driver) is written into the finance recipe.</b>">Kütusearvel (nt Neste) on ostud grupeeritud <b>kaardi kaupa</b> — iga kaart kuulub ühele autole/juhile. Filtriks on <b>kaardi number Sisalduses</b>, mis suunab rea õigesse finantsretsepti. <b>Iga kaardi objekt (auto/juht) on kirjutatud finantsretsepti sisse.</b></p>
+    <div class="cols" style="gap:16px">
+      <div class="col"><div class="card fill" style="padding:14px 16px">
+        <h3 style="font-size:15px" data-en="1 · Automation rules — filter by card number">1 · Automaatika reeglid — filter kaardi numbri järgi</h3>
+        <table class="rt">
+          <thead><tr><th>Sisaldus</th><th>Finantsretsept</th><th>Koond</th></tr></thead>
+          <tbody>
+            <tr class="hl"><td class="mono">Futura 95%…0001</td><td>KÜTUS-01</td><td>Rida</td></tr>
+            <tr><td class="mono">Autopuhastus%…0001</td><td>PESU-01</td><td>Rida</td></tr>
+            <tr class="hl"><td class="mono">Futura 95%…0002</td><td>KÜTUS-02</td><td>Rida</td></tr>
+            <tr><td class="mono">Autopuhastus%…0002</td><td>PESU-02</td><td>Rida</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px">…0001 / …0002 = kütusekaardi number. Iga kaart + toode → oma reegel ja oma retsept.</div>
+      </div></div>
+      <div class="col"><div class="card fill" style="padding:14px 16px">
+        <h3 style="font-size:15px" data-en="2 · Finance Recipe &#39;KÜTUS-01&#39; (one car)">2 · Finantsretsept „KÜTUS-01" (üks auto)</h3>
+        <table class="rt">
+          <thead><tr><th>Rida</th><th>Valiku tüüp</th><th>Konto</th><th>Objekt</th><th>KM kood</th></tr></thead>
+          <tbody>
+            <tr><td>100</td><td>Parameeter</td><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td></tr>
+            <tr class="hl"><td>200</td><td>Konto</td><td class="mono">5130</td><td>AUTO-01</td><td>sõiduauto 50%</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12px;color:var(--ink3);margin-top:8px">Objekt <b>AUTO-01</b> = selle kaardi auto/juht, kirjutatud retsepti sisse. KM kood = sõiduauto sisendkm 50%.</div>
+      </div></div>
+    </div>
+    <div class="tip"><span class="ti">💡</span><div data-en="The fuel card number is <b>a filter in Content</b> → routes to the right recipe. For each card create <b>its own finance recipe</b> with that car/driver&#39;s object written in. For a passenger car the <b>input VAT 50%</b> code applies.">Kütusekaardi number on <b>Sisalduses filtrina</b> → suunab õigesse retsepti. Iga kaardi jaoks tee <b>oma finantsretsept</b>, kuhu on kirjutatud selle auto/juhi objekt. Sõiduauto puhul rakendub <b>sisendkm 50%</b> KM kood.</div></div>
+    <div class="slide-foot" data-en="<span class='lg'>Part 4</span> · Examples"><span class="lg">Osa 4</span> · Näited</div>
+  </section>
 
   
 
