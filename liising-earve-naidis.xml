@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NÄIDISFAIL koolituseks (Hankija automaatika, Näide 15 "Liisinguarved — sõiduk lepingu numbri järgi").
+     Andmed on väljamõeldud. Struktuur järgib Eesti e-arve standardit EVS 923:2014.
+     Arvel 4 rida: 2 sõidukit (lepingud 380011 ja 380022), igal Intress + Osamakse.
+     Kõigil ridadel sama viitenumber ja sama seletus (Intress/Osamakse) —
+     sõidukeid eristab AINULT lepingu number rea sisus.
+     Automaatika: reegel "Intress"->konto 5510, "Osamakse"->konto 1580;
+     Sisaldus "380011"->objekt AUTO-01, "380022"->objekt AUTO-02. -->
+<E_Invoice>
+  <Header>
+    <Date>2026-08-13</Date>
+    <FileId>FARM-EARVE-NAIDIS-001</FileId>
+    <Version>1.2</Version>
+  </Header>
+  <Invoice invoiceId="FARM-2026-0142" serviceId="1" regNumber="12345678" sellerRegnumber="14700000">
+    <InvoiceParties>
+      <SellerParty>
+        <Name>Farm Demo AS</Name>
+        <RegNumber>14700000</RegNumber>
+        <VATRegNumber>EE101470000</VATRegNumber>
+        <ContactData>
+          <ContactName>Liisingu osakond</ContactName>
+          <PhoneNumber>+372 600 7000</PhoneNumber>
+          <E-mailAddress>liising@farmdemo.example.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Põllu tee 7</PostalAddress1>
+            <City>Tartu</City>
+            <PostalCode>51009</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+        <AccountInfo>
+          <AccountNumber>EE471010014700000001</AccountNumber>
+          <BIC>EEUHEE2X</BIC>
+        </AccountInfo>
+      </SellerParty>
+      <BuyerParty>
+        <Name>Näidis Ettevõte OÜ</Name>
+        <RegNumber>12345678</RegNumber>
+        <VATRegNumber>EE123456789</VATRegNumber>
+        <ContactData>
+          <ContactName>Raamatupidamine</ContactName>
+          <E-mailAddress>raamatupidaja@naidis.ee</E-mailAddress>
+          <LegalAddress>
+            <PostalAddress1>Näidise tn 1</PostalAddress1>
+            <City>Tartu</City>
+            <PostalCode>50050</PostalCode>
+            <Country>EE</Country>
+          </LegalAddress>
+        </ContactData>
+      </BuyerParty>
+    </InvoiceParties>
+    <InvoiceInformation>
+      <Type type="DEB"/>
+      <DocumentName>Arve</DocumentName>
+      <InvoiceNumber>FARM-2026-0142</InvoiceNumber>
+      <InvoiceContentText>Liisingumaksed 08.2026</InvoiceContentText>
+      <PaymentReferenceNumber>770260142</PaymentReferenceNumber>
+      <InvoiceDate>2026-08-13</InvoiceDate>
+      <DueDate>2026-08-27</DueDate>
+      <Period>
+        <StartDate>2026-08-01</StartDate>
+        <EndDate>2026-08-31</EndDate>
+      </Period>
+    </InvoiceInformation>
+    <InvoiceSumGroup>
+      <InvoiceSum>1003.00</InvoiceSum>
+      <VAT>
+        <VATRate>0</VATRate>
+        <SumBeforeVAT>1003.00</SumBeforeVAT>
+        <VATSum>0.00</VATSum>
+      </VAT>
+      <TotalVATSum>0.00</TotalVATSum>
+      <TotalSum>1003.00</TotalSum>
+      <TotalToPay>1003.00</TotalToPay>
+      <Currency>EUR</Currency>
+    </InvoiceSumGroup>
+    <InvoiceItem>
+      <InvoiceItemGroup>
+        <ItemEntry>
+          <Description>Liisingu intress, leping 380011</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>45.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>45.00</ItemSum>
+          <VAT><VATRate>0</VATRate><VATSum>0.00</VATSum></VAT>
+          <ItemTotal>45.00</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Liisingu osamakse, leping 380011</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>500.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>500.00</ItemSum>
+          <VAT><VATRate>0</VATRate><VATSum>0.00</VATSum></VAT>
+          <ItemTotal>500.00</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Liisingu intress, leping 380022</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>38.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>38.00</ItemSum>
+          <VAT><VATRate>0</VATRate><VATSum>0.00</VATSum></VAT>
+          <ItemTotal>38.00</ItemTotal>
+        </ItemEntry>
+        <ItemEntry>
+          <Description>Liisingu osamakse, leping 380022</Description>
+          <ItemDetailInfo>
+            <ItemUnit>tk</ItemUnit>
+            <ItemAmount>1</ItemAmount>
+            <ItemPrice>420.00</ItemPrice>
+          </ItemDetailInfo>
+          <ItemSum>420.00</ItemSum>
+          <VAT><VATRate>0</VATRate><VATSum>0.00</VATSum></VAT>
+          <ItemTotal>420.00</ItemTotal>
+        </ItemEntry>
+      </InvoiceItemGroup>
+    </InvoiceItem>
+    <PaymentInfo>
+      <Currency>EUR</Currency>
+      <PaymentDescription>Liisingumaksed 08.2026</PaymentDescription>
+      <Payable>YES</Payable>
+      <PayDueDate>2026-08-27</PayDueDate>
+      <PaymentTotalSum>1003.00</PaymentTotalSum>
+      <PayerName>Näidis Ettevõte OÜ</PayerName>
+      <PaymentId>770260142</PaymentId>
+      <PayToAccount>EE471010014700000001</PayToAccount>
+      <PayToName>Farm Demo AS</PayToName>
+    </PaymentInfo>
+  </Invoice>
+</E_Invoice>
