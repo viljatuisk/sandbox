@@ -131,6 +131,43 @@ Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetus
 
 ''#'' on **süsteemiseadistustes määratud tühja välja märk**.
 
+==== Objekt filtri päringuloogika (vana Pearaamat) ====
+
+Alljärgnev selgitab, kuidas vana Pearaamat objekti filtri sisestuse **päringutingimuseks tõlgib** (legacy funktsioon ''onobjekt''). See kirjeldab **sama käitumist**, mida ülal olevad tabelid kokku võtavad - siin on „mootori" tasandi loogika lahti seletatud.
+
+=== Kust objekti otsitakse (dokument + rida) ===
+
+Objekti otsitakse korraga **kahelt tasandilt**:
+
+  * kui kanderea tasandil on oma objektiväli, ühendatakse **dokumendi objekt + rea objekt** üheks komaga eraldatud tekstiks;
+  * kui rea tasandi objektivälja pole, kasutatakse ainult **dokumendi objekti**.
+
+Tühjad (NULL) väärtused käsitletakse tühja tekstina. Seega vastab rida, kui otsitav objekt esineb kas dokumendi või rea objektide seas.
+
+=== Erimärgid ja operaatorid ===
+
+^ Sisestus ^ Tähendus (päringus) ^
+| ''#'' (tühja otsingu märk, seadistatav) | Objekt on **tühi** - kuvatakse ainult objektita read. |
+| ''%'' üksi | Objekt on **olemas** (mitte tühi) - kuvatakse ainult objektiga read. |
+| ''+'' | **VÕI** - sisestus tükeldatakse ''+'' järgi ja osad ühendatakse ''OR''-iga (piisab ühest vastest). |
+| '','' | **JA** - komaga loend, kus **kõik** objektid peavad real korraga olema (osad ühendatakse ''AND''-iga). |
+| ''!'' alguses | **EI (NOT)** - tingimus pööratakse ümber; kuvatakse read, mis ''ei'' vasta. |
+| ''&'' või ''\|'' (mitme otsingu märk) | Seadistatav mitme-tingimuse eraldaja: seadistuse ''mitme_otsingu_char'' väärtus „1" annab märgiks ''&'', väärtus „3" märgiks ''\|''. (Sama loogika nagu Konto väljal.) |
+
+=== Vaste-loogika (LIKE) ===
+
+Iga otsitava objekti kohta ehitatakse muster kujul: objektide tekst ümbritsetakse komadega ja otsitakse ''LIKE '%,<objekt>,%''''. Komadega ümbritsemine tagab **täpse vaste** - nt otsing ''10'' ei vasta objektile ''100''.
+
+=== Objektide hierarhia laiendus ===
+
+Otsingut laiendatakse ka **objektid_master** kaudu (objektide hierarhia / master-objektid), et vaste hõlmaks seotud objekte.
+
+**NB!** Selle laienduse **täpne loogika oli koodinäites kärbitud** - kui see peab uude aruandesse üle tulema samamoodi, tuleb täpne käitumine arendajaga üle täpsustada. Mul puudub selle osa kohta koodist täielik info.
+
+=== Seos uue aruandega ===
+
+Uue Pearaamatu prototüübi Objekt-välja käitumine (''+'' = VÕI, '','' = JA, ''%'' = objektiga, ''#'' = objektita, ''!'' = eitus, seadistatav mitme-otsingu märk) **järgib sama loogikat** nagu see legacy-päring. Seega on operaatorite tähendus aruannete vahel ühtne.
+
 ==== Objekti/taseme filtri mõju saldodele ====
 
 **Objekti või objekti taseme filter mõjub ka kontode saldode arvutusse** (mitte ainult kannete kuvamisele). Ehk kui filtreerid objekti järgi, arvutatakse:
