@@ -139,12 +139,13 @@ Objekt-välja legend (⊞ nupp) peab katma **kõik** objekti otsimise võimaluse
 | ''%'' (üksi) | Ainult **täidetud** objektiga read (objekt olemas) | ''%'' |
 | ''#'' | Ainult **täitmata** objektiga read (objektita) | ''#'' |
 | ''%'' (sõnas) | Metamärk - asendab tähti/numbreid sõna alguses, keskel või lõpus | ''MÜÜ%'' |
-| '':'' | Vahemik | ''1000:1999'' |
 | ''+'' | **VÕI** - vähemalt üks objekt | ''LADU+MÜÜK'' |
 | '','' | **JA** - kõik objektid real korraga | ''LADU,TLN'' |
 | ''!'' | **Eitus** (NOT) - kõik, mis ei vasta | ''!LADU'' |
 
 Lisaks võib olla seadistatav **mitme otsingu märk** (''&'' või ''\|'', seadistus ''mitme_otsingu_char''), sama loogika nagu Konto väljal.
+
+**NB! Vahemik '':'' - kontrollimata.** Vana Pearaamatu ''onobjekt'' koodis (legacy) **puudub vahemiku käsitlus** - objekte otsitakse ainult koma-loendi ja LIKE-vaste kaudu, mitte vahemikuna. Seega ei ole kinnitust, et objekti saab vahemiku (''1000:1999'') järgi filtreerida nagu kontosid. Praeguses arendaja legendis on '':'' olemas - **tuleb arendajaga üle kontrollida**, kas objekti vahemik on tegelikult toetatud ja vajalik, või on see ekslikult Konto legendilt üle võetud. //(Mul puudub selle kohta koodist kinnitus.)//
 
 **NB! Praeguses arendaja legendis puuduvad olulised märgid:**
 
