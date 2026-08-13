@@ -131,6 +131,30 @@ Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetus
 
 ''#'' on **süsteemiseadistustes määratud tühja välja märk**.
 
+==== Objekt välja legend - täismärgid (soovitus) ====
+
+Objekt-välja legend (⊞ nupp) peab katma **kõik** objekti otsimise võimalused. Alljärgnev on täielik soovituslik legend:
+
+^ Märk ^ Tähendus ^ Näide ^
+| ''%'' (üksi) | Ainult **täidetud** objektiga read (objekt olemas) | ''%'' |
+| ''#'' | Ainult **täitmata** objektiga read (objektita) | ''#'' |
+| ''%'' (sõnas) | Metamärk - asendab tähti/numbreid sõna alguses, keskel või lõpus | ''MÜÜ%'' |
+| '':'' | Vahemik | ''1000:1999'' |
+| ''+'' | **VÕI** - vähemalt üks objekt | ''LADU+MÜÜK'' |
+| '','' | **JA** - kõik objektid real korraga | ''LADU,TLN'' |
+| ''!'' | **Eitus** (NOT) - kõik, mis ei vasta | ''!LADU'' |
+
+Lisaks võib olla seadistatav **mitme otsingu märk** (''&'' või ''\|'', seadistus ''mitme_otsingu_char''), sama loogika nagu Konto väljal.
+
+**NB! Praeguses arendaja legendis puuduvad olulised märgid:**
+
+  * ''%'' **üksi** (objekt olemas) - praegu on ''%'' näidatud ainult metamärgina; ''%'' üksi peab tähendama „täidetud objektiga read".
+  * ''#'' (objektita) - **täiesti puudu**, kuigi selle kaudu otsitakse täitmata objektiga kandeid (vt //Täidetud ja täitmata objekt//).
+  * ''+'' (VÕI) - **puudu**; praegu on legendis ainult '',''.
+  * '','' tähendus on ebatäpne - Objekt väljal tähendab koma **JA** (kõik objektid korraga real), mitte lihtsalt „mitu väärtust". See erineb Konto välja komast (kus koma = VÕI).
+
+Näited täidetud/täitmata objekti kohta: [[https://wiki.directo.ee/et/fin_aru_pea#taeidetud_ja_taeitmata_objekt|wiki: Täidetud ja täitmata objekt]].
+
 ==== Objekt filtri päringuloogika (vana Pearaamat) ====
 
 Alljärgnev selgitab, kuidas vana Pearaamat objekti filtri sisestuse **päringutingimuseks tõlgib** (legacy funktsioon ''onobjekt''). See kirjeldab **sama käitumist**, mida ülal olevad tabelid kokku võtavad - siin on „mootori" tasandi loogika lahti seletatud.

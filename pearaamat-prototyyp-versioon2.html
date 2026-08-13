@@ -554,10 +554,13 @@
               <div class="obj-picker-list" id="objPickerList"></div>
             </div>
             <div class="obj-picker konto-legend" id="objLegend">
-              <div class="kl-quick" onclick="pickObjSym('%')"><b>%</b><span>Ainult täidetud objektiga read</span></div>
-              <div class="kl-quick" onclick="pickObjSym('#')"><b>#</b><span>Ainult täitmata objektiga read</span></div>
+              <div class="kl-quick" onclick="pickObjSym('%')"><b>%</b><span>Ainult täidetud objektiga read (objekt olemas)</span></div>
+              <div class="kl-quick" onclick="pickObjSym('#')"><b>#</b><span>Ainult täitmata objektiga read (objektita)</span></div>
+              <div class="kl-hint"><span class="kl-sym">%</span>Metamärk - asendab tähti sõna alguses, keskel või lõpus (nt MÜÜ%)</div>
+              <div class="kl-hint"><span class="kl-sym">:</span>Vahemik (nt 1000:1999)</div>
               <div class="kl-hint"><span class="kl-sym">+</span>Vähemalt üks objekt (VÕI), nt LADU+MÜÜK</div>
               <div class="kl-hint"><span class="kl-sym">,</span>Kõik objektid korraga (JA), nt LADU,TLN</div>
+              <div class="kl-hint"><span class="kl-sym">!</span>Eitus - kõik, mis ei vasta tingimusele (nt !LADU)</div>
             </div>
           </div>
           <div class="obj-mode-note" id="objModeNote"></div>
