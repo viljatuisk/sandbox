@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perioodi filter - UX mockup (Kasumiaruanne)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; background: #e8ecf0; color: #1a2a3a; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── TOP BAR ── */
+  .topbar { background: #2d4a6b; color: #fff; height: 34px; display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; font-size: 11px; }
+  .topbar-logo { font-weight: 700; font-size: 13px; margin-right: 6px; }
+  .topbar-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+  .topbar-link { color: rgba(255,255,255,0.75); }
+  .topbar .badge { margin-left: auto; background: #e0a53a; color: #3a2c08; border-radius: 3px; font-size: 10px; font-weight: 700; padding: 3px 8px; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── FILTER PANEL (deliverable) ── */
+  .panel { width: 320px; min-width: 320px; background: #f4f8fd; border-right: 1px solid #b0c8e0; overflow-y: auto; flex-shrink: 0; }
+  .sec { border-bottom: 1px solid #cfdcea; }
+  .sec-head { padding: 6px 10px; font-size: 11px; font-weight: 700; color: #e8f2fb; text-transform: uppercase; letter-spacing: 0.6px; background: #2d4f72; border-left: 3px solid #5a9fd4; display: flex; align-items: center; gap: 6px; }
+  .sec-head .req { color: #f0b849; }
+  .sec-head .wrench { margin-left: auto; opacity: .6; font-size: 12px; }
+  .sec-body { padding: 9px 10px 12px; display: flex; flex-direction: column; gap: 9px; }
+
+  label.fld { display: flex; flex-direction: column; gap: 3px; }
+  label.fld > .lbl { font-size: 10px; font-weight: 700; color: #2a4a6a; }
+  input[type=text], input[type=number], select { height: 24px; background: #fff; border: 1px solid #9ab8d4; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 6px; font-family: Arial, sans-serif; width: 100%; }
+  input:focus, select:focus { outline: none; border-color: #3a7abf; }
+
+  /* segmented granularity */
+  .seg { display: flex; border: 1px solid #9ab8d4; border-radius: 3px; overflow: hidden; background: #fff; }
+  .seg button { flex: 1; border: none; background: #fff; color: #3a5a7a; font-size: 11px; font-family: Arial, sans-serif; padding: 5px 0; cursor: pointer; border-right: 1px solid #d6e2ee; }
+  .seg button:last-child { border-right: none; }
+  .seg button.on { background: #3a6a9a; color: #fff; font-weight: 700; }
+  .seg button:hover:not(.on) { background: #eef4fa; }
+
+  /* anchor stepper */
+  .stepper { display: flex; align-items: stretch; gap: 0; }
+  .stepper button { width: 30px; background: #e0ecf8; border: 1px solid #9ab8d4; color: #2a4a6a; font-size: 14px; cursor: pointer; }
+  .stepper button:hover { background: #c8dff0; }
+  .stepper .step-lbl { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-top: 1px solid #9ab8d4; border-bottom: 1px solid #9ab8d4; background: #fff; }
+  .stepper .step-lbl b { font-size: 13px; color: #1a3a5a; }
+  .stepper .step-lbl span { font-size: 9px; color: #7a8a9a; }
+
+  .daterow { display: flex; gap: 6px; align-items: flex-end; }
+  .daterow label.fld { flex: 1; }
+  .daterow.locked input { background: #eef2f6; color: #5a6a7a; }
+
+  /* checkbox rows */
+  .chk { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #2a4a6a; cursor: pointer; padding: 2px 0; }
+  .chk input { accent-color: #3a6a9a; width: 14px; height: 14px; }
+  .chk .tag { margin-left: auto; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 1px 5px; border-radius: 2px; }
+  .chk .tag.b { background: #fbeed4; color: #8a5a12; }
+  .chk .tag.py { background: #e4eefa; color: #2d5f8a; }
+  .chk .tag.ytd { background: #e0f0e4; color: #2a7a4a; }
+  .chk.disabled { opacity: .4; pointer-events: none; }
+
+  .sub { font-size: 10px; color: #7a8a9a; margin: -4px 0 2px 21px; line-height: 1.35; }
+  .inline2 { display: flex; gap: 8px; }
+  .inline2 label.fld { flex: 1; }
+  .thresh { display: flex; align-items: center; gap: 6px; }
+  .thresh input { width: 62px; }
+  .thresh .u { font-size: 11px; color: #5a6a7a; }
+
+  .go { margin: 10px; width: calc(100% - 20px); height: 30px; background: #3a6a9a; color: #fff; border: none; border-radius: 3px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .go:hover { background: #4a7aaa; }
+
+  /* ── MAIN / PREVIEW ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+  .explain { padding: 8px 14px; background: #f4f8fc; border-bottom: 1px solid #dde5ec; font-size: 11px; color: #45607a; line-height: 1.5; }
+  .explain b { color: #2d4f72; }
+  .matrix { display: inline-grid; grid-template-columns: auto auto auto; gap: 1px; background: #cdd8e4; border: 1px solid #cdd8e4; margin: 6px 0 2px; font-size: 10px; }
+  .matrix > div { background: #fff; padding: 3px 8px; text-align: center; }
+  .matrix .mh { background: #eef3f9; font-weight: 700; color: #2d4f72; }
+  .matrix .mrh { background: #eef3f9; font-weight: 700; color: #2d4f72; text-align: left; }
+  .matrix .cell.on { background: #e0f0e4; color: #2a7a4a; font-weight: 700; }
+  .matrix .cell.off { background: #f6f7f9; color: #b0b8c0; }
+
+  .summary { padding: 7px 14px; border-bottom: 1px solid #dde5ec; background: #fff; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .schip { display: inline-flex; align-items: center; gap: 5px; background: #f0f5fa; border: 1px solid #d4e0ec; border-left: 3px solid #3a7abf; border-radius: 2px; padding: 2px 8px; font-size: 10px; color: #33465a; }
+  .schip b { color: #2d4f72; }
+  .schip.b { border-left-color: #d08a2a; }
+  .schip.py { border-left-color: #5a8ab8; }
+  .schip.m { border-left-color: #a06a2a; }
+
+  .table-wrap { flex: 1; overflow: auto; }
+  table.pl { border-collapse: collapse; font-size: 12px; white-space: nowrap; min-width: 100%; }
+  table.pl thead th { position: sticky; top: 0; z-index: 5; background: #d8e4f0; color: #1a3a5a; font-weight: 700; padding: 5px 10px; border-right: 1px solid #bcccd8; border-bottom: 2px solid #9ab4c8; text-align: right; font-size: 11px; vertical-align: bottom; }
+  table.pl thead th.lbl { text-align: left; }
+  table.pl thead th.blk { text-align: center; font-size: 11px; border-bottom: 1px solid #b6c8d8; }
+  table.pl thead th.blk.per { background: #d3e2f2; }
+  table.pl thead th.blk.ytd { background: #d3ecdd; color: #1a4a30; }
+  table.pl thead th.grpstart { border-left: 2px solid #9ab4c8; }
+  th .sub2 { display: block; font-weight: 400; font-size: 9px; color: #4a6a8a; margin-top: 1px; }
+
+  table.pl td { padding: 3px 10px; border-right: 1px solid #eef1f5; text-align: right; }
+  table.pl td.lbl { text-align: left; border-right: 1px solid #dde3ea; }
+  td.grpstart { border-left: 2px solid #cdd8e4; }
+  .marg { display: block; font-size: 9px; color: #8a97a6; font-weight: 400; margin-top: 1px; }
+
+  tr.leaf td.lbl { padding-left: 20px; color: #33465a; }
+  tr.leaf:hover td { background: #f7fafd; }
+  tr.sub td { background: #eaf0f7; font-weight: 700; color: #1a3a5a; border-top: 1px solid #cdd8e4; }
+  tr.result td { background: #cfe0ee; color: #082438; font-weight: 700; border-top: 2px solid #8fb0cb; border-bottom: 1px solid #8fb0cb; }
+
+  td.neg { color: #b00020; }
+  /* soodne / ebasoodne */
+  td.fav.color { color: #1a7a3a; }
+  td.unf.color { color: #c0202a; }
+  td.var { background: #fbfdfb; }
+  td.material { position: relative; font-weight: 700; }
+  td.material::before { content: ''; position: absolute; left: 2px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background: #e0a53a; }
+  td.zero { color: #9aa8b6; }
+
+  .legend { padding: 6px 14px; border-top: 1px solid #e4ebf2; background: #f7fafd; font-size: 10px; color: #6a7a8a; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .legend .li { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .sw { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+  .legend .sw.fav { background: #1a7a3a; }
+  .legend .sw.unf { background: #c0202a; }
+  .legend .sw.mat { background: #e0a53a; border-radius: 50%; }
+  .footnote { padding: 6px 14px 10px; font-size: 10px; color: #98a4b0; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-logo">D</span>
+  <span class="topbar-sep"></span>
+  <span class="topbar-link">Finants</span><span>&rsaquo;</span>
+  <span class="topbar-link">Aruanded</span><span>&rsaquo;</span>
+  <span>Kasumiaruanne</span>
+  <span class="badge">UX mockup - perioodi filter</span>
+</div>
+
+<div class="layout">
+
+  <!-- ══════════ FILTRIPANEEL (disainiobjekt) ══════════ -->
+  <div class="panel">
+
+    <!-- PERIOOD -->
+    <div class="sec">
+      <div class="sec-head">Periood <span class="req">*</span> <span class="wrench">&#128295;</span></div>
+      <div class="sec-body">
+        <div class="seg" id="segGran">
+          <button data-g="month" class="on" onclick="setGran('month')">Kuu</button>
+          <button data-g="quarter" onclick="setGran('quarter')">Kvartal</button>
+          <button data-g="year" onclick="setGran('year')">Aasta</button>
+          <button data-g="custom" onclick="setGran('custom')">Vaba</button>
+        </div>
+
+        <div class="stepper" id="stepper">
+          <button onclick="stepAnchor(-1)" title="Eelmine">&#8249;</button>
+          <div class="step-lbl"><b id="anchorMain">august 2026</b><span id="anchorSub">01.08.2026 - 31.08.2026</span></div>
+          <button onclick="stepAnchor(1)" title="Järgmine">&#8250;</button>
+        </div>
+
+        <div class="daterow locked" id="dateRow">
+          <label class="fld"><span class="lbl">Algus</span><input type="text" id="dFrom" value="01.08.2026" readonly></label>
+          <label class="fld"><span class="lbl">Lõpp</span><input type="text" id="dTo" value="31.08.2026" readonly></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- VÕRDLUS -->
+    <div class="sec">
+      <div class="sec-head">Võrdlus</div>
+      <div class="sec-body">
+        <label class="chk"><input type="checkbox" id="cBudget" checked onchange="render()"> Eelarve <span class="tag b">plaan</span></label>
+        <label class="chk"><input type="checkbox" id="cPY" checked onchange="render()"> Eelmine aasta (sama periood) <span class="tag py">YoY</span></label>
+        <div class="sub">Võrdlusveerud tuletatakse ankurperioodist automaatselt - käesolev vs eelarve ja vs eelmine aasta.</div>
+      </div>
+    </div>
+
+    <!-- VAADE -->
+    <div class="sec">
+      <div class="sec-head">Vaade</div>
+      <div class="sec-body">
+        <label class="chk"><input type="checkbox" id="vPer" checked onchange="render()"> Periood <span class="tag py" id="vPerLbl">august 2026</span></label>
+        <label class="chk"><input type="checkbox" id="vYtd" checked onchange="render()"> Akumuleeritud (YTD) <span class="tag ytd" id="vYtdLbl">jaan-aug 2026</span></label>
+        <label class="fld"><span class="lbl">Majandusaasta algus (YTD lähtekoht)</span>
+          <select id="fiscal" onchange="render()">
+            <option value="1" selected>jaanuar</option>
+            <option value="7">juuli</option>
+            <option value="4">aprill</option>
+            <option value="10">oktoober</option>
+          </select>
+        </label>
+        <div class="sub">YTD = majandusaasta algusest ankurperioodi lõpuni. Periood ja akumuleeritud kuvatakse kõrvuti, mitte eraldi aruannetes.</div>
+      </div>
+    </div>
+
+    <!-- ESITUS -->
+    <div class="sec">
+      <div class="sec-head">Esitus</div>
+      <div class="sec-body">
+        <label class="chk"><input type="checkbox" id="oAbs" checked onchange="render()"> Vahe (&euro;)</label>
+        <label class="chk"><input type="checkbox" id="oPct" checked onchange="render()"> Vahe %</label>
+        <label class="chk"><input type="checkbox" id="oMarg" checked onchange="render()"> Marginaal % käibest</label>
+        <label class="chk"><input type="checkbox" id="oFav" checked onchange="render()"> Soodne / ebasoodne värvikood</label>
+        <label class="fld" style="margin-top:2px"><span class="lbl">Olulisuse piir (tõsta esile ainult olulised kõrvalekalded)</span></label>
+        <div class="thresh">
+          <span class="u">&plusmn;</span><input type="number" id="tPct" value="5" onchange="render()"><span class="u">%</span>
+          <span class="u" style="margin-left:8px">või &plusmn;</span><input type="number" id="tEur" value="10" onchange="render()"><span class="u">t&euro;</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="go" onclick="render()">&#9654; Uuenda aruanne</button>
+  </div>
+
+  <!-- ══════════ EELVAADE ══════════ -->
+  <div class="main">
+
+    <div class="explain">
+      Finantsjuhi standardvaade: <b>üks ankurperiood + tuletatud 2x2 võrdlus</b>. Ankruks valid perioodi vasakult; ülejäänud kuus veergu (eelarve, eelmine aasta ja nende vahed) ning YTD-plokk tuletatakse ise.
+      <div class="matrix">
+        <div class="mh"></div><div class="mh">vs Eelarve</div><div class="mh">vs Eelmine aasta</div>
+        <div class="mrh" id="mxPerRow">Periood</div><div class="cell" id="mxPB">&#10003;</div><div class="cell" id="mxPY">&#10003;</div>
+        <div class="mrh" id="mxYtdRow">Akumuleeritud</div><div class="cell" id="mxYB">&#10003;</div><div class="cell" id="mxYY">&#10003;</div>
+      </div>
+    </div>
+
+    <div class="summary" id="summary"></div>
+
+    <div class="table-wrap">
+      <table class="pl">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <span class="li"><span class="sw fav"></span> Soodne kõrvalekalle</span>
+      <span class="li"><span class="sw unf"></span> Ebasoodne kõrvalekalle</span>
+      <span class="li"><span class="sw mat"></span> Ületab olulisuse piiri</span>
+      <span class="li" style="color:#8a97a6">Märgikonventsioon: tulud +, kulud kirjas negatiivsena &rarr; positiivne vahe = alati soodne.</span>
+    </div>
+    <div class="footnote">Numbrid on näidislikud ja ei muutu perioodi vahetamisel - eesmärk on näitlikustada filtri UX ja veeruloogika. Kasutab su näidet: Käive periood 100 / eelarve 80 / e.a. 110; YTD 850 / 758 / 458.</div>
+  </div>
+</div>
+
+<script>
+  /* ══════════ ANDMEMUDEL ══════════
+     Kõik summad märgiga (signed): tulud +, kulud -.
+     Selle konventsiooniga on "kõrgem väärtus = alati parem" -> positiivne vahe = soodne.
+     Iga väärtus: { a: tegelik, b: eelarve, p: eelmine aasta } eraldi perioodi ja YTD jaoks. */
+  const LEAVES = {
+    kaive: { per:{a:100,b:80,p:110},  ytd:{a:850,b:758,p:458} },
+    cogs:  { per:{a:-45,b:-40,p:-50}, ytd:{a:-390,b:-360,p:-220} },
+    tooj:  { per:{a:-25,b:-24,p:-22}, ytd:{a:-190,b:-185,p:-110} },
+    muud:  { per:{a:-12,b:-10,p:-11}, ytd:{a:-95,b:-88,p:-60} },
+    kulum: { per:{a:-5,b:-5,p:-5},    ytd:{a:-40,b:-40,p:-25} },
+    fin:   { per:{a:-1,b:-1,p:-2},    ytd:{a:-9,b:-8,p:-14} },
+    tax:   { per:{a:-2,b:0,p:-3},     ytd:{a:-16,b:-10,p:-4} },
+  };
+  // Aruande skeem: leaf = konto/rida, sub/result = summeeritud read.
+  const SCHEMA = [
+    { kind:'leaf',   id:'kaive', name:'Müügitulu' },
+    { kind:'leaf',   id:'cogs',  name:'Müüdud toodete/teenuste kulu' },
+    { kind:'sub',    name:'Brutokasum', of:['kaive','cogs'] },
+    { kind:'leaf',   id:'tooj',  name:'Tööjõukulud' },
+    { kind:'leaf',   id:'muud',  name:'Muud tegevuskulud' },
+    { kind:'sub',    name:'EBITDA', of:['kaive','cogs','tooj','muud'] },
+    { kind:'leaf',   id:'kulum', name:'Põhivara kulum' },
+    { kind:'sub',    name:'Ärikasum (EBIT)', of:['kaive','cogs','tooj','muud','kulum'] },
+    { kind:'leaf',   id:'fin',   name:'Finantstulud ja -kulud' },
+    { kind:'sub',    name:'Kasum enne tulumaksu', of:['kaive','cogs','tooj','muud','kulum','fin'] },
+    { kind:'leaf',   id:'tax',   name:'Tulumaks' },
+    { kind:'result', name:'Aruandeperioodi puhaskasum', of:['kaive','cogs','tooj','muud','kulum','fin','tax'] },
+  ];
+
+  function val(row, blk, field){
+    if (row.kind === 'leaf') return LEAVES[row.id][blk][field];
+    return row.of.reduce((s,id) => s + LEAVES[id][blk][field], 0);
+  }
+
+  /* ── util ── */
+  function fmt(n){
+    if (Math.abs(n) < 0.005) return '0';
+    const neg = n < 0, abs = Math.abs(n);
+    const s = abs.toFixed(0).replace(/\B(?=(\d{3})+$)/g, ' ');
+    return (neg ? '−' : '') + s;
+  }
+  function fmtSigned(n){ return (n > 0 ? '+' : n < 0 ? '−' : '') + fmt(Math.abs(n)); }
+  function fmtPct(n){
+    if (n === null) return '<span style="color:#aab">&mdash;</span>';
+    return (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n).toFixed(1).replace('.', ',') + '%';
+  }
+  function fmtMarg(mv){
+    return (mv < 0 ? '−' : '') + Math.abs(mv).toFixed(1).replace('.', ',') + '%';
+  }
+  function pctOf(diff, base){
+    if (Math.abs(base) < 0.005) return null;   // nullilähedaselt baasilt % ei kuvata
+    return diff / Math.abs(base) * 100;
+  }
+
+  /* ══════════ PERIOODI ANKUR ══════════ */
+  const MON  = ['jaanuar','veebruar','märts','aprill','mai','juuni','juuli','august','september','oktoober','november','detsember'];
+  const MONS = ['jaan','veebr','märts','apr','mai','juuni','juuli','aug','sept','okt','nov','dets'];
+  const ROMAN = ['I','II','III','IV'];
+  const LASTDAY = [31,28,31,30,31,30,31,31,30,31,30,31];
+  let gran = 'month';
+  let anchor = { y:2026, m:8 };   // m = perioodi lõpukuu
+
+  function fiscalStart(){ return parseInt(document.getElementById('fiscal').value,10); }
+
+  function periodStartMonth(){
+    if (gran === 'month')   return anchor.m;
+    if (gran === 'quarter') return anchor.m - 2;
+    if (gran === 'year')    return 1;
+    return anchor.m;
+  }
+  function pad(n){ return (n<10?'0':'') + n; }
+  function periodRangeStr(y){
+    const sm = periodStartMonth(), em = (gran==='year') ? 12 : anchor.m;
+    return '01.' + pad(sm) + '.' + y + ' - ' + LASTDAY[em-1] + '.' + pad(em) + '.' + y;
+  }
+  function periodTitle(y){
+    if (gran === 'month')   return MON[anchor.m-1] + ' ' + y;
+    if (gran === 'quarter') return ROMAN[Math.ceil(anchor.m/3)-1] + ' kvartal ' + y;
+    if (gran === 'year')    return 'aasta ' + y;
+    return 'valitud periood';
+  }
+  function ytdTitle(y){
+    const fs = fiscalStart();
+    return MONS[fs-1] + '-' + MONS[anchor.m-1] + ' ' + y;
+  }
+
+  function setGran(g){
+    gran = g;
+    document.querySelectorAll('#segGran button').forEach(b => b.classList.toggle('on', b.dataset.g === g));
+    if (g === 'quarter') anchor.m = Math.ceil(anchor.m/3)*3;   // snap kvartali lõppu
+    if (g === 'year') anchor.m = 12;
+    document.getElementById('dateRow').classList.toggle('locked', g !== 'custom');
+    document.querySelectorAll('#dFrom, #dTo').forEach(i => i.readOnly = (g !== 'custom'));
+    document.getElementById('stepper').style.display = (g === 'custom') ? 'none' : 'flex';
+    render();
+  }
+  function stepAnchor(dir){
+    const stepMonths = gran === 'year' ? 12 : gran === 'quarter' ? 3 : 1;
+    let m = anchor.m + dir * stepMonths, y = anchor.y;
+    while (m > 12){ m -= 12; y++; } while (m < 1){ m += 12; y--; }
+    anchor = { y, m };
+    render();
+  }
+
+  /* ══════════ RENDER ══════════ */
+  function render(){
+    const showBudget = document.getElementById('cBudget').checked;
+    const showPY     = document.getElementById('cPY').checked;
+    let showPer      = document.getElementById('vPer').checked;
+    let showYtd      = document.getElementById('vYtd').checked;
+    if (!showPer && !showYtd){ showPer = true; document.getElementById('vPer').checked = true; }
+    const oAbs  = document.getElementById('oAbs').checked;
+    const oPct  = document.getElementById('oPct').checked;
+    const oMarg = document.getElementById('oMarg').checked;
+    const oFav  = document.getElementById('oFav').checked;
+    const tPct  = parseFloat(document.getElementById('tPct').value) || 0;
+    const tEur  = parseFloat(document.getElementById('tEur').value) || 0;
+
+    const y = anchor.y;
+    // ankuri sildid
+    document.getElementById('anchorMain').textContent = periodTitle(y);
+    document.getElementById('anchorSub').textContent  = periodRangeStr(y);
+    if (gran !== 'custom'){
+      const sm = periodStartMonth();
+      document.getElementById('dFrom').value = '01.' + pad(sm) + '.' + y;
+      document.getElementById('dTo').value   = LASTDAY[anchor.m-1] + '.' + pad(anchor.m) + '.' + y;
+    }
+    document.getElementById('vPerLbl').textContent = periodTitle(y);
+    document.getElementById('vYtdLbl').textContent = ytdTitle(y);
+
+    // maatriks-indikaator
+    document.getElementById('mxPerRow').style.opacity = showPer ? 1 : .35;
+    document.getElementById('mxYtdRow').style.opacity = showYtd ? 1 : .35;
+    setCell('mxPB', showPer && showBudget); setCell('mxPY', showPer && showPY);
+    setCell('mxYB', showYtd && showBudget); setCell('mxYY', showYtd && showPY);
+
+    // blokid
+    const blocks = [];
+    if (showPer) blocks.push({ key:'per', cls:'per', title:'Periood: ' + periodTitle(y), pyLabel:periodTitle(y-1) });
+    if (showYtd) blocks.push({ key:'ytd', cls:'ytd', title:'Akumuleeritud: ' + ytdTitle(y), pyLabel:ytdTitle(y-1) });
+
+    // veergude loend bloki sees
+    function cols(){
+      const c = [{ t:'act' }];
+      if (showBudget){ c.push({ t:'bud' }); if (oAbs) c.push({ t:'vb_abs' }); if (oPct) c.push({ t:'vb_pct' }); }
+      if (showPY){ c.push({ t:'py' }); if (oAbs) c.push({ t:'vp_abs' }); if (oPct) c.push({ t:'vp_pct' }); }
+      return c;
+    }
+    const COLS = cols();
+
+    /* ── kokkuvõtte-ribad ── */
+    const chips = [];
+    chips.push('<span class="schip"><b>Ankur:</b> ' + periodTitle(y) + '</span>');
+    if (showBudget) chips.push('<span class="schip b"><b>vs Eelarve</b></span>');
+    if (showPY) chips.push('<span class="schip py"><b>vs Eelmine aasta:</b> ' + periodTitle(y-1) + '</span>');
+    if (showYtd) chips.push('<span class="schip ytd"><b>YTD:</b> ' + ytdTitle(y) + '</span>');
+    if (tPct || tEur) chips.push('<span class="schip m"><b>Olulisuse piir:</b> &plusmn;' + tPct + '% või &plusmn;' + tEur + ' t&euro;</span>');
+    document.getElementById('summary').innerHTML = chips.join('');
+
+    /* ── THEAD (kaherealine) ── */
+    const colLabel = { act:'Tegelik', bud:'Eelarve', vb_abs:'Vahe', vb_pct:'Vahe %', py:'Eelmine<br>aasta', vp_abs:'Vahe', vp_pct:'Vahe %' };
+    let h1 = '<tr><th class="lbl" rowspan="2">Näitaja</th>';
+    blocks.forEach(b => { h1 += '<th class="blk ' + b.cls + ' grpstart" colspan="' + COLS.length + '">' + b.title + '</th>'; });
+    h1 += '</tr>';
+    let h2 = '<tr>';
+    blocks.forEach(b => {
+      COLS.forEach((c, i) => {
+        let extra = (i === 0) ? ' grpstart' : '';
+        let lab = colLabel[c.t];
+        if (c.t === 'py') lab = 'Tegelik<br><span class="sub2">' + b.pyLabel + '</span>';
+        if (c.t === 'vb_abs' || c.t === 'vb_pct') lab += '<span class="sub2">vs eelarve</span>';
+        if (c.t === 'vp_abs' || c.t === 'vp_pct') lab += '<span class="sub2">vs e.a.</span>';
+        h2 += '<th class="' + extra + '">' + lab + '</th>';
+      });
+    });
+    h2 += '</tr>';
+    document.getElementById('thead').innerHTML = h1 + h2;
+
+    /* ── TBODY ── */
+    let rows = '';
+    SCHEMA.forEach(row => {
+      const trCls = row.kind === 'result' ? 'result' : row.kind === 'sub' ? 'sub' : 'leaf';
+      let tds = '<td class="lbl">' + row.name + '</td>';
+      blocks.forEach(b => {
+        const kaiveA = LEAVES.kaive[b.key].a;
+        const a = val(row, b.key, 'a');
+        const bd = val(row, b.key, 'b');
+        const p  = val(row, b.key, 'p');
+        COLS.forEach((c, i) => {
+          const gs = (i === 0) ? ' grpstart' : '';
+          if (c.t === 'act'){
+            let marg = '';
+            if (oMarg && Math.abs(kaiveA) > 0.005){
+              marg = '<span class="marg">' + fmtMarg(a/kaiveA*100) + '</span>';
+            }
+            tds += '<td class="' + gs + (a<0?' neg':'') + '">' + fmt(a) + marg + '</td>';
+          }
+          else if (c.t === 'bud') tds += '<td class="' + gs + (bd<0?' neg':'') + '">' + fmt(bd) + '</td>';
+          else if (c.t === 'py')  tds += '<td class="' + gs + (p<0?' neg':'') + '">' + fmt(p) + '</td>';
+          else if (c.t === 'vb_abs') tds += varCell(a - bd, a - bd, oFav, tPct, tEur, gs, pctOf(a-bd, bd));
+          else if (c.t === 'vb_pct') tds += varPctCell(a - bd, bd, oFav, tPct, tEur, gs);
+          else if (c.t === 'vp_abs') tds += varCell(a - p, a - p, oFav, tPct, tEur, gs, pctOf(a-p, p));
+          else if (c.t === 'vp_pct') tds += varPctCell(a - p, p, oFav, tPct, tEur, gs);
+        });
+      });
+      rows += '<tr class="' + trCls + '">' + tds + '</tr>';
+    });
+    document.getElementById('tbody').innerHTML = rows;
+  }
+
+  // absoluutvahe lahter
+  function varCell(diff, favBasis, oFav, tPct, tEur, gs, pct){
+    const favCls = oFav ? (favBasis > 0.005 ? ' fav color' : favBasis < -0.005 ? ' unf color' : '') : (favBasis > 0.005 ? ' fav' : favBasis < -0.005 ? ' unf' : '');
+    const mat = isMaterial(diff, pct, tPct, tEur) ? ' material' : '';
+    return '<td class="var' + gs + favCls + mat + '">' + fmtSigned(diff) + '</td>';
+  }
+  // protsentvahe lahter
+  function varPctCell(diff, base, oFav, tPct, tEur, gs){
+    const pct = pctOf(diff, base);
+    const favCls = oFav ? (diff > 0.005 ? ' fav color' : diff < -0.005 ? ' unf color' : '') : '';
+    const mat = isMaterial(diff, pct, tPct, tEur) ? ' material' : '';
+    return '<td class="var' + gs + favCls + mat + '">' + fmtPct(pct) + '</td>';
+  }
+  function isMaterial(diff, pct, tPct, tEur){
+    const okEur = tEur > 0 && Math.abs(diff) >= tEur;
+    const okPct = tPct > 0 && pct !== null && Math.abs(pct) >= tPct;
+    return okEur || okPct;
+  }
+  function setCell(id, on){
+    const el = document.getElementById(id);
+    el.className = 'cell ' + (on ? 'on' : 'off');
+    el.innerHTML = on ? '&#10003;' : '&ndash;';
+  }
+
+  render();
+</script>
+</body>
+</html>
