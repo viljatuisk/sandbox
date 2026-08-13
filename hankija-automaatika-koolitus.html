@@ -443,7 +443,7 @@
 
   <!-- 13 · NÄIDE 1 koondamine -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 1</span><span class="theme-chip" data-en="Topic · % logic">Teema · % loogika</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 1">Näide 1</span><span class="theme-chip" data-en="Topic · % logic">Teema · % loogika</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Every row, line by line, to a fixed account">Kõik rida-realt kindlale kontole</h1>
     <p class="ex-desc" data-en="<span class='pill a'>Content = %</span> means &#39;anything&#39; — the rule applies to all rows. Each row stays a separate row on the purchase invoice; all go to the same account."><span class="pill a">Sisaldus = %</span> tähendab „mida iganes" — reegel rakendub kõigile ridadele. Iga rida jääb eraldi reaks ostuarvel, kõik lähevad samale kontole.</p>
     <div class="shot-wrap">
@@ -481,7 +481,7 @@
 
   <!-- 14 · NÄIDE 2 % rida-realt -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 2</span><span class="theme-chip" data-en="Topic · Consolidation">Teema · Koondamine</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 2">Näide 2</span><span class="theme-chip" data-en="Topic · Consolidation">Teema · Koondamine</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="All rows to one account + object + auto-confirm">Kõik read ühele kontole + objekt + automaatkinnitus</h1>
     <p class="ex-desc" data-en="Rule: <span class='pill a'>Content = %</span> <span class='pill b'>Account 522104</span> <span class='pill b'>Object PARNU</span> <span class='pill v'>Group = Document</span> <span class='pill' style='background:var(--green-bg);color:var(--green)'>Confirm ✓</span>. All rows are merged into one and the invoice confirms itself.">Reegel: <span class="pill a">Sisaldus = %</span> <span class="pill b">Konto 522104</span> <span class="pill b">Objekt PARNU</span> <span class="pill v">Koond = Dokument</span> <span class="pill" style="background:var(--green-bg);color:var(--green)">Kinnita ✓</span>. Kõik read koondatakse üheks ja arve kinnitub ise.</p>
     <div class="shot-wrap">
@@ -546,7 +546,7 @@
   </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 3</span><span class="theme-chip">Teema &middot; Koondamine</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 3">N&auml;ide 3</span><span class="theme-chip">Teema &middot; Koondamine</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Many rows &rarr; a single-row purchase invoice (Group = Document)">Palju ridu &rarr; &uuml;herealine ostuarve (Koond = Dokument)</h1>
       <p class="ex-desc" data-en="Recurring-service rows (Tartu, P&auml;rnu) <b>with different objects</b> &rarr; you want one row on the purchase invoice. In automation <b>3 rules</b>: 2 recurring services (Group = Document, own object) + an extra service. Consolidate merges the recurring services into one; the extra service stays separate.">P&uuml;siteenuse read (Tartu, P&auml;rnu) <b>eri objektidega</b> &rarr; soovid ostuarvele &uuml;ht rida. Automaatikas <b>3 reeglit</b>: 2 p&uuml;siteenust (Koond = Dokument, oma objekt) + lisateenus. Koond koondab p&uuml;siteenused &uuml;heks; lisateenus j&auml;&auml;b eraldi.</p>
       <div class="shot-wrap">
@@ -570,7 +570,7 @@
 
   <!-- 15 · NÄIDE 3 KM koodid -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 4</span><span class="theme-chip" data-en="Topic · VAT codes">Teema · KM koodid</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 4">Näide 4</span><span class="theme-chip" data-en="Topic · VAT codes">Teema · KM koodid</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Different VAT rates on one invoice">Erinevad käibemaksumäärad ühel arvel</h1>
     <p class="ex-desc" data-en="If the <b>VAT code is left empty</b> in the rule, Directo takes the VAT rate from each e-invoice row separately. The rule sets only the account — suitable for invoices mixing 24%, 0% and reverse charge.">Kui reeglis <b>KM kood jätta tühjaks</b>, võtab Directo KM määra igalt e-arve realt eraldi. Reegel määrab ainult konto — sobib arvetele, kus on nii 24%, 0% kui pöördmaks segamini.</p>
     <div class="shot-wrap">
@@ -607,7 +607,7 @@
 
   <!-- 16 · NÄIDE 4 automaatkinnitus summa -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 5</span><span class="theme-chip" data-en="Topic · Auto-confirmation">Teema · Automaatkinnitus</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 5">Näide 5</span><span class="theme-chip" data-en="Topic · Auto-confirmation">Teema · Automaatkinnitus</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Auto-confirmation by amount">Automaatkinnitus summa järgi</h1>
     <p class="ex-desc" data-en="A <b>C.sum</b> is set on the row. If the purchase invoice row amount matches exactly (or falls within the range <b>C.sum – C.sum up to</b>), the invoice confirms. If some amount differs, the invoice is <b>created but not confirmed</b>.">Reale määratakse <b>K.summa</b>. Kui ostuarve rea summa klapib täpselt (või jääb vahemikku <b>K.summa – K.summa kuni</b>), arve kinnitub. Kui mõni summa erineb, arve <b>luuakse, aga ei kinnitu</b>.</p>
     <div class="shot-wrap">
@@ -644,7 +644,7 @@
 
   <!-- 17 · NÄIDE 5 tingimuslik kinnitus -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 6</span><span class="theme-chip" data-en="Topic · Auto-confirmation">Teema · Automaatkinnitus</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 6">Näide 6</span><span class="theme-chip" data-en="Topic · Auto-confirmation">Teema · Automaatkinnitus</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Conditional confirmation — unexpected extra rows">Tingimuslik kinnitus — ootamatud lisaread</h1>
     <p class="ex-desc" data-en="If the invoice has rows to which <b>no confirm rule applies</b>, the whole invoice stays unconfirmed. This is a safeguard against unexpected extra rows — e.g. the supplier adds a new service to the invoice.">Kui arvel on ridu, millele <b>ükski kinnita-reegel ei rakendu</b>, jääb kogu arve kinnitamata. See on kaitsemehhanism ootamatute lisaridade vastu — nt hankija lisab arvele uue teenuse.</p>
     <div class="shot-wrap">
@@ -686,7 +686,7 @@
 
   <!-- 18 · NÄIDE 6 finantsretsept -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 7</span><span class="theme-chip" data-en="Topic · Finance Recipe">Teema · Finantsretsept</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 7">Näide 7</span><span class="theme-chip" data-en="Topic · Finance Recipe">Teema · Finantsretsept</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Finance Recipe — splitting a cost between objects">Finantsretsept — kulu jagamine objektide vahel</h1>
     <p class="ex-desc" data-en="A <b>finance recipe</b> set in the rule splits the row&#39;s cost between objects (e.g. ADM 20%, HOOLDUS 50%, MÜÜK 30%). <span class='pill v'>Recipe = Row</span> → split on each row separately; <span class='pill v'>= Document</span> → across the whole invoice.">Reeglis määratud <b>finantsretsept</b> jagab rea kulu objektide vahel (nt ADM 20%, HOOLDUS 50%, MÜÜK 30%). <span class="pill v">Retsept = Rida</span> → jagamine igal real eraldi; <span class="pill v">= Dokument</span> → kogu arvele.</p>
     <div class="shot-wrap">
@@ -723,7 +723,7 @@
 
   <!-- 19 · NÄIDE 7 finantsretsept {10} eri kontod -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 8</span><span class="theme-chip" data-en="Topic · Finance Recipe · {10}">Teema · Finantsretsept · {10}</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 8">Näide 8</span><span class="theme-chip" data-en="Topic · Finance Recipe · {10}">Teema · Finantsretsept · {10}</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="Same finance recipe, different account from the rule">Sama finantsretsept, erinev konto reeglist</h1>
     <p class="ex-desc" data-en="The recipe sets the <b>split proportions and objects</b>, but the account is taken <b>from the automation rule</b>. This way one recipe splits costs across different expense accounts — no separate recipe needs to be created.">Retsept määrab <b>jagamise proportsioonid ja objektid</b>, konto aga võetakse <b>automaatika reeglist</b>. Nii jagab üks retsept eri kulukontode kulusid — eraldi retsepti pole vaja koostada.</p>
     <div class="shot-wrap">
@@ -776,7 +776,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 9</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 9">N&auml;ide 9</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
       <h1 class="slide-title" style="font-size:29px" data-en="All to the same account">K&otilde;ik samale kontole</h1>
       <p class="ex-desc" data-en="Personnel Member = <b>Telefon</b> links each row to an employee by its number and puts all to the same account (522104). The object and user come from the employee card.">Kuulub personal = <b>Telefon</b> seob iga rea numbri j&auml;rgi t&ouml;&ouml;tajaga ja paneb k&otilde;ik samale kontole (522104). Objekt ja kasutaja tulevad t&ouml;&ouml;taja kaardilt.</p>
       <div class="shot-wrap">
@@ -799,7 +799,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 10</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 10">N&auml;ide 10</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Exception for one employee — the exception rule sets all fields">Erand &uuml;hele t&ouml;&ouml;tajale &mdash; erandreegel m&auml;&auml;rab k&otilde;ik v&auml;ljad</h1>
       <p class="ex-desc" data-en="Juta&#39;s Telia costs <b>to several fields at once</b>. The exception rule (first) sets for Juta <b>account 562901, VAT code 39, object HOOLDUS and project 771</b>. Other employees &rarr; the general rule (522104).">Juta Telia kulud <b>mitmele v&auml;ljale korraga</b>. Erandreegel (esimene) m&auml;&auml;rab Jutale <b>konto 562901, KM koodi 39, objekti HOOLDUS ja projekti 771</b>. Teised t&ouml;&ouml;tajad &rarr; &uuml;ldreegel (522104).</p>
       <div class="shot-wrap">
@@ -823,7 +823,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 11</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 11">N&auml;ide 11</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; exception for one employee">Teema &middot; Personal &middot; erand &uuml;hele t&ouml;&ouml;tajale</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Exception for one employee — exception only on the account, the rest from the general rule">Erand &uuml;hele t&ouml;&ouml;tajale &mdash; erand ainult kontol, muu &uuml;ldreeglist</h1>
       <p class="ex-desc" data-en="Juta&#39;s costs to a separate account, but the <b>same object</b> as others. The exception rule gives <b>only the account</b> (562901); the object is left empty &rarr; the general rule fills the object (<span style='color:#2f6ab5'>HOOLDUS</span>) and VAT code on Juta&#39;s rows too.">Juta kulud eraldi kontole, aga <b>sama objekt</b> kui teistel. Erandireegel annab <b>ainult konto</b> (562901); objekt j&auml;etakse t&uuml;hjaks &rarr; &uuml;ldreegel t&auml;idab objekti (<span style="color:#2f6ab5">HOOLDUS</span>) ja KM koodi ka Juta ridadel.</p>
       <div class="shot-wrap">
@@ -847,7 +847,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 12</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 12">N&auml;ide 12</span><span class="theme-chip" data-en="Topic &middot; Linking with personnel">Teema &middot; Personaliga sidumine</span></div>
       <h1 class="slide-title" style="font-size:28px" data-en="Everyone to different accounts">K&otilde;ik erinevatele kontodele</h1>
       <p class="ex-desc" data-en="Each employee&#39;s costs <b>to a separate account</b>: Mati &rarr; 522104, Juta &rarr; 522106. <b>Accounts are distinguished by Content = %mobile number</b> (&#39;Personnel Member&#39; can&#39;t do this). By also adding <b>Personnel Member = Telefon</b> to the rule, the <b>User and object(s)</b> from the employee card are also filled on the purchase invoice.">Iga t&ouml;&ouml;taja kulud <b>eraldi kontole</b>: Mati &rarr; 522104, Juta &rarr; 522106. <b>Kontosid eristab Sisaldus = %mobiilinumber</b> (&bdquo;Kuulub personal&ldquo; seda ei suuda). Lisades reeglisse ka <b>Kuulub personal = Telefon</b>, t&auml;ituvad ostuarvel ka <b>Kasutaja ja objekt(id)</b> t&ouml;&ouml;taja kaardilt.</p>
       <div class="shot-wrap">
@@ -870,7 +870,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 13</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; % per user">Teema &middot; Personal &middot; % kasutaja kohta</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 13">N&auml;ide 13</span><span class="theme-chip" data-en="Topic &middot; Personnel &middot; % per user">Teema &middot; Personal &middot; % kasutaja kohta</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="% at the end of the user&#39;s section">% kasutaja sektsiooni l&otilde;pus</h1>
       <p class="ex-desc" data-en="Multiple users&#39; costs on a Telia invoice. Some services to a specific account, the user&#39;s <b>remaining</b> services to another. The key: <b>&#39;%mobile number&#39; at the end of each user&#39;s section</b> = all of that user&#39;s remaining rows.">Telia arvel mitme kasutaja kulud. Osad teenused kindlale kontole, kasutaja <b>&uuml;lej&auml;&auml;nud</b> teenused teisele. V&otilde;ti: <b>&bdquo;%mobiilinumber&ldquo; iga kasutaja sektsiooni l&otilde;pus</b> = selle kasutaja k&otilde;ik &uuml;lej&auml;&auml;nud read.</p>
       <div class="shot-wrap">
@@ -895,7 +895,7 @@
   
 
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 14</span><span class="theme-chip" data-en="Topic · Finance Recipe · fuel card">Teema · Finantsretsept · kütusekaart</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 14">Näide 14</span><span class="theme-chip" data-en="Topic · Finance Recipe · fuel card">Teema · Finantsretsept · kütusekaart</span></div>
     <h1 class="slide-title" style="font-size:24px" data-en="Fuel card invoice — fuel card users&#39; amounts are split by the finance recipe">Kütusekaardi arve — kütusekaardi kasutajate summad jagatakse finantsretsepti alusel</h1>
     <p class="ex-desc" data-en="On a fuel invoice (e.g. Neste) purchases are grouped <b>by card</b> — each card belongs to one car/driver. The filter is the <b>card number in Content</b>, which routes the row to the right finance recipe. <b>Each card&#39;s object (car/driver) is written into the finance recipe.</b>">Kütusearvel (nt Neste) on ostud grupeeritud <b>kaardi kaupa</b> — iga kaart kuulub ühele autole/juhile. Filtriks on <b>kaardi number Sisalduses</b>, mis suunab rea õigesse finantsretsepti. <b>Iga kaardi objekt (auto/juht) on kirjutatud finantsretsepti sisse.</b></p>
     <div class="cols" style="gap:16px">
@@ -934,7 +934,7 @@
 
   <!-- 23 · NÄIDE 11 koondamine kandel -->
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 15</span><span class="theme-chip" data-en="Topic &middot; Contract-based &middot; leasing">Teema &middot; Lepingup&otilde;hine &middot; liising</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 15">N&auml;ide 15</span><span class="theme-chip" data-en="Topic &middot; Contract-based &middot; leasing">Teema &middot; Lepingup&otilde;hine &middot; liising</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Leasing invoices — the vehicle by contract number">Liisinguarved &mdash; s&otilde;iduk lepingu numbri j&auml;rgi</h1>
       <p class="ex-desc" data-en="On the leasing company&#39;s e-invoice everything has the <b>same reference number and row description</b> (Interest/Instalment) — vehicles can be distinguished <b>only by contract number</b>. Two rules set the type (account), the contract-number rules set the vehicle&#39;s object.">Liisingufirma e-arvel on k&otilde;igil <b>sama viitenumber ja rea seletus</b> (Intress/Osamakse) &mdash; s&otilde;idukeid saab eristada <b>ainult lepingu numbri j&auml;rgi</b>. Kaks reeglit m&auml;&auml;ravad t&uuml;&uuml;bi (konto), lepingu numbri reeglid m&auml;&auml;ravad s&otilde;iduki objekti.</p>
       <div class="shot-wrap">
@@ -958,7 +958,7 @@
     </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 16</span><span class="theme-chip" data-en="Topic &middot; Contract-based &middot; blocks">Teema &middot; Lepingup&otilde;hine &middot; plokid</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 16">N&auml;ide 16</span><span class="theme-chip" data-en="Topic &middot; Contract-based &middot; blocks">Teema &middot; Lepingup&otilde;hine &middot; plokid</span></div>
       <h1 class="slide-title" style="font-size:27px" data-en="Invoice in blocks — the contract number sets the object">Arve plokkides &mdash; lepingu number m&auml;&auml;rab objekti</h1>
       <p class="ex-desc" data-en="The invoice is divided into blocks, each block has <b>its own contract number</b> (in separator rows). The same products (Container rent, Waste collection), but by contract to <b>different objects</b> (TARTU vs PARNU); the account is the same.">Arve on jagatud plokkideks, igal plokil <b>oma lepingu number</b> (vaheridades). Samad tooted (Konteineri rent, J&auml;&auml;tmevedu), aga lepingu j&auml;rgi <b>eri objektidele</b> (TARTU vs PARNU); konto sama.</p>
       <div class="shot-wrap">
@@ -984,7 +984,7 @@
 
   <!-- NÄIDE 19 artikli filter -->
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">N&auml;ide 17</span><span class="theme-chip" data-en="Topic &middot; Item">Teema &middot; Artikkel</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 17">N&auml;ide 17</span><span class="theme-chip" data-en="Topic &middot; Item">Teema &middot; Artikkel</span></div>
     <h1 class="slide-title" style="font-size:27px" data-en="By item code to an account and a Directo item">Artikli koodi j&auml;rgi kontole ja Directo artiklile</h1>
     <p class="ex-desc" data-en="If the e-invoice rows have the supplier&#39;s <b>item codes</b>, rules can be made <b>by code</b> — more reliable than changing row text. The item filter links the row to a Directo <b>item</b> and sets the <b>account</b>. Suitable for suppliers with a stable code set (office supplies, stock goods).">Kui e-arve ridadel on tarnija <b>artiklikoodid</b>, saab reegleid teha <b>koodi j&auml;rgi</b> &mdash; kindlam kui muutuv rea tekst. Artikli-filter seob rea Directo <b>artikliga</b> ja m&auml;&auml;rab <b>konto</b>. Sobib p&uuml;siva koodistikuga tarnijale (b&uuml;rootarbed, laokaup).</p>
     <div class="shot-wrap">
@@ -1022,7 +1022,7 @@
   </section>
 
   <section class="slide">
-      <div class="ex-head"><span class="ex-tag">N&auml;ide 18</span><span class="theme-chip" data-en="Topic &middot; &#39;Single&#39; &middot; correct Description">Teema &middot; &bdquo;Ainus&ldquo; &middot; &otilde;ige Sisu</span></div>
+      <div class="ex-head"><span class="ex-tag" data-en="Example 18">N&auml;ide 18</span><span class="theme-chip" data-en="Topic &middot; &#39;Single&#39; &middot; correct Description">Teema &middot; &bdquo;Ainus&ldquo; &middot; &otilde;ige Sisu</span></div>
       <h1 class="slide-title" style="font-size:28px" data-en="Why does the wrong Description end up on the row? — the &#39;Single&#39; checkbox">Miks asetub reale vale Sisu? &mdash; &bdquo;Ainus&ldquo; linnuke</h1>
       <p class="ex-desc" data-en="If a row matches <b>several rules</b> and a lower rule fills the Description, the correct description may get overwritten. Solution: tick <b>&#39;Single&#39;</b> on the specific rule. Note: here &#39;Personnel Member&#39; <b>is not used</b>.">Kui rida vastab <b>mitmele reeglile</b> ja alumine reegel t&auml;idab Sisu, v&otilde;ib &otilde;ige kirjeldus &uuml;le kirjutatud saada. Lahendus: linnuta spetsiifilisel reeglil <b>&bdquo;Ainus&ldquo;</b>. NB: siin <b>ei kasutata</b> &bdquo;Kuulub personal&ldquo;.</p>
       <div class="shot-wrap">
@@ -1045,7 +1045,7 @@
     </section>
 
   <section class="slide">
-    <div class="ex-head"><span class="ex-tag">Näide 19</span><span class="theme-chip" data-en="Topic · Consolidation in the ledger entry">Teema · Koondamine kandel</span></div>
+    <div class="ex-head"><span class="ex-tag" data-en="Example 19">Näide 19</span><span class="theme-chip" data-en="Topic · Consolidation in the ledger entry">Teema · Koondamine kandel</span></div>
     <h1 class="slide-title" style="font-size:30px" data-en="When you can&#39;t consolidate on the purchase invoice — consolidate in the ledger entry">Kui ostuarvel ei saa koondada — koonda kandel</h1>
     <p class="ex-desc" data-en="A data-services invoice has rows with different content (Calls, SMS, Internet…), no common text. On the purchase invoice, rows from different rules can&#39;t be merged into one — <b>but in the ledger entry identical rows consolidate automatically</b>.">Andmesideteenuste arvel on erineva sisuga read (Kõned, SMS, Internet…), ühist teksti pole. Ostuarvel eri reeglitega ridu ühele reale ei saa — <b>kuid kandel koonduvad identsed read automaatselt</b>.</p>
     <div class="cols" style="gap:14px">
