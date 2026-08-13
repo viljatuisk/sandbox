@@ -117,7 +117,41 @@ Eraldi (ja oluline) juht: kui kliendi/hankija kaardil on **KM maa = konkreetne v
 
 ---
 
-## 6. Lahtised küsimused
+## 6. KM maa seadistuse roll uues aruandes (vana INF A/B "lisa KM maad" seadistus)
+
+**Praegune KMD:** seadistus "Käibedeklaratsiooni lisa KM maad" (nt väärtus `0,5` = KM maad 0 Siseriiklik + 5 Kontsern) määrab, milliste KM maadega klientide/hankijate arved näidatakse **INF A ja B** osas. Ühendusesisese käibe aruanne (**VD**) on eraldi aruanne.
+
+**Uus APA KMD:** INF A/B ja VD EI ole eraldi - kõik on **ühes aruandes** ja tehingupartnerid näidatakse ridadel ka ühendusesiseste tehingute puhul (endine VD).
+
+**Küsimus:** kas uus aruanne töötab sama "lisa KM maad" seadistuse alusel?
+
+**Vastus / ettepanek:**
+
+1. **Vana "lisa KM maad" (0,5) EI sobi uuele aruandele muutmata kujul** - see kataks ainult siseriiklikud (INF A/B) partnerid ja jätaks EÜ (ühendusesisesed, endine VD) partnerid välja. Kasutaja tähelepanek on õige: kui seadistuspõhist loogikat üldse hoida, tuleb sinna lisada ka EÜ maad (1, 3, 4).
+
+2. **Puhtam lahendus:** uues aruandes ei juhi partneri detaili näitamist üksik "lisa KM maad" seadistus, vaid **KM tüüp + identifierCategory loogika** (partneri tüüp, 1000 EUR piirmäär, EL/KMKR - vt jaotis 3). Ühendusesisesed tüübid (M_201 jne) nõuavad KMKR + riiki niikuinii, seega EÜ partnerid tulevad ridadele automaatselt.
+
+3. **KM maa jääb siiski keskseks kaheks otstarbeks:**
+   - (a) **Kas tehing üldse kuulub Eesti KMD-sse** - KM maa eristab Eestis deklareeritavad (0-5) välisriigis deklareeritavatest (6, 7, 8) -> vt R4c.
+   - (b) **Tsooni määramine** R4 kontrollide jaoks (siseriiklik / EÜ / eksport).
+
+**Ettepanek: KM maa -> käitlus mapping** (demobaasi loetelu alusel; vajab kinnitust):
+
+| KM maa (kood, nimi) | Tsoon | Eesti KMD-s? | Partneri detail ridadel |
+|---|---|---|---|
+| 0 Siseriiklik | siseriiklik | Jah | 1000 EUR + tüüp -> 100 / 103 / 200 |
+| 1 EÜ, 3 EÜ 2, 4 EÜ 3 | ühendusesisene | Jah (endine VD) | KMKR + riik -> 100 |
+| 2 Mitte EÜ | eksport | Jah | tavaliselt partneri detaili pole |
+| 5 Kontsern | siseriiklik (grupp) | Jah | grupi liige -> 300 (kontrolli) |
+| 6 FR 20% OSS | välisriik / OSS | **EI** (deklareeritakse OSS/FR) | - |
+| 7 LV Domestic | välisriik | **EI** (deklareeritakse LV) | - |
+| 8 LT Domestic | välisriik | **EI** (deklareeritakse LT) | - |
+
+Ehk: KM maad 6, 7, 8 on välisriigi KM-registreeringud -> nende tehingud EI kuulu Eesti KMD-sse (R4c viga, kui satuvad). KM maad 0-5 kuuluvad Eesti KMD-sse, EÜ maade partnerid näidatakse ridadel (endine VD).
+
+---
+
+## 7. Lahtised küsimused
 
 1. Kas kontroll peaks olema **blokeeriv** (ei luba saata enne parandust) või ainult **hoiatav**? Ettepanek: R1 ja R6 blokeerivad, ülejaanud hoiatavad.
 2. Konto klassi reegel (R2) - kas 4... = müük ja 5... = ost kehtib kliendi kontoplaanis alati, või on vaja seadistatavat vastavustabelit (konto -> lubatud KM tüüp perekond)?

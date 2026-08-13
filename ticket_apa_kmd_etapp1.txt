@@ -101,7 +101,7 @@ Iga tabeli veeru sisu paritolu (vasakul veerg, paremal Directo andmeallikas):
 - Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lahe)
 - Riik -> ostja riigi tunnus (EL riigid, uhendusesiseste tehingute puhul)
 - Riigi taps. -> riigi roll (RR_ostja)
-- Konto -> tehingu/kande raamatupidamiskonto (müügikontod algavad 4..., ostukontod 5...). Prototüübis näidisväärtus tuletatud KMD tüübist; Directos tuleb tegelik raamatupidamiskonto tehingurealt.
+- Konto -> tehingu/kande raamatupidamiskonto. Müügipool (M, A ja pöördmaksu müügipool S) algab 4...; ostu-/sisendipool (O) algab 5.... NB! Pöördmaksu kandel on kaks poolt: kreeditpool (tasuda KM) S_ tüübi all kontol 4..., deebetpool (tagasisaadav KM) O_ tüübi all kontol 5.... Prototüübis näidisväärtus tuletatud KMD tüübist; Directos tuleb tegelik raamatupidamiskonto tehingurealt.
 - Arve nr -> dokumendi (arve) number. ERAND: lootusetu nõude korral vt jaotis 5 (käsitsi täidetav real).
 - Ettemaks nr -> ettemaksuarve number
 - Kuupaev -> arve voi ettemaksuarve kuupaev

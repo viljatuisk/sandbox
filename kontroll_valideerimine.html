@@ -111,7 +111,14 @@ var DOCFIELD={'Müügiarve':'m','Ostuarve':'o','Kulutus':'o','Soetus':'s','Kanne
 var FIELDPFX={m:'M_',o:'O_',s:'S_',a:'A_'};
 var FIELDNIMI={m:'Müügi KM tüüp',o:'Ostu KM tüüp',s:'Soetuse KM tüüp',a:'Arvestusliku kande KM tüüp'};
 var EU=['EE','FI','LV','LT','DE','SE','PL','FR','NL','BE','AT','IT','ES','DK','IE','LU','PT','CZ','SK','HU','RO','BG','HR','SI','GR','CY','MT'];
-var ZONEMAA={'Siseriiklik':'dom','EÜ':'eu','Väljaspool EÜ':'export','Soome':'foreign','Rootsi':'foreign','Läti':'foreign','Leedu':'foreign','Saksamaa':'foreign'};
+/* Directo demobaasi KM maa loetelu -> tsoon. 0-5 kuuluvad Eesti KMD-sse; 6-8 on välisriigi registreeringud (deklareeritakse mujal). */
+var ZONEMAA={
+  'Siseriiklik':'dom','Kontsern':'dom',
+  'EÜ':'eu','EÜ 2':'eu','EÜ 3':'eu',
+  'Mitte EÜ':'export',
+  'FR 20% OSS':'foreign','LV Domestic':'foreign','LT Domestic':'foreign',
+  'Soome':'foreign'
+};
 var ZONENIMI={dom:'siseriiklik',eu:'ühendusesisene (EL)',export:'eksport (kolmas riik)',foreign:'välisriigis deklareeritav'};
 
 /* ---- Näidistehingud (osa tahtlikult vigased) ---- */
@@ -129,12 +136,13 @@ var TX=[
  {doc:'Müügiarve', arvenr:'MA10011', kmCode:'KM24',   konto:'4101', partner:'Suur Klient OÜ',    isik:'Ettevõte',   regnr:'',         kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:5000,  perTotal:5000, comment:'R6: juriidiline >=1000 EUR ilma reg.nr-ta'},
  {doc:'Müügiarve', arvenr:'MA10012', kmCode:'KM24',   konto:'4101', partner:'Soome Klient OY',    isik:'Ettevõte',   regnr:'11111133', kmMaa:'Soome',        kmAsumaa:'FI', kmkr:'FI08611133',  sum:2000,  perTotal:2000, comment:'R4c: KM maa Soome (deklareeritakse Soomes), aga M_101 toob Eesti KMD-sse'},
  {doc:'Ostuarve',  arvenr:'OA27001', kmCode:'KM24',   konto:'5101', partner:'Sisend OÜ',         isik:'Ettevõte',   regnr:'13000001', kmMaa:'Siseriiklik',   kmAsumaa:'EE', kmkr:'',            sum:240,   perTotal:1000, comment:'Korras sisendkäibemaks'},
- {doc:'Soetus',    arvenr:'OA45001', kmCode:'SOET24', konto:'5201', partner:'EE Pöördmaks OÜ',   isik:'Ettevõte',   regnr:'13000013', kmMaa:'EÜ',           kmAsumaa:'LT', kmkr:'LT100011111111',sum:1440,perTotal:6000, comment:'Korras ühendusesisene soetus'}
+ {doc:'Soetus',    arvenr:'OA45001', kmCode:'SOET24', konto:'4201', partner:'EE Pöördmaks OÜ',   isik:'Ettevõte',   regnr:'13000013', kmMaa:'EÜ',           kmAsumaa:'LT', kmkr:'LT100011111111',sum:1440,perTotal:6000, comment:'Korras pöördmaksu müügipool (S_101, konto 4...)'}
 ];
 
 /* ---- Abifunktsioonid ---- */
 function pct(r){return r===''||r==null?'—':(r*100).toFixed(0)+'%';}
-function famOfKonto(k){return (k||'').charAt(0)==='4'?['M','A']:((k||'').charAt(0)==='5'?['O','S']:null);}
+/* Konto klass: 4... = müük / pöördmaksu müügipool (M, A, S) ; 5... = ost / sisend (O) */
+function famOfKonto(k){return (k||'').charAt(0)==='4'?['M','A','S']:((k||'').charAt(0)==='5'?['O']:null);}
 function resolveTyyp(tx){var c=KMCODES[tx.kmCode];if(!c)return{code:null};var f=DOCFIELD[tx.doc];return{code:c,field:f,tyyp:c[f]||''};}
 
 /* ---- Kontrollimootor ---- */

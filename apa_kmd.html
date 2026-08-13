@@ -949,12 +949,12 @@ const TYPE_LABELS={
   O_601:'O_601 — Sisend-KM korrigeerimine',
   A_101:'A_101 — Arvestuslik kanne',
 };
-/* Naidiskonto KMD tuubi jargi: muuk (M) 4..., ost/soetus (O/S) 5..., arvestuslik (A) 4... */
+/* Naidiskonto KMD tuubi jargi: muuk (M) 4..., poordmaksu muugipool (S) 4..., arvestuslik (A) 4..., ost/sisend (O) 5... */
 function kontoFor(type){
   if(!type)return'';
   var p=type.charAt(0), num=type.replace(/^[A-Z]_?/,'');
-  if(p==='M'||p==='A')return '4'+num;
-  if(p==='O'||p==='S')return '5'+num;
+  if(p==='M'||p==='A'||p==='S')return '4'+num;
+  if(p==='O')return '5'+num;
   return '';
 }
 function getKmk(k){return KMK.find(m=>m.kood===String(k));}

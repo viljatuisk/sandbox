@@ -55,7 +55,7 @@ Nii saab sama KM kood eri kontekstis anda erineva KMD tüübi. KM% (maksumäär)
 - Grupi liikme nimi -> grupi liikme nimi (ainult kuvamiseks; XML-i EI lähe)
 - Riik -> ostja riigi tunnus (EL riigid, ühendusesiseste tehingute puhul)
 - Riigi täps. -> riigi roll (RR_ostja)
-- Konto -> tehingu/kande raamatupidamiskonto (müügikontod algavad 4..., ostukontod 5...). Prototüübis näidisväärtus tuletatud KMD tüübist; Directos tuleb tegelik raamatupidamiskonto tehingurealt
+- Konto -> tehingu/kande raamatupidamiskonto. Müügipool (M, A ja pöördmaksu müügipool S) algab 4...; ostu-/sisendipool (O) algab 5.... Pöördmaksu kandel: kreeditpool (tasuda KM) S_ all kontol 4..., deebetpool (tagasisaadav KM) O_ all kontol 5.... Prototüübis näidis tuletatud KMD tüübist; Directos tegelik konto tehingurealt
 - Arve nr -> dokumendi (arve) number. ERAND: lootusetu nõude korral käsitsi täidetav real (vt allpool)
 - Ettemaks nr -> ettemaksuarve number
 - Kuupäev -> arve või ettemaksuarve kuupäev
