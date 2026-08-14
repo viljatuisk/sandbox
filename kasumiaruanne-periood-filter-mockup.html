@@ -123,6 +123,24 @@
   .legend .sw.unf { background: #c0202a; }
   .legend .sw.mat { background: #e0a53a; border-radius: 50%; }
   .footnote { padding: 6px 14px 10px; font-size: 10px; color: #98a4b0; font-style: italic; }
+
+  /* ── VABA PERIOODI LOEND ── */
+  .sec.na { opacity: .4; }
+  .na-note { font-size: 10px; color: #a06a2a; font-style: italic; margin-top: -3px; }
+  .fp-list { display: flex; flex-direction: column; gap: 5px; }
+  .fp-row { display: grid; grid-template-columns: 16px 1fr 1fr 58px 22px; gap: 4px; align-items: center; background: #fff; border: 1px solid #d4e0ec; border-radius: 3px; padding: 4px; }
+  .fp-row.base { border-color: #3a7abf; background: #f0f7ff; }
+  .fp-row .fp-baas { display: flex; align-items: center; justify-content: center; }
+  .fp-row input.fp-d { height: 22px; font-size: 10px; padding: 0 4px; }
+  .fp-row select.fp-t { height: 22px; font-size: 10px; padding: 0 2px; }
+  .fp-del { width: 22px; height: 22px; background: #f4e4e4; border: 1px solid #d8a8a8; color: #a33; border-radius: 3px; cursor: pointer; font-size: 11px; line-height: 1; }
+  .fp-del:hover { background: #f0d0d0; }
+  .fp-del:disabled { opacity: .35; cursor: not-allowed; }
+  .fp-head { display: grid; grid-template-columns: 16px 1fr 1fr 58px 22px; gap: 4px; font-size: 9px; font-weight: 700; color: #6a8aa8; text-transform: uppercase; letter-spacing: .3px; padding: 0 4px; }
+  .fp-add { height: 24px; background: #eef4fa; border: 1px dashed #9ab8d4; color: #2a5a8a; border-radius: 3px; font-size: 11px; cursor: pointer; font-family: Arial, sans-serif; font-weight: 700; }
+  .fp-add:hover { background: #e0ecf8; }
+  th.blk.free { background: #e8e2f2; color: #45306a; }
+  td.baseval { background: #f4f0fb; }
 </style>
 </head>
 <body>
@@ -165,18 +183,37 @@
       </div>
     </div>
 
+    <!-- VABA PERIOODI LOEND (ainult Vaba-režiimis) -->
+    <div class="sec" id="secFree" style="display:none">
+      <div class="sec-head">Perioodid (vaba võrdlus)</div>
+      <div class="sec-body">
+        <div class="sub" style="margin:0 0 2px 0">Määra suvalised perioodid kõrvuti. Vali üks <b>baasiks</b> (&#9679;) - ülejäänud näitavad vahet baasi suhtes.</div>
+        <div class="fp-head"><span></span><span>Algus</span><span>Lõpp</span><span>Tüüp</span><span></span></div>
+        <div class="fp-list" id="fpList"></div>
+        <button class="fp-add" onclick="addFreePeriod()">＋ Lisa periood</button>
+        <label class="fld" style="margin-top:4px"><span class="lbl">Võrdlusviis</span>
+          <select id="fpMode" onchange="render()">
+            <option value="baas" selected>Kõik vs baasperiood</option>
+            <option value="prev">Iga vs eelmine tulp (trend)</option>
+            <option value="none">Ainult väärtused (ei võrdle)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
     <!-- VÕRDLUS -->
-    <div class="sec">
+    <div class="sec" id="secCmp">
       <div class="sec-head">Võrdlus</div>
       <div class="sec-body">
         <label class="chk"><input type="checkbox" id="cBudget" checked onchange="render()"> Eelarve <span class="tag b">plaan</span></label>
         <label class="chk"><input type="checkbox" id="cPY" checked onchange="render()"> Eelmine aasta (sama periood) <span class="tag py">YoY</span></label>
         <div class="sub">Võrdlusveerud tuletatakse ankurperioodist automaatselt - käesolev vs eelarve ja vs eelmine aasta.</div>
+        <div class="na-note" id="cmpNa" style="display:none">Ei kehti vabas režiimis - kasuta perioodide loendit ülal.</div>
       </div>
     </div>
 
     <!-- VAADE -->
-    <div class="sec">
+    <div class="sec" id="secView">
       <div class="sec-head">Vaade</div>
       <div class="sec-body">
         <label class="chk"><input type="checkbox" id="vPer" checked onchange="render()"> Periood <span class="tag py" id="vPerLbl">august 2026</span></label>
@@ -190,6 +227,7 @@
           </select>
         </label>
         <div class="sub">YTD = majandusaasta algusest ankurperioodi lõpuni. Periood ja akumuleeritud kuvatakse kõrvuti, mitte eraldi aruannetes.</div>
+        <div class="na-note" id="viewNa" style="display:none">Ei kehti vabas režiimis - iga periood defineeritakse loendis eraldi.</div>
       </div>
     </div>
 
@@ -217,7 +255,7 @@
 
     <div class="explain">
       Finantsjuhi standardvaade: <b>üks ankurperiood + tuletatud 2x2 võrdlus</b>. Ankruks valid perioodi vasakult; ülejäänud kuus veergu (eelarve, eelmine aasta ja nende vahed) ning YTD-plokk tuletatakse ise.
-      <div class="matrix">
+      <div class="matrix" id="anchorMatrix">
         <div class="mh"></div><div class="mh">vs Eelarve</div><div class="mh">vs Eelmine aasta</div>
         <div class="mrh" id="mxPerRow">Periood</div><div class="cell" id="mxPB">&#10003;</div><div class="cell" id="mxPY">&#10003;</div>
         <div class="mrh" id="mxYtdRow">Akumuleeritud</div><div class="cell" id="mxYB">&#10003;</div><div class="cell" id="mxYY">&#10003;</div>
@@ -335,10 +373,149 @@
     document.querySelectorAll('#segGran button').forEach(b => b.classList.toggle('on', b.dataset.g === g));
     if (g === 'quarter') anchor.m = Math.ceil(anchor.m/3)*3;   // snap kvartali lõppu
     if (g === 'year') anchor.m = 12;
-    document.getElementById('dateRow').classList.toggle('locked', g !== 'custom');
-    document.querySelectorAll('#dFrom, #dTo').forEach(i => i.readOnly = (g !== 'custom'));
-    document.getElementById('stepper').style.display = (g === 'custom') ? 'none' : 'flex';
+    const free = (g === 'custom');
+    // Vaba-režiimis: peida ankuri stepper + kuupäevad, näita perioodide loend, tumenda ankur-sektsioonid
+    document.getElementById('stepper').style.display = free ? 'none' : 'flex';
+    document.getElementById('dateRow').style.display = free ? 'none' : 'flex';
+    document.getElementById('secFree').style.display = free ? 'block' : 'none';
+    document.getElementById('secCmp').classList.toggle('na', free);
+    document.getElementById('secView').classList.toggle('na', free);
+    document.getElementById('cmpNa').style.display = free ? 'block' : 'none';
+    document.getElementById('viewNa').style.display = free ? 'block' : 'none';
+    document.getElementById('anchorMatrix').style.display = free ? 'none' : 'inline-grid';
+    if (free && !fpRendered){ renderFpList(); fpRendered = true; }
     render();
+  }
+
+  /* ══════════ VABA PERIOODI VÕRDLUS ══════════ */
+  let _fid = 0, fpRendered = false;
+  let freePeriods = [
+    { id:++_fid, from:'01.01.2026', to:'15.01.2026', type:'actual' },
+    { id:++_fid, from:'01.02.2025', to:'28.02.2025', type:'actual' },
+  ];
+  let baselineId = 1;
+
+  function renderFpList(){
+    const box = document.getElementById('fpList');
+    box.innerHTML = freePeriods.map(p => {
+      const isBase = p.id === baselineId;
+      return '<div class="fp-row' + (isBase ? ' base' : '') + '">' +
+        '<span class="fp-baas"><input type="radio" name="fpbaas" ' + (isBase?'checked':'') + ' title="Baasperiood" onchange="setBaseline(' + p.id + ')"></span>' +
+        '<input class="fp-d" type="text" value="' + p.from + '" onchange="fpEdit(' + p.id + ',\'from\',this.value)">' +
+        '<input class="fp-d" type="text" value="' + p.to + '" onchange="fpEdit(' + p.id + ',\'to\',this.value)">' +
+        '<select class="fp-t" onchange="fpEdit(' + p.id + ',\'type\',this.value)">' +
+          '<option value="actual"' + (p.type==='actual'?' selected':'') + '>Tegelik</option>' +
+          '<option value="budget"' + (p.type==='budget'?' selected':'') + '>Eelarve</option>' +
+        '</select>' +
+        '<button class="fp-del" onclick="delFreePeriod(' + p.id + ')"' + (freePeriods.length<=2?' disabled title="Vähemalt 2 perioodi"':' title="Eemalda"') + '>&times;</button>' +
+      '</div>';
+    }).join('');
+  }
+  function fpEdit(id, field, v){ const p = freePeriods.find(x=>x.id===id); if(p){ p[field]=v; render(); } }
+  function setBaseline(id){ baselineId = id; renderFpList(); render(); }
+  function addFreePeriod(){
+    freePeriods.push({ id:++_fid, from:'01.01.2025', to:'31.01.2025', type:'actual' });
+    renderFpList(); render();
+  }
+  function delFreePeriod(id){
+    if (freePeriods.length <= 2) return;
+    freePeriods = freePeriods.filter(x => x.id !== id);
+    if (baselineId === id) baselineId = freePeriods[0].id;
+    renderFpList(); render();
+  }
+
+  // Determinstlik kordaja perioodi kohta (stabiilne sama seadistuse korral).
+  function freeFactor(p){
+    let h = 0; const s = p.from + '|' + p.to + '|' + p.type;
+    for (let i=0; i<s.length; i++) h = (h*31 + s.charCodeAt(i)) % 100000;
+    let f = 0.55 + (h % 900) / 1000;               // ~0.55 .. 1.45
+    if (p.type === 'budget') f = Math.round(f*20)/20;
+    return f;
+  }
+  function freeRowBase(row){
+    if (row.kind === 'leaf') return LEAVES[row.id].per.a;
+    return row.of.reduce((s,id) => s + LEAVES[id].per.a, 0);
+  }
+  function freeRowVal(row, p){
+    let v = freeRowBase(row) * freeFactor(p);
+    if (p.type === 'budget') v = Math.round(v);
+    return v;
+  }
+  function fpLabel(p){ return p.from + '-' + p.to; }
+  function fpTarget(p, idx){
+    const mode = document.getElementById('fpMode').value;
+    if (mode === 'none') return null;
+    if (mode === 'baas') return p.id === baselineId ? null : baselineId;
+    return idx === 0 ? null : freePeriods[idx-1].id;   // prev
+  }
+
+  function renderFree(oAbs, oPct, oMarg, oFav, tPct, tEur){
+    const mode = document.getElementById('fpMode').value;
+    // kokkuvõte
+    const chips = ['<span class="schip"><b>Vaba võrdlus:</b> ' + freePeriods.length + ' perioodi</span>'];
+    if (mode === 'baas'){ const bp = freePeriods.find(x=>x.id===baselineId); chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Baas:</b> ' + fpLabel(bp) + '</span>'); }
+    else if (mode === 'prev') chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Trend:</b> iga vs eelmine</span>');
+    if (tPct || tEur) chips.push('<span class="schip m"><b>Olulisuse piir:</b> &plusmn;' + tPct + '% või &plusmn;' + tEur + ' t&euro;</span>');
+    document.getElementById('summary').innerHTML = chips.join('');
+
+    // veerud: iga perioodi kohta väärtus + (kui on sihtperiood) vahe €/%
+    const colsFor = freePeriods.map((p, idx) => {
+      const tgt = fpTarget(p, idx);
+      const sub = [{ t:'val', p, tgt }];
+      if (tgt !== null){ if (oAbs) sub.push({ t:'abs', p, tgt }); if (oPct) sub.push({ t:'pct', p, tgt }); }
+      return { p, idx, tgt, sub };
+    });
+
+    // THEAD
+    let h1 = '<tr><th class="lbl" rowspan="2">Näitaja</th>';
+    colsFor.forEach(cf => {
+      const isBase = (mode==='baas' && cf.p.id===baselineId);
+      const tag = isBase ? ' &middot; baas' : (cf.p.type==='budget' ? ' &middot; eelarve' : '');
+      h1 += '<th class="blk free grpstart" colspan="' + cf.sub.length + '">' + fpLabel(cf.p) + '<span class="sub2">' + (cf.p.type==='budget'?'Eelarve':'Tegelik') + tag + '</span></th>';
+    });
+    h1 += '</tr>';
+    let h2 = '<tr>';
+    colsFor.forEach(cf => {
+      cf.sub.forEach((c, i) => {
+        const gs = (i===0) ? ' grpstart' : '';
+        let lab = c.t==='val' ? 'Väärtus' : c.t==='abs' ? 'Vahe' : 'Vahe %';
+        if (c.t!=='val' && c.tgt!==null){
+          const tp = freePeriods.find(x=>x.id===c.tgt);
+          lab += '<span class="sub2">vs ' + fpLabel(tp) + '</span>';
+        }
+        h2 += '<th class="' + gs + '">' + lab + '</th>';
+      });
+    });
+    h2 += '</tr>';
+    document.getElementById('thead').innerHTML = h1 + h2;
+
+    // TBODY
+    let rows = '';
+    SCHEMA.forEach(row => {
+      const trCls = row.kind==='result' ? 'result' : row.kind==='sub' ? 'sub' : 'leaf';
+      let tds = '<td class="lbl">' + row.name + '</td>';
+      colsFor.forEach(cf => {
+        const v = freeRowVal(row, cf.p);
+        const kaiveV = freeRowVal({kind:'leaf',id:'kaive'}, cf.p);
+        const tgtP = cf.tgt!==null ? freePeriods.find(x=>x.id===cf.tgt) : null;
+        const tv = tgtP ? freeRowVal(row, tgtP) : null;
+        const isBase = (mode==='baas' && cf.p.id===baselineId);
+        cf.sub.forEach((c, i) => {
+          const gs = (i===0) ? ' grpstart' : '';
+          if (c.t==='val'){
+            let marg = '';
+            if (oMarg && Math.abs(kaiveV) > 0.005) marg = '<span class="marg">' + fmtMarg(v/kaiveV*100) + '</span>';
+            tds += '<td class="' + gs + (isBase?' baseval':'') + (v<0?' neg':'') + '">' + fmt(v) + marg + '</td>';
+          } else if (c.t==='abs'){
+            tds += varCell(v - tv, v - tv, oFav, tPct, tEur, gs, pctOf(v - tv, tv));
+          } else {
+            tds += varPctCell(v - tv, tv, oFav, tPct, tEur, gs);
+          }
+        });
+      });
+      rows += '<tr class="' + trCls + '">' + tds + '</tr>';
+    });
+    document.getElementById('tbody').innerHTML = rows;
   }
   function stepAnchor(dir){
     const stepMonths = gran === 'year' ? 12 : gran === 'quarter' ? 3 : 1;
@@ -361,6 +538,9 @@
     const oFav  = document.getElementById('oFav').checked;
     const tPct  = parseFloat(document.getElementById('tPct').value) || 0;
     const tEur  = parseFloat(document.getElementById('tEur').value) || 0;
+
+    // Vaba-režiim: suvaliste perioodide võrdlus (eraldi renderdaja)
+    if (gran === 'custom'){ renderFree(oAbs, oPct, oMarg, oFav, tPct, tEur); return; }
 
     const y = anchor.y;
     // ankuri sildid
