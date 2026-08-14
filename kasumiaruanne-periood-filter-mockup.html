@@ -191,7 +191,18 @@
         <div class="fp-head"><span></span><span>Algus</span><span>Lõpp</span><span>Tüüp</span><span></span></div>
         <div class="fp-list" id="fpList"></div>
         <button class="fp-add" onclick="addFreePeriod()">＋ Lisa periood</button>
-        <label class="fld" style="margin-top:4px"><span class="lbl">Võrdlusviis</span>
+        <label class="fld" style="margin-top:4px"><span class="lbl">Tükelda ajas (pikk periood &rarr; tulbad ajaühiku kaupa)</span>
+          <select id="fpSplit" onchange="render()">
+            <option value="none" selected>(ei tükelda)</option>
+            <option value="day">Kuu päevaks</option>
+            <option value="week">Nädalaks</option>
+            <option value="month">Kuuks</option>
+            <option value="quarter">Kvartaliks</option>
+            <option value="half">Aasta poolaastaks</option>
+            <option value="year">Aastaks</option>
+          </select>
+        </label>
+        <label class="fld"><span class="lbl">Võrdlusviis</span>
           <select id="fpMode" onchange="render()">
             <option value="baas" selected>Kõik vs baasperiood</option>
             <option value="prev">Iga vs eelmine tulp (trend)</option>
@@ -442,36 +453,94 @@
     return v;
   }
   function fpLabel(p){ return p.from + '-' + p.to; }
-  function fpTarget(p, idx){
-    const mode = document.getElementById('fpMode').value;
-    if (mode === 'none') return null;
-    if (mode === 'baas') return p.id === baselineId ? null : baselineId;
-    return idx === 0 ? null : freePeriods[idx-1].id;   // prev
+  /* ── ajaline tükeldamine: periood -> ajaühiku-tükid ── */
+  const COL_CAP = 120;   // mockupi ohutuspiir (nt aasta paevadeks = 365)
+  function parseDMY(s){ const a=(s||'').split('.').map(Number); return new Date(a[2], (a[1]||1)-1, a[0]||1); }
+  function fmtDMY(d){ return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear(); }
+  function isoWeek(d){
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = (t.getUTCDay() + 6) % 7;                 // 0 = esmaspaev
+    t.setUTCDate(t.getUTCDate() - day + 3);              // sama nadala neljapaev
+    const first = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+    return 1 + Math.round(((t - first) / 86400000 - 3 + ((first.getUTCDay()+6)%7)) / 7);
+  }
+  function bucketLabel(g, d){
+    const y = d.getFullYear();
+    if (g==='day')     return d.getDate() + '.' + (d.getMonth()+1) + '.' + y;
+    if (g==='week')    return 'N' + isoWeek(d) + ' ' + y;
+    if (g==='month')   return MONS[d.getMonth()] + ' ' + y;
+    if (g==='quarter') return ROMAN[Math.floor(d.getMonth()/3)] + ' kv ' + y;
+    if (g==='half')    return (d.getMonth()<6?'I':'II') + ' pa ' + y;
+    return '' + y;
+  }
+  // uks periood -> tukkide massiiv (kui g==='none', siis uks tukk = periood ise)
+  function splitPeriod(p, g){
+    if (g==='none') return [{ from:p.from, to:p.to, type:p.type, label:fpLabel(p), pid:p.id }];
+    const end = parseDMY(p.to), out = [];
+    let cur = parseDMY(p.from);
+    while (cur <= end && out.length < 3000){   // ohutuspiir; nahtav karpimine toimub buildFreeColumns-is
+      const bStart = new Date(cur);
+      let bEnd, next;
+      if (g==='day'){ bEnd = new Date(cur); next = new Date(cur); next.setDate(next.getDate()+1); }
+      else if (g==='week'){ const dow=(bStart.getDay()+6)%7; bEnd=new Date(bStart); bEnd.setDate(bStart.getDate()+(6-dow)); next=new Date(bEnd); next.setDate(next.getDate()+1); }
+      else if (g==='month'){ bEnd=new Date(bStart.getFullYear(), bStart.getMonth()+1, 0); next=new Date(bStart.getFullYear(), bStart.getMonth()+1, 1); }
+      else if (g==='quarter'){ const qe=Math.floor(bStart.getMonth()/3)*3+2; bEnd=new Date(bStart.getFullYear(), qe+1, 0); next=new Date(bStart.getFullYear(), qe+1, 1); }
+      else if (g==='half'){ const he=bStart.getMonth()<6?5:11; bEnd=new Date(bStart.getFullYear(), he+1, 0); next=new Date(bStart.getFullYear(), he+1, 1); }
+      else { bEnd=new Date(bStart.getFullYear(), 11, 31); next=new Date(bStart.getFullYear()+1, 0, 1); }
+      if (bEnd > end) bEnd = new Date(end);
+      out.push({ from:fmtDMY(bStart), to:fmtDMY(bEnd), type:p.type, label:bucketLabel(g, bStart), pid:p.id });
+      cur = next;
+    }
+    return out;
+  }
+  // koik tulbad (perioodid x tukeldus)
+  function buildFreeColumns(g){
+    let cols = [];
+    freePeriods.forEach(p => { cols = cols.concat(splitPeriod(p, g)); });
+    const truncated = cols.length > COL_CAP;
+    if (truncated) cols = cols.slice(0, COL_CAP);
+    return { cols, truncated };
   }
 
   function renderFree(oAbs, oPct, oMarg, oFav, tPct, tEur){
     const mode = document.getElementById('fpMode').value;
+    const split = document.getElementById('fpSplit').value;
+    const { cols, truncated } = buildFreeColumns(split);
+
+    // baasitulba indeks (baas-reziimis = baasperioodi esimene tukk)
+    let baseIdx = cols.findIndex(c => c.pid === baselineId);
+    if (baseIdx < 0) baseIdx = 0;
+    // sihtmargi tulba indeks: baas -> baasitulp; prev -> eelmine tulp; none -> puudub
+    function targetIdx(idx){
+      if (mode==='none') return -1;
+      if (mode==='baas') return idx===baseIdx ? -1 : baseIdx;
+      return idx===0 ? -1 : idx-1;   // prev
+    }
+
     // kokkuvõte
-    const chips = ['<span class="schip"><b>Vaba võrdlus:</b> ' + freePeriods.length + ' perioodi</span>'];
-    if (mode === 'baas'){ const bp = freePeriods.find(x=>x.id===baselineId); chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Baas:</b> ' + fpLabel(bp) + '</span>'); }
-    else if (mode === 'prev') chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Trend:</b> iga vs eelmine</span>');
+    const SPLIT_LBL = { none:'', day:'päevaks', week:'nädalaks', month:'kuuks', quarter:'kvartaliks', half:'poolaastaks', year:'aastaks' };
+    const chips = ['<span class="schip"><b>Vaba võrdlus:</b> ' + freePeriods.length + ' periood(i) &rarr; ' + cols.length + ' tulp(a)</span>'];
+    if (split!=='none') chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Tükeldus:</b> ' + SPLIT_LBL[split] + '</span>');
+    if (mode==='baas') chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Baas:</b> ' + cols[baseIdx].label + '</span>');
+    else if (mode==='prev') chips.push('<span class="schip" style="border-left-color:#7a5ab8"><b>Trend:</b> iga vs eelmine</span>');
     if (tPct || tEur) chips.push('<span class="schip m"><b>Olulisuse piir:</b> &plusmn;' + tPct + '% või &plusmn;' + tEur + ' t&euro;</span>');
+    if (truncated) chips.push('<span class="schip" style="border-left-color:#c0202a"><b>Kärbitud:</b> kuvatud esimesed ' + COL_CAP + '</span>');
     document.getElementById('summary').innerHTML = chips.join('');
 
-    // veerud: iga perioodi kohta väärtus + (kui on sihtperiood) vahe €/%
-    const colsFor = freePeriods.map((p, idx) => {
-      const tgt = fpTarget(p, idx);
-      const sub = [{ t:'val', p, tgt }];
-      if (tgt !== null){ if (oAbs) sub.push({ t:'abs', p, tgt }); if (oPct) sub.push({ t:'pct', p, tgt }); }
-      return { p, idx, tgt, sub };
+    // veerugrupid: iga tulp = väärtus + (kui on sihtmark) vahe €/%
+    const colsFor = cols.map((c, idx) => {
+      const tIdx = targetIdx(idx);
+      const sub = [{ t:'val' }];
+      if (tIdx >= 0){ if (oAbs) sub.push({ t:'abs' }); if (oPct) sub.push({ t:'pct' }); }
+      return { c, idx, tIdx, sub };
     });
 
     // THEAD
     let h1 = '<tr><th class="lbl" rowspan="2">Näitaja</th>';
     colsFor.forEach(cf => {
-      const isBase = (mode==='baas' && cf.p.id===baselineId);
-      const tag = isBase ? ' &middot; baas' : (cf.p.type==='budget' ? ' &middot; eelarve' : '');
-      h1 += '<th class="blk free grpstart" colspan="' + cf.sub.length + '">' + fpLabel(cf.p) + '<span class="sub2">' + (cf.p.type==='budget'?'Eelarve':'Tegelik') + tag + '</span></th>';
+      const isBase = (mode==='baas' && cf.idx===baseIdx);
+      const tag = isBase ? ' &middot; baas' : (cf.c.type==='budget' ? ' &middot; eelarve' : '');
+      h1 += '<th class="blk free grpstart" colspan="' + cf.sub.length + '">' + cf.c.label + '<span class="sub2">' + (cf.c.type==='budget'?'Eelarve':'Tegelik') + tag + '</span></th>';
     });
     h1 += '</tr>';
     let h2 = '<tr>';
@@ -479,10 +548,7 @@
       cf.sub.forEach((c, i) => {
         const gs = (i===0) ? ' grpstart' : '';
         let lab = c.t==='val' ? 'Väärtus' : c.t==='abs' ? 'Vahe' : 'Vahe %';
-        if (c.t!=='val' && c.tgt!==null){
-          const tp = freePeriods.find(x=>x.id===c.tgt);
-          lab += '<span class="sub2">vs ' + fpLabel(tp) + '</span>';
-        }
+        if (c.t!=='val' && cf.tIdx>=0) lab += '<span class="sub2">vs ' + cols[cf.tIdx].label + '</span>';
         h2 += '<th class="' + gs + '">' + lab + '</th>';
       });
     });
@@ -495,11 +561,10 @@
       const trCls = row.kind==='result' ? 'result' : row.kind==='sub' ? 'sub' : 'leaf';
       let tds = '<td class="lbl">' + row.name + '</td>';
       colsFor.forEach(cf => {
-        const v = freeRowVal(row, cf.p);
-        const kaiveV = freeRowVal({kind:'leaf',id:'kaive'}, cf.p);
-        const tgtP = cf.tgt!==null ? freePeriods.find(x=>x.id===cf.tgt) : null;
-        const tv = tgtP ? freeRowVal(row, tgtP) : null;
-        const isBase = (mode==='baas' && cf.p.id===baselineId);
+        const v = freeRowVal(row, cf.c);
+        const kaiveV = freeRowVal({kind:'leaf',id:'kaive'}, cf.c);
+        const tv = cf.tIdx>=0 ? freeRowVal(row, cols[cf.tIdx]) : null;
+        const isBase = (mode==='baas' && cf.idx===baseIdx);
         cf.sub.forEach((c, i) => {
           const gs = (i===0) ? ' grpstart' : '';
           if (c.t==='val'){
