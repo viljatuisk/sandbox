@@ -173,20 +173,34 @@
 
   .empty-note { padding: 30px; text-align: center; color: #8898a8; font-style: italic; }
 
-  /* ── VEERU PEITMINE päisest ── */
+  /* ── VEERU PEITMINE päisest (Notioni stiilis) ── */
   table.rep thead th { position: relative; }
-  .colx { position: absolute; top: 1px; right: 2px; min-width: 13px; height: 13px; line-height: 12px; text-align: center; border-radius: 2px; color: #8aa0b4; font-size: 12px; font-weight: 700; cursor: pointer; display: none; background: rgba(255,255,255,0.7); }
-  table.rep thead th:hover .colx { display: block; }
-  .colx:hover { background: #f0d0d0; color: #a33; }
+  .colmenu-btn { position: absolute; top: 1px; right: 2px; width: 16px; height: 15px; line-height: 13px; text-align: center; border-radius: 2px; color: #5a7a9a; font-size: 13px; cursor: pointer; display: none; background: rgba(255,255,255,0.9); border: 1px solid #c8d6e2; }
+  table.rep thead th:hover .colmenu-btn { display: block; }
+  .colmenu-btn:hover { background: #dbe6f0; }
+  /* päise rippmenüü */
+  .colmenu { display: none; position: fixed; background: #fff; border: 1px solid #aabccc; border-radius: 5px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 6000; min-width: 168px; padding: 4px 0; }
+  .colmenu.open { display: block; }
+  .colmenu-item { display: flex; align-items: center; gap: 9px; padding: 7px 13px; font-size: 12px; color: #1f2d3d; cursor: pointer; }
+  .colmenu-item:hover { background: #eef4fa; }
+  .colmenu-sep { height: 1px; background: #e6ecf2; margin: 4px 0; }
+  /* veeru nähtavuse paneel */
   .colchooser-wrap { position: relative; }
-  .colchooser { display: none; position: absolute; right: 0; top: 26px; width: 220px; max-height: 340px; overflow-y: auto; background: #fff; border: 1px solid #aabccc; border-radius: 3px; box-shadow: 0 6px 18px rgba(0,0,0,0.22); z-index: 2000; }
+  .colchooser { display: none; position: absolute; right: 0; top: 26px; width: 250px; max-height: 400px; overflow-y: auto; background: #fff; border: 1px solid #aabccc; border-radius: 5px; box-shadow: 0 8px 22px rgba(0,0,0,0.24); z-index: 2000; }
   .colchooser.open { display: block; }
-  .colchooser .cc-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #f0f4f8; border-bottom: 1px solid #dde3ea; font-size: 10px; font-weight: 700; color: #4a6a8a; text-transform: uppercase; letter-spacing: .4px; position: sticky; top: 0; }
-  .colchooser .cc-head a { color: #3a6a9a; cursor: pointer; font-weight: 700; text-transform: none; letter-spacing: 0; }
-  .colchooser .cc-head a:hover { text-decoration: underline; }
-  .colchooser label { display: flex; align-items: center; gap: 7px; padding: 4px 9px; font-size: 11px; color: #1a2a3a; cursor: pointer; }
-  .colchooser label:hover { background: #eef4fa; }
-  .colchooser input[type=checkbox] { accent-color: #3a6a9a; }
+  .cc-top { padding: 8px 12px 4px; font-size: 12px; font-weight: 700; color: #1f2d3d; }
+  .cc-sec { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 3px; font-size: 10px; font-weight: 700; color: #8a97a4; text-transform: uppercase; letter-spacing: .4px; }
+  .cc-sec a { color: #3a6a9a; cursor: pointer; font-weight: 700; text-transform: none; letter-spacing: 0; font-size: 11px; }
+  .cc-sec a:hover { text-decoration: underline; }
+  .cc-row { display: flex; align-items: center; gap: 8px; padding: 5px 12px; font-size: 12px; color: #1f2d3d; }
+  .cc-row:hover { background: #f4f8fc; }
+  .cc-grip { color: #c0cad4; cursor: grab; font-size: 11px; letter-spacing: -2px; user-select: none; }
+  .cc-lbl { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cc-row.is-hidden .cc-lbl { color: #9aa8b6; }
+  .cc-eye { cursor: pointer; font-size: 13px; position: relative; width: 18px; text-align: center; }
+  .cc-eye.off { opacity: 0.55; }
+  .cc-eye.off::after { content: ''; position: absolute; left: 1px; top: 50%; width: 15px; height: 1.5px; background: #7a8794; transform: rotate(-18deg); }
+  .cc-empty { padding: 4px 12px 8px; font-size: 11px; color: #a8b4c0; font-style: italic; }
 </style>
 <style id="colHideStyle"></style>
 </head>
@@ -362,10 +376,6 @@
           <button class="mini-btn" onclick="expandAll(true)">⊞ Ava kõik</button>
           <button class="mini-btn" onclick="expandAll(false)">⊟ Sule kõik</button>
           <label title="Perioodist väljas olevad liikumised näidatakse hallilt; märkega peida"><input type="checkbox" id="cbHideOut" onchange="render()"> Peida perioodivälised read</label>
-          <div class="colchooser-wrap">
-            <button class="mini-btn" onclick="toggleColChooser(event)" title="Vali, milliseid veerge näidata">⚙ Veerud ▾</button>
-            <div class="colchooser" id="colChooser" onclick="event.stopPropagation()"></div>
-          </div>
         </span>
         <!-- KOOND juhtnupud -->
         <span id="koondCtrls" style="display:none;align-items:center;gap:8px;">
@@ -403,6 +413,10 @@
         <label title="Hetkekursiga ümberhindluse tulbad"><input type="checkbox" id="cbHetke" checked onchange="applyColHide()"> Hetkekursiga tulbad</label>
       </div>
       <div class="table-options">
+        <div class="colchooser-wrap" id="colTulbadWrap">
+          <button class="mini-btn" id="colPickerBtn" onclick="toggleColChooser(event)" title="Vali tulbad">🔧 Vali tulbad</button>
+          <div class="colchooser" id="colChooser" onclick="event.stopPropagation()"></div>
+        </div>
         <span title="Eksport Excel" style="color:#4a7a4a;font-size:15px;">📊</span>
         <span title="Eksport CSV" style="color:#6a8ab0;font-size:15px;">📋</span>
       </div>
@@ -416,6 +430,13 @@
     </div>
 
   </div>
+</div>
+
+<!-- PÄISE VEERUMENÜÜ (Notioni stiilis) -->
+<div class="colmenu" id="colHdrMenu" onclick="event.stopPropagation()">
+  <div class="colmenu-item" onclick="colMenuHide()">🚫 Peida veerg</div>
+  <div class="colmenu-sep"></div>
+  <div class="colmenu-item" onclick="colMenuOpenPicker()">🔧 Vali tulbad…</div>
 </div>
 
 <!-- HELP MODAL -->
@@ -517,6 +538,7 @@
     document.getElementById('vsegKoond').classList.toggle('active', v === 'koond');
     document.getElementById('detailCtrls').style.display = v === 'detail' ? 'flex' : 'none';
     document.getElementById('koondCtrls').style.display  = v === 'koond'  ? 'flex' : 'none';
+    document.getElementById('colTulbadWrap').style.display = v === 'detail' ? 'block' : 'none';
     document.getElementById('schemaTab').textContent = v === 'detail' ? 'Ettemaksude saldo + väljavõte' : 'Ettemaksude koond';
     render();
   }
@@ -652,7 +674,7 @@
       const cls = [c.align === 'r' ? 'r' : c.align === 'c' ? 'c' : '', c.grp || ''].filter(Boolean).join(' ');
       th += '<th' + (cls ? ' class="' + cls + '"' : '') + (c.style ? ' style="' + c.style + '"' : '') + '>' +
         esc(c.label) +
-        '<span class="colx" title="Peida veerg" onclick="hideCol(\'' + c.key + '\')">&times;</span>' +
+        '<span class="colmenu-btn" title="Veeru menüü" onclick="openColMenu(event,\'' + c.key + '\')">&#8942;</span>' +
         '</th>';
     });
     return th + '</tr>';
@@ -671,13 +693,26 @@
   function hideCol(key){ hiddenCols.add(key); buildColStyle(); buildColChooser(); }
   function showCol(key){ hiddenCols.delete(key); buildColStyle(); buildColChooser(); }
   function showAllCols(){ hiddenCols.clear(); buildColStyle(); buildColChooser(); }
+  function hideAllCols(){ DETAIL_COLS.forEach(c => hiddenCols.add(c.key)); buildColStyle(); buildColChooser(); }
+  function ccRow(c){
+    const hidden = hiddenCols.has(c.key);
+    return '<div class="cc-row' + (hidden ? ' is-hidden' : '') + '">' +
+      '<span class="cc-grip" title="Lohista järjestamiseks">&#8942;&#8942;</span>' +
+      '<span class="cc-lbl">' + esc(c.label) + '</span>' +
+      '<span class="cc-eye' + (hidden ? ' off' : '') + '" title="' + (hidden ? 'Näita veergu' : 'Peida veerg') + '" ' +
+        'onclick="' + (hidden ? 'showCol' : 'hideCol') + '(\'' + c.key + '\')">&#128065;</span>' +
+      '</div>';
+  }
   function buildColChooser(){
     const box = document.getElementById('colChooser');
-    let h = '<div class="cc-head"><span>Näita veerge</span><a onclick="showAllCols()">Kõik</a></div>';
-    DETAIL_COLS.forEach(c => {
-      h += '<label><input type="checkbox"' + (hiddenCols.has(c.key) ? '' : ' checked') +
-        ' onchange="this.checked?showCol(\'' + c.key + '\'):hideCol(\'' + c.key + '\')"> ' + esc(c.label) + '</label>';
-    });
+    const shown = DETAIL_COLS.filter(c => !hiddenCols.has(c.key));
+    const hidden = DETAIL_COLS.filter(c => hiddenCols.has(c.key));
+    let h = '<div class="cc-top">Vali tulbad</div>';
+    h += '<div class="cc-sec"><span>Nähtaval tabelis</span><a onclick="hideAllCols()">Peida kõik</a></div>';
+    shown.forEach(c => h += ccRow(c));
+    h += '<div class="cc-sec"><span>Peidetud tabelis</span><a onclick="showAllCols()">Näita kõik</a></div>';
+    if (!hidden.length) h += '<div class="cc-empty">- pole -</div>';
+    hidden.forEach(c => h += ccRow(c));
     box.innerHTML = h;
   }
   function toggleColChooser(e){
@@ -685,11 +720,29 @@
     const el = document.getElementById('colChooser');
     if (!el.classList.contains('open')) buildColChooser();
     el.classList.toggle('open');
+    document.getElementById('colPickerBtn').classList.toggle('active', el.classList.contains('open'));
   }
   document.addEventListener('click', e => {
     const w = document.querySelector('.colchooser-wrap');
-    if (w && !w.contains(e.target)) document.getElementById('colChooser').classList.remove('open');
+    if (w && !w.contains(e.target)){ document.getElementById('colChooser').classList.remove('open'); document.getElementById('colPickerBtn').classList.remove('active'); }
   });
+
+  /* ── päise rippmenüü (⋮) ── */
+  let _colMenuKey = null;
+  function openColMenu(e, key){
+    e.stopPropagation();
+    _colMenuKey = key;
+    const m = document.getElementById('colHdrMenu');
+    const r = e.currentTarget.getBoundingClientRect();
+    m.classList.add('open');
+    let left = r.right - m.offsetWidth;
+    if (left < 4) left = 4;
+    m.style.left = left + 'px';
+    m.style.top = (r.bottom + 3) + 'px';
+  }
+  function colMenuHide(){ if (_colMenuKey) hideCol(_colMenuKey); document.getElementById('colHdrMenu').classList.remove('open'); }
+  function colMenuOpenPicker(){ document.getElementById('colHdrMenu').classList.remove('open'); toggleColChooser(); }
+  document.addEventListener('click', () => document.getElementById('colHdrMenu').classList.remove('open'));
 
   /* ── dispetšer ── */
   function render(){
