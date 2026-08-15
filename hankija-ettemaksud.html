@@ -282,6 +282,12 @@
       <div class="sidebar-body">
         <div class="sf"><label title="EtteID või ettemaksu-artikli seerianumber">EtteID / artikli SN</label><input type="text" id="fEtteId" placeholder="nt 118" onchange="render()"></div>
         <div class="sf"><label>Ettemaks-artikkel</label><input type="text" id="fArtikkel" placeholder="nt E2" onchange="render()"></div>
+        <div class="sf"><label title="Ettemaksuga seotud ostutellimuse number">Ostutellimus</label>
+          <div class="sf-lookup">
+            <input type="text" id="fOrder" placeholder="nt 140233" onchange="render()">
+            <button class="lkp-btn" type="button" title="Nimekiri-asetaja">🔍</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -349,6 +355,7 @@
               <option value="konto" selected>Konto</option>
               <option value="hankija">Hankija</option>
               <option value="etteId">EtteID / SN</option>
+              <option value="ostutellimus">Ostutellimus</option>
               <option value="valuuta">Valuuta</option>
             </select>
           </label>
@@ -358,6 +365,7 @@
               <option value="konto">Konto</option>
               <option value="etteId">EtteID / SN</option>
               <option value="artikkel">Artikkel</option>
+              <option value="ostutellimus">Ostutellimus</option>
               <option value="hankija">Hankija</option>
               <option value="">(pole)</option>
             </select>
@@ -474,6 +482,7 @@
     hankija: { label:'Hankija',     get:g => g.hankija + ' ' + g.nimi },
     etteId:  { label:'EtteID / SN', get:g => g.etteId },
     artikkel:{ label:'Artikkel',    get:g => g.artikkel || '(pole)' },
+    ostutellimus:{ label:'Ostutellimus', get:g => { const m = g.mv.find(x => x.order); return m ? m.order : '(pole)'; } },
   };
 
   function setView(v){
@@ -567,6 +576,8 @@
     if (e && !g.etteId.toLowerCase().includes(e)) return false;
     const a = document.getElementById('fArtikkel').value.trim().toLowerCase();
     if (a && !(g.artikkel||'').toLowerCase().includes(a)) return false;
+    const ord = document.getElementById('fOrder').value.trim().toLowerCase();
+    if (ord && !g.mv.some(m => (m.order||'').toLowerCase().includes(ord))) return false;
     const v = document.getElementById('fValuuta').value;
     if (v && g.valuuta !== v) return false;
     return true;
@@ -814,7 +825,7 @@
             '<td>' + esc(g.artikkel) + '</td>' +
             '<td class="c">' + esc(g.hankija) + '</td>' +
             '<td>' + esc(g.nimi) + '</td>' +
-            '<td>' + esc(m.order) + '</td>' +
+            '<td' + (m.order ? ' class="link"' : '') + '>' + esc(m.order) + '</td>' +
             '<td>' + esc(m.comment) + '</td>' +
             '<td>' + esc(m.obj) + '</td>' +
             '<td>' + esc(m.proj) + '</td>' +
