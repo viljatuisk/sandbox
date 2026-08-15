@@ -172,7 +172,23 @@
   body.hide-hetke .col-hetke { display: none; }
 
   .empty-note { padding: 30px; text-align: center; color: #8898a8; font-style: italic; }
+
+  /* ── VEERU PEITMINE päisest ── */
+  table.rep thead th { position: relative; }
+  .colx { position: absolute; top: 1px; right: 2px; min-width: 13px; height: 13px; line-height: 12px; text-align: center; border-radius: 2px; color: #8aa0b4; font-size: 12px; font-weight: 700; cursor: pointer; display: none; background: rgba(255,255,255,0.7); }
+  table.rep thead th:hover .colx { display: block; }
+  .colx:hover { background: #f0d0d0; color: #a33; }
+  .colchooser-wrap { position: relative; }
+  .colchooser { display: none; position: absolute; right: 0; top: 26px; width: 220px; max-height: 340px; overflow-y: auto; background: #fff; border: 1px solid #aabccc; border-radius: 3px; box-shadow: 0 6px 18px rgba(0,0,0,0.22); z-index: 2000; }
+  .colchooser.open { display: block; }
+  .colchooser .cc-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #f0f4f8; border-bottom: 1px solid #dde3ea; font-size: 10px; font-weight: 700; color: #4a6a8a; text-transform: uppercase; letter-spacing: .4px; position: sticky; top: 0; }
+  .colchooser .cc-head a { color: #3a6a9a; cursor: pointer; font-weight: 700; text-transform: none; letter-spacing: 0; }
+  .colchooser .cc-head a:hover { text-decoration: underline; }
+  .colchooser label { display: flex; align-items: center; gap: 7px; padding: 4px 9px; font-size: 11px; color: #1a2a3a; cursor: pointer; }
+  .colchooser label:hover { background: #eef4fa; }
+  .colchooser input[type=checkbox] { accent-color: #3a6a9a; }
 </style>
+<style id="colHideStyle"></style>
 </head>
 <body>
 
@@ -346,6 +362,10 @@
           <button class="mini-btn" onclick="expandAll(true)">⊞ Ava kõik</button>
           <button class="mini-btn" onclick="expandAll(false)">⊟ Sule kõik</button>
           <label title="Perioodist väljas olevad liikumised näidatakse hallilt; märkega peida"><input type="checkbox" id="cbHideOut" onchange="render()"> Peida perioodivälised read</label>
+          <div class="colchooser-wrap">
+            <button class="mini-btn" onclick="toggleColChooser(event)" title="Vali, milliseid veerge näidata">⚙ Veerud ▾</button>
+            <div class="colchooser" id="colChooser" onclick="event.stopPropagation()"></div>
+          </div>
         </span>
         <!-- KOOND juhtnupud -->
         <span id="koondCtrls" style="display:none;align-items:center;gap:8px;">
@@ -596,20 +616,80 @@
   }
   function blank(cls){ return '<td class="' + (cls||'') + '"></td>'; }
 
-  /* ── DETAIL thead ── */
-  const DETAIL_HEAD =
-    '<tr>' +
-    '<th style="min-width:78px">Aeg</th><th>Dok tüüp</th><th>Dokument</th>' +
-    '<th class="c">Konto</th><th>EtteID / SN</th><th>Artikkel</th>' +
-    '<th class="c">Hankija</th><th>Hankija nimi</th><th>Ostutellimus</th><th>Kommentaar</th>' +
-    '<th>Objekt</th><th>Projekt</th><th class="c">Val</th>' +
-    '<th class="r col-val">Val. deebet</th><th class="r col-val">Val. kreedit</th>' +
-    '<th class="r col-val">Saldo valuutas</th><th class="r col-val">Kurss</th>' +
-    '<th class="r">Deebet</th><th class="r">Kreedit</th>' +
-    '<th class="r">Saldo baasval km-ga</th><th class="r col-kmta">Saldo baasval km-ta</th>' +
-    '<th class="c">KMK</th><th class="r col-hetke">Hetke-kurss</th>' +
-    '<th class="r col-hetke">Hetkek. saldo km-ga</th><th class="r col-hetke col-kmta">Hetkek. saldo km-ta</th>' +
-    '</tr>';
+  /* ── DETAIL veerumudel (järjekord = ridade lahtrite järjekord) ── */
+  const DETAIL_COLS = [
+    { key:'aeg',          label:'Aeg',                 align:'l', style:'min-width:78px' },
+    { key:'doktyyp',      label:'Dok tüüp',            align:'l' },
+    { key:'dokument',     label:'Dokument',            align:'l' },
+    { key:'konto',        label:'Konto',               align:'c' },
+    { key:'etteid',       label:'EtteID / SN',         align:'l' },
+    { key:'artikkel',     label:'Artikkel',            align:'l' },
+    { key:'hankija',      label:'Hankija',             align:'c' },
+    { key:'nimi',         label:'Hankija nimi',        align:'l' },
+    { key:'ostutellimus', label:'Ostutellimus',        align:'l' },
+    { key:'kommentaar',   label:'Kommentaar',          align:'l' },
+    { key:'objekt',       label:'Objekt',              align:'l' },
+    { key:'projekt',      label:'Projekt',             align:'l' },
+    { key:'val',          label:'Val',                 align:'c' },
+    { key:'valdeebet',    label:'Val. deebet',         align:'r', grp:'col-val' },
+    { key:'valkreedit',   label:'Val. kreedit',        align:'r', grp:'col-val' },
+    { key:'saldoval',     label:'Saldo valuutas',      align:'r', grp:'col-val' },
+    { key:'kurss',        label:'Kurss',               align:'r', grp:'col-val' },
+    { key:'deebet',       label:'Deebet',              align:'r' },
+    { key:'kreedit',      label:'Kreedit',             align:'r' },
+    { key:'saldokmga',    label:'Saldo baasval km-ga', align:'r' },
+    { key:'saldokmta',    label:'Saldo baasval km-ta', align:'r', grp:'col-kmta' },
+    { key:'kmk',          label:'KMK',                 align:'c' },
+    { key:'hetkekurss',   label:'Hetke-kurss',         align:'r', grp:'col-hetke' },
+    { key:'hetkekmga',    label:'Hetkek. saldo km-ga', align:'r', grp:'col-hetke' },
+    { key:'hetkekmta',    label:'Hetkek. saldo km-ta', align:'r', grp:'col-hetke col-kmta' },
+  ];
+  const hiddenCols = new Set();   // peidetud veerud (võti)
+
+  function buildDetailHead(){
+    let th = '<tr>';
+    DETAIL_COLS.forEach(c => {
+      const cls = [c.align === 'r' ? 'r' : c.align === 'c' ? 'c' : '', c.grp || ''].filter(Boolean).join(' ');
+      th += '<th' + (cls ? ' class="' + cls + '"' : '') + (c.style ? ' style="' + c.style + '"' : '') + '>' +
+        esc(c.label) +
+        '<span class="colx" title="Peida veerg" onclick="hideCol(\'' + c.key + '\')">&times;</span>' +
+        '</th>';
+    });
+    return th + '</tr>';
+  }
+  function buildColStyle(){
+    const rules = [];
+    DETAIL_COLS.forEach((c, i) => {
+      if (hiddenCols.has(c.key)){
+        const n = i + 1;
+        rules.push('#repTable.vd thead tr > *:nth-child(' + n + '){display:none}');
+        rules.push('#repTable.vd tbody tr > *:nth-child(' + n + '){display:none}');
+      }
+    });
+    document.getElementById('colHideStyle').textContent = rules.join('');
+  }
+  function hideCol(key){ hiddenCols.add(key); buildColStyle(); buildColChooser(); }
+  function showCol(key){ hiddenCols.delete(key); buildColStyle(); buildColChooser(); }
+  function showAllCols(){ hiddenCols.clear(); buildColStyle(); buildColChooser(); }
+  function buildColChooser(){
+    const box = document.getElementById('colChooser');
+    let h = '<div class="cc-head"><span>Näita veerge</span><a onclick="showAllCols()">Kõik</a></div>';
+    DETAIL_COLS.forEach(c => {
+      h += '<label><input type="checkbox"' + (hiddenCols.has(c.key) ? '' : ' checked') +
+        ' onchange="this.checked?showCol(\'' + c.key + '\'):hideCol(\'' + c.key + '\')"> ' + esc(c.label) + '</label>';
+    });
+    box.innerHTML = h;
+  }
+  function toggleColChooser(e){
+    if (e) e.stopPropagation();
+    const el = document.getElementById('colChooser');
+    if (!el.classList.contains('open')) buildColChooser();
+    el.classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    const w = document.querySelector('.colchooser-wrap');
+    if (w && !w.contains(e.target)) document.getElementById('colChooser').classList.remove('open');
+  });
 
   /* ── dispetšer ── */
   function render(){
@@ -643,6 +723,7 @@
 
   /* ══════════ KOONDVAADE ══════════ */
   function renderKoond(){
+    document.getElementById('repTable').classList.remove('vd');
     const asOfKey = dkey(document.getElementById('fAsOf').value.trim());
     const subKey = document.getElementById('selSub').value;
     const grpKey = document.getElementById('selGrp').value;
@@ -768,7 +849,9 @@
 
   /* ══════════ DETAILVAADE ══════════ */
   function renderDetail(){
-    document.getElementById('repHead').innerHTML = DETAIL_HEAD;
+    document.getElementById('repTable').classList.add('vd');
+    document.getElementById('repHead').innerHTML = buildDetailHead();
+    buildColStyle();
     const asOf = document.getElementById('fAsOf').value.trim();
     const asOfKey = dkey(asOf);
     const fromKey = dkey(document.getElementById('fFrom').value);
