@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<title>Hankija ettemaksud — prototüüp</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; background: #e8ecf0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── TOP BAR ── */
+  .topbar { background: #2d4a6b; color: #fff; height: 32px; display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; font-size: 11px; }
+  .topbar-logo { font-weight: 700; font-size: 13px; margin-right: 8px; }
+  .topbar-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+  .topbar-link { color: rgba(255,255,255,0.75); cursor: pointer; }
+  .topbar-link:hover { color: #fff; text-decoration: underline; }
+
+  /* ── KKK ── */
+  .kkk-btn { background: #e0a53a; color: #3a2c08; border: none; border-radius: 3px; font-size: 11px; font-weight: 700; padding: 3px 9px; cursor: pointer; font-family: Arial, sans-serif; }
+  .kkk-btn:hover { background: #f0b849; }
+  .kkk-panel { display: none; position: absolute; right: 0; top: 26px; width: 460px; max-width: 92vw; background: #fff; color: #1f2d3d; border: 1px solid #aabccc; border-radius: 4px; box-shadow: 0 8px 26px rgba(0,0,0,0.3); z-index: 4000; }
+  .kkk-panel.open { display: block; }
+  .kkk-head { background: #2d4a6b; color: #fff; padding: 8px 12px; font-size: 12px; font-weight: 700; border-radius: 4px 4px 0 0; }
+  .kkk-list { max-height: 66vh; overflow-y: auto; padding: 4px 0; }
+  .kkk-item { padding: 8px 12px; border-bottom: 1px solid #eef2f6; }
+  .kkk-item:last-child { border-bottom: none; }
+  .kkk-q { font-size: 12px; font-weight: 700; color: #2d4a6b; margin-bottom: 4px; }
+  .kkk-a { font-size: 11px; line-height: 1.5; color: #33465a; }
+  .kkk-a code { background: #eef2f6; border: 1px solid #dde5ec; border-radius: 3px; padding: 0 3px; font-family: Consolas, monospace; color: #b23; }
+  .kkk-status { display: inline-block; margin-top: 5px; font-size: 10px; font-weight: 700; color: #a05a00; background: #fdf1d8; border: 1px solid #eccf94; border-radius: 3px; padding: 1px 6px; }
+  .kkk-foot { padding: 6px 12px; font-size: 10px; color: #8898a8; background: #f5f8fb; border-top: 1px solid #e4ebf2; border-radius: 0 0 4px 4px; font-style: italic; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 250px; min-width: 250px; background: #e8f0f8; color: #1a2a3a; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; font-size: 11px; transition: width .18s, min-width .18s; border-right: 1px solid #b0c8e0; }
+  .sidebar.hidden { width: 0; min-width: 0; overflow: hidden; }
+  .tog-btn { background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; padding: 2px 8px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; white-space: nowrap; height: 24px; }
+  .tog-btn:hover { background: #eef3f8; }
+  .sidebar-section { border-bottom: 1px solid #c8daea; position: relative; }
+  .sidebar-head { padding: 5px 8px 5px 10px; font-size: 11px; font-weight: 700; color: #c8e4f8; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; background: #2d4f72; border-left: 3px solid #5a9fd4; }
+  .sidebar-head:hover { background: #264566; }
+  .sidebar-head .arrow { font-size: 10px; opacity: 0.7; }
+  .sidebar-body { padding: 8px 8px 14px; display: flex; flex-direction: column; gap: 6px; background: #f4f8fd; }
+  .sf { display: flex; flex-direction: column; gap: 1px; }
+  .sf label { font-size: 10px; font-weight: 600; color: #2a4a6a; }
+  .sf input, .sf select { height: 22px; background: #fff; border: 1px solid #9ab8d4; border-radius: 2px; color: #1a2a3a; font-size: 11px; padding: 0 5px; font-family: Arial, sans-serif; }
+  .sf input:focus, .sf select:focus { outline: none; border-color: #3a7abf; }
+  .sf-row { display: flex; gap: 4px; align-items: flex-end; }
+  .sf-row .sf { flex: 1; min-width: 0; }
+  .sidebar-body.collapsed { display: none; }
+  .sf-check { display: flex; align-items: center; gap: 4px; padding: 1px 0; color: #2a4a6a; cursor: pointer; font-size: 10px; }
+  .sf-check input[type=checkbox] { accent-color: #3a7abf; }
+  .sf-lookup { display: flex; gap: 0; }
+  .sf-lookup input { flex: 1; min-width: 0; border-radius: 2px 0 0 2px; }
+  .sf-lookup .lkp-btn { height: 22px; padding: 0 5px; background: #e0ecf8; border: 1px solid #9ab8d4; border-left: none; border-radius: 0 2px 2px 0; font-size: 11px; color: #2a4a6a; cursor: pointer; white-space: nowrap; }
+  .sf-lookup .lkp-btn:hover { background: #c8dff0; }
+  .sf-hint { font-size: 10px; color: #5a7a9a; line-height: 1.4; background: #eaf2fb; border-left: 3px solid #7fb0d8; border-radius: 2px; padding: 4px 6px; }
+  .sidebar-btn { margin: 4px 8px; height: 24px; background: #3a6a9a; color: #fff; border: none; border-radius: 2px; font-size: 12px; font-family: Arial, sans-serif; cursor: pointer; font-weight: 700; letter-spacing: 0.3px; }
+  .sidebar-btn:hover { background: #4a7aaa; }
+  .badge-live { display: inline-block; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; background: #dff0e2; color: #2a7a4a; border: 1px solid #a8d8b6; border-radius: 2px; padding: 0 4px; margin-left: 5px; }
+
+  /* ── HELP MODAL ── */
+  .help-i { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border-radius: 50%; background: #5a9fd4; color: #fff; font-size: 9px; font-weight: 700; cursor: pointer; vertical-align: middle; margin-left: 2px; }
+  .help-i:hover { background: #3a7abf; }
+  .wiki-overlay { display: none; position: fixed; inset: 0; background: rgba(20,35,55,0.45); z-index: 5000; }
+  .wiki-overlay.open { display: flex; align-items: center; justify-content: center; }
+  .wiki-modal { background: #fff; width: 780px; max-width: 92vw; max-height: 88vh; border-radius: 6px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); display: flex; flex-direction: column; overflow: hidden; }
+  .wiki-modal-head { background: #2d4a6b; color: #fff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .wiki-modal-head .wm-title { font-size: 14px; font-weight: 700; }
+  .wiki-modal-head .wm-close { background: none; border: none; color: #cfe0f0; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  .wiki-modal-head .wm-close:hover { color: #fff; }
+  .wiki-body { padding: 16px 22px 24px; overflow-y: auto; font-size: 13px; line-height: 1.55; color: #1f2d3d; }
+  .wiki-body h2 { font-size: 16px; color: #2d4a6b; margin: 20px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #dce5ee; }
+  .wiki-body h2:first-child { margin-top: 0; }
+  .wiki-body p { margin: 6px 0; }
+  .wiki-body table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; }
+  .wiki-body th, .wiki-body td { border: 1px solid #cfd9e4; padding: 5px 8px; text-align: left; vertical-align: top; }
+  .wiki-body th { background: #eef3f9; color: #2d4a6b; font-weight: 700; }
+  .wiki-body code { background: #eef2f6; border: 1px solid #dde5ec; border-radius: 3px; padding: 0 4px; font-family: Consolas, monospace; font-size: 12px; color: #b23; }
+  .wiki-body ol, .wiki-body ul { margin: 6px 0 6px 22px; }
+  .wiki-body li { margin: 3px 0; }
+  .wiki-body .wnote { border-left: 3px solid #e0a53a; background: #fdf6e8; margin: 10px 0; padding: 8px 12px; font-size: 12px; color: #5a4620; }
+  .wiki-target-flash { animation: wikiFlash 1.4s ease-out; }
+  @keyframes wikiFlash { 0%,40% { background: #fff6d8; } 100% { background: transparent; } }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+  .report-head { padding: 6px 12px; border-bottom: 1px solid #dde3ea; background: #f5f7fa; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .report-title { font-size: 15px; font-weight: 700; color: #1a2a3a; }
+  .report-actions { margin-left: auto; display: flex; gap: 4px; }
+  .ra-btn { height: 24px; padding: 0 9px; background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; display: flex; align-items: center; gap: 4px; }
+  .ra-btn:hover { background: #eef3f8; }
+  .ra-btn.primary { background: #3a6a9a; color: #fff; border-color: #2a5a8a; }
+  .ra-btn.primary:hover { background: #4a7aaa; }
+
+  /* ── SEISU RIBA ── */
+  .status-strip { display: flex; align-items: center; gap: 14px; padding: 5px 12px; background: #eef4fb; border-bottom: 1px solid #d4e2f0; font-size: 11px; color: #33526f; flex-wrap: wrap; }
+  .status-strip .ss-item { display: flex; align-items: center; gap: 5px; }
+  .status-strip .ss-lbl { color: #6a86a2; }
+  .status-strip .ss-val { font-weight: 700; color: #1a3a5a; background: #fff; border: 1px solid #c0d4e6; border-radius: 2px; padding: 1px 7px; }
+  .status-strip .ss-val.per { color: #7a5a12; background: #fbf3e2; border-color: #e6cf9c; }
+  .status-strip .ss-val.per.empty { color: #6a86a2; background: #fff; border-color: #c0d4e6; font-weight: 400; }
+
+  /* ── OPTIONS BAR ── */
+  .table-controls { display: flex; align-items: center; border-bottom: 3px solid #8aafc8; background: #f0f4f8; flex-shrink: 0; flex-wrap: wrap; }
+  .schema-tab { padding: 7px 14px; font-size: 11px; cursor: default; color: #1a4a8a; border-bottom: 2px solid #2d6aaa; border-right: 1px solid #c8d4e0; white-space: nowrap; background: #fff; font-weight: 700; user-select: none; }
+  .view-controls { display: flex; align-items: center; gap: 12px; padding: 4px 14px; font-size: 11px; color: #4a6a8a; flex-wrap: wrap; }
+  .view-controls label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+  .view-controls input[type=checkbox] { accent-color: #3a6a9a; }
+  .view-ctrl-sep { width: 1px; height: 14px; background: #cbd6e2; }
+  .mini-btn { height: 22px; padding: 0 8px; background: #fff; border: 1px solid #b8c4d0; border-radius: 2px; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #2a4a6a; }
+  .mini-btn:hover { background: #eef3f8; }
+  .view-controls select { height: 22px; font-size: 11px; font-family: Arial, sans-serif; border: 1px solid #b8c4d0; border-radius: 2px; background: #fff; color: #2a4a6a; padding: 0 4px; }
+  .vseg { display: flex; border: 1px solid #9ab8d4; border-radius: 3px; overflow: hidden; }
+  .vseg-btn { height: 22px; padding: 0 10px; background: #fff; border: none; border-right: 1px solid #cddae8; font-size: 11px; font-family: Arial, sans-serif; cursor: pointer; color: #3a5a7a; }
+  .vseg-btn:last-child { border-right: none; }
+  .vseg-btn:hover { background: #eef3f8; }
+  .vseg-btn.active { background: #3a6a9a; color: #fff; font-weight: 700; }
+  .table-options { display: flex; align-items: center; gap: 10px; padding: 0 12px; margin-left: auto; font-size: 11px; color: #4a6a8a; }
+  .table-options span[title] { cursor: pointer; }
+
+  /* ── TABLE ── */
+  .table-wrap { flex: 1; overflow: auto; }
+  table.rep { border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+  table.rep thead th { position: sticky; top: 0; z-index: 5; background: #d8e4f0; color: #1a3a5a; font-weight: 700; padding: 5px 8px; border-right: 1px solid #bcccd8; border-bottom: 2px solid #9ab4c8; text-align: left; font-size: 10px; vertical-align: bottom; }
+  table.rep thead th.r { text-align: right; }
+  table.rep thead th.c { text-align: center; }
+
+  table.rep td { padding: 3px 8px; border-right: 1px solid #eef1f5; color: #26374a; }
+  table.rep td.r { text-align: right; }
+  table.rep td.c { text-align: center; }
+  table.rep td.link { color: #2a6aaa; cursor: pointer; }
+  table.rep td.link:hover { text-decoration: underline; }
+  table.rep td.neg { color: #b00020; }
+  table.rep td.zero { color: #9aa8b6; }
+
+  /* group (saldo) row */
+  tr.grp { background: #dde8f2; cursor: pointer; }
+  tr.grp:hover { background: #d2e0ee; }
+  tr.grp td { padding: 5px 8px; font-weight: 700; color: #0a2a4a; border-top: 2px solid #b0c8dc; border-bottom: 1px solid #b0c8dc; }
+  tr.grp td.tog { color: #2d4f72; }
+  tr.grp .gtog { display: inline-block; width: 12px; text-align: center; color: #2d4f72; }
+  tr.grp .gcount { font-weight: 400; font-size: 10px; color: #5a7590; margin-left: 4px; }
+  tr.grp td.closed { color: #7a8 a0; }
+  tr.grp.is-closed td { background: #e7edf3; color: #5f7284; }
+  tr.grp.is-closed:hover td { background: #dee6ee; }
+
+  /* movement (statement) rows */
+  tr.mv td { border-bottom: 1px solid #eef1f5; background: #fff; }
+  tr.mv:hover td { background: #f4f8fc; }
+  tr.mv td.first { padding-left: 20px; }
+  tr.mv.out-per td { color: #a9b6c4; background: #fbfcfe; font-style: italic; }
+  tr.mv.out-per:hover td { background: #f4f6f9; }
+
+  /* ── KOONDVAADE ── */
+  table.rep thead th.grouphdr { text-align: center; background: #c8d8ec; border-bottom: 1px solid #9ab4c8; font-size: 10px; }
+  tr.k-row td { background: #fff; border-bottom: 1px solid #eef1f5; }
+  tr.k-row:hover td { background: #f4f8fc; }
+  tr.k-row td.dim { font-weight: 600; color: #1a3a5a; }
+  tr.k-sub td { background: #e7edf3; color: #0a2a4a; font-weight: 700; border-top: 1px solid #c4d4e4; border-bottom: 1px solid #c4d4e4; }
+  tr.k-spacer td { background: #fff; height: 5px; padding: 0; border: none; }
+
+  /* grand total */
+  tr.grand td { background: #bcd4e6; color: #082438; font-weight: 700; border-top: 2px solid #6f98ba; border-bottom: 2px solid #6f98ba; padding: 6px 8px; }
+
+  tr.row-hidden { display: none; }
+
+  /* column groups hide */
+  body.hide-val .col-val { display: none; }
+  body.hide-kmta .col-kmta { display: none; }
+  body.hide-hetke .col-hetke { display: none; }
+
+  .empty-note { padding: 30px; text-align: center; color: #8898a8; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-logo">D</span>
+  <span class="topbar-sep"></span>
+  <span class="topbar-link">Ost</span>
+  <span>›</span>
+  <span class="topbar-link">Aruanded</span>
+  <span>›</span>
+  <span>Hankija ettemaksud</span>
+  <span class="kkk-wrap" style="margin-left:auto; position:relative;">
+    <button class="kkk-btn" onclick="event.stopPropagation(); toggleKkk()" title="Korduma kippuvad küsimused / testiteemad">❓ KKK / Testiteemad</button>
+    <div class="kkk-panel" id="kkkPanel" onclick="event.stopPropagation()">
+      <div class="kkk-head">Testiteemad &amp; lahtised küsimused</div>
+      <div class="kkk-list">
+        <div class="kkk-item">
+          <div class="kkk-q">Saldo JA väljavõte ühes aruandes</div>
+          <div class="kkk-a">
+            Kokkuvolditud olekus näitab iga rida <b>ühe ettemaksu (EtteID) saldot</b> valitud seisu kuupäeval. Rea avamisel (<code>▸</code>) kuvatakse <b>liikumised</b>, millest saldo on kokku tekkinud - deebet (ettemaks/tasumine) ja kreedit (arvega ära kasutamine), jooksva saldoga real.
+            <br><b>Näide:</b> EtteID tekib 100 €, arvega kasutatakse 30 € - avamisel näed mõlemat kannet ja lõppsaldot 70 €.
+            <br><span class="kkk-status">✔ Prototüübis kaetud</span>
+          </div>
+        </div>
+        <div class="kkk-item">
+          <div class="kkk-q">Saldo seisu kp vs periood - kaks eraldi asja</div>
+          <div class="kkk-a">
+            <b>Saldo seisu kp</b> = mis kuupäeva seisuga saldo arvutatakse (kõik hilisemad kanded jäetakse välja). <b>Periood</b> = millise ajavahemiku liikumisi väljavõttes näidatakse.
+            <br>Kui aruanne avatakse reskontrost lingi kaudu, tuleb kaasa <b>ainult seisu kp</b> (reskontro kuupäev), periood on tühi - avamisel näed kogu liikumist ettemaksu tekkest alates.
+            <br><span class="kkk-status">✔ Prototüübis kaetud</span>
+          </div>
+        </div>
+        <div class="kkk-item">
+          <div class="kkk-q">Jooksev saldo perioodi filtriga</div>
+          <div class="kkk-a">
+            Kui periood on määratud, kuvatakse väljavõttes <b>ainult selle perioodi liikumisi</b>, kuid <code>Saldo</code> tulbad näitavad endiselt <b>jooksvat kumulatiivset saldot</b> algusest, et number oleks tähenduslik. Perioodist väljas olevad read on halliks tuhmitud (valikuline: peida).
+            <br><span class="kkk-status">✔ Prototüübis kaetud</span>
+          </div>
+        </div>
+        <div class="kkk-item">
+          <div class="kkk-q">Hetkekursiga ümberhindlus</div>
+          <div class="kkk-a">
+            Valuutas ettemaksu saldo hinnatakse KOKKU-real ümber <b>hetkekursiga</b> (<code>Hetke-kurss</code>), et näha realiseerimata kursivahet baasvaluutas. Rea saldo (<code>Saldo baasvaluutas</code>) on tekkeaegse kursiga.
+            <br><span class="kkk-status">✔ Prototüübis kaetud</span>
+          </div>
+        </div>
+      </div>
+      <div class="kkk-foot">Märkmed testimiseks - ei ole osa aruande funktsioonist.</div>
+    </div>
+  </span>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- SEIS & PERIOOD -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Seis ja periood
+        <span class="help-i" style="margin-left:auto" onclick="event.stopPropagation();openHelp('seis')" title="Ava juhend">?</span>
+      </div>
+      <div class="sidebar-body">
+        <div class="sf">
+          <label>Saldo seisu kp <span class="badge-live">arvutab</span></label>
+          <input type="text" id="fAsOf" value="31.05.2023" onchange="render()">
+        </div>
+        <div class="sf-hint">Saldo arvutatakse selle kuupäeva seisuga. Hilisemad kanded jäetakse välja. Reskontrost avades tuleb kaasa reskontro kuupäev.</div>
+        <div class="sf-row">
+          <div class="sf"><label>Periood alates</label><input type="text" id="fFrom" placeholder="pp.kk.aaaa" onchange="render()"></div>
+          <div class="sf"><label>kuni</label><input type="text" id="fTo" placeholder="pp.kk.aaaa" onchange="render()"></div>
+        </div>
+        <div class="sf-hint">Periood piirab ainult väljavõttes näidatavaid liikumisi. Tühjaks jättes näidatakse kogu liikumist ettemaksu tekkest kuni seisu kp-ni.</div>
+        <button class="mini-btn" style="align-self:flex-start" onclick="clearPeriod()">✕ Tühjenda periood</button>
+      </div>
+    </div>
+
+    <!-- HANKIJA -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Hankija <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf"><label>Hankija kood/nimi</label>
+          <div class="sf-lookup">
+            <input type="text" id="fHankija" placeholder="nt 1058" onchange="render()">
+            <button class="lkp-btn" type="button" title="Nimekiri-asetaja">🔍</button>
+          </div>
+        </div>
+        <div class="sf"><label>Hankija klass</label><select><option value=""></option><option>Tarnija</option><option>Kontsern</option></select></div>
+      </div>
+    </div>
+
+    <!-- KONTO -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Konto <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf-row">
+          <div class="sf"><label>Algus</label><input type="text" id="fKontoFrom" placeholder="nt 114501" onchange="render()"></div>
+          <div class="sf"><label>Lõpp</label><input type="text" id="fKontoTo" placeholder="nt 114599" onchange="render()"></div>
+        </div>
+        <div class="sf-hint">Ettemaksude ettemaksukontod (nt 114501 hankija ettemaksud, 114502 ettemaksu-artikliga).</div>
+      </div>
+    </div>
+
+    <!-- ETTEMAKS -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Ettemaks <span class="arrow">▾</span></div>
+      <div class="sidebar-body">
+        <div class="sf"><label title="EtteID või ettemaksu-artikli seerianumber">EtteID / artikli SN</label><input type="text" id="fEtteId" placeholder="nt 118" onchange="render()"></div>
+        <div class="sf"><label>Ettemaks-artikkel</label><input type="text" id="fArtikkel" placeholder="nt E2" onchange="render()"></div>
+      </div>
+    </div>
+
+    <!-- OBJEKT / PROJEKT -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Objekt / Projekt <span class="arrow">▸</span></div>
+      <div class="sidebar-body collapsed">
+        <div class="sf"><label>Objekt</label><input type="text" placeholder="nt MÜÜK+TOOTMINE"></div>
+        <div class="sf"><label>Projekt</label><select><option value=""></option><option>PROJ2025</option><option>PROJ2024</option></select></div>
+      </div>
+    </div>
+
+    <!-- MUUD -->
+    <div class="sidebar-section">
+      <div class="sidebar-head">Muud <span class="arrow">▸</span></div>
+      <div class="sidebar-body collapsed">
+        <div class="sf"><label>Valuuta</label><select id="fValuuta" onchange="render()"><option value="">(kõik)</option><option>EUR</option><option>USD</option><option>SEK</option></select></div>
+        <div class="sf"><label>Keel</label><select><option>Eesti</option><option>English</option><option>Русский</option></select></div>
+        <div class="sf"><label>Ühik / täpsus</label><select><option>0,01</option><option>1</option><option>1000</option></select></div>
+      </div>
+    </div>
+
+    <button class="sidebar-btn" onclick="render()">▶ Näita</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="report-head">
+      <button class="tog-btn" id="togBtn" onclick="toggleSidebar()">&#9664; Filtrid</button>
+      <span class="report-title">Hankija ettemaksud</span>
+      <div class="report-actions">
+        <button class="ra-btn">🖨 Trüki</button>
+        <button class="ra-btn">📤 Meil</button>
+        <button class="ra-btn">⬇ Loo PDF</button>
+        <button class="ra-btn primary" onclick="render()">▶ Aruanne</button>
+      </div>
+    </div>
+
+    <div class="status-strip">
+      <div class="ss-item"><span class="ss-lbl">Saldo seisuga:</span><span class="ss-val" id="ssAsOf">31.05.2023</span></div>
+      <div class="ss-item"><span class="ss-lbl">Väljavõtte periood:</span><span class="ss-val per empty" id="ssPer">kogu liikumine</span></div>
+      <div class="ss-item"><span class="ss-lbl">Avatud ettemakse:</span><span class="ss-val" id="ssOpen">0</span></div>
+    </div>
+
+    <div class="table-controls">
+      <div class="schema-tab" id="schemaTab">Ettemaksude saldo + väljavõte</div>
+      <div class="view-controls">
+        <div class="vseg" title="Vali vaade">
+          <button class="vseg-btn active" id="vsegDetail" onclick="setView('detail')">📄 Detailne</button>
+          <button class="vseg-btn" id="vsegKoond" onclick="setView('koond')">📊 Koond</button>
+        </div>
+        <div class="view-ctrl-sep"></div>
+        <!-- DETAILNE juhtnupud -->
+        <span id="detailCtrls" style="display:flex;align-items:center;gap:12px;">
+          <button class="mini-btn" onclick="expandAll(true)">⊞ Ava kõik</button>
+          <button class="mini-btn" onclick="expandAll(false)">⊟ Sule kõik</button>
+          <label title="Perioodist väljas olevad liikumised näidatakse hallilt; märkega peida"><input type="checkbox" id="cbHideOut" onchange="render()"> Peida perioodivälised read</label>
+        </span>
+        <!-- KOOND juhtnupud -->
+        <span id="koondCtrls" style="display:none;align-items:center;gap:8px;">
+          <label>Näita vahesummat:
+            <select id="selSub" onchange="render()">
+              <option value="">(pole)</option>
+              <option value="konto" selected>Konto</option>
+              <option value="hankija">Hankija</option>
+              <option value="etteId">EtteID / SN</option>
+              <option value="valuuta">Valuuta</option>
+            </select>
+          </label>
+          <label>Grupeeri:
+            <select id="selGrp" onchange="render()">
+              <option value="valuuta" selected>Valuuta</option>
+              <option value="konto">Konto</option>
+              <option value="etteId">EtteID / SN</option>
+              <option value="artikkel">Artikkel</option>
+              <option value="hankija">Hankija</option>
+              <option value="">(pole)</option>
+            </select>
+          </label>
+        </span>
+        <div class="view-ctrl-sep"></div>
+        <label title="Kuva ka nullsaldoga (suletud) ettemaksud"><input type="checkbox" id="cbClosed" checked onchange="render()"> Suletud (0-saldo)</label>
+        <div class="view-ctrl-sep"></div>
+        <label title="Valuutatulbad (Val. deebet/kreedit, saldo valuutas, kurss)"><input type="checkbox" id="cbVal" checked onchange="applyColHide()"> Valuutatulbad</label>
+        <label title="Km-ta tulbad"><input type="checkbox" id="cbKmta" checked onchange="applyColHide()"> Km-ta tulbad</label>
+        <label title="Hetkekursiga ümberhindluse tulbad"><input type="checkbox" id="cbHetke" checked onchange="applyColHide()"> Hetkekursiga tulbad</label>
+      </div>
+      <div class="table-options">
+        <span title="Eksport Excel" style="color:#4a7a4a;font-size:15px;">📊</span>
+        <span title="Eksport CSV" style="color:#6a8ab0;font-size:15px;">📋</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="rep" id="repTable">
+        <thead id="repHead"></thead>
+        <tbody id="repBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="wiki-overlay" id="wikiOverlay" onclick="if(event.target===this)closeHelp()">
+  <div class="wiki-modal">
+    <div class="wiki-modal-head">
+      <span class="wm-title">Hankija ettemaksud - juhend</span>
+      <button class="wm-close" onclick="closeHelp()" title="Sulge">&times;</button>
+    </div>
+    <div class="wiki-body" id="wikiBody">
+      <h2 id="wiki-seis">Saldo seisu kp ja periood</h2>
+      <p>Aruandel on <b>kaks eraldi ajaparameetrit</b>, mis vastavad kahele eri küsimusele:</p>
+      <table>
+        <tr><th>Väli</th><th>Vastab küsimusele</th><th>Mõju</th></tr>
+        <tr><td><b>Saldo seisu kp</b></td><td>Kui suur on ettemaksu saldo <i>täna / valitud kuupäeval</i>?</td><td>Saldo arvutatakse selle kp seisuga; hilisemad kanded jäetakse välja.</td></tr>
+        <tr><td><b>Periood (alates - kuni)</b></td><td>Milline oli ettemaksu <i>liikumine mingil ajavahemikul</i>?</td><td>Piirab väljavõttes näidatavaid liikumisridu. Saldo tulbad jäävad jooksvalt kumulatiivseks.</td></tr>
+      </table>
+      <div class="wnote">Reskontrost <b>ettemaks</b>-lingi kaudu avades tuleb kaasa ainult <b>seisu kp</b> (reskontro kuupäev), periood jääb tühjaks. Rea avamisel näed siis kogu liikumist ettemaksu tekkest alates.</div>
+
+      <h2 id="wiki-vaade">Saldo ja väljavõte ühes vaates</h2>
+      <p>Iga <b>EtteID</b> (või ettemaksu-artikli seerianumber) on aruandes kokkuvolditav rida:</p>
+      <ul>
+        <li><b>Kokku volditud</b> = ettemaksu saldo seisu kuupäeval (üks rida = üks saldo).</li>
+        <li><b>Avatud</b> (<code>▸</code>) = liikumised, millest saldo koosneb: deebet suurendab ettemaksu (ettemaksu tasumine tarnijale), kreedit vähendab (ostuarvega ära kasutamine). Iga real on jooksev saldo.</li>
+      </ul>
+
+      <h2 id="wiki-hetke">Hetkekursiga ümberhindlus</h2>
+      <p>Välisvaluutas ettemaksu saldo real (<code>Saldo baasvaluutas</code>) on tekkeaegse kursiga. KOKKU-real hinnatakse valuutasaldo ümber <b>hetkekursiga</b>, et näha realiseerimata kursivahe mõju baasvaluutas (km-ga ja km-ta).</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── util ── */
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtNum(n){
+    if (n === 0 || Object.is(n, -0)) return '0,00';
+    const neg = n < 0, abs = Math.abs(n);
+    const parts = abs.toFixed(2).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+$)/g, ' ');
+    return (neg ? '-' : '') + parts[0] + ',' + parts[1];
+  }
+  function fmtRate(n, dec){ return n.toFixed(dec).replace('.', ','); }
+  function r2(n){ return Math.round(n * 100) / 100; }
+  // dd.mm.yyyy -> yyyymmdd number (sortitav/võrreldav)
+  function dkey(d){
+    const m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec((d||'').trim());
+    if (!m) return null;
+    return parseInt(m[3]) * 10000 + parseInt(m[2]) * 100 + parseInt(m[1]);
+  }
+  const KM = 1.2; // km-ta = km-ga / 1.2 (KM 20%)
+
+  /* ── NÄIDISANDMED ── iga grupp = üks ettemaks (EtteID / artikli SN) ── */
+  const GROUPS = [
+    { konto:'114501', etteId:'118', artikkel:'', hankija:'1058', nimi:'Directo OÜ', valuuta:'USD', hetke:0.9545521, mv:[
+      { date:'03.05.2023', type:'Tasumine', doc:'TASU.100220', order:'125425', comment:'', obj:'', proj:'', valD:1000, valK:0, kurss:0.94352100, kmk:'1' },
+      { date:'05.05.2023', type:'Ostuarve', doc:'OST.100275',  order:'',       comment:'', obj:'', proj:'', valD:0, valK:400, kurss:0.94352100, kmk:'25' },
+      { date:'06.05.2023', type:'Tasumine', doc:'TASU.122321', order:'',       comment:'', obj:'', proj:'', valD:0, valK:600, kurss:0.94352100, kmk:'1' },
+    ]},
+    { konto:'114501', etteId:'119', artikkel:'', hankija:'1058', nimi:'Directo OÜ', valuuta:'EUR', hetke:1.0000000, mv:[
+      { date:'03.05.2023', type:'Tasumine', doc:'TASU.100365', order:'', comment:'', obj:'', proj:'', valD:600, valK:0, kurss:1.00000000, kmk:'1' },
+      { date:'04.05.2023', type:'Ostuarve', doc:'OST.100278',  order:'', comment:'', obj:'', proj:'', valD:0, valK:155, kurss:1.00000000, kmk:'' },
+      { date:'20.05.2023', type:'Ostuarve', doc:'OST.122329',  order:'', comment:'', obj:'', proj:'', valD:0, valK:300, kurss:1.00000000, kmk:'' },
+    ]},
+    { konto:'114501', etteId:'120', artikkel:'', hankija:'1058', nimi:'Directo OÜ', valuuta:'USD', hetke:0.9545521, mv:[
+      { date:'03.05.2023', type:'Tasumine', doc:'TASU.100400', order:'165485', comment:'', obj:'', proj:'', valD:1200, valK:0, kurss:0.95425210, kmk:'1' },
+    ]},
+    { konto:'114502', etteId:'ETTE.1', artikkel:'E2', hankija:'1058', nimi:'Directo OÜ', valuuta:'USD', hetke:0.9545521, mv:[
+      { date:'03.05.2023', type:'Ostuarve', doc:'OST.100278', order:'', comment:'', obj:'', proj:'', valD:2400, valK:0, kurss:0.94536540, kmk:'' },
+      { date:'05.05.2023', type:'Ostuarve', doc:'OST.100279', order:'', comment:'', obj:'', proj:'', valD:0, valK:1800, kurss:0.94536540, kmk:'3' },
+      { date:'20.05.2023', type:'Ostuarve', doc:'OST.100279', order:'', comment:'', obj:'', proj:'', valD:0, valK:200, kurss:0.94536540, kmk:'' },
+    ]},
+    { konto:'114502', etteId:'ETTE.2', artikkel:'', hankija:'1058', nimi:'Directo OÜ', valuuta:'EUR', hetke:1.0000000, mv:[
+      { date:'03.05.2023', type:'Ostuarve', doc:'OST.100300', order:'', comment:'', obj:'', proj:'', valD:1000, valK:0, kurss:1.00000000, kmk:'1' },
+      { date:'04.05.2023', type:'Ostuarve', doc:'OST.100301', order:'', comment:'', obj:'', proj:'', valD:0, valK:200, kurss:1.00000000, kmk:'' },
+      { date:'25.05.2023', type:'Ostuarve', doc:'OST.100302', order:'', comment:'', obj:'', proj:'', valD:0, valK:200, kurss:1.00000000, kmk:'' },
+    ]},
+  ];
+
+  /* ── olek ── */
+  const expanded = {};                          // gid -> bool
+  GROUPS.forEach((g, i) => expanded[i] = false);
+  let VIEW = 'detail';                           // 'detail' | 'koond'
+
+  const DIMS = {
+    konto:   { label:'Konto',       get:g => g.konto },
+    valuuta: { label:'Valuuta',     get:g => g.valuuta },
+    hankija: { label:'Hankija',     get:g => g.hankija + ' ' + g.nimi },
+    etteId:  { label:'EtteID / SN', get:g => g.etteId },
+    artikkel:{ label:'Artikkel',    get:g => g.artikkel || '(pole)' },
+  };
+
+  function setView(v){
+    VIEW = v;
+    document.getElementById('vsegDetail').classList.toggle('active', v === 'detail');
+    document.getElementById('vsegKoond').classList.toggle('active', v === 'koond');
+    document.getElementById('detailCtrls').style.display = v === 'detail' ? 'flex' : 'none';
+    document.getElementById('koondCtrls').style.display  = v === 'koond'  ? 'flex' : 'none';
+    document.getElementById('schemaTab').textContent = v === 'detail' ? 'Ettemaksude saldo + väljavõte' : 'Ettemaksude koond';
+    render();
+  }
+
+  /* ── KKK ── */
+  function toggleKkk(){ document.getElementById('kkkPanel').classList.toggle('open'); }
+  document.addEventListener('click', e => {
+    const w = document.querySelector('.kkk-wrap');
+    if (w && !w.contains(e.target)) document.getElementById('kkkPanel').classList.remove('open');
+  });
+
+  /* ── help ── */
+  function openHelp(section){
+    document.getElementById('wikiOverlay').classList.add('open');
+    const map = { seis:'wiki-seis', vaade:'wiki-vaade', hetke:'wiki-hetke' };
+    const el = document.getElementById(map[section]);
+    const body = document.getElementById('wikiBody');
+    if (el){ body.scrollTop = el.offsetTop - body.offsetTop - 6; el.classList.remove('wiki-target-flash'); void el.offsetWidth; el.classList.add('wiki-target-flash'); }
+    else body.scrollTop = 0;
+  }
+  function closeHelp(){ document.getElementById('wikiOverlay').classList.remove('open'); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
+
+  /* ── sidebar ── */
+  document.querySelectorAll('.sidebar-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const body = head.nextElementSibling;
+      if (!body || !body.classList.contains('sidebar-body')) return;
+      const isOpen = !body.classList.contains('collapsed');
+      body.classList.toggle('collapsed', isOpen);
+      const arr = head.querySelector('.arrow');
+      if (arr) arr.textContent = isOpen ? '▸' : '▾';
+    });
+  });
+  let _sidebarOpen = true;
+  function toggleSidebar(){
+    _sidebarOpen = !_sidebarOpen;
+    document.querySelector('.sidebar').classList.toggle('hidden', !_sidebarOpen);
+    document.getElementById('togBtn').textContent = (_sidebarOpen ? '◄' : '►') + ' Filtrid';
+  }
+
+  function clearPeriod(){ document.getElementById('fFrom').value=''; document.getElementById('fTo').value=''; render(); }
+  function expandAll(on){ GROUPS.forEach((g,i)=>expanded[i]=on); render(); }
+  function toggleGrp(i){ expanded[i] = !expanded[i]; render(); }
+
+  function applyColHide(){
+    document.body.classList.toggle('hide-val', !document.getElementById('cbVal').checked);
+    document.body.classList.toggle('hide-kmta', !document.getElementById('cbKmta').checked);
+    document.body.classList.toggle('hide-hetke', !document.getElementById('cbHetke').checked);
+  }
+
+  /* ── grupi arvutus seisu kp seisuga ── */
+  function computeGroup(g, asOfKey){
+    let sv = 0, sb = 0, td = 0, tk = 0, tvd = 0, tvk = 0;
+    const rows = [];
+    g.mv.forEach(m => {
+      const k = dkey(m.date);
+      if (asOfKey != null && k != null && k > asOfKey) return; // seisu kp piir
+      const baseD = r2(m.valD * m.kurss);
+      const baseK = r2(m.valK * m.kurss);
+      sv = r2(sv + m.valD - m.valK);
+      sb = r2(sb + baseD - baseK);
+      td += baseD; tk += baseK; tvd += m.valD; tvk += m.valK;
+      rows.push({ m, baseD, baseK, runVal: sv, runBase: sb, runKmta: r2(sb / KM), dk:k });
+    });
+    const saldoVal = sv, saldoBase = r2(sb);
+    return {
+      rows,
+      tvd, tvk, td: r2(td), tk: r2(tk),
+      saldoVal, saldoBase, saldoKmta: r2(saldoBase / KM),
+      hetkeGa: r2(saldoVal * g.hetke), hetkeKmta: r2((saldoVal * g.hetke) / KM),
+    };
+  }
+
+  function passFilter(g){
+    const h = document.getElementById('fHankija').value.trim().toLowerCase();
+    if (h && !((g.hankija+' '+g.nimi).toLowerCase().includes(h))) return false;
+    const kf = document.getElementById('fKontoFrom').value.trim();
+    const kt = document.getElementById('fKontoTo').value.trim();
+    if (kf && g.konto < kf) return false;
+    if (kt && g.konto > kt) return false;
+    const e = document.getElementById('fEtteId').value.trim().toLowerCase();
+    if (e && !g.etteId.toLowerCase().includes(e)) return false;
+    const a = document.getElementById('fArtikkel').value.trim().toLowerCase();
+    if (a && !(g.artikkel||'').toLowerCase().includes(a)) return false;
+    const v = document.getElementById('fValuuta').value;
+    if (v && g.valuuta !== v) return false;
+    return true;
+  }
+
+  function cell(v, cls){ // numbriline
+    const c = ['r']; if (cls) c.push(cls);
+    if (v < 0) c.push('neg'); else if (v === 0) c.push('zero');
+    return '<td class="' + c.join(' ') + '">' + fmtNum(v) + '</td>';
+  }
+  function blank(cls){ return '<td class="' + (cls||'') + '"></td>'; }
+
+  /* ── DETAIL thead ── */
+  const DETAIL_HEAD =
+    '<tr>' +
+    '<th style="min-width:78px">Aeg</th><th>Dok tüüp</th><th>Dokument</th>' +
+    '<th class="c">Konto</th><th>EtteID / SN</th><th>Artikkel</th>' +
+    '<th class="c">Hankija</th><th>Hankija nimi</th><th>Ostutellimus</th><th>Kommentaar</th>' +
+    '<th>Objekt</th><th>Projekt</th><th class="c">Val</th>' +
+    '<th class="r col-val">Val. deebet</th><th class="r col-val">Val. kreedit</th>' +
+    '<th class="r col-val">Saldo valuutas</th><th class="r col-val">Kurss</th>' +
+    '<th class="r">Deebet</th><th class="r">Kreedit</th>' +
+    '<th class="r">Saldo baasval km-ga</th><th class="r col-kmta">Saldo baasval km-ta</th>' +
+    '<th class="c">KMK</th><th class="r col-hetke">Hetke-kurss</th>' +
+    '<th class="r col-hetke">Hetkek. saldo km-ga</th><th class="r col-hetke col-kmta">Hetkek. saldo km-ta</th>' +
+    '</tr>';
+
+  /* ── dispetšer ── */
+  function render(){
+    applyColHide();
+    // seisuriba (ühine)
+    const asOf = document.getElementById('fAsOf').value.trim();
+    document.getElementById('ssAsOf').textContent = asOf || '-';
+    const fromKey0 = dkey(document.getElementById('fFrom').value);
+    const toKey0   = dkey(document.getElementById('fTo').value);
+    const hasPer0  = fromKey0 != null || toKey0 != null;
+    const perEl0 = document.getElementById('ssPer');
+    if (hasPer0){
+      perEl0.textContent = (document.getElementById('fFrom').value.trim() || '...') + ' - ' + (document.getElementById('fTo').value.trim() || '...');
+      perEl0.classList.remove('empty');
+    } else { perEl0.textContent = 'kogu liikumine'; perEl0.classList.add('empty'); }
+    if (VIEW === 'koond') renderKoond(); else renderDetail();
+  }
+
+  /* ── ühine: filtreeritud + arvutatud grupid ── */
+  function activeGroups(asOfKey){
+    const showClosed = document.getElementById('cbClosed').checked;
+    const out = [];
+    GROUPS.forEach((g, i) => {
+      if (!passFilter(g)) return;
+      const c = computeGroup(g, asOfKey);
+      if (c.saldoVal === 0 && !showClosed) return;
+      out.push({ g, c, i });
+    });
+    return out;
+  }
+
+  /* ══════════ KOONDVAADE ══════════ */
+  function renderKoond(){
+    const asOfKey = dkey(document.getElementById('fAsOf').value.trim());
+    const subKey = document.getElementById('selSub').value;
+    const grpKey = document.getElementById('selGrp').value;
+    const subDim = DIMS[subKey] || null;
+    const grpDim = DIMS[grpKey] || null;
+    const items = activeGroups(asOfKey);
+
+    // Valuuta-tulba päis: ainult kui kumbki dimensioon pole Valuuta
+    const showValCol = grpKey !== 'valuuta' && subKey !== 'valuuta';
+
+    // ── thead ──
+    let head = '<tr>';
+    if (subDim) head += '<th style="min-width:90px">' + esc(subDim.label) + '</th>';
+    if (grpDim) head += '<th style="min-width:90px">' + esc(grpDim.label) + '</th>';
+    if (showValCol) head += '<th class="c">Valuuta</th>';
+    head += '<th class="grouphdr col-val" colspan="3">Valuutas</th>';
+    head += '<th class="grouphdr" colspan="2">Baasvaluutas</th>';
+    head += '<th class="grouphdr col-hetke" colspan="2">Hetkekursiga (' + esc(document.getElementById('fAsOf').value.trim()) + ')</th>';
+    head += '</tr><tr>';
+    if (subDim) head += '<th></th>';
+    if (grpDim) head += '<th></th>';
+    if (showValCol) head += '<th></th>';
+    head += '<th class="r col-val">Deebet</th><th class="r col-val">Kreedit</th><th class="r col-val">Saldo</th>';
+    head += '<th class="r">Saldo km-ga</th><th class="r col-kmta">Saldo km-ta</th>';
+    head += '<th class="r col-hetke">Saldo km-ga</th><th class="r col-hetke col-kmta">Saldo km-ta</th>';
+    head += '</tr>';
+    document.getElementById('repHead').innerHTML = head;
+
+    const nCols = (subDim?1:0) + (grpDim?1:0) + (showValCol?1:0) + 7;
+
+    // ── akumulaator ──
+    function blankBucket(){ return { tvd:0,tvk:0,sv:0,sb:0,hga:0, cur:new Set(), n:0 }; }
+    function add(b, c, valuuta){ b.tvd+=c.tvd; b.tvk+=c.tvk; b.sv=r2(b.sv+c.saldoVal); b.sb=r2(b.sb+c.saldoBase); b.hga=r2(b.hga+c.hetkeGa); b.cur.add(valuuta); b.n++; return b; }
+
+    // järjestatud unikaalsed dim-väärtused (esmailmumise järjekorras)
+    function orderedVals(list, dim){ const seen=[]; list.forEach(x=>{ const v=dim.get(x.g); if(!seen.includes(v)) seen.push(v); }); return seen; }
+
+    function bucketRowCells(b){
+      const single = b.cur.size === 1;
+      const svKmta = r2(b.sb / KM), hKmta = r2(b.hga / KM);
+      let h = '';
+      // valuutas (ainult kui üks valuuta)
+      h += single ? cell(b.tvd,'col-val') + cell(b.tvk,'col-val') + cell(b.sv,'col-val')
+                  : '<td class="r col-val zero"></td><td class="r col-val zero"></td><td class="r col-val zero"></td>';
+      h += cell(b.sb) + cell(svKmta,'col-kmta');
+      h += cell(b.hga,'col-hetke') + cell(hKmta,'col-hetke col-kmta');
+      return h;
+    }
+
+    let html = '';
+    let G = blankBucket();
+
+    if (subDim){
+      const subVals = orderedVals(items, subDim);
+      subVals.forEach((sv, si) => {
+        const subItems = items.filter(x => subDim.get(x.g) === sv);
+        const subB = blankBucket();
+        if (grpDim){
+          const grpVals = orderedVals(subItems, grpDim);
+          grpVals.forEach((gv, gi) => {
+            const cellItems = subItems.filter(x => grpDim.get(x.g) === gv);
+            const b = blankBucket();
+            cellItems.forEach(x => add(b, x.c, x.g.valuuta));
+            add(subB, {tvd:b.tvd,tvk:b.tvk,saldoVal:b.sv,saldoBase:b.sb,hetkeGa:b.hga}, [...b.cur][0] || '');
+            b.cur.forEach(cu => subB.cur.add(cu));
+            html += '<tr class="k-row">' +
+              (gi === 0 ? '<td class="dim">' + esc(sv) + '</td>' : '<td></td>') +
+              '<td class="dim">' + esc(gv) + '</td>' +
+              (showValCol ? '<td class="c">' + esc(b.cur.size===1 ? [...b.cur][0] : '') + '</td>' : '') +
+              bucketRowCells(b) + '</tr>';
+          });
+        } else {
+          subItems.forEach(x => add(subB, x.c, x.g.valuuta));
+          html += '<tr class="k-row"><td class="dim">' + esc(sv) + '</td>' +
+            (showValCol ? '<td class="c">' + esc(subB.cur.size===1 ? [...subB.cur][0] : '') + '</td>' : '') +
+            bucketRowCells(subB) + '</tr>';
+        }
+        // vahesumma (ainult kui grupeeritud, muidu rida ise ongi kokkuvõte)
+        if (grpDim){
+          html += '<tr class="k-sub"><td>Vahesumma ' + esc(sv) + '</td><td></td>' +
+            (showValCol ? '<td></td>' : '') +
+            '<td class="r col-val zero"></td><td class="r col-val zero"></td><td class="r col-val zero"></td>' +
+            cell(subB.sb) + cell(r2(subB.sb/KM),'col-kmta') +
+            cell(subB.hga,'col-hetke') + cell(r2(subB.hga/KM),'col-hetke col-kmta') + '</tr>';
+        }
+        // grand
+        subItems.forEach(x => add(G, x.c, x.g.valuuta));
+        if (si < subVals.length - 1) html += '<tr class="k-spacer"><td colspan="' + nCols + '"></td></tr>';
+      });
+    } else if (grpDim){
+      const grpVals = orderedVals(items, grpDim);
+      grpVals.forEach(gv => {
+        const cellItems = items.filter(x => grpDim.get(x.g) === gv);
+        const b = blankBucket();
+        cellItems.forEach(x => { add(b, x.c, x.g.valuuta); add(G, x.c, x.g.valuuta); });
+        html += '<tr class="k-row"><td class="dim">' + esc(gv) + '</td>' +
+          (showValCol ? '<td class="c">' + esc(b.cur.size===1 ? [...b.cur][0] : '') + '</td>' : '') +
+          bucketRowCells(b) + '</tr>';
+      });
+    } else {
+      items.forEach(x => add(G, x.c, x.g.valuuta));
+      html += '<tr class="k-row"><td class="dim">Kõik ettemaksud</td>' +
+        (showValCol ? '<td class="c"></td>' : '') + bucketRowCells(G) + '</tr>';
+    }
+
+    document.getElementById('ssOpen').textContent = items.filter(x => x.c.saldoVal !== 0).length;
+
+    if (!items.length){
+      document.getElementById('repBody').innerHTML = '<tr><td colspan="' + nCols + '"><div class="empty-note">Valitud filtritega ettemakse ei leitud.</div></td></tr>';
+      return;
+    }
+
+    // KÕIK KOKKU
+    html += '<tr class="grand"><td>KÕIK KOKKU</td>';
+    if (grpDim) html += '<td></td>';
+    if (showValCol) html += '<td></td>';
+    html += '<td class="r col-val zero"></td><td class="r col-val zero"></td><td class="r col-val zero"></td>' +
+      cell(G.sb) + cell(r2(G.sb/KM),'col-kmta') +
+      cell(G.hga,'col-hetke') + cell(r2(G.hga/KM),'col-hetke col-kmta') + '</tr>';
+
+    document.getElementById('repBody').innerHTML = html;
+  }
+
+  /* ══════════ DETAILVAADE ══════════ */
+  function renderDetail(){
+    document.getElementById('repHead').innerHTML = DETAIL_HEAD;
+    const asOf = document.getElementById('fAsOf').value.trim();
+    const asOfKey = dkey(asOf);
+    const fromKey = dkey(document.getElementById('fFrom').value);
+    const toKey   = dkey(document.getElementById('fTo').value);
+    const hasPer  = fromKey != null || toKey != null;
+    const showClosed = document.getElementById('cbClosed').checked;
+    const hideOut = document.getElementById('cbHideOut').checked;
+
+    let html = '';
+    let G_tvd=0, G_tvk=0, G_td=0, G_tk=0, G_ga=0, G_kmta=0, G_hga=0, G_hkmta=0;
+    let openCount = 0, shownGroups = 0;
+
+    GROUPS.forEach((g, i) => {
+      if (!passFilter(g)) return;
+      const c = computeGroup(g, asOfKey);
+      const isClosed = c.saldoVal === 0;
+      if (isClosed && !showClosed) return;
+      shownGroups++;
+      if (!isClosed) openCount++;
+
+      // grand kokku (baasvaluutas alati summeeritav)
+      G_tvd += c.tvd; G_tvk += c.tvk; G_td = r2(G_td + c.td); G_tk = r2(G_tk + c.tk);
+      G_ga = r2(G_ga + c.saldoBase); G_hga = r2(G_hga + c.hetkeGa);
+
+      const open = expanded[i];
+      const artLbl = g.artikkel ? (g.etteId + ' / ' + g.artikkel) : g.etteId;
+
+      // GRUPI (SALDO) RIDA
+      html += '<tr class="grp' + (isClosed ? ' is-closed' : '') + '" onclick="toggleGrp(' + i + ')">' +
+        '<td class="tog"><span class="gtog">' + (open ? '▾' : '▸') + '</span></td>' +
+        '<td>' + (isClosed ? 'suletud' : 'SALDO') + '</td>' +
+        '<td><span class="gcount">' + c.rows.length + ' liik.</span></td>' +
+        '<td class="c">' + esc(g.konto) + '</td>' +
+        '<td>' + esc(g.etteId) + '</td>' +
+        '<td>' + esc(g.artikkel) + '</td>' +
+        '<td class="c">' + esc(g.hankija) + '</td>' +
+        '<td>' + esc(g.nimi) + '</td>' +
+        blank() + blank() + blank() + blank() +
+        '<td class="c">' + esc(g.valuuta) + '</td>' +
+        cell(c.tvd, 'col-val') + cell(c.tvk, 'col-val') + cell(c.saldoVal, 'col-val') +
+        '<td class="r col-val zero"></td>' +
+        cell(c.td) + cell(c.tk) + cell(c.saldoBase) + cell(c.saldoKmta, 'col-kmta') +
+        '<td class="c"></td>' +
+        '<td class="r col-hetke">' + fmtRate(g.hetke, 7) + '</td>' +
+        cell(c.hetkeGa, 'col-hetke') + cell(c.hetkeKmta, 'col-hetke col-kmta') +
+        '</tr>';
+
+      // LIIKUMISED (väljavõte)
+      if (open){
+        c.rows.forEach(rw => {
+          const inPer = !hasPer || ((fromKey == null || rw.dk >= fromKey) && (toKey == null || rw.dk <= toKey));
+          if (hasPer && hideOut && !inPer) return;
+          const m = rw.m;
+          html += '<tr class="mv' + (inPer ? '' : ' out-per') + '">' +
+            '<td class="first">' + esc(m.date) + '</td>' +
+            '<td>' + esc(m.type) + '</td>' +
+            '<td class="link">' + esc(m.doc) + '</td>' +
+            '<td class="c">' + esc(g.konto) + '</td>' +
+            '<td>' + esc(g.etteId) + '</td>' +
+            '<td>' + esc(g.artikkel) + '</td>' +
+            '<td class="c">' + esc(g.hankija) + '</td>' +
+            '<td>' + esc(g.nimi) + '</td>' +
+            '<td>' + esc(m.order) + '</td>' +
+            '<td>' + esc(m.comment) + '</td>' +
+            '<td>' + esc(m.obj) + '</td>' +
+            '<td>' + esc(m.proj) + '</td>' +
+            '<td class="c">' + esc(g.valuuta) + '</td>' +
+            (m.valD ? cell(m.valD, 'col-val') : '<td class="r col-val zero">0,00</td>') +
+            (m.valK ? cell(m.valK, 'col-val') : '<td class="r col-val zero">0,00</td>') +
+            cell(rw.runVal, 'col-val') +
+            '<td class="r col-val">' + fmtRate(m.kurss, 8) + '</td>' +
+            (m.valD ? cell(rw.baseD) : '<td class="r zero">0,00</td>') +
+            (m.valK ? cell(rw.baseK) : '<td class="r zero">0,00</td>') +
+            cell(rw.runBase) + cell(rw.runKmta, 'col-kmta') +
+            '<td class="c">' + esc(m.kmk) + '</td>' +
+            '<td class="r col-hetke"></td><td class="r col-hetke"></td><td class="r col-hetke col-kmta"></td>' +
+            '</tr>';
+        });
+      }
+    });
+
+    G_kmta = r2(G_ga / KM); G_hkmta = r2(G_hga / KM);
+    document.getElementById('ssOpen').textContent = openCount;
+
+    if (shownGroups === 0){
+      html = '<tr><td colspan="25"><div class="empty-note">Valitud filtritega ettemakse ei leitud.</div></td></tr>';
+      document.getElementById('repBody').innerHTML = html;
+      return;
+    }
+
+    // KÕIK KOKKU
+    html += '<tr class="grand">' +
+      '<td></td><td>KÕIK KOKKU</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+      cell(G_tvd, 'col-val') + cell(G_tvk, 'col-val') + '<td class="r col-val zero"></td><td class="r col-val zero"></td>' +
+      cell(G_td) + cell(G_tk) + cell(G_ga) + cell(G_kmta, 'col-kmta') +
+      '<td></td><td class="r col-hetke"></td>' +
+      cell(G_hga, 'col-hetke') + cell(G_hkmta, 'col-hetke col-kmta') +
+      '</tr>';
+
+    document.getElementById('repBody').innerHTML = html;
+  }
+
+  /* ── init ── */
+  setView('detail');
+</script>
+</body>
+</html>
