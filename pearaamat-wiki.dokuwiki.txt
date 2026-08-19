@@ -43,6 +43,31 @@ Sama kirjapilt kehtib ka siis, kui JA-märgiks on seatud ''+'' (''Obj1 + Obj2 , 
 
 **NB! Erinevus vanast.** Vanas Pearaamatus sai kombinatsioone otsida teisiti (nt ''Obj1,Obj2 + Obj3,Obj4'') ja loogika polnud päris ühtne. Uues aruandes on reegel **ühtne kõigil väljadel**: koma = VÕI, seadistatav märk (''&''/''+''/''\|'') = JA.
 
+=== Miks uues aruandes nii tehti ===
+
+Vanas Pearaamatus oli otsingumärkide tähendus **väljade lõikes ebaühtlane** - koma tähendas ühel väljal VÕI, teisel JA, ja kombineerimiseks kasutati kohati ''+''. See oli kasutajale segane ja raskesti õpitav. Uues aruandes ühtlustati loogika järgmistel põhjustel:
+
+  * **Üks reegel kõigi väljade jaoks** - koma on alati VÕI, seadistatav märk alati JA. Kasutaja õpib loogika ühe korra ja see kehtib kõikjal (Konto, Objekt jne).
+  * **Ootuspärasus** - koma kui „loend" (VÕI) on levinud ja intuitiivne arusaam nii Directos kui mujal.
+  * **Ühemõttelised kombinatsioonid** - reegel „JA seob tugevamalt kui VÕI" annab selge viisi ehitada (A JA B) VÕI (C JA D) ilma segaduseta.
+  * **Paindlikkus** - JA-märk on seadistatav (''&''/''+''/''\|''), aga VÕI jääb alati komaks, seega põhiloogika on alati sama.
+
+=== Mis vana ja uue vahel muutub ===
+
+Kuna märkide tähendus ühtlustati, siis **osa vana harjumustest ei tööta enam samamoodi**:
+
+^ Väli ^ Vanas ^ Uues ^
+| **Objekt** | ''+'' = VÕI, '','' = JA | '','' = VÕI, seadistatav märk (''&''/''+''/''\|'') = JA |
+| **Konto** | kombineerimine ''+''-ga (nt ''111101:111191+111203'') | kombineerimine komaga (nt ''111101:111191,111203'') |
+
+**Praktiline mõju:**
+
+  * Objekti väljal **pöördus koma tähendus** (vanas JA, uues VÕI) - sama sisestus võib anda erineva tulemuse.
+  * Konto väljal tuleb kombineerimiseks kasutada koma, mitte ''+''; vana harjumusega kasutaja peab ümber õppima.
+  * **NB!** Kui vanu salvestatud filtreid või malle uude aruandesse üle tuua, tuleb **koma tähenduse muutust arvestada** (eriti Objektil) - vastasel juhul võib tulemus vaikselt muutuda. Migratsioonil tasub need üle kontrollida. //(Kui/kuidas vanu salvestatud filtreid üle tuuakse, tuleb arendajaga täpsustada.)//
+
+**Leevendus:** välja all olev **elav tõlge** näitab kohe, mida sisestus tähendab (nt „kontod 111101-111191 või konto 111203"), nii et kasutaja näeb üleminekul, kas otsing teeb seda, mida ta ootab.
+
 ==== Konto otsingu süntaks ja näited ====
 
 Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse **elav tõlge** - sisestuse tavakeelne selgitus.
