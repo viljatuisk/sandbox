@@ -115,9 +115,9 @@ Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
 Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega.
 
 ^ Sisestus ^ Tähendus ^
-| ''10%&%5'' | kontod, mis algavad „10" ning sisaldavad „5" |
-| ''5%&!52%'' | kontod, mis algavad „5", kuid mitte „52" |
-| ''4%&%0'' | kontod, mis algavad „4" ning sisaldavad „0" |
+| ''10%&%5'' | kontod, mis algavad „10" ning lõppevad „5-ga" |
+| ''10%&%5%'' | kontod, mis algavad „10" ning sisaldavad „5" |
+| ''10%&!%5%'' | kontod, mis algavad „10", aga ei sisalda „5" |
 
 **Märk on seadistatav.** „Kõik tingimused korraga" märgi määrab süsteemiseadistus **„Mitme teksti korraga otsingu märk"**. Valikud: ''&'', ''+'', ''|'' või **tühi** (märki pole määratud). Legendis kuvatav sümbol sõltub sellest seadistusest - näiteks kui seadistus on ''+'', kuvatakse legendis ''&'' asemel ''+''. Funktsioon on sama (JA - kõik tingimused peavad kehtima), muutub ainult kasutatav sümbol. Tühi valik tähendab, et seda otsingumärki pole määratud ja mitme tingimuse korraga otsingut ei saa kasutada.
 
@@ -125,7 +125,7 @@ Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõtt
 
 ^ Sisestus ^ Tähendus ^
 | ''10%'' | kontod, mis algavad „10" |
-| ''%5'' | kontod, mis lõpevad „5" |
+| ''%5'' | kontod, mis lõppevad „5-ga" |
 | ''%50%'' | kontod, mis sisaldavad „50" |
 
 === ! - eitus (välistus) ===
