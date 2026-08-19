@@ -177,6 +177,15 @@
   .mx-btn.sec:hover { background: #eef3f8; }
   .mx-preview { flex: 1; font-size: 12px; color: #445; font-family: Consolas, monospace; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mx-hint { padding: 7px 14px; font-size: 11px; color: #6a7a8a; background: #fbfdff; border-bottom: 1px solid #eef2f6; }
+  /* Kombinatsioonide kogumine matriksis */
+  .mx-groups-wrap { display: flex; align-items: flex-start; gap: 10px; padding: 9px 14px; border-top: 1px solid #eef2f6; background: #f8fbff; flex-shrink: 0; }
+  .mx-groups-wrap .mx-btn { flex-shrink: 0; }
+  .mx-groups { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-height: 24px; font-size: 12px; }
+  .mx-groups .mx-empty { color: #99a6b3; font-size: 11px; }
+  .mx-chip { display: inline-flex; align-items: center; gap: 5px; background: #e4eef8; border: 1px solid #b8cde0; border-radius: 12px; padding: 2px 9px; font-family: Consolas, monospace; color: #1a3a5a; }
+  .mx-chip-x { cursor: pointer; color: #a05050; font-weight: 700; }
+  .mx-chip-x:hover { color: #d02020; }
+  .mx-chip-or { color: #3a6a9a; font-weight: 700; padding: 0 2px; }
 
   /* ── MAIN CONTENT ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
@@ -1478,12 +1487,16 @@
       <span class="mx-title">⊞ Aseta objektid - Matrix</span>
       <button class="mx-close" onclick="closeObjMatrix()" title="Sulge">&times;</button>
     </div>
-    <div class="mx-hint">Vali igalt tasemelt objekt. Valitud objektid asetatakse Objekt-välja komadega (kombinatsioon = JA). Iga uus ASETA lisab olemasolevale <code>+</code>-ga (VÕI).</div>
+    <div class="mx-hint">Vali igalt tasemelt objekt - koos moodustavad nad <b>ühe kombinatsiooni</b> (tasemed seotakse komaga = JA). Mitme kombinatsiooni jaoks vajuta <b>„+ Lisa kombinatsioon"</b>, siis vali järgmine - kombinatsioonid liidetakse <code>+</code>-ga (VÕI). Lõpuks vajuta ASETA.</div>
     <div class="mx-body">
       <table class="mx-table">
         <thead><tr><th class="mx-lvl">Tase</th><th>Tüüp</th><th style="width:55%">Objekt</th></tr></thead>
         <tbody id="mxTbody"></tbody>
       </table>
+    </div>
+    <div class="mx-groups-wrap">
+      <button class="mx-btn sec" onclick="mxAddGroup()" title="Lisa praegune valik kombinatsioonina ja alusta järgmist">+ Lisa kombinatsioon</button>
+      <div class="mx-groups" id="mxGroups"></div>
     </div>
     <div class="mx-foot">
       <button class="mx-btn sec" onclick="clearObjMatrix()">Tühjenda</button>
@@ -2213,34 +2226,72 @@
       .map(s => s.value.trim()).filter(Boolean);
   }
 
+  // Kogutud kombinatsioonid (iga element = ühe kombinatsiooni komadega string, nt "LADU,TLN").
+  let _mxGroups = [];
+  // Ehita lõplik avaldis kombinatsioonidest (+ soovi korral praegusest valikust).
+  // Üks kombinatsioon -> tavaline (nt "LADU,TLN"); mitu -> mitmeliikmelised sulgudes, liidetud +-ga.
+  function mxExpression(includeCurrent) {
+    const groups = _mxGroups.slice();
+    if (includeCurrent) { const cur = collectMatrix().join(','); if (cur) groups.push(cur); }
+    if (!groups.length) return '';
+    if (groups.length === 1) return groups[0];
+    return groups.map(g => g.indexOf(',') >= 0 ? '(' + g + ')' : g).join('+');
+  }
+  function renderMxGroups() {
+    const box = document.getElementById('mxGroups');
+    if (!_mxGroups.length) { box.innerHTML = '<span class="mx-empty">(kombinatsioone pole veel lisatud)</span>'; return; }
+    box.innerHTML = _mxGroups.map((g, i) =>
+      '<span class="mx-chip">' + (g.indexOf(',') >= 0 ? '(' + g + ')' : g) +
+      '<span class="mx-chip-x" title="Eemalda" onclick="mxRemoveGroup(' + i + ')">✕</span></span>'
+    ).join('<span class="mx-chip-or">+</span>');
+  }
+  function mxAddGroup() {
+    const combo = collectMatrix().join(',');
+    if (!combo) return; // midagi pole valitud
+    _mxGroups.push(combo);
+    document.querySelectorAll('#mxTbody select').forEach(s => s.value = ''); // tühjenda järgmiseks
+    renderMxGroups();
+    updateMxPreview();
+  }
+  function mxRemoveGroup(i) {
+    _mxGroups.splice(i, 1);
+    renderMxGroups();
+    updateMxPreview();
+  }
   function updateMxPreview() {
-    const vals = collectMatrix();
-    document.getElementById('mxPreview').textContent = vals.length ? vals.join(',') : '(vali objektid)';
+    const expr = mxExpression(true);
+    document.getElementById('mxPreview').textContent = expr || '(vali objektid)';
   }
 
   function openObjMatrix() {
     buildObjMatrix();
+    _mxGroups = [];
+    document.querySelectorAll('#mxTbody select').forEach(s => s.value = '');
     document.getElementById('objPicker').classList.remove('open');
     document.getElementById('objLegend').classList.remove('open');
+    renderMxGroups();
     updateMxPreview();
     document.getElementById('mxOverlay').classList.add('open');
   }
   function closeObjMatrix() { document.getElementById('mxOverlay').classList.remove('open'); }
   function clearObjMatrix() {
     document.querySelectorAll('#mxTbody select').forEach(s => s.value = '');
+    _mxGroups = [];
+    renderMxGroups();
     updateMxPreview();
   }
-  // ASETA: valitud objektid komadega (kombinatsioon = JA). Kui väljas on juba sisu,
-  // lisatakse uus kombinatsioon '+'-ga (VÕI).
+  // ASETA: kõik kogutud kombinatsioonid (+ hetkevalik) Objekt-välja. Üks kombinatsioon = komadega (JA);
+  // mitu kombinatsiooni liidetakse '+'-ga (VÕI), mitmeliikmelised sulgudes. Kui väljas on juba sisu, +.
   function asetaObjMatrix() {
-    const combo = collectMatrix().join(',');
-    if (!combo) { closeObjMatrix(); return; }
+    const expr = mxExpression(true);
+    if (!expr) { closeObjMatrix(); return; }
     const inp = document.getElementById('objInput');
     let v = inp.value.trim();
     if (v === '%' || v === OBJ_EMPTY_MARK) v = ''; // asenda sümbol-režiim asetatud objektidega
     if (v && !/[+,]\s*$/.test(v)) v += '+';
-    inp.value = v + combo;
-    clearObjMatrix();
+    inp.value = v + expr;
+    _mxGroups = [];
+    document.querySelectorAll('#mxTbody select').forEach(s => s.value = '');
     closeObjMatrix();
     refreshObjMode();
     inp.focus();
