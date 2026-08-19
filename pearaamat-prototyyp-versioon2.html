@@ -543,11 +543,11 @@
           <option>Osakond</option>
           <option>Pinnad</option>
         </select></div>
-        <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: + = vähemalt üks (VÕI), , = kõik korraga (JA). % = ainult täidetud objektiga read, # = ainult täitmata objektiga read (tühja välja märk). Nt LADU,TLN+MÜÜK">Objekt <span class="help-i" onclick="openObjHelp('objekt')" title="Ava juhend">?</span></label>
+        <div class="sf"><label title="Käsitsi sisestatav. Mitu objekti: , = vähemalt üks (VÕI), & = kõik korraga (JA, märk seadistatav &/+/|). % = ainult täidetud objektiga read, # = ainult täitmata objektiga read (tühja välja märk). Nt LADU & TLN , MÜÜK">Objekt <span class="help-i" onclick="openObjHelp('objekt')" title="Ava juhend">?</span></label>
           <div class="obj-wrap" id="objWrap">
             <div class="sf-lookup">
               <button class="lkp-btn" type="button" title="Otsingu abi / sümbolid" onclick="toggleObjLegend()" style="border-left:1px solid #9ab8d4;border-right:none;border-radius:2px 0 0 2px;">⊞</button>
-              <input type="text" id="objInput" placeholder="nt LADU,TLN+MÜÜK" autocomplete="off" style="border-radius:0;">
+              <input type="text" id="objInput" placeholder="nt LADU & TLN , MÜÜK" autocomplete="off" style="border-radius:0;">
               <button class="lkp-btn" type="button" title="Matrix-asetaja (vali objekt taseme kaupa)" onclick="openObjMatrix()">🔍</button>
             </div>
             <div class="obj-picker" id="objPicker">
@@ -559,8 +559,8 @@
             <div class="obj-picker konto-legend" id="objLegend">
               <div class="kl-hint obj-clickable" onclick="pickObjSym('%')"><span class="kl-sym">%</span><span><b>Üksi:</b> ainult täidetud objektiga read (objekt olemas).<br><b>Sõnas:</b> metamärk - asendab tähti sõna alguses, keskel või lõpus (nt MÜÜ%)</span></div>
               <div class="kl-hint obj-clickable" onclick="pickObjSym('#')"><span class="kl-sym">#</span><span>Ainult täitmata objektiga read (objektita)</span></div>
-              <div class="kl-hint"><span class="kl-sym">+</span>Vähemalt üks objekt (VÕI), nt LADU+MÜÜK</div>
-              <div class="kl-hint"><span class="kl-sym">,</span>Kõik objektid korraga (JA), nt LADU,TLN</div>
+              <div class="kl-hint"><span class="kl-sym">,</span>Mitu objekti - vähemalt üks (VÕI), nt MÜÜK,TOOTMINE</div>
+              <div class="kl-hint"><span class="kl-sym">&</span>Kõik objektid korraga (JA); märk seadistatav (&amp; / + / |), nt LADU &amp; TLN</div>
               <div class="kl-hint"><span class="kl-sym">!</span>Eitus - kõik, mis ei vasta tingimusele (nt !LADU)</div>
             </div>
           </div>
@@ -1374,15 +1374,15 @@
     <div class="wiki-body" id="wikiBody">
       <h2 id="wiki-objekt">Väli „Objekt"</h2>
       <p>Käsitsi sisestatav tekstiväli, mille kõrval on asetaja (<code>🔍</code>) objektide valimiseks. Kes objektikoode peast teab, saab need otse sisestada; ülejäänud saavad avada asetaja, kus objektid on grupeeritud objekti taseme kaupa.</p>
-      <p>Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:</p>
+      <p>Filtrisse võib sisestada ühe või mitu objekti. Kehtib sama VÕI/JA loogika nagu kõigil mitme väärtusega väljadel:</p>
       <table>
-        <tr><th>Eraldaja</th><th>Tähendus</th><th>Näide</th><th>Tulemus</th></tr>
-        <tr><td><code>+</code> (pluss)</td><td><b>VÕI</b> - vähemalt üks valitud objektidest</td><td><code>MÜÜK+TOOTMINE</code></td><td>Read, millel on objekt MÜÜK <i>või</i> TOOTMINE</td></tr>
-        <tr><td><code>,</code> (koma)</td><td><b>JA</b> - kandel peavad olema olemas kõik loetletud objektid (lisaks võib olla ka muid objekte)</td><td><code>LADU,TLN</code></td><td>Read, millel on korraga olemas <i>nii</i> LADU <i>kui</i> TLN</td></tr>
+        <tr><th>Märk</th><th>Tähendus</th><th>Näide</th><th>Tulemus</th></tr>
+        <tr><td><code>,</code> (koma)</td><td><b>VÕI</b> - vähemalt üks loetletud objektidest</td><td><code>MÜÜK,TOOTMINE</code></td><td>Read, millel on objekt MÜÜK <i>või</i> TOOTMINE</td></tr>
+        <tr><td><code>&amp;</code> (seadistatav: <code>&amp;</code> / <code>+</code> / <code>|</code>)</td><td><b>JA</b> - kandel peavad olema olemas kõik loetletud objektid (lisaks võib olla ka muid objekte)</td><td><code>LADU &amp; TLN</code></td><td>Read, millel on korraga olemas <i>nii</i> LADU <i>kui</i> TLN</td></tr>
       </table>
-      <p><code>+</code> ja <code>,</code> saab omavahel kombineerida:</p>
-      <blockquote><b>Objekt:</b> <code>LADU,TLN+MÜÜK,TLN</code><br>Kuvatakse read, millel on korraga <b>LADU ja TLN</b>, või korraga <b>MÜÜK ja TLN</b>.</blockquote>
-      <div class="wnote">Koma (JA) nõuab, et loetletud objektid oleksid real <b>olemas</b> - see ei tähenda „täpselt ainult need". Kandel tohib lisaks olla ka teiste tasemete objekte. Näiteks kanne, millel on objektid <code>LADU</code>, <code>TLN</code> <b>ja</b> <code>PROJ2025</code>, vastab filtrile <code>LADU,TLN</code>, sest mõlemad nõutud objektid on olemas.</div>
+      <p>VÕI ja JA saab kombineerida (<b>JA seob tugevamalt</b>):</p>
+      <blockquote><b>Objekt:</b> <code>LADU &amp; TLN , MÜÜK &amp; TLN</code><br>Kuvatakse read, millel on korraga <b>LADU ja TLN</b>, <i>või</i> korraga <b>MÜÜK ja TLN</b>.</blockquote>
+      <div class="wnote">JA (seadistatav märk) nõuab, et loetletud objektid oleksid real <b>olemas</b> - see ei tähenda „täpselt ainult need". Kandel tohib lisaks olla ka teiste tasemete objekte. Näiteks kanne, millel on objektid <code>LADU</code>, <code>TLN</code> <b>ja</b> <code>PROJ2025</code>, vastab filtrile <code>LADU &amp; TLN</code>, sest mõlemad nõutud objektid on olemas.</div>
 
       <h2 id="wiki-tase">Väli „Objekti tase"</h2>
       <p><b>Ainuvalik</b> (rippmenüü) - korraga saab valida ainult ühe objekti taseme (nt Osakond, Regioon, Projekt).</p>
@@ -1397,7 +1397,7 @@
       </ol>
       <p>Kui väljale „Objekt" on sisestatud objekt, mis <b>ei kuulu</b> valitud tasemele, siis selle objektiga ridu ei kuvata.</p>
       <h3>Näide</h3>
-      <blockquote><b>Objekti tase:</b> Osakond (tase 3)<br><b>Objekt:</b> <code>MÜÜK+TOOTMINE</code><br><br>Kuvatakse ainult read, mis on seotud <b>taseme 3 (Osakond)</b> objektidega <b>ning</b> mille objekt on kas <b>MÜÜK</b> või <b>TOOTMINE</b>.<br><br>Kui väljale „Objekt" oleks lisatud objekt mõnest muust tasemest (nt linn TLN), siis selle objektiga ridu ei kuvata, sest valitud tase on Osakond.</blockquote>
+      <blockquote><b>Objekti tase:</b> Osakond (tase 3)<br><b>Objekt:</b> <code>MÜÜK,TOOTMINE</code><br><br>Kuvatakse ainult read, mis on seotud <b>taseme 3 (Osakond)</b> objektidega <b>ning</b> mille objekt on kas <b>MÜÜK</b> või <b>TOOTMINE</b>.<br><br>Kui väljale „Objekt" oleks lisatud objekt mõnest muust tasemest (nt linn TLN), siis selle objektiga ridu ei kuvata, sest valitud tase on Osakond.</blockquote>
 
       <h2 id="wiki-taidetud">Täidetud ja täitmata objekt</h2>
       <p>Kanderidadel võib objekt olla nii määratud kui määramata. Filtriga saab piirduda ainult ühe või teisega:</p>
