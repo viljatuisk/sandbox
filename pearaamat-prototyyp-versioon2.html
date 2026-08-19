@@ -579,11 +579,24 @@
         <div class="sf"><label>Viide</label><input type="text" placeholder=""></div>
         <div class="sf"><label>KM kood</label><select><option>(kõik)</option></select></div>
         <div class="sf"><label>Valuuta</label><select><option value=""></option><option>EUR</option><option>USD</option><option>SEK</option><option>GBP</option></select></div>
-        <div class="sf"><label>Muutus</label>
-          <div class="sf-row">
-            <select style="flex:1"><option>on suurem kui</option></select>
-            <input type="text" style="width:50px">
+        <div class="sf"><label>Muutus <span class="help-i" onclick="toggleMuutusLegend()" title="Märkide selgitus (+ / -)">?</span></label>
+          <div class="obj-wrap" id="muutusWrap">
+            <div class="sf-row">
+              <select id="muutusOp" style="flex:1" onchange="updateMuutusXlate()">
+                <option value=">">on suurem kui</option>
+                <option value="<">on väiksem kui</option>
+                <option value="=">võrdub</option>
+                <option value="!">ei võrdu</option>
+              </select>
+              <input type="text" id="muutusInput" style="width:60px" placeholder="nt +100" autocomplete="off" oninput="updateMuutusXlate()">
+            </div>
+            <div class="obj-picker konto-legend" id="muutusLegend" style="width:300px;">
+              <div class="kl-hint" style="font-style:italic;">Märgita = <b>absoluutväärtus</b> (nii + kui -), vana käitumine</div>
+              <div class="kl-hint"><span class="kl-sym">+</span>Ainult <b>positiivsed</b> summad, nt +100</div>
+              <div class="kl-hint"><span class="kl-sym">-</span>Ainult <b>negatiivsed</b> summad, nt -100 (võrdlus absoluutväärtusega negatiivsel poolel: >-100 → -101, -200 …)</div>
+            </div>
           </div>
+          <div class="konto-xlate" id="muutusXlate"></div>
         </div>
         <div class="sf"><label title="Välistab kanded, millel on teatud objekti taseme objektid täidetud (märkida taseme number)">Tasemeta</label><input type="text" placeholder="" title="Välistab kanded, millel on teatud objekti taseme objektid täidetud (märkida taseme number)"></div>
       </div>
@@ -2155,6 +2168,25 @@
     document.getElementById('objPicker').classList.remove('open');
     document.getElementById('objLegend').classList.toggle('open');
   }
+  // ── MUUTUS filter: +/- märk + elav tõlge (mida näidatakse) ──
+  function toggleMuutusLegend() {
+    document.getElementById('muutusLegend').classList.toggle('open');
+  }
+  function updateMuutusXlate() {
+    const el = document.getElementById('muutusXlate'); if (!el) return;
+    const op = document.getElementById('muutusOp').value;
+    let raw = document.getElementById('muutusInput').value.trim();
+    if (!raw) { el.textContent = ''; return; }
+    let sign = '';
+    if (raw[0] === '+' || raw[0] === '-') { sign = raw[0]; raw = raw.slice(1).trim(); }
+    if (raw === '') { el.textContent = '↳ Lisa arv (nt ' + sign + '100)'; return; }
+    const opTxt = { '>': 'suurem kui', '<': 'väiksem kui', '=': 'võrdub', '!': 'ei võrdu' }[op] || op;
+    let txt;
+    if (sign === '+')      txt = 'Ainult positiivsed summad: muutuse väärtus ' + opTxt + ' +' + raw;
+    else if (sign === '-') txt = 'Ainult negatiivsed summad: muutuse absoluutväärtus ' + opTxt + ' ' + raw + ' (negatiivsel poolel, nt -' + raw + ' lähedal)';
+    else                   txt = 'Muutuse absoluutväärtus ' + opTxt + ' ' + raw + ' (nii positiivsed kui negatiivsed)';
+    el.textContent = '↳ ' + txt;
+  }
   function pickObjSym(v) {
     document.getElementById('objInput').value = v;
     document.getElementById('objLegend').classList.remove('open');
@@ -2191,6 +2223,10 @@
     if (w && !w.contains(e.target)) {
       document.getElementById('objPicker').classList.remove('open');
       document.getElementById('objLegend').classList.remove('open');
+    }
+    const mw = document.getElementById('muutusWrap');
+    if (mw && !mw.contains(e.target) && !e.target.closest('[onclick*="toggleMuutusLegend"]')) {
+      document.getElementById('muutusLegend').classList.remove('open');
     }
   });
 
