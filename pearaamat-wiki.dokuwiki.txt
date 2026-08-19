@@ -55,7 +55,9 @@ Kontol seda probleemi **ei ole** - konto väärtus koma ei sisalda, seega Kontol
 
 === Objekti kombinatsioonide näited ===
 
-**Meeldetuletus (Objekt):** '','' = JA (kõik samal real korraga), ''+'' = VÕI (liidab eraldi otsingud kokku).
+**Meeldetuletus (Objekt):**
+  * '','' = JA (kõik samal real korraga)
+  * ''+'' = VÕI (liidab eraldi otsingud kokku)
 
 **Näide 1 - kaks kombinatsiooni:**
 
