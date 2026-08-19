@@ -242,7 +242,7 @@ Tühjad (NULL) väärtused käsitletakse tühja tekstina. Seega vastab rida, kui
 
 === Vaste-loogika (LIKE) ===
 
-Iga otsitava objekti kohta ehitatakse muster kujul: objektide tekst ümbritsetakse komadega ja otsitakse ''LIKE '%,<objekt>,%''''. Komadega ümbritsemine tagab **täpse vaste** - nt otsing ''10'' ei vasta objektile ''100''.
+Iga otsitava objekti kohta ehitatakse muster: objektide tekst ümbritsetakse komadega ja otsitakse SQL-avaldisega <nowiki>LIKE '%,objekt,%'</nowiki>. Komadega ümbritsemine tagab **täpse vaste** - nt otsing ''10'' ei vasta objektile ''100''.
 
 === Objektide hierarhia laiendus ===
 
