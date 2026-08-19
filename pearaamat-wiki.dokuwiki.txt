@@ -18,55 +18,73 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
 | **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA, märk seadistatav), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010-1011, välja arvatud konto 1000"). |
 | **Korr. konto** (KANDED) | Kande **vastaskonto** filter - piirab kandeid vastaskonto järgi. Kuulub **KANDED** sektsiooni (kanderea tunnus), mitte KONTOD alla. NB! Erineb konto kaardi „Korr. konto" väljast; viimane tuleb II faasis KONTOD „+" filtrina (vt //Konto lisa filter//). |
-| **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Täpne käitumine (VÕI '','' / JA seadistatav märk, täidetud/täitmata ''%'' / ''#'' , tase + objekt koostoime) - vt jaotised //Otsingu põhimõte: VÕI ja JA// ja //Objekt ja Objekti tase - väljade käitumine//. |
+| **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Objektil ''+'' = VÕI, '','' = JA (erineb Kontost - põhjus objekti väärtuse ehituses); täidetud/täitmata ''%'' / ''#''; tase + objekt koostoime - vt jaotised //Otsingu põhimõte: VÕI (OR) ja JA (AND)// ja //Objekt ja Objekti tase - väljade käitumine//. |
 | **Muutus** | Filtreeri muutuse suuruse järgi (nt ''on suurem kui''). |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
 | **Selgitus / Viide / KM kood / Valuuta** | Täiendavad kanderea filtrid. |
 
-==== Otsingu põhimõte: VÕI ja JA ====
+==== Otsingu põhimõte: VÕI (OR) ja JA (AND) ====
 
-Mitme väärtusega filtriväljad (nt **Konto**, **Objekt**) kasutavad kõik **sama loogikat**. Otsingu ehitamiseks on kaks põhitehet:
+Filtrites otsimise aluseks on kaks lihtsat põhitehet - **VÕI** ja **JA**:
 
-^ Põhimõte ^ Tähendus ^ Märk ^
-| **VÕI (OR)** | „see **või** see" - otsib mitut väärtust, laiendab tulemust | '','' (koma) |
-| **JA (AND)** | „see **ja** see" - kitsendab, kõik tingimused peavad korraga kehtima | seadistatav: ''&'' , ''+'' või ''\|'' |
+  * **VÕI (OR)** - „see või see". Otsib mitut väärtust, **laiendab** tulemust.
+  * **JA (AND)** - „see ja see". **Kitsendab** - kõik tingimused peavad korraga kehtima.
 
-**JA-märk on seadistatav** (Directo seadistus //„Mitme teksti korraga otsingu märk"//) - see võib olla ''&'', ''+'' või ''\|''. VÕI-märk on alati koma ('','').
+VÕI ja JA on kõige tavalisem viis, kuidas inimene otsides mõtleb, ja sama loogikat kasutavad Excel, otsingumootorid ja praktiliselt kõik programmid - seega enamikule kasutajatele on see juba tuttav ega vaja eraldi õppimist.
 
-**JA seob tugevamalt kui VÕI.** Seega ehitatakse „kombinatsioonid" nii, et JA-ga seotud osad grupeeritakse esmalt ja koma eraldab grupid:
+=== Konto ja Objekt kasutavad eri märke ===
 
-> **Objekt:** ''Obj1 & Obj2 , Obj3 & Obj4'' \\
-> Tähendus: **(Obj1 JA Obj2) VÕI (Obj3 JA Obj4)** - ehk otsi read, millel on korraga Obj1 ja Obj2, //või// korraga Obj3 ja Obj4.
+Kuigi VÕI/JA **põhimõte on sama**, on Konto ja Objekti väljal nende **märgid erinevad**:
 
-Sama kirjapilt kehtib ka siis, kui JA-märgiks on seatud ''+'' (''Obj1 + Obj2 , Obj3 + Obj4'') või ''\|'' (''Obj1 \| Obj2 , Obj3 \| Obj4'').
+^ Funktsioon ^ Konto ^ Objekt ^
+| **VÕI** - otsib mitut väärtust | '','' (koma) | ''+'' (pluss) |
+| **JA** - kõik tingimused korraga | ''&'' (seadistatav) | '','' (koma) |
 
-**NB! Erinevus vanast.** Vanas Pearaamatus sai kombinatsioone otsida teisiti (nt ''Obj1,Obj2 + Obj3,Obj4'') ja loogika polnud päris ühtne. Uues aruandes on reegel **ühtne kõigil väljadel**: koma = VÕI, seadistatav märk (''&''/''+''/''\|'') = JA.
+=== Miks Objekt erineb Kontost ===
 
-=== Miks uues aruandes nii tehti ===
+Erinevuse põhjus on **objekti väärtuse enda ehituses**. Objekt võib koosneda mitmest tasemest (nt osakond + projekt) ja need tasemed **eraldatakse omavahel komaga** (nt ''Tallinn,Müük''). Koma on seega juba **objekti väärtuse osa** - tasemete eraldaja.
 
-Vanas Pearaamatus oli otsingumärkide tähendus **väljade lõikes ebaühtlane** - koma tähendas ühel väljal VÕI, teisel JA, ja kombineerimiseks kasutati kohati ''+''. See oli kasutajale segane ja raskesti õpitav. Uues aruandes ühtlustati loogika järgmistel põhjustel:
+Seetõttu **ei saa** Objekti väljal koma kasutada „otsi mitut väärtust" (VÕI) tähenduses - see läheks vastuollu koma tähendusega väärtuse sees. Objektil:
+  * '','' (koma) = **JA** - kombineerib objekti tasemeid, mis peavad samal real korraga kehtima;
+  * ''+'' (pluss) = **VÕI** - liidab kokku read, mis vastavad kummalegi otsingule eraldi.
 
-  * **Üks reegel kõigi väljade jaoks** - koma on alati VÕI, seadistatav märk alati JA. Kasutaja õpib loogika ühe korra ja see kehtib kõikjal (Konto, Objekt jne).
-  * **Ootuspärasus** - koma kui „loend" (VÕI) on levinud ja intuitiivne arusaam nii Directos kui mujal.
-  * **Ühemõttelised kombinatsioonid** - reegel „JA seob tugevamalt kui VÕI" annab selge viisi ehitada (A JA B) VÕI (C JA D) ilma segaduseta.
-  * **Paindlikkus** - JA-märk on seadistatav (''&''/''+''/''\|''), aga VÕI jääb alati komaks, seega põhiloogika on alati sama.
+Kontol seda probleemi **ei ole** - konto väärtus koma ei sisalda, seega Kontol saab koma vabalt kasutada VÕI (mitme väärtuse) tähenduses.
+
+**Kokkuvõte:** VÕI/JA loogika on universaalne, aga **märgid peavad kohanduma andmega**. Objekti väljal on koma juba hõivatud (väärtuse struktuuri osa), seega OR/AND märgid on seal paratamatult teised. Neid **ei saa kunstlikult ühtseks teha** - süntaksierinevus on põhjendatud ja jääb püsima.
+
+=== Objekti kombinatsioonide näited ===
+
+**Meeldetuletus (Objekt):** '','' = JA (kõik samal real korraga), ''+'' = VÕI (liidab eraldi otsingud kokku).
+
+**Näide 1 - kaks kombinatsiooni:**
+
+> **Objekt:** ''(Obj1,Obj2) + (Obj3,Obj4)''
+
+Tähendus: too read, kus objekt on **(Obj1 JA Obj2)** VÕI **(Obj3 JA Obj4)**. Ehk kaks eraldi otsingut liidetakse kokku:
+  * Otsing A: read, kus objektil on korraga nii Obj1 kui Obj2 -> ''Obj1,Obj2''
+  * Otsing B: read, kus objektil on korraga nii Obj3 kui Obj4 -> ''Obj3,Obj4''
+  * Tulemus = A + B (liidetud kokku, dubleerimata)
+
+Praktiline näide: kui ''Obj1=Tallinn'', ''Obj2=Müük'', ''Obj3=Tartu'', ''Obj4=Tootmine'', siis ''(Tallinn,Müük) + (Tartu,Tootmine)'' leiab read, kus objekt on korraga **Tallinn JA Müük**, //või// korraga **Tartu JA Tootmine**. Kombinatsioon „Tallinn + Tootmine" jääb välja, sest see ei vasta kummalegi grupile.
+
+**Näide 2 - ainult koma (üks pikk JA-ahel):**
+
+> **Objekt:** ''(Obj1,Obj2) , (Obj3,Obj4)''
+
+Kuna koma = JA, **ei loo sulud eraldi gruppe** - süsteem loeb selle üheks JA-ahelaks: ''Obj1 JA Obj2 JA Obj3 JA Obj4'' (kõik neli korraga samal real). **NB!** See annab praktikas sageli **tühja tulemuse**: kui objektil on nt ainult 2 taset, ei saa real korraga olla 4 väärtust. Kahe **erineva kombinatsiooni** otsimiseks tuleb kasutada **plussi** gruppide vahel (Näide 1), mitte koma - sulud üksi ei loo loogilist eraldatust, kui operaator sees ja väljas on sama.
+
+**Erinevus lihtsast plussist:** ''Tallinn + Tartu'' (ilma komagruppideta) leiab kõik read, kus objektil esineb **kas** Tallinn //või// Tartu, sõltumata muudest tasemetest. Grupeeritud ''(Tallinn,Müük) + (Tartu,Tootmine)'' on **täpsem** - nõuab, et konkreetne paar tasemeid esineks koos.
 
 === Mis vana ja uue vahel muutub ===
 
-Kuna märkide tähendus ühtlustati, siis **osa vana harjumustest ei tööta enam samamoodi**:
+^ Väli ^ Vana ^ Uus ^ Muutus ^
+| **Objekt** | ''+'' = VÕI, '','' = JA | ''+'' = VÕI, '','' = JA | **ei muutu** |
+| **Konto** | kombineerimine ''+''-ga (''111101:111191+111203'') | kombineerimine komaga (''111101:111191,111203'') | ''+'' -> '','' |
 
-^ Väli ^ Vanas ^ Uues ^
-| **Objekt** | ''+'' = VÕI, '','' = JA | '','' = VÕI, seadistatav märk (''&''/''+''/''\|'') = JA |
-| **Konto** | kombineerimine ''+''-ga (nt ''111101:111191+111203'') | kombineerimine komaga (nt ''111101:111191,111203'') |
-
-**Praktiline mõju:**
-
-  * Objekti väljal **pöördus koma tähendus** (vanas JA, uues VÕI) - sama sisestus võib anda erineva tulemuse.
-  * Konto väljal tuleb kombineerimiseks kasutada koma, mitte ''+''; vana harjumusega kasutaja peab ümber õppima.
-  * **NB!** Kui vanu salvestatud filtreid või malle uude aruandesse üle tuua, tuleb **koma tähenduse muutust arvestada** (eriti Objektil) - vastasel juhul võib tulemus vaikselt muutuda. Migratsioonil tasub need üle kontrollida. //(Kui/kuidas vanu salvestatud filtreid üle tuuakse, tuleb arendajaga täpsustada.)//
-
-**Leevendus:** välja all olev **elav tõlge** näitab kohe, mida sisestus tähendab (nt „kontod 111101-111191 või konto 111203"), nii et kasutaja näeb üleminekul, kas otsing teeb seda, mida ta ootab.
+  * **Objekti** väljal jääb loogika **samaks** nagu vanas (koma = JA, pluss = VÕI) - siin harjumus ei muutu.
+  * **Konto** väljal muutub: vanas kombineeriti ''+''-ga, uues komaga. Vana harjumusega kasutaja peab Kontol ümber õppima (''+'' -> '','').
+  * **Leevendus:** välja all olev **elav tõlge** näitab kohe, mida sisestus tähendab (nt „kontod 111101-111191 või konto 111203"), nii et kasutaja näeb, kas otsing teeb seda, mida ta ootab.
 
 ==== Konto otsingu süntaks ja näited ====
 
@@ -129,16 +147,16 @@ Käsitsi sisestatav tekstiväli, mille kõrval on asetaja (''🔍'', Matrix-aset
 
 Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:
 
-Objekt kasutab sama loogikat nagu kõik mitme väärtusega väljad (vt //Otsingu põhimõte: VÕI ja JA//):
+Objekt kasutab sama VÕI/JA **põhimõtet**, aga **eri märke** kui Konto (põhjus: objekti väärtus sisaldab juba koma - vt //Konto ja Objekt kasutavad eri märke//):
 
 ^ Märk ^ Tähendus ^ Näide ^ Tulemus ^
-| '','' (koma) | **VÕI** - vähemalt üks valitud objektidest | ''MÜÜK,TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
-| ''&'' (seadistatav: ''&''/''+''/''\|'') | **JA** - kõik valitud objektid korraga (kombinatsioon) | ''LADU & TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
+| ''+'' (pluss) | **VÕI** - vähemalt üks valitud objektidest (liidab eraldi otsingud) | ''MÜÜK+TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
+| '','' (koma) | **JA** - kõik valitud objektid korraga samal real (kombineerib tasemeid) | ''LADU,TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
 
-VÕI ja JA saab omavahel kombineerida (JA seob tugevamalt):
+VÕI ja JA saab omavahel kombineerida (koma/JA seob tugevamalt, pluss/VÕI liidab grupid):
 
-> **Objekt:** ''LADU & TLN , MÜÜK & TLN'' \\
-> Kuvatakse read, millel on korraga **LADU ja TLN**, //või// korraga **MÜÜK ja TLN**.
+> **Objekt:** ''(LADU,TLN) + (MÜÜK,TLN)'' \\
+> Kuvatakse read, millel on korraga **LADU ja TLN**, //või// korraga **MÜÜK ja TLN**. Vt lisanäited jaotises //Objekti kombinatsioonide näited//.
 
 ==== Väli „Objekti tase" ====
 
@@ -160,7 +178,7 @@ Kui väljale „Objekt" on sisestatud objekt, mis **ei kuulu** valitud tasemele,
 === Näide ===
 
 > **Objekti tase:** Osakond (tase 3) \\
-> **Objekt:** ''MÜÜK,TOOTMINE''
+> **Objekt:** ''MÜÜK+TOOTMINE''
 >
 > Kuvatakse ainult read, mis on seotud **taseme 3 (Osakond)** objektidega **ning** mille objekt on kas **MÜÜK** või **TOOTMINE**.
 >
@@ -177,37 +195,29 @@ Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetus
 
 ''#'' on **süsteemiseadistustes määratud tühja välja märk**.
 
-==== Objekt välja legend - täismärgid (soovitus) ====
+==== Objekt välja legend - täismärgid ====
 
-Objekt-välja legend (⊞ nupp) peab katma **kõik** objekti otsimise võimalused. Alljärgnev on täielik soovituslik legend:
+Objekt-välja legend (⊞ nupp) katab kõik objekti otsimise võimalused:
 
 ^ Märk ^ Tähendus ^ Näide ^
-| ''%'' (üksi) | Ainult **täidetud** objektiga read (objekt olemas) | ''%'' |
+| ''+'' | **VÕI** - otsib mitut väärtust (vähemalt üks; liidab eraldi otsingud) | ''MÜÜK+TOOTMINE'' |
+| '','' | **JA** - kitsendab; kõik tingimused peavad samal real korraga kehtima (kombineerib tasemeid) | ''LADU,TLN'' |
 | ''#'' | Ainult **täitmata** objektiga read (objektita) | ''#'' |
+| ''%'' (üksi) | Ainult **täidetud** objektiga read (objekt olemas) | ''%'' |
 | ''%'' (sõnas) | Metamärk - asendab tähti/numbreid sõna alguses, keskel või lõpus | ''MÜÜ%'' |
-| '','' | **VÕI** - vähemalt üks objekt | ''MÜÜK,TOOTMINE'' |
-| ''&'' (seadistatav ''&''/''+''/''\|'') | **JA** - kõik objektid real korraga | ''LADU & TLN'' |
 | ''!'' | **Eitus** (NOT) - kõik, mis ei vasta | ''!LADU'' |
 
-VÕI ('','') ja JA (seadistatav märk) loogika on kirjeldatud jaotises //Otsingu põhimõte: VÕI ja JA//.
+Märkide VÕI/JA loogika ja põhjus, **miks Objekti märgid erinevad Konto omadest**, on kirjeldatud jaotises //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
 
-**NB! Vahemik '':'' - kontrollimata.** Vana Pearaamatu ''onobjekt'' koodis (legacy) **puudub vahemiku käsitlus** - objekte otsitakse ainult koma-loendi ja LIKE-vaste kaudu, mitte vahemikuna. Seega ei ole kinnitust, et objekti saab vahemiku (''1000:1999'') järgi filtreerida nagu kontosid. Praeguses arendaja legendis on '':'' olemas - **tuleb arendajaga üle kontrollida**, kas objekti vahemik on tegelikult toetatud ja vajalik, või on see ekslikult Konto legendilt üle võetud. //(Mul puudub selle kohta koodist kinnitus.)//
-
-**NB! Praeguses arendaja legendis puuduvad märgid:**
-
-  * ''%'' **üksi** (objekt olemas) - praegu on ''%'' näidatud ainult metamärgina; ''%'' üksi peab tähendama „täidetud objektiga read".
-  * ''#'' (objektita) - **täiesti puudu**, kuigi selle kaudu otsitakse täitmata objektiga kandeid (vt //Täidetud ja täitmata objekt//).
-  * **JA-märk** (''&''/''+''/''\|'') selgitus - legendis võiks olla ka JA-märk („kõik objektid korraga"), mitte ainult VÕI (koma).
-
-Arendaja legendi '','' = „otsib mitut väärtust (VÕI)" on **õige** ja vastab ühtsele põhimõttele (koma = VÕI kõigil väljadel).
+**NB! Vahemik '':'' - kontrollimata.** Vana Pearaamatu ''onobjekt'' koodis (legacy) **puudub vahemiku käsitlus** - objekte otsitakse ainult koma-loendi ja LIKE-vaste kaudu, mitte vahemikuna. Seega ei ole kinnitust, et objekti saab vahemiku (''1000:1999'') järgi filtreerida nagu kontosid. Kui arendaja legendis on '':'' olemas, **tuleb üle kontrollida**, kas objekti vahemik on tegelikult toetatud ja vajalik. //(Mul puudub selle kohta koodist kinnitus.)//
 
 Näited täidetud/täitmata objekti kohta: [[https://wiki.directo.ee/et/fin_aru_pea#taeidetud_ja_taeitmata_objekt|wiki: Täidetud ja täitmata objekt]].
 
 ==== Objekt filtri päringuloogika (vana Pearaamat) ====
 
-Alljärgnev selgitab, kuidas **vana** Pearaamat objekti filtri sisestuse **päringutingimuseks tõlgib** (legacy funktsioon ''onobjekt''). See on ajalooline taust „mootori" tasandil.
+Alljärgnev selgitab, kuidas vana Pearaamat objekti filtri sisestuse **päringutingimuseks tõlgib** (legacy funktsioon ''onobjekt''). See on „mootori" tasandi taust.
 
-**NB! Vanas olid VÕI/JA märgid vastupidised** kui uues aruandes: vanas ''+'' = VÕI ja '','' = JA. **Uues aruandes** on '','' = VÕI ja JA-märk seadistatav (''&''/''+''/''\|'') - vt //Otsingu põhimõte: VÕI ja JA//. Alltoodud tabel kirjeldab **vana** loogikat.
+**NB!** Objekti väljal **jääb sama loogika kehtima ka uues aruandes**: ''+'' = VÕI, '','' = JA. Objekti märgid ei muutu (erinevalt Konto väljast, kus VÕI läks ''+''-lt komale). Vt //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
 
 === Kust objekti otsitakse (dokument + rida) ===
 
@@ -240,7 +250,7 @@ Otsingut laiendatakse ka **objektid_master** kaudu (objektide hierarhia / master
 
 === Seos uue aruandega ===
 
-Uus aruanne pakub **sama võimalust** (VÕI/JA kombinatsioonide otsing objektide kaupa, täidetud/tühi ''%''/''#'', eitus ''!''), aga **märkide tähendus on ühtlustatud**: uues on '','' = **VÕI** ja JA-märk seadistatav (''&''/''+''/''\|''), vanas oli vastupidi (''+'' = VÕI, '','' = JA). Uues on koma tähendus (VÕI) **sama kõigil väljadel** (Konto, Objekt) - vt //Otsingu põhimõte: VÕI ja JA//.
+Uue aruande Objekt-välja loogika **on sama** nagu see legacy-päring: ''+'' = VÕI, '','' = JA, ''%''/''#'' täidetud/tühi, ''!'' eitus. Objekti märgid **ei muutunud**. Konto väljal seevastu läks VÕI ''+''-lt komale - see erinevus on põhjendatud objekti väärtuse ehitusega (koma on objektil juba tasemete eraldaja). Vt //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
 
 ==== Objekti/taseme filtri mõju saldodele ====
 
