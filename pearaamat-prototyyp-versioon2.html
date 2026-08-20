@@ -186,6 +186,13 @@
   .mx-chip-x { cursor: pointer; color: #a05050; font-weight: 700; }
   .mx-chip-x:hover { color: #d02020; }
   .mx-chip-or { color: #3a6a9a; font-weight: 700; padding: 0 2px; }
+  /* Koondvaate korr-kontode alamplokk - puhas taandega alamloend vasaku aktsentjoonega */
+  #mainTbody tr.summa-corr td { background: #f3f8fc; border-top: none; border-bottom: none; padding: 2px 8px; font-size: 11px; color: #3a4a5a; }
+  #mainTbody tr.summa-corr .kk-first { padding-left: 26px; box-shadow: inset 3px 0 0 #bcd4e8; }
+  #mainTbody tr.summa-corr.summa-corr-hdr td { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #90a0b0; font-weight: 700; padding-top: 5px; padding-bottom: 1px; }
+  #mainTbody tr.summa-corr.summa-corr-last td { padding-bottom: 5px; box-shadow: none; }
+  #mainTbody tr.summa-corr.summa-corr-last .kk-first { box-shadow: inset 3px 0 0 #bcd4e8; }
+  #mainTbody tr.summa-corr.summa-corr-total td { font-weight: 600; color: #1a3a5a; border-top: 1px solid #cfe0ef; }
 
   /* ── MAIN CONTENT ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
@@ -2941,9 +2948,18 @@
   let _corrByAccount = null, _corrNames = null;
 
   // Tuletab detailtabelist (_origTbody) iga konto lõikes korr-kontode Deebet/Kreedit summad.
+  // Demo korr-kontode nimed (nende jaoks, mida pole kontode nimekirjas ega detaili korr-ridadel).
+  const KORR_NIMI_DEMO = {
+    '411000': 'Müügitulu', '411001': 'Müügitulu teenused',
+    '551000': 'Tegevuskulud', '552000': 'Muud ärikulud',
+    '211100': 'Ostjatelt laekumata', '211000': 'Ostjate arved',
+    '111201': 'Pangakonto EUR', '111202': 'Pangakonto EUR', '111204': 'Pangakonto SEK',
+    '10101': 'Kassa EUR', '521000': 'Palgakulu',
+  };
   function _computeCorr() {
     const byAcct = new Map();
     const names  = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
+    Object.keys(KORR_NIMI_DEMO).forEach(k => { if (!names.has(k)) names.set(k, KORR_NIMI_DEMO[k]); });
     const tmp = document.createElement('tbody');
     tmp.innerHTML = _origTbody || '';
     let curKonto = '';
@@ -3125,22 +3141,33 @@
     const cm = _corrByAccount.get(konto);
     if (!cm || cm.size === 0) return '';
     const sk = 'sk' + konto;
-    let h = '<tr class="summa-corr" data-sk="' + sk + '" style="background:#eef4fa;">' +
-      '<td style="padding-left:24px;font-style:italic;font-size:10px;color:#5a6a7a;">Korrespondeerib</td>' +
-      '<td style="font-style:italic;font-size:10px;color:#5a6a7a;">Nimi</td>' +
-      '<td colspan="5"></td></tr>';
-    Array.from(cm.keys()).sort().forEach(code => {
+    // Alamploki päis: üks silt (Konto+Nimetus veerus) + väikesed Deebet/Kreedit sildid õigete tulpade kohal.
+    let h = '<tr class="summa-corr summa-corr-hdr" data-sk="' + sk + '">' +
+      '<td class="kk-first" colspan="2">↳ Korrespondeerivad kontod</td>' +
+      '<td class="r" colspan="5"></td></tr>';
+    const codes = Array.from(cm.keys()).sort();
+    let sumD = 0, sumK = 0;
+    codes.forEach(code => {
       const c  = cm.get(code);
       const nm = (_corrNames && _corrNames.get(code)) || '';
-      h += '<tr class="summa-corr" data-sk="' + sk + '" style="background:#f2f7fb;">' +
-        '<td style="padding-left:24px;font-size:11px;color:#33475b;">' + code + '</td>' +
-        '<td style="font-size:11px;color:#33475b;">' + nm + '</td>' +
+      sumD += c.deebet; sumK += c.kreedit;
+      h += '<tr class="summa-corr" data-sk="' + sk + '">' +
+        '<td class="kk-first">' + code + '</td>' +
+        '<td>' + nm + '</td>' +
         '<td class="r"></td>' +
         '<td class="r">' + fmtNum(c.deebet) + '</td>' +
         '<td class="r">' + fmtNum(c.kreedit) + '</td>' +
         '<td class="r"></td>' +
         '<td class="r"></td></tr>';
     });
+    // Kokku-rida: korr-kontode summa peab klappima konto rea Deebet/Kreedit summaga.
+    h += '<tr class="summa-corr summa-corr-total summa-corr-last" data-sk="' + sk + '">' +
+      '<td class="kk-first" colspan="2">Korr. kontod kokku</td>' +
+      '<td class="r"></td>' +
+      '<td class="r">' + fmtNum(sumD) + '</td>' +
+      '<td class="r">' + fmtNum(sumK) + '</td>' +
+      '<td class="r"></td>' +
+      '<td class="r"></td></tr>';
     return h;
   }
 
