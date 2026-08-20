@@ -189,9 +189,11 @@
   /* Koondvaate korr-kontode alamplokk - puhas taandega alamloend vasaku aktsentjoonega */
   #mainTbody tr.summa-corr td { background: #f3f8fc; border-top: none; border-bottom: none; padding: 2px 8px; font-size: 11px; color: #3a4a5a; }
   #mainTbody tr.summa-corr .kk-first { padding-left: 26px; box-shadow: inset 3px 0 0 #bcd4e8; }
+  /* Alampaneel lõpeb Kreediti veeru juures: parem aktsent Kreedil, Muutus/Lõppsaldo veerud paneelist väljas (läbipaistvad). Numbrid jäävad joondatuks. */
+  #mainTbody tr.summa-corr .kk-end { box-shadow: inset -3px 0 0 #bcd4e8; }
+  #mainTbody tr.summa-corr .kk-blank { background: transparent; box-shadow: none; }
   #mainTbody tr.summa-corr.summa-corr-hdr td { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #90a0b0; font-weight: 700; padding-top: 5px; padding-bottom: 1px; }
-  #mainTbody tr.summa-corr.summa-corr-last td { padding-bottom: 5px; box-shadow: none; }
-  #mainTbody tr.summa-corr.summa-corr-last .kk-first { box-shadow: inset 3px 0 0 #bcd4e8; }
+  #mainTbody tr.summa-corr.summa-corr-last td { padding-bottom: 5px; }
   #mainTbody tr.summa-corr.summa-corr-total td { font-weight: 600; color: #1a3a5a; border-top: 1px solid #cfe0ef; }
 
   /* ── MAIN CONTENT ── */
@@ -3144,7 +3146,8 @@
     // Alamploki päis: üks silt (Konto+Nimetus veerus) + väikesed Deebet/Kreedit sildid õigete tulpade kohal.
     let h = '<tr class="summa-corr summa-corr-hdr" data-sk="' + sk + '">' +
       '<td class="kk-first" colspan="2">↳ Korrespondeerivad kontod</td>' +
-      '<td class="r" colspan="5"></td></tr>';
+      '<td class="r kk-end" colspan="3"></td>' +
+      '<td class="r kk-blank" colspan="2"></td></tr>';
     const codes = Array.from(cm.keys()).sort();
     let sumD = 0, sumK = 0;
     codes.forEach(code => {
@@ -3156,18 +3159,18 @@
         '<td>' + nm + '</td>' +
         '<td class="r"></td>' +
         '<td class="r">' + fmtNum(c.deebet) + '</td>' +
-        '<td class="r">' + fmtNum(c.kreedit) + '</td>' +
-        '<td class="r"></td>' +
-        '<td class="r"></td></tr>';
+        '<td class="r kk-end">' + fmtNum(c.kreedit) + '</td>' +
+        '<td class="r kk-blank"></td>' +
+        '<td class="r kk-blank"></td></tr>';
     });
     // Kokku-rida: korr-kontode summa peab klappima konto rea Deebet/Kreedit summaga.
     h += '<tr class="summa-corr summa-corr-total summa-corr-last" data-sk="' + sk + '">' +
       '<td class="kk-first" colspan="2">Korr. kontod kokku</td>' +
       '<td class="r"></td>' +
       '<td class="r">' + fmtNum(sumD) + '</td>' +
-      '<td class="r">' + fmtNum(sumK) + '</td>' +
-      '<td class="r"></td>' +
-      '<td class="r"></td></tr>';
+      '<td class="r kk-end">' + fmtNum(sumK) + '</td>' +
+      '<td class="r kk-blank"></td>' +
+      '<td class="r kk-blank"></td></tr>';
     return h;
   }
 
