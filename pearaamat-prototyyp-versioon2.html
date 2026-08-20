@@ -766,6 +766,7 @@
         <label id="modLblKronoloogiline" title="vanas 'Vaheldumisi kontod'"><input type="checkbox" id="cbVaheldumisi" onchange="modVaheldumisiChange(this.checked)"> Kronoloogiline</label>
         <div class="view-ctrl-sep" id="viewCtrlSep"></div>
         <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
+        <label id="modLblKorrKonto" title="Näita iga konto all korrespondeerivate kontode lahustust" style="display:none;"><input type="checkbox" id="cbSummaCorr" onchange="summaCorrToggle(this.checked)"> Korr. konto</label>
       </div>
       <div class="table-options">
         <div class="col-picker-wrap" id="colPickerWrap">
@@ -1651,6 +1652,7 @@
   }
 
   let _currentTab = 'detailvaade';
+  let _summaShowCorr = false; // "Korr. konto" linnuke Koondvaates (deklareeritud varakult - updateTabModifiers kasutab)
 
   document.querySelectorAll('.sidebar-head').forEach(head => {
     head.addEventListener('click', () => {
@@ -1757,11 +1759,17 @@
     if (cbV) cbV.checked = false;
     const sel = document.getElementById('selVahesumma');
     if (sel) sel.value = '';
+    const cbKorr = document.getElementById('cbSummaCorr');
+    if (cbKorr) cbKorr.checked = false;
+    _summaShowCorr = false;
     const isKoond = tabName === 'koondvaade';
     const lblK = document.getElementById('modLblKronoloogiline');
     const sep  = document.getElementById('viewCtrlSep');
     if (lblK) lblK.style.display = isKoond ? 'none' : '';
     if (sep)  sep.style.display  = isKoond ? 'none' : '';
+    // "Korr. konto" linnuke ainult Koondvaates
+    const lblKorr = document.getElementById('modLblKorrKonto');
+    if (lblKorr) lblKorr.style.display = isKoond ? '' : 'none';
   }
 
   function modVaheldumisiChange(checked) {
@@ -3139,8 +3147,13 @@
   }
 
   // Taandatud korr-konto alamread (Deebet/Kreedit summeeritud), Algsaldo/Muutus/Lõppsaldo tühjad - nagu vanas 'ainult summa' + 'näita korr. kontosid'.
+  // "Korr. konto" linnuke Koondvaates - näita korr-kontode lahustust ainult kui märgitud. (_summaShowCorr deklareeritud varem)
+  function summaCorrToggle(on) {
+    _summaShowCorr = on;
+    if (_summaOn) summaFilterChange();
+  }
   function _summaCorrRows(konto) {
-    if (!colVisible.corrAccount || !_corrByAccount) return '';
+    if (!_summaShowCorr || !_corrByAccount) return '';
     const cm = _corrByAccount.get(konto);
     if (!cm || cm.size === 0) return '';
     const sk = 'sk' + konto;
@@ -3150,17 +3163,21 @@
       '<td class="r kk-end" colspan="3"></td>' +
       '<td class="r kk-blank" colspan="2"></td></tr>';
     const codes = Array.from(cm.keys()).sort();
+    // Topeltkirje: korr-konto (vastaskonto) kuvatakse TEMA ENDA poolel - ema-konto deebet vastab
+    // korr-konto kreedile ja vastupidi. Nt kanne Dr Ostjad / Kr Müügitulu -> Müügitulu KREEDIL.
     let sumD = 0, sumK = 0;
     codes.forEach(code => {
       const c  = cm.get(code);
       const nm = (_corrNames && _corrNames.get(code)) || '';
-      sumD += c.deebet; sumK += c.kreedit;
+      const corrDeebet = c.kreedit;   // korr-konto deebet = ema-konto kreedit
+      const corrKreedit = c.deebet;   // korr-konto kreedit = ema-konto deebet
+      sumD += corrDeebet; sumK += corrKreedit;
       h += '<tr class="summa-corr" data-sk="' + sk + '">' +
         '<td class="kk-first">' + code + '</td>' +
         '<td>' + nm + '</td>' +
         '<td class="r"></td>' +
-        '<td class="r">' + fmtNum(c.deebet) + '</td>' +
-        '<td class="r kk-end">' + fmtNum(c.kreedit) + '</td>' +
+        '<td class="r">' + fmtNum(corrDeebet) + '</td>' +
+        '<td class="r kk-end">' + fmtNum(corrKreedit) + '</td>' +
         '<td class="r kk-blank"></td>' +
         '<td class="r kk-blank"></td></tr>';
     });
@@ -3211,8 +3228,8 @@
     const theadRow = document.querySelector('table thead tr');
     let html = '';
 
-    // Korr-kontode lahustus arvutatakse detailtabelist ainult kui 'corrAccount' tulp on valitud (vali tulbad).
-    if (colVisible.corrAccount) {
+    // Korr-kontode lahustus arvutatakse detailtabelist ainult kui "Korr. konto" linnuke on märgitud.
+    if (_summaShowCorr) {
       const cc = _computeCorr();
       _corrByAccount = cc.byAcct;
       _corrNames = cc.names;
