@@ -1,0 +1,301 @@
+<meta charset="utf-8">
+<title>Koondvaade mockup · APA KMD</title>
+<style>
+:root{
+  --blue:#2b5c9e;--blue-dk:#1e3a5f;--blue-lt:#eaf1fa;--blue-mid:#4a6fa5;
+  --bg:#fff;--bg2:#f4f7fb;--bg3:#e8eef6;--border:#c9d6e5;--border2:#e6ecf4;
+  --text:#1f2d3d;--text2:#48566d;--text3:#7d8ba1;
+  --red:#c0392b;--red-lt:#fdecea;--red-bd:#f0b3ac;
+  --amber:#b7791f;--amber-lt:#fdf6e7;--amber-bd:#f0d9a8;
+  --green:#2e7d46;--green-lt:#e9f7ee;--green-bd:#bce3c9;
+  --r:6px;--mono:'SF Mono',Consolas,monospace
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 20px 70px}
+.ctx{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;color:var(--text3);font-size:12px;margin-bottom:4px}
+.ctx b{color:var(--blue-dk);font-size:15px}
+.demo-toggle{margin-left:auto;font-size:11px;color:var(--text2)}
+.demo-toggle button{font-size:11px;border:1px solid var(--border);background:var(--bg);border-radius:20px;padding:3px 10px;cursor:pointer;margin-left:4px}
+.demo-toggle button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.mono{font-family:var(--mono)}
+.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.neg{color:var(--red)}
+
+/* ---- TSOON 1: HERO ---- */
+.hero{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(30,58,95,.06)}
+.hero-top{display:flex;flex-wrap:wrap;align-items:center;gap:24px;padding:16px 20px}
+.hero-fig{display:flex;flex-direction:column}
+.hero-fig .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.hero-fig .val{font-size:26px;font-weight:800;color:var(--blue-dk);font-family:var(--mono)}
+.hero-fig.sec .val{font-size:18px;font-weight:700;color:var(--text2)}
+.hero-fig.diff .val{font-size:18px;font-weight:800}
+.hero-sep{width:1px;align-self:stretch;background:var(--border2)}
+.status{display:flex;align-items:center;gap:12px;padding:11px 20px;font-size:13px;font-weight:600;border-top:1px solid}
+.status.warn{background:var(--amber-lt);border-color:var(--amber-bd);color:var(--amber)}
+.status.ok{background:var(--green-lt);border-color:var(--green-bd);color:var(--green)}
+.status .ico{font-size:16px}
+.status .act{margin-left:auto;background:var(--amber);color:#fff;border:none;border-radius:var(--r);padding:6px 14px;font-weight:700;cursor:pointer;font-size:12px}
+.status.ok .act{display:none}
+
+/* ---- TSOON 2: KONTROLL ---- */
+.grid2{display:grid;grid-template-columns:minmax(320px,1fr) 1.3fr;gap:14px;margin-bottom:16px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.card-hd{padding:9px 14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;letter-spacing:.02em}
+.calc{padding:6px 14px 12px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:var(--r);cursor:pointer}
+.calc-row:hover{background:var(--blue-lt)}
+.calc-row .lbl{color:var(--text2)}
+.calc-row .lbl .k{color:var(--text3);font-size:11px}
+.calc-row.sub{border-top:1px solid var(--border);margin-top:4px;padding-top:9px;font-weight:700;color:var(--blue-dk);cursor:default}
+.calc-row.sub:hover{background:none}
+.calc-row.total{border-top:2px solid var(--blue-mid);margin-top:6px;padding-top:10px;font-weight:800;font-size:15px;color:var(--blue-dk);cursor:default}
+.calc-row.total:hover{background:none}
+.calc-row .arrow{color:var(--blue);font-size:11px;opacity:0;margin-left:6px}
+.calc-row:hover .arrow{opacity:1}
+
+table{border-collapse:collapse;width:100%;font-size:12px}
+.rec th,.rec td{padding:6px 10px;border-bottom:1px solid var(--border2);text-align:left}
+.rec th{background:var(--bg3);color:var(--text2);font-size:11px;font-weight:700}
+.rec th.num,.rec td.num{text-align:right}
+.rec tr.match td{color:var(--text2)}
+.rec tr.diff{background:var(--amber-lt);cursor:pointer}
+.rec tr.diff:hover{background:#fbeecb}
+.rec tr.diff td{color:var(--amber);font-weight:600}
+.rec tr.sumr td{border-top:2px solid var(--blue-mid);font-weight:800;color:var(--blue-dk);background:var(--blue-lt)}
+.st{display:inline-block;width:18px;text-align:center}
+.st.ok{color:var(--green)}.st.warn{color:var(--amber)}
+.rec .drilllink{font-size:11px;color:var(--amber);text-decoration:underline}
+.hint{font-size:11px;color:var(--text3);padding:8px 14px;border-top:1px dashed var(--border2)}
+
+/* ---- TSOON 3: SEKTSIOONID ---- */
+.zone-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:700;margin:18px 4px 8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:12px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.chip:hover{border-color:var(--blue);background:var(--blue-lt)}
+.chip .c-k{font-weight:700;color:var(--blue-dk)}
+.chip .c-v{font-family:var(--mono);font-weight:700}
+.sect{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;scroll-margin-top:10px}
+.sect-hd{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--blue);color:#fff;cursor:pointer;user-select:none}
+.sect-hd .arw{transition:transform .15s;font-size:11px}
+.sect.closed .arw{transform:rotate(-90deg)}
+.sect-hd .nm{font-weight:700;font-size:13px}
+.sect-hd .tot{margin-left:auto;font-family:var(--mono);font-size:12px}
+.sect-hd .tot b{font-size:14px}
+.sect-bd{overflow-x:auto}
+.sect.closed .sect-bd{display:none}
+.dt th,.dt td{padding:5px 10px;border-bottom:1px solid var(--border2);text-align:left;font-size:12px}
+.dt th{background:var(--bg3);color:var(--text2);font-size:11px;position:sticky;top:0}
+.dt td.num,.dt th.num{text-align:right;font-family:var(--mono)}
+.dt td.km{font-weight:700;color:var(--blue-dk)}
+.dt td.base{color:var(--text3)}
+.dt tr.krow td{border-top:1px solid var(--blue-mid);font-weight:800;background:var(--bg2)}
+.dt .code{font-family:var(--mono);font-weight:700;color:var(--blue-dk)}
+.hl{animation:hl 1.6s ease}
+@keyframes hl{0%,40%{background:#fff3d6}100%{background:transparent}}
+
+/* ---- Drill-down paneel ---- */
+.ovl{position:fixed;inset:0;background:rgba(20,35,60,.45);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50}
+.ovl.open{display:flex}
+.dd{background:var(--bg);border-radius:var(--r);max-width:760px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3);overflow:hidden}
+.dd-hd{padding:13px 18px;background:var(--amber-lt);border-bottom:1px solid var(--amber-bd);display:flex;align-items:center;gap:10px}
+.dd-hd .t{font-weight:800;color:var(--amber)}
+.dd-hd .x{margin-left:auto;cursor:pointer;font-size:18px;color:var(--text3);border:none;background:none}
+.dd-bd{padding:14px 18px}
+.dd .cause{background:var(--red-lt);border:1px solid var(--red-bd);border-radius:var(--r);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--red)}
+.dd .cause b{color:var(--red)}
+tr.cause-row{background:var(--red-lt)}
+tr.cause-row td{color:var(--red);font-weight:600}
+</style>
+
+<div class="wrap">
+  <div class="ctx">
+    <b>Koondvaade — deklaratsiooni kokkuvõte</b>
+    <span>Andmepõhine KMD · Testfirma OÜ · Märts 2026</span>
+    <span class="demo-toggle">Demo staatus:
+      <button id="tg-warn" class="on" onclick="setState('warn')">Vahe olemas</button>
+      <button id="tg-ok" onclick="setState('ok')">Klapib</button>
+    </span>
+  </div>
+
+  <!-- ============ TSOON 1: TULEMUS + STAATUS ============ -->
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-fig">
+        <span class="lbl" id="res-lbl">Tasumisele kuuluv käibemaks</span>
+        <span class="val" id="res-val">2 238,71 €</span>
+      </div>
+      <div class="hero-sep"></div>
+      <div class="hero-fig sec">
+        <span class="lbl">Raamatupidamise järgi</span>
+        <span class="val" id="bil-val">2 113,91 €</span>
+      </div>
+      <div class="hero-sep"></div>
+      <div class="hero-fig diff">
+        <span class="lbl">Vahe</span>
+        <span class="val" id="diff-val">124,80 €</span>
+      </div>
+    </div>
+    <div class="status warn" id="status">
+      <span class="ico">&#9888;</span>
+      <span id="status-txt">KMD ei klapi bilansiga — vahe <b>124,80 €</b> kontol <b>2320 Sisendkäibemaks</b></span>
+      <button class="act" onclick="openDrill()">Vaata kandeid &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ============ TSOON 2: KONTROLL BILANSIGA ============ -->
+  <div class="grid2">
+    <div class="card">
+      <div class="card-hd">Arvutus aruande andmetest</div>
+      <div class="calc">
+        <div class="calc-row" onclick="goSect('s-m')"><span class="lbl">Käibemaks müügilt <span class="k">(M)</span></span><span class="num">7 066,86<span class="arrow">&rarr;</span></span></div>
+        <div class="calc-row" onclick="goSect('s-s')"><span class="lbl">Pöördmaksustatud soetused <span class="k">(S)</span></span><span class="num">2 455,21<span class="arrow">&rarr;</span></span></div>
+        <div class="calc-row" onclick="goSect('s-a')"><span class="lbl">Arvestuslikud kanded <span class="k">(A)</span></span><span class="num">204,00<span class="arrow">&rarr;</span></span></div>
+        <div class="calc-row sub"><span class="lbl">Arvestatud käibemaks</span><span class="num">9 726,07</span></div>
+        <div class="calc-row" onclick="goSect('s-o')"><span class="lbl">Sisendkäibemaks <span class="k">(O)</span></span><span class="num neg">&minus; 7 487,36<span class="arrow">&rarr;</span></span></div>
+        <div class="calc-row total"><span class="lbl">Tasumisele kuuluv</span><span class="num">2 238,71 &euro;</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">Võrdlus bilansiliste käibemaksukontodega</div>
+      <table class="rec">
+        <thead><tr><th style="width:22px"></th><th>Konto</th><th>Nimetus</th><th class="num">KMD järgi</th><th class="num">Bilanss</th><th class="num">Vahe</th></tr></thead>
+        <tbody>
+          <tr class="match"><td><span class="st ok">&#10003;</span></td><td class="mono">2310</td><td>Käibemaks müügilt</td><td class="num">7 066,86</td><td class="num">7 066,86</td><td class="num">&mdash;</td></tr>
+          <tr class="match"><td><span class="st ok">&#10003;</span></td><td class="mono">2312</td><td>Pöördmaksustatud soetuse käibemaks</td><td class="num">2 455,21</td><td class="num">2 455,21</td><td class="num">&mdash;</td></tr>
+          <tr class="match"><td><span class="st ok">&#10003;</span></td><td class="mono">2318</td><td>Arvestuslike kannete käibemaks</td><td class="num">204,00</td><td class="num">204,00</td><td class="num">&mdash;</td></tr>
+          <tr class="diff" id="rec-2320" onclick="openDrill()"><td><span class="st warn">&#9888;</span></td><td class="mono">2320</td><td>Sisendkäibemaks <span class="drilllink">vaata kandeid</span></td><td class="num">&minus;6 460,80</td><td class="num">&minus;6 585,60</td><td class="num">124,80</td></tr>
+          <tr class="match"><td><span class="st ok">&#10003;</span></td><td class="mono">2321</td><td>Sisendkäibemaks, kassapõhine</td><td class="num">&minus;576,00</td><td class="num">&minus;576,00</td><td class="num">&mdash;</td></tr>
+          <tr class="match"><td><span class="st ok">&#10003;</span></td><td class="mono">2325</td><td>Sisendkäibemaks, sõiduauto</td><td class="num">&minus;650,56</td><td class="num">&minus;650,56</td><td class="num">&mdash;</td></tr>
+          <tr class="sumr"><td></td><td></td><td>Kokku</td><td class="num">2 238,71</td><td class="num">2 113,91</td><td class="num" id="rec-sum-diff">124,80</td></tr>
+        </tbody>
+      </table>
+      <div class="hint">Sisendkäibemaks on arvestuse miinusmärgiga, nii et võrreldud summeeruvad tasumisele kuuluva käibemaksuni. Vahe näidatakse selle konto rea nimetuses.</div>
+    </div>
+  </div>
+
+  <!-- ============ TSOON 3: DEKLARATSIOONI STRUKTUUR ============ -->
+  <div class="zone-lbl">Deklaratsiooni struktuur — mis läheb e-MTA-le</div>
+  <div class="chips">
+    <div class="chip" onclick="goSect('s-m')"><span class="c-k">M · Müük</span><span class="c-v">7 066,86</span></div>
+    <div class="chip" onclick="goSect('s-s')"><span class="c-k">S · Pöördmaks</span><span class="c-v">2 455,21</span></div>
+    <div class="chip" onclick="goSect('s-a')"><span class="c-k">A · Arv. kanded</span><span class="c-v">204,00</span></div>
+    <div class="chip" onclick="goSect('s-o')"><span class="c-k">O · Sisend-KM</span><span class="c-v neg">&minus;7 487,36</span></div>
+  </div>
+
+  <!-- Müük -->
+  <div class="sect" id="s-m">
+    <div class="sect-hd" onclick="toggleSect('s-m')"><span class="arw">&#9660;</span><span class="nm">M — Müük</span><span class="tot">52 kirjet · <b>7 066,86 &euro;</b></span></div>
+    <div class="sect-bd"><table class="dt">
+      <thead><tr><th>Kood</th><th>Sisu</th><th class="num">KM%</th><th class="num">Kirjeid</th><th class="num">Deklareeritav</th><th class="num">KM (&euro;)</th></tr></thead>
+      <tbody>
+        <tr><td class="code">M_101</td><td>Standard-/soodusmääraga maksustatav käive, sh ettemaks</td><td class="num">24%</td><td class="num">25</td><td class="num base">35 455,53</td><td class="num km">8 511,75</td></tr>
+        <tr><td class="code">M_101</td><td>Standard-/soodusmääraga maksustatav käive, sh ettemaks</td><td class="num">22%</td><td class="num">4</td><td class="num base neg">&minus;4 592,14</td><td class="num km neg">&minus;1 010,27</td></tr>
+        <tr><td class="code">M_102</td><td>Standard-/soodusmääraga käive, kassapõhine</td><td class="num">22%</td><td class="num">2</td><td class="num base neg">&minus;3 500,00</td><td class="num km neg">&minus;770,00</td></tr>
+        <tr><td class="code">M_103</td><td>Kasuminormi kord — kasutatud kaup, kunstiteos</td><td class="num">13%</td><td class="num">2</td><td class="num base">1 300,00</td><td class="num km">169,00</td></tr>
+        <tr><td class="code">M_104</td><td>Kasuminormi kord — reisibürood</td><td class="num">9%</td><td class="num">3</td><td class="num base">1 848,72</td><td class="num km">166,38</td></tr>
+        <tr><td class="code">M_201</td><td>Kauba ühendusesisene käive</td><td class="num">0%</td><td class="num">12</td><td class="num base">88 855,00</td><td class="num km">0,00</td></tr>
+        <tr><td class="code">M_301</td><td>Maksuvaba käive</td><td class="num">Maksuvaba</td><td class="num">4</td><td class="num base">10 975,00</td><td class="num km">0,00</td></tr>
+        <tr class="krow"><td>Kokku</td><td></td><td class="num"></td><td class="num">52</td><td class="num">130 352,11</td><td class="num">7 066,86</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- Pöördmaksustav soetus -->
+  <div class="sect" id="s-s">
+    <div class="sect-hd" onclick="toggleSect('s-s')"><span class="arw">&#9660;</span><span class="nm">S — Pöördmaksustav soetus</span><span class="tot">8 kirjet · <b>2 455,21 &euro;</b></span></div>
+    <div class="sect-bd"><table class="dt">
+      <thead><tr><th>Kood</th><th>Sisu</th><th class="num">KM%</th><th class="num">Kirjeid</th><th class="num">Deklareeritav</th><th class="num">KM (&euro;)</th></tr></thead>
+      <tbody>
+        <tr><td class="code">S_101</td><td>Kauba ühendusesisene soetamine</td><td class="num">24%</td><td class="num">4</td><td class="num base">9 050,00</td><td class="num km">2 172,00</td></tr>
+        <tr><td class="code">S_102</td><td>Teise liikmesriigi maksukohustuslaselt saadud teenused</td><td class="num">9%</td><td class="num">2</td><td class="num base">1 400,00</td><td class="num km">129,61</td></tr>
+        <tr><td class="code">S_104</td><td>Muu kauba soetamine ja teenuse saamine</td><td class="num">24%</td><td class="num">2</td><td class="num base">640,00</td><td class="num km">153,60</td></tr>
+        <tr class="krow"><td>Kokku</td><td></td><td class="num"></td><td class="num">8</td><td class="num">11 090,00</td><td class="num">2 455,21</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- Arvestuslikud kanded -->
+  <div class="sect" id="s-a">
+    <div class="sect-hd" onclick="toggleSect('s-a')"><span class="arw">&#9660;</span><span class="nm">A — Arvestuslikud kanded</span><span class="tot">3 kirjet · <b>204,00 &euro;</b></span></div>
+    <div class="sect-bd"><table class="dt">
+      <thead><tr><th>Kood</th><th>Sisu</th><th class="num">KM%</th><th class="num">Kirjeid</th><th class="num">Deklareeritav</th><th class="num">KM (&euro;)</th></tr></thead>
+      <tbody>
+        <tr><td class="code">A_101</td><td>Standard-/soodusmääraga arvestuslikud kanded</td><td class="num">24%</td><td class="num">3</td><td class="num base">850,00</td><td class="num km">204,00</td></tr>
+        <tr class="krow"><td>Kokku</td><td></td><td class="num"></td><td class="num">3</td><td class="num">850,00</td><td class="num">204,00</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- Ost -->
+  <div class="sect" id="s-o">
+    <div class="sect-hd" onclick="toggleSect('s-o')"><span class="arw">&#9660;</span><span class="nm">O — Ost / Sisendkäibemaks</span><span class="tot">41 kirjet · <b>7 487,36 &euro;</b></span></div>
+    <div class="sect-bd"><table class="dt">
+      <thead><tr><th>Kood</th><th>Sisu</th><th class="num">KM%</th><th class="num">Kirjeid</th><th class="num">Sisend-KM (&euro;)</th></tr></thead>
+      <tbody>
+        <tr><td class="code">O_101</td><td>Sisendkäibemaksu summa, mis on seadusega lubatud maha arvata</td><td class="num">24%</td><td class="num">30</td><td class="num km">4 162,80</td></tr>
+        <tr><td class="code">O_104</td><td>Sisendkäibemaks, kassapõhine käibemaksuarvestus</td><td class="num">9%</td><td class="num">2</td><td class="num km">576,00</td></tr>
+        <tr><td class="code">O_304</td><td>Osaliselt ettevõtluses kasutatava sõiduauto sisend-KM (max 50%, EE)</td><td class="num">24%</td><td class="num">2</td><td class="num km">450,56</td></tr>
+        <tr><td class="code">O_401</td><td>Sisend-KM, kauba ühendusesisene soetamine (v.a põhivara/sõiduauto)</td><td class="num">24%</td><td class="num">5</td><td class="num km">2 172,00</td></tr>
+        <tr><td class="code">O_402</td><td>Sisend-KM, teise liikmesriigi maksukohustuslaselt saadud teenused</td><td class="num">9%</td><td class="num">2</td><td class="num km">126,00</td></tr>
+        <tr class="krow"><td>Kokku</td><td></td><td class="num"></td><td class="num">41</td><td class="num">7 487,36</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ============ DRILL-DOWN PANEEL ============ -->
+<div class="ovl" id="ovl" onclick="if(event.target===this)closeDrill()">
+  <div class="dd">
+    <div class="dd-hd"><span class="ico" style="color:var(--amber);font-size:16px">&#9888;</span><span class="t">Konto 2320 — Sisendkäibemaks · vahe 124,80 &euro;</span><button class="x" onclick="closeDrill()">&times;</button></div>
+    <div class="dd-bd">
+      <div class="cause"><b>Tõenäoline põhjus:</b> raamatupidamises (bilansis) on kontol 2320 kanne <b>124,80 &euro;</b>, mis KMD-s ei kajastu — tõenäoliselt KM kood ilma KMD tüübita või periodiväline kanne. Kontrolli allolevat rida.</div>
+      <table class="rec">
+        <thead><tr><th>Kuupäev</th><th>Dokument</th><th>Selgitus</th><th class="num">Bilanss</th><th class="num">KMD-s</th><th class="num">Vahe</th></tr></thead>
+        <tbody>
+          <tr class="match"><td>05.03.2026</td><td class="mono">OA27001</td><td>Sisend OÜ — kontorikaup</td><td class="num">&minus;240,00</td><td class="num">&minus;240,00</td><td class="num">&mdash;</td></tr>
+          <tr class="match"><td>12.03.2026</td><td class="mono">OA30001</td><td>Osaline Sisend OÜ</td><td class="num">&minus;360,00</td><td class="num">&minus;360,00</td><td class="num">&mdash;</td></tr>
+          <tr class="cause-row"><td>28.03.2026</td><td class="mono">OA31099</td><td>Kulukanne KM koodiga, millel puudub KMD tüüp</td><td class="num">&minus;124,80</td><td class="num">&mdash;</td><td class="num">124,80</td></tr>
+          <tr class="match"><td>30.03.2026</td><td class="mono">OA33001</td><td>Kombaini Osaline Sisend OÜ</td><td class="num">&minus;1 200,00</td><td class="num">&minus;1 200,00</td><td class="num">&mdash;</td></tr>
+        </tbody>
+      </table>
+      <div class="hint" style="border:none;padding-left:0">Päris lahenduses viiks see rida otse tehingupäeviku kandeni (või KM tüübi kontrolli), et viga parandada.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSect(id){document.getElementById(id).classList.toggle('closed');}
+function goSect(id){
+  var el=document.getElementById(id);
+  el.classList.remove('closed');
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  var hd=el.querySelector('.sect-hd');hd.classList.remove('hl');void hd.offsetWidth;hd.classList.add('hl');
+}
+function openDrill(){document.getElementById('ovl').classList.add('open');}
+function closeDrill(){document.getElementById('ovl').classList.remove('open');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrill();});
+function setState(s){
+  var warn=s==='warn';
+  document.getElementById('tg-warn').classList.toggle('on',warn);
+  document.getElementById('tg-ok').classList.toggle('on',!warn);
+  var st=document.getElementById('status');
+  var rec=document.getElementById('rec-2320');
+  if(warn){
+    st.className='status warn';
+    st.querySelector('.ico').innerHTML='&#9888;';
+    document.getElementById('status-txt').innerHTML='KMD ei klapi bilansiga — vahe <b>124,80 &euro;</b> kontol <b>2320 Sisendkäibemaks</b>';
+    document.getElementById('bil-val').textContent='2 113,91 €';
+    document.getElementById('diff-val').textContent='124,80 €';
+    document.getElementById('diff-val').className='val';
+  }else{
+    st.className='status ok';
+    st.querySelector('.ico').innerHTML='&#10003;';
+    document.getElementById('status-txt').innerHTML='KMD klapib raamatupidamisega — kõik käibemaksukontod on kooskõlas';
+    document.getElementById('bil-val').textContent='2 238,71 €';
+    document.getElementById('diff-val').textContent='0,00 €';
+  }
+}
+</script>
