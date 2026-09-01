@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMK kaart - APA KMD väljade paigutus</title>
+<style>
+  :root{
+    --bg:#f4f5f7;--card:#ffffff;--line:#e2e5ea;--label:#5b6472;--text:#1f2733;
+    --field:#ffffff;--field-border:#c6ccd6;--accent:#1657d0;
+    --new-bg:#eaf3ff;--new-border:#8fb8f2;--new-badge:#1657d0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;line-height:1.4;padding:24px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--label);margin:0 0 18px;font-size:13px}
+
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:20px}
+  .controls .lbl{font-weight:600;margin-right:6px}
+  .btn{border:1px solid var(--field-border);background:#fff;color:var(--text);
+    padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+  .btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn:hover:not(.active){background:#f0f3f8}
+
+  .layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .card h2{font-size:18px;margin:0 0 16px}
+
+  .row{display:grid;grid-template-columns:190px 1fr;align-items:center;gap:12px;padding:4px 0;border-radius:6px}
+  .row .k{color:var(--label);font-size:12.5px}
+  .row .v{border:1px solid var(--field-border);background:var(--field);border-radius:4px;
+    height:26px;padding:2px 8px;display:flex;align-items:center;font-size:12.5px;color:#333;position:relative}
+  .row .v.sel::after{content:"\00BB";position:absolute;right:8px;color:#9aa3b0}
+  .row .v.dd::after{content:"\25BE";position:absolute;right:8px;color:#9aa3b0;font-size:10px}
+  .row .v.empty{color:#b9c0cb}
+
+  /* uued väljad naevad valja tapselt nagu koik teised - eristab ainult "(APA KMD)" tekst ja "?" ikoon */
+  .row.new{grid-template-columns:190px 1fr auto}
+
+  .opt{display:none}
+  body[data-opt="A"] .optA{display:grid}
+  body[data-opt="B"] .optB{display:grid}
+
+  .side{position:sticky;top:24px}
+  .side .card{padding:18px 20px}
+  .side h3{font-size:14px;margin:0 0 10px}
+  .side p{font-size:12.5px;color:#444;margin:0 0 10px}
+  .side ul{margin:0 0 10px;padding-left:18px;font-size:12.5px;color:#444}
+  .side li{margin-bottom:6px}
+  .field-name{color:var(--new-badge);font-weight:600}
+  .rec{background:#e9f7ee;border:1px solid #9ad6b0;border-radius:6px;padding:10px 12px;font-size:12px;color:#1e5c37;margin-bottom:14px}
+  .rec b{color:#14472a}
+  .warn{color:#8a5a00;background:#fdf3e0;border:1px solid #f0d191;border-radius:6px;padding:8px 10px;font-size:12px}
+  .legend{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--label);margin-top:10px}
+  .swatch{width:16px;height:16px;border-radius:3px;background:var(--new-bg);border:1px solid var(--new-border);display:inline-block}
+
+  .help{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;
+    border-radius:50%;background:var(--new-badge);color:#fff;font-size:10px;font-weight:700;
+    margin-left:6px;cursor:help;position:relative;vertical-align:middle}
+  .help .tip{display:none;position:absolute;right:0;bottom:150%;width:270px;
+    background:#1f2733;color:#fff;font-weight:400;font-size:11.5px;line-height:1.5;
+    padding:9px 11px;border-radius:6px;z-index:20;box-shadow:0 3px 10px rgba(0,0,0,.28);text-align:left}
+  .help .tip::after{content:"";position:absolute;right:5px;top:100%;border:6px solid transparent;border-top-color:#1f2733}
+  .help:hover .tip{display:block}
+</style>
+</head>
+<body data-opt="A">
+<div class="wrap">
+  <h1>KMK kaart - APA KMD väljade paigutus</h1>
+  <p class="sub">Kuna vahepealkirju (sektsioone) lisada ei saa, on 4 uut APA KMD välja paigutatud tavaliste ridadena olemasolevate väljade sekka. Kaardi väljajärjestus on nagu praeguses tootmisversioonis.</p>
+
+  <div class="controls">
+    <span class="lbl">Paigutuse variant:</span>
+    <button class="btn active" data-set="A" onclick="setOpt('A')">A - koos, "Käibemaksumäära tüüp" järel (soovitus)</button>
+    <button class="btn" data-set="B" onclick="setOpt('B')">B - iga tüüp oma suuna kõrval</button>
+    <span class="legend" style="margin-left:auto">Uued väljad: "MÜÜGI/OSTU/SOETUSE/ARVESTUSLIKU ... KM TÜÜP"</span>
+  </div>
+
+  <div class="layout">
+    <!-- ============ KAART (lame nimekiri, nagu praegu) ============ -->
+    <div class="card">
+      <h2>24% määraga maksustatavad toimingud ja tehingud</h2>
+
+      <div class="row"><div class="k">KOOD</div><div class="v">1</div></div>
+      <div class="row"><div class="k">SELETUS</div><div class="v">24% määraga maksustatavad toimingud</div></div>
+      <div class="row"><div class="k">KM%</div><div class="v">24</div></div>
+      <div class="row"><div class="k">MÜÜGI KM KONTO</div><div class="v sel">212371</div></div>
+
+      <!-- Variant B: müügi + soetuse + arvestusliku tüüp müügi konto järel -->
+      <div class="row new opt optB"><div class="k">MÜÜGI KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row new opt optB"><div class="k">SOETUSE KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row new opt optB"><div class="k">ARVESTUSLIKU KANDE KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+
+      <div class="row"><div class="k">OSTU KM KONTO</div><div class="v sel">212351</div></div>
+
+      <!-- Variant B: ostu tüüp ostu konto järel -->
+      <div class="row new opt optB"><div class="k">OSTU KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+
+      <div class="row"><div class="k">MÜÜGI KASSAPÕHINE KONTO</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">OSTU KASSAPÕHINE KONTO</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">MR ETTEMAKSU KONTO 1</div><div class="v sel">212102</div></div>
+      <div class="row"><div class="k">MR ETTEMAKSU KONTO 2</div><div class="v sel">212371</div></div>
+      <div class="row"><div class="k">OR ETTEMAKSU KONTO 1</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">OR ETTEMAKSU KONTO 2</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">KMREGNR</div><div class="v dd">Ei</div></div>
+      <div class="row"><div class="k">ARVE LISAVÄLI</div><div class="v empty">&nbsp;</div></div>
+      <div class="row"><div class="k">PÖÖRDKM %</div><div class="v">0</div></div>
+      <div class="row"><div class="k">PÖÖRDKM KONTO D</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">PÖÖRDKM KONTO K</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">KORR. KONTO</div><div class="v sel">113381</div></div>
+
+      <div class="row"><div class="k">MÜÜGI KM OBJEKT</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">OSTU KM OBJEKT</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">FISKAALBLOKK</div><div class="v empty">&nbsp;</div></div>
+      <div class="row"><div class="k">PEPPOLI KATEGOORIA ID</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">PEPPOLI KM VABASTUSE ID</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">DOK.TRANSPORT EELISTAB</div><div class="v dd">Jah</div></div>
+      <div class="row"><div class="k">OSTU KM PROPORTSIOON</div><div class="v empty">&nbsp;</div></div>
+      <div class="row"><div class="k">OR KÄIBEMAKSU KULUKONTO</div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row"><div class="k">LIIK</div><div class="v dd empty">&nbsp;</div></div>
+      <div class="row"><div class="k">KÄIBEMAKSUMÄÄRA TÜÜP</div><div class="v dd empty">&nbsp;</div></div>
+
+      <!-- Variant A: kõik 4 koos, "tüüp"-ankru järel -->
+      <div class="row new opt optA"><div class="k">MÜÜGI KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row new opt optA"><div class="k">OSTU KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row new opt optA"><div class="k">SOETUSE KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+      <div class="row new opt optA"><div class="k">ARVESTUSLIKU KANDE KM TÜÜP (APA KMD)<span class="help">?<span class="tip">APA KMD (Andmepõhine käibedeklaratsioon). Neid välju kasutatakse ainult Eesti Vabariigi APA KMD aruande koostamiseks. Kui ettevõte APA KMD-d ei kasuta, võib väljad jätta tühjaks. APA KMD aruanne on hetkel väljatöötamisel ning selle esitamine algab Eestis alates 2027. aasta I kvartalist.</span></span></div><div class="v sel empty">&nbsp;</div></div>
+
+      <div class="row"><div class="k">RIIK</div><div class="v dd empty">&nbsp;</div></div>
+      <div class="row"><div class="k">VD ARUANDE TEHINGULIIK</div><div class="v dd empty">&nbsp;</div></div>
+      <div class="row"><div class="k">SULETUD</div><div class="v dd">Ei</div></div>
+      <div class="row"><div class="k">LISAINFO</div><div class="v empty">erikord</div></div>
+      <div class="row"><div class="k">ERISUS</div><div class="v dd empty">&nbsp;</div></div>
+    </div>
+
+    <!-- ============ SELGITUS ============ -->
+    <div class="side">
+      <div class="card">
+        <h3>Selgitus</h3>
+
+        <div class="rec">
+          <b>Soovitus: variant A.</b> Paiguta kõik neli APA KMD tüüpi järjest kohe olemasoleva <i>Käibemaksumäära tüüp</i> välja järele. Nii on nad koos, ühe loogilise "tüüpide" ploki moodi, ilma et oleks vaja vahepealkirja - naabriks on juba samalaadne tüübiväli.
+        </div>
+
+        <p><b>Miks "Käibemaksumäära tüüp" järel?</b></p>
+        <ul>
+          <li>Tekib loomulik "tüüpide" jada ilma vahepealkirjata.</li>
+          <li>Kõik neli välja on ühes kohas - kergem leida ja seostada APA KMD-ga.</li>
+          <li>Ei lõhu olemasolevaid müügi/ostu konto paare.</li>
+        </ul>
+
+        <p><b>Variant B</b> - iga tüüp oma suuna kõrval:</p>
+        <ul>
+          <li><span class="field-name">Müügi KM tüüp</span>, <span class="field-name">Soetuse KM tüüp</span> ja <span class="field-name">Arvestusliku kande KM tüüp</span> - <i>Müügi KM konto</i> järel</li>
+          <li><span class="field-name">Ostu KM tüüp</span> - <i>Ostu KM konto</i> järel</li>
+        </ul>
+        <p class="warn">Variant B puuduseks: ilma vahepealkirjata on neli välja laiali kahes kohas, seega raskem üles leida ja seos APA KMD-ga pole nii selge.</p>
+
+        <p style="font-size:12px;color:var(--label);margin:0">Väljad näevad välja täpselt nagu kõik teised - eristab ainult tekst <b>"(APA KMD)"</b> ja rea lõpus olev <b>"?"</b> abiikoon, mille all on selgitav tekst (vii hiir ikoonile).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setOpt(o){
+    document.body.setAttribute('data-opt',o);
+    document.querySelectorAll('.btn').forEach(b=>b.classList.toggle('active',b.dataset.set===o));
+  }
+  // Tosta "?" abiikoon rea lõppu (peale väljaväärtust)
+  document.querySelectorAll('.row.new').forEach(function(r){
+    var h=r.querySelector('.help');
+    if(h) r.appendChild(h);
+  });
+</script>
+</body>
+</html>
