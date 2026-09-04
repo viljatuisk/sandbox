@@ -39,7 +39,6 @@ Filtrid on jaotatud **nelja sektsiooni (voldikusse)**: **PERIOOD**, **KONTOD**, 
 | ::: | Projekt | Projekti järgi. |
 | ::: | Klient | Kliendi järgi. //(Faas II)// |
 | ::: | Hankija | Hankija järgi. //(Faas II)// |
-| ::: | Kontoklass | Kontoklassi järgi. //(Faas II)// |
 | ::: | Rea sisu | Kanderea sisu/seletuse teksti järgi. (Varem/prototüübis „Selgitus" - täpsustada arendajaga.) |
 | ::: | KM kood | Käibemaksukoodi järgi. |
 | ::: | Valuuta | Valuuta järgi. |
@@ -420,7 +419,6 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
 ===== Laiendatud filtrid (Faas II) =====
 
-  * **Kontoklass** - filtreerimine kontoklasside järgi. Paikneb **KONTOD** sektsioonis (kontoklass on konto kaardi omadus), mitte eraldi filtrigrupina.
   * **Hankija / Klient** - koos nende andmeväljade valikuga (vali lisaväljad).
   * **Kasutaja** - kasutajapõhine filter.
   * **Simulatsioon** - simulatsioonikannete kaasamine/välistamine.
@@ -449,7 +447,7 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 „+" filter teeb selgeks kahe filtrigrupi erineva rolli:
 
-  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''Kontoklass'', ''+ Riigi konto'', ''+ Korr. konto'' jne) ning vahetult järgnev grupp **Kontode lisaväljad** (konto kaardi lisaväljad). Vastab küsimusele: //milliste kontode tehinguid näitan?//
+  * **KONTOD** - konto ja **konto kaardi omaduste** filtrid (''Konto'', ''+ Riigi konto'', ''+ Korr. konto'' jne) ning vahetult järgnev grupp **Kontode lisaväljad** (konto kaardi lisaväljad). Vastab küsimusele: //milliste kontode tehinguid näitan?//
   * **KANDED** - **kanderea omaduste** filtrid (''Korr. konto'' ehk kande vastaskonto, Objekt, Kande tüüp, Selgitus jne). Vastab küsimusele: //milliseid kandeid näitan?//
 
 **Piiramatu arv lisavälju.** Vanas Pearaamatus sai valida ainult **kolm** lisavälja. Uues saab lisada **nii palju kui vaja** - nupp „+ Lisa väli" lisab uue rea (lisavälja valik + väärtus), iga rea saab ✕ nupuga eemaldada. Vähemalt üks rida jääb alati alles.
