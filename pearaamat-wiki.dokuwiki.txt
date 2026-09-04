@@ -22,7 +22,32 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 | **Muutus** | Filtreeri kanderea muutuse (summa) suuruse järgi: //suurem kui//, //väiksem kui//, //võrdub//, //ei võrdu//. Märgiga ''+''/''-'' saab piirduda ainult positiivsete või ainult negatiivsete summadega - vt jaotis //Muutus filter (+ / - märk)//. |
 | **Ainult muutusega** | Näita ainult kontosid, millel on perioodis käive (liikumine). |
 | **Ainult saldoga** | Näita ainult kontosid, millel on saldo. |
-| **Selgitus / Viide / KM kood / Valuuta** | Täiendavad kanderea filtrid. |
+| **KANDED sektsiooni filtrid** (Kanne, Projekt, Rea sisu, KM kood, Valuuta, Viide, Tasemeta jt) | Täiendavad kanderea filtrid - vt jaotis //KANDED sektsiooni filtrid//. |
+
+==== KANDED sektsiooni filtrid ====
+
+**KANDED** sektsioon koondab **kanderea tunnuste** filtrid (vastab küsimusele //„milliseid kandeid näitan?"//). Kõik need piiravad ridu, mitte kontode valikut.
+
+^ Filter ^ Kirjeldus ^
+| **Korr. konto** | Kande vastaskonto järgi (vt filtrite koondtabel ja //Filtrite loogiline jaotus: KONTOD vs KANDED//). |
+| **Objekt / Objekti tase** | Objektifilter (vt //Objekt ja Objekti tase - väljade käitumine//). |
+| **Kanne** (kande tüüp) | Piira kande tüübi järgi (nt ARVE, FIN, INV, KULUTUS, LAEK, PALK, TASU jne) - kuvatakse ainult valitud tüüpi kanded. |
+| **Projekt** | Filtreeri projekti järgi. |
+| **Klient** | Filtreeri kliendi järgi. (Wiki plaanis Faas II - vt //Laiendatud filtrid//.) |
+| **Hankija** | Filtreeri hankija järgi. (Faas II.) |
+| **Kontoklass** | Filtreeri kontoklassi järgi. (Faas II; konto kaardi omadus.) |
+| **Rea sisu** | Filtreeri kanderea sisu/seletuse teksti järgi. (Prototüübis oli väli nimega „Selgitus" - täpsustada arendajaga, kas tegu on sama väljaga.) |
+| **KM kood** | Filtreeri käibemaksukoodi järgi. |
+| **Valuuta** | Filtreeri valuuta järgi. |
+| **Muutus** | Kanderea muutuse suurus + märk (vt //Muutus filter (+ / - märk)//). |
+| **Viide** | Filtreeri viite järgi. |
+| **Tasemeta** | Välistab kanded, millel on teatud **objekti taseme** objekt täidetud (väljale märkida taseme number). Alles jäävad read, kus see tase on **tühi**. |
+
+**NB! „Tasemeta" reapõhisus.** „Tasemeta" peab rakenduma **rea tasandil** - välistatakse üksikud kanderead, millel vastava taseme objekt on täidetud, mitte terve kanne. Kui filter rakendub kande/dokumendi tasandil, satuvad tulemusse ka täidetud tasemega read -> valed summad.
+
+==== Lisaväljad (KANDED - kande lisaväljad) ====
+
+KANDED all on eraldi grupp **LISAVÄLJAD**, kust saab filtreerida **kande/dokumendi lisaväljade** järgi (nt „Artikli kood", „Olemus" vm). Need on **kande tasandi** lisaväljad ja **erinevad** KONTOD juures olevast grupist **„Kontode lisaväljad"** (konto kaardi lisaväljad). Objekti-tasandi loogika: konto kaardi lisaväli -> KONTOD „Kontode lisaväljad"; kande lisaväli -> KANDED „Lisaväljad" (vt märkus //Lisavälja objekt// jaotises //Filtrite loogiline jaotus: KONTOD vs KANDED//).
 
 ==== Otsingu põhimõte: VÕI (OR) ja JA (AND) ====
 
