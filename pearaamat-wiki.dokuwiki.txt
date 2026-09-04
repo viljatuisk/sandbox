@@ -7,6 +7,19 @@ Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud periood
 
 //See wiki on töös ja täieneb: kui prototüüpi lisandub uusi funktsioone, lisatakse need siia vastava faasi alla.//
 
+===== Mis Faas I-s veel puudub (tuleb Faas II-s) =====
+
+Kiire ülevaade, mida Faas I **veel ei sisalda** - kõik allolev on **tulemas Faas II-s**. Osa on Faas I-s peidetud, osa nähtav, kuid veel mitteaktiivne (sakk/valik olemas, aga ei anna tulemust). Täpsemalt vt jaotis //Mida Faas I kasutajale EI näita// (lehe lõpus).
+
+  * **Filtrid:** Simulatsioon, Kontsern; Riigikonto „+" filter (ja muud konto kaardi väljade filtrid); **lisaväljade järgi filtreerimine** (LISAVÄLJAD grupp on nähtav, aga ei filtreeri).
+  * **Vahesumma:** Faas I-s ainult **Objekti** ja **Projekti lõikes**; puuduvad Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes.
+  * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke).
+  * **Saldeerimata vaade** - sakk on nähtav, aga **ei anna veel tulemusi**.
+  * **Vali tulbad / Valitavad väljad:** andmekaardi väljade ja lisaväljade lisamine aruandele „Valitavad väljad" kaudu ei tööta veel (nt Riigikonto on praegu käsitsi lisatud).
+  * **Eksport:** Faas I-s Excel, PDF, XML; **CSV** puudub.
+  * **Väljatrükk:** vormindatud trükivaade puudub (Faas I-s andmete eksport).
+  * **Tabelihaldus:** sortimine (Sort1/Sort2), kogused, numbri täpsus - Faas II.
+
 
 ====== Faas I - toimiv aruanne ======
 
