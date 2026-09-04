@@ -16,7 +16,7 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 
 ^ Filter ^ Kirjeldus ^
 | **Periood (Aeg)** | Päringu algus- ja lõppkuupäev. |
-| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA, märk seadistatav), ''%'' metamärk, ''!'' eitus. **Elav tõlge:** välja all kuvatakse sisestuse tavakeelne selgitus (nt ''010:1011,!1000'' → „kontod 010-1011, välja arvatud konto 1000"). |
+| **Konto** | Kontode vahemik või loend. Vaikeväärtus ''0:Z'' (kõik kontod). Otsingu-legend toetab: ''0:Z'' kõik kontod, '':'' vahemik (nt ''1000:1999''), '','' mitu väärtust (VÕI), ''&'' kõik tingimused (JA, märk seadistatav), ''%'' metamärk, ''!'' eitus. |
 | **Korr. konto** (KANDED) | Kande **vastaskonto** filter - piirab kandeid vastaskonto järgi. Kuulub **KANDED** sektsiooni (kanderea tunnus), mitte KONTOD alla. NB! Erineb konto kaardi „Korr. konto" väljast; viimane tuleb II faasis KONTOD „+" filtrina (vt //Konto lisa filter//). |
 | **Objekt / Objekti tase** | Objektifilter tasemete kaupa. Objektil ''+'' = VÕI, '','' = JA (erineb Kontost - põhjus objekti väärtuse ehituses); täidetud/täitmata ''%'' / ''#''; tase + objekt koostoime - vt jaotised //Otsingu põhimõte: VÕI (OR) ja JA (AND)// ja //Objekt ja Objekti tase - väljade käitumine//. |
 | **Muutus** | Filtreeri kanderea muutuse (summa) suuruse järgi: //suurem kui//, //väiksem kui//, //võrdub//, //ei võrdu//. Märgiga ''+''/''-'' saab piirduda ainult positiivsete või ainult negatiivsete summadega - vt jaotis //Muutus filter (+ / - märk)//. |
@@ -113,11 +113,10 @@ Kuna koma = JA, **ei loo sulud eraldi gruppe** - süsteem loeb selle üheks JA-a
 
   * **Objekti** väljal jääb loogika **samaks** nagu vanas (koma = JA, pluss = VÕI) - siin harjumus ei muutu.
   * **Konto** väljal muutub: vanas kombineeriti ''+''-ga, uues komaga. Vana harjumusega kasutaja peab Kontol ümber õppima (''+'' -> '','').
-  * **Leevendus:** välja all olev **elav tõlge** näitab kohe, mida sisestus tähendab (nt „kontod 111101-111191 või konto 111203"), nii et kasutaja näeb, kas otsing teeb seda, mida ta ootab.
 
 ==== Konto otsingu süntaks ja näited ====
 
-Konto väljal saab kombineerida erinevaid otsingumeetodeid. Välja all kuvatakse **elav tõlge** - sisestuse tavakeelne selgitus.
+Konto väljal saab kombineerida erinevaid otsingumeetodeid.
 
 === 0:Z - kõik kontod ===
 
