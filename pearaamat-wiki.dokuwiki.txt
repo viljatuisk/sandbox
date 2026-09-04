@@ -9,7 +9,7 @@ Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud periood
 
 ===== Mis Faas I-s veel puudub (tuleb Faas II-s) =====
 
-Kiire ülevaade, mida Faas I **veel ei sisalda** - kõik allolev on **tulemas Faas II-s**. Osa on Faas I-s peidetud, osa nähtav, kuid veel mitteaktiivne (sakk/valik olemas, aga ei anna tulemust). Täpsemalt vt jaotis //Mida Faas I kasutajale EI näita// (lehe lõpus).
+Kiire ülevaade, mida Faas I **veel ei sisalda** - kõik allolev on **tulemas Faas II-s**. Osa on Faas I-s peidetud, osa nähtav, kuid veel mitteaktiivne (sakk/valik olemas, aga ei anna tulemust).
 
   * **Filtrid:** Simulatsioon, Kontsern; Riigikonto „+" filter (ja muud konto kaardi väljade filtrid); **lisaväljade järgi filtreerimine** (LISAVÄLJAD grupp on nähtav, aga ei filtreeri).
   * **Vahesumma:** Faas I-s ainult **Objekti** ja **Projekti lõikes**; puuduvad Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes.
@@ -496,20 +496,3 @@ Ettepanek muuta „Valitavad väljad" seadistus **aruande-teadlikuks** (praegu g
 Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (väli on kohe veeruna ees, saab peita). Super kasutaja pääseb seadistusse ka otse aruande mutrivõtme „Vali lisainfo väljad" → „Halda välju…" lingi kaudu.
 
 **Seos lisavälja kaardiga.** Lisavälja kaardil (//Süsteemi seadistused > Üldine > Lisaväljad//) on juba olemas lipud **„Nähtav aruandes"** ja **„Filtreeritav aruandes"**, mis on mõeldud määrama, kas lisaväli ilmub aruandesse veeruna ja kas selle järgi saab filtreerida. **Praegu (Faas I) need lipud pearaamatu aruannet ei mõjuta** - kirjeldatud aruande-teadlik mehhanism (nii andmekaardi väljade kui lisaväljade aruandesse toomine ja filtreeritavus) rakendub **Faas II-s**.
-
-
-====== Mida Faas I kasutajale EI näita ======
-
-Järgnev on kavandatud **Faas II-s**. Osa on Faas I-s **peidetud**, osa **nähtav, aga veel mitteaktiivne** (sakk/valik on olemas, kuid ei anna tulemust):
-
-  * **Simulatsiooni filter**
-  * **Kontsern filter** (kontserni baasis nimetusega „Firma")
-  * **Oma või Riigi konto** valik (Riigikonto „+" filter)
-  * **Filtrite „Vali lisaväljad" funktsionaalsus** (nt Projekt, Klient, Hankija jne andmeväljad)
-  * **Vahesumma lisavalikud** - Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes (Faas I-s on ainult Objekti ja Projekti lõikes)
-  * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke Koondvaates)
-  * **Saldeerimata vaade** - sakk on **nähtav, aga ei anna tulemusi** (aktiveerub Faas II-s)
-  * **CSV eksport** (Faas I-s ainult Excel, PDF, XML)
-  * **Lisaväljade järgi filtreerimine** - LISAVÄLJAD filtrigrupp on **nähtav, aga ei filtreeri veel**
-  * **Lisaväljade lisamine aruandele Lisaväljade registri kaudu** - lisavälja kaardi lipud „Nähtav aruandes" / „Filtreeritav aruandes" ei mõjuta veel aruannet
-  * **Andmekaardi väljade lisamine „Vali tulbad" alla „Valitavad väljad" kaudu** (nt Riigikonto on praegu käsitsi lisatud)
