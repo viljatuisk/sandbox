@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<title>Pearaamat - Projekt + Tüüp filtri loogika (demo)</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #eef2f6; color: #1a2a3a; font-size: 13px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 18px; color: #1a3a5a; margin: 0 0 4px; }
+  h2 { font-size: 14px; color: #2a4a6a; margin: 18px 0 6px; border-bottom: 2px solid #cdd9e5; padding-bottom: 3px; }
+  .sub { color: #6a7a8a; margin: 0 0 12px; }
+  table { border-collapse: collapse; width: 100%; background: #fff; font-size: 12px; }
+  th, td { border: 1px solid #d4dfe9; padding: 4px 8px; text-align: left; }
+  th { background: #d8e4f0; color: #1a3a5a; }
+  td.r, th.r { text-align: right; }
+  .muted { color: #8a98a6; }
+  .card { background: #fff; border: 1px solid #cdd9e5; border-radius: 6px; padding: 14px; margin-bottom: 14px; }
+  .filters { display: flex; gap: 18px; align-items: flex-end; flex-wrap: wrap; }
+  .f label { display: block; font-size: 11px; font-weight: 700; color: #2a4a6a; margin-bottom: 3px; }
+  .f input, .f select { height: 26px; border: 1px solid #9ab8d4; border-radius: 3px; padding: 0 6px; font-size: 13px; min-width: 150px; }
+  .xlate { font-size: 11px; color: #3a6a9a; margin-top: 6px; min-height: 15px; }
+  .presets { margin: 10px 0 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .presets button { background: #e4eef8; border: 1px solid #b8cde0; border-radius: 14px; padding: 3px 11px; font-size: 11px; cursor: pointer; color: #1a3a5a; }
+  .presets button:hover { background: #d4e3f0; }
+  tr.hid { display: none; }
+  tr.inc td:first-child { box-shadow: inset 3px 0 0 #4a9a4a; }
+  .tot td { font-weight: 700; background: #dde8f2; }
+  .note { background: #fff8e6; border: 1px solid #e8d9a8; border-radius: 5px; padding: 8px 12px; font-size: 12px; margin: 8px 0; }
+  .pill { display: inline-block; background: #eef4fa; border: 1px solid #cdd9e5; border-radius: 10px; padding: 1px 8px; margin: 2px; font-family: Consolas, monospace; font-size: 11px; }
+  .pill.on { background: #d9f0d9; border-color: #8ac88a; }
+  code { background: #eef2f6; padding: 1px 4px; border-radius: 2px; font-family: Consolas, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pearaamat - Projekt + Tüüp filtri loogika (demo)</h1>
+  <p class="sub">Näidisandmed. Muuda Projekt / Tüüp filtrit ja vaata, millised kanded pearaamatusse jäävad.</p>
+
+  <div class="note">
+    <b>Loogika:</b> kanne on märgitud <b>konkreetse projektiga</b> (nt P001). <b>Projekt=peaprojekt (P)</b> kaasab kõik alamprojektid (Peaprojekt=P). <b>Tüüp</b> filtreerib <b>projekti kaardi Tüüp</b> järgi. Projekt + Tüüp koos = <b>JA</b> (mõlemad peavad kehtima).
+  </div>
+
+  <h2>Projekti kaardid (näidis)</h2>
+  <table id="projTable">
+    <thead><tr><th>Kood</th><th>Peaprojekt</th><th>Tüüp</th><th>Nimi</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Filter</h2>
+  <div class="card">
+    <div class="filters">
+      <div class="f"><label>Projekt (peaprojekt või alamprojekt)</label>
+        <input id="projInput" placeholder="nt P või P001" oninput="apply()"></div>
+      <div class="f"><label>Tüüp</label>
+        <select id="tyypSel" onchange="apply()"><option value="">(kõik)</option></select></div>
+    </div>
+    <div class="presets" id="presets"></div>
+    <div class="xlate" id="xlate"></div>
+    <div style="margin-top:8px;font-size:11px;">Kaasatud projektid: <span id="incList"></span></div>
+  </div>
+
+  <h2>Pearaamat - tulemus (konto 5210 Kulud)</h2>
+  <table id="entryTable">
+    <thead><tr><th>Kanne</th><th>Projekt</th><th>Projekti nimi</th><th>Projekti tüüp</th><th class="r">Summa (€)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p class="muted" id="emptyMsg" style="display:none;">Ühtki kannet ei vasta filtrile.</p>
+</div>
+
+<script>
+  // ── Näidisandmed ──
+  const PROJECTS = [
+    { code: 'P',    parent: '',  type: '',            name: 'Peaprojekt P' },
+    { code: 'P001', parent: 'P', type: 'Elektritööd', name: 'Projekt 1' },
+    { code: 'P002', parent: 'P', type: 'Santehnika',  name: 'Projekt 2' },
+    { code: 'P003', parent: 'P', type: 'Elektritööd', name: 'Projekt 3' },
+    { code: 'Q',    parent: '',  type: '',            name: 'Peaprojekt Q' },
+    { code: 'Q001', parent: 'Q', type: 'Elektritööd', name: 'Projekt Q1' },
+  ];
+  const PMAP = Object.fromEntries(PROJECTS.map(p => [p.code, p]));
+
+  const ENTRIES = [
+    { id: 'FIN.101', projekt: 'P001', summa: 100 },
+    { id: 'FIN.102', projekt: 'P002', summa: 200 },
+    { id: 'FIN.103', projekt: 'P003', summa: 300 },
+    { id: 'FIN.104', projekt: 'Q001', summa: 400 },
+    { id: 'FIN.105', projekt: '',     summa: 500 },
+  ];
+
+  // Kas projekt `code` kuulub filtri `filter` alla (ise või mõne esivanema kaudu)?
+  function isUnder(code, filter) {
+    let c = code;
+    while (c) {
+      if (c === filter) return true;
+      c = PMAP[c] ? PMAP[c].parent : '';
+    }
+    return false;
+  }
+
+  function buildProjTable() {
+    document.querySelector('#projTable tbody').innerHTML = PROJECTS.map(p =>
+      '<tr><td><b>' + p.code + '</b></td><td>' + (p.parent || '<span class="muted">-</span>') +
+      '</td><td>' + (p.type || '<span class="muted">-</span>') + '</td><td>' + p.name + '</td></tr>').join('');
+  }
+  function buildTyypSel() {
+    const types = [...new Set(PROJECTS.map(p => p.type).filter(Boolean))].sort();
+    document.getElementById('tyypSel').innerHTML =
+      '<option value="">(kõik)</option>' + types.map(t => '<option>' + t + '</option>').join('');
+  }
+  function buildEntryTable() {
+    document.querySelector('#entryTable tbody').innerHTML = ENTRIES.map(e => {
+      const p = PMAP[e.projekt];
+      return '<tr data-proj="' + e.projekt + '">' +
+        '<td>' + e.id + '</td>' +
+        '<td>' + (e.projekt || '<span class="muted">(projektita)</span>') + '</td>' +
+        '<td>' + (p ? p.name : '') + '</td>' +
+        '<td>' + (p && p.type ? p.type : '<span class="muted">-</span>') + '</td>' +
+        '<td class="r">' + e.summa.toFixed(2) + '</td></tr>';
+    }).join('') + '<tr class="tot"><td colspan="4">Kokku (kuvatud)</td><td class="r" id="totCell">0.00</td></tr>';
+  }
+
+  const PRESETS = [
+    { l: 'Projekt P (peaprojekt)', p: 'P', t: '' },
+    { l: 'Projekt P + Tüüp Elektritööd', p: 'P', t: 'Elektritööd' },
+    { l: 'Projekt P001 (alam)', p: 'P001', t: '' },
+    { l: 'Projekt P001 + Tüüp Santehnika', p: 'P001', t: 'Santehnika' },
+    { l: 'Ainult Tüüp Elektritööd', p: '', t: 'Elektritööd' },
+    { l: 'Tühjenda', p: '', t: '' },
+  ];
+  function buildPresets() {
+    document.getElementById('presets').innerHTML = PRESETS.map((s, i) =>
+      '<button onclick="preset(' + i + ')">' + s.l + '</button>').join('');
+  }
+  function preset(i) {
+    document.getElementById('projInput').value = PRESETS[i].p;
+    document.getElementById('tyypSel').value = PRESETS[i].t;
+    apply();
+  }
+
+  function apply() {
+    const pf = document.getElementById('projInput').value.trim().toUpperCase();
+    const tf = document.getElementById('tyypSel').value;
+    let total = 0, shown = 0;
+
+    // kaasatud projektid (filtri laiendus): projekt kuulub filtri alla JA vastab tüübile
+    const included = PROJECTS.filter(p =>
+      (!pf || isUnder(p.code, pf)) && (!tf || p.type === tf)
+    ).map(p => p.code);
+    document.getElementById('incList').innerHTML = PROJECTS.map(p =>
+      '<span class="pill' + (included.includes(p.code) ? ' on' : '') + '">' + p.code + '</span>').join('');
+
+    document.querySelectorAll('#entryTable tbody tr[data-proj]').forEach(tr => {
+      const proj = tr.getAttribute('data-proj');
+      const p = PMAP[proj];
+      let ok = true;
+      if (pf && !(proj && isUnder(proj, pf))) ok = false;   // Projekt (peaprojekt kaasab alamad)
+      if (tf && !(p && p.type === tf)) ok = false;           // Tüüp (projekti kaardilt), JA
+      tr.classList.toggle('hid', !ok);
+      tr.classList.toggle('inc', ok);
+      if (ok) { total += Number(tr.querySelector('td.r').textContent); shown++; }
+    });
+    document.getElementById('totCell').textContent = total.toFixed(2);
+    document.getElementById('emptyMsg').style.display = shown ? 'none' : '';
+
+    // elav tõlge
+    const el = document.getElementById('xlate');
+    let parts = [];
+    if (pf) {
+      const kids = PROJECTS.filter(x => x.parent === pf).map(x => x.code);
+      const isParent = kids.length > 0;
+      parts.push('Projekt „' + pf + '"' + (isParent ? ' (peaprojekt → alamad ' + kids.join(', ') + ')' : ''));
+    }
+    if (tf) parts.push('Tüüp „' + tf + '" (projekti kaardilt)');
+    el.textContent = parts.length ? '↳ ' + parts.join('  JA  ') + '.' : '↳ Filter tühi - kõik kanded.';
+  }
+
+  buildProjTable(); buildTyypSel(); buildEntryTable(); buildPresets();
+  preset(0); // ava „Projekt P (peaprojekt)"
+</script>
+</body>
+</html>
