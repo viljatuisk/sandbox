@@ -203,8 +203,6 @@ Objekt-välja legend (⊞ nupp) katab kõik objekti otsimise võimalused:
 
 Märkide VÕI/JA loogika ja põhjus, **miks Objekti märgid erinevad Konto omadest**, on kirjeldatud jaotises //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
 
-**NB! Vahemik '':'' - kontrollimata.** Vana Pearaamatu ''onobjekt'' koodis (legacy) **puudub vahemiku käsitlus** - objekte otsitakse ainult koma-loendi ja LIKE-vaste kaudu, mitte vahemikuna. Seega ei ole kinnitust, et objekti saab vahemiku (''1000:1999'') järgi filtreerida nagu kontosid. Kui arendaja legendis on '':'' olemas, **tuleb üle kontrollida**, kas objekti vahemik on tegelikult toetatud ja vajalik. //(Mul puudub selle kohta koodist kinnitus.)//
-
 Näited täidetud/täitmata objekti kohta: [[https://wiki.directo.ee/et/fin_aru_pea#taeidetud_ja_taeitmata_objekt|wiki: Täidetud ja täitmata objekt]].
 
 ==== Objekt filtri päringuloogika (vana Pearaamat) ====
