@@ -382,11 +382,17 @@ Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa - m
 
 ===== Eksport (Faas I) =====
 
-  * **Excel** (andmete eksport)
-  * **CSV** (andmete eksport)
-  * **PDF** (andmete eksport)
+Faas I-s saab aruande andmed alla laadida **kolmes formaadis**:
 
-//Märkus: vormindatud //väljatrükk// (trükivaade) tuleb Faas II-s. Faas I-s on andmete eksport.//
+  * **Excel** (''.xlsx'')
+  * **PDF** (''.pdf'')
+  * **XML** (''.xml'')
+
+**CSV** eksport **ei ole Faas I-s** - lisandub **Faas II-s**.
+
+**Märkus:** vormindatud **väljatrükk** (trükivaade) tuleb samuti Faas II-s; Faas I-s on **andmete eksport**, mitte trükivorming.
+
+**UX märkus (kaalumiseks).** Praegu on **Excel eraldi nupp**, aga **PDF ja XML** on eraldi „Lae alla" rippmenüü (noole) all. Kõik kolm on sisuliselt allalaadimine - järjekindluse mõttes võiks kaaluda **kõik ühte „Lae alla" menüüsse** (Excel / PDF / XML, hiljem CSV), või Excel esmavalikuna nupul + ülejäänud noole all. Tegu on UI-otsusega, mille saab arendaja/tootejuhiga kokku leppida.
 
 
 ====== Faas II - täiendused ======
@@ -483,3 +489,4 @@ Järgnev on kavandatud **Faas II-s**. Osa on Faas I-s **peidetud**, osa **nähta
   * **Vahesumma lisavalikud** - Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes (Faas I-s on ainult Objekti ja Projekti lõikes)
   * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke Koondvaates)
   * **Saldeerimata vaade** - sakk on **nähtav, aga ei anna tulemusi** (aktiveerub Faas II-s)
+  * **CSV eksport** (Faas I-s ainult Excel, PDF, XML)
