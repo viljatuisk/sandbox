@@ -47,7 +47,9 @@ Faas I eesmärk: kasutaja saab teha pearaamatupäringu, filtreerida tulemust, va
 
 ==== Lisaväljad (KANDED - kande lisaväljad) ====
 
-KANDED all on eraldi grupp **LISAVÄLJAD**, kust saab filtreerida **kande/dokumendi lisaväljade** järgi (nt „Artikli kood", „Olemus" vm). Need on **kande tasandi** lisaväljad ja **erinevad** KONTOD juures olevast grupist **„Kontode lisaväljad"** (konto kaardi lisaväljad). Objekti-tasandi loogika: konto kaardi lisaväli -> KONTOD „Kontode lisaväljad"; kande lisaväli -> KANDED „Lisaväljad" (vt märkus //Lisavälja objekt// jaotises //Filtrite loogiline jaotus: KONTOD vs KANDED//).
+KANDED all on eraldi grupp **LISAVÄLJAD** (nt „Artikli kood", „Olemus" vm) - mõeldud filtreerimiseks **kande/dokumendi lisaväljade** järgi. Need on **kande tasandi** lisaväljad ja **erinevad** KONTOD juures olevast grupist **„Kontode lisaväljad"** (konto kaardi lisaväljad). Objekti-tasandi loogika: konto kaardi lisaväli -> KONTOD „Kontode lisaväljad"; kande lisaväli -> KANDED „Lisaväljad" (vt märkus //Lisavälja objekt// jaotises //Filtrite loogiline jaotus: KONTOD vs KANDED//).
+
+**NB! Lisaväljade järgi filtreerimine ei tööta veel - Faas II.** LISAVÄLJAD filtrigrupp on **nähtav**, kuid **ei filtreeri veel** andmeid. Samuti **ei tööta veel lisaväljade lisamine aruandele Lisaväljade registri kaudu**: kuigi lisavälja kaardil (//Süsteemi seadistused > Üldine > Lisaväljad//) on olemas valikud **„Nähtav aruandes"** ja **„Filtreeritav aruandes"**, need ei mõjuta praegu pearaamatu aruannet. Kogu see mehhanism (lisavälja kaardilt aruandesse tuleku ja filtreeritavuse juhtimine) aktiveeritakse **Faas II-s** (vt //Aruandepõhine „Valitavad väljad"//).
 
 ==== Otsingu põhimõte: VÕI (OR) ja JA (AND) ====
 
@@ -392,7 +394,7 @@ Faas I-s saab aruande andmed alla laadida **kolmes formaadis**:
 
 **Märkus:** vormindatud **väljatrükk** (trükivaade) tuleb samuti Faas II-s; Faas I-s on **andmete eksport**, mitte trükivorming.
 
-**UX märkus (kaalumiseks).** Praegu on **Excel eraldi nupp**, aga **PDF ja XML** on eraldi „Lae alla" rippmenüü (noole) all. Kõik kolm on sisuliselt allalaadimine - järjekindluse mõttes võiks kaaluda **kõik ühte „Lae alla" menüüsse** (Excel / PDF / XML, hiljem CSV), või Excel esmavalikuna nupul + ülejäänud noole all. Tegu on UI-otsusega, mille saab arendaja/tootejuhiga kokku leppida.
+**Nupu paigutus (split-button).** Excel ja ülejäänud vormingud on **split-button** kujul: **Excel on esmane (primaarne) tegevus** eraldi nupul, sest seda kasutatakse kõige rohkem; **PDF ja XML** (hiljem ka CSV) on sama nupu **noole all** teisejärguliste valikutena. See on **teadlik UI-lahendus** (mitte ebajärjekindlus).
 
 
 ====== Faas II - täiendused ======
@@ -486,6 +488,8 @@ Ettepanek muuta „Valitavad väljad" seadistus **aruande-teadlikuks** (praegu g
 
 Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (väli on kohe veeruna ees, saab peita). Super kasutaja pääseb seadistusse ka otse aruande mutrivõtme „Vali lisainfo väljad" → „Halda välju…" lingi kaudu.
 
+**Seos lisavälja kaardiga.** Lisavälja kaardil (//Süsteemi seadistused > Üldine > Lisaväljad//) on juba olemas lipud **„Nähtav aruandes"** ja **„Filtreeritav aruandes"**, mis on mõeldud määrama, kas lisaväli ilmub aruandesse veeruna ja kas selle järgi saab filtreerida. **Praegu (Faas I) need lipud pearaamatu aruannet ei mõjuta** - kirjeldatud aruande-teadlik mehhanism (nii andmekaardi väljade kui lisaväljade aruandesse toomine ja filtreeritavus) rakendub **Faas II-s**.
+
 
 ====== Mida Faas I kasutajale EI näita ======
 
@@ -499,3 +503,6 @@ Järgnev on kavandatud **Faas II-s**. Osa on Faas I-s **peidetud**, osa **nähta
   * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke Koondvaates)
   * **Saldeerimata vaade** - sakk on **nähtav, aga ei anna tulemusi** (aktiveerub Faas II-s)
   * **CSV eksport** (Faas I-s ainult Excel, PDF, XML)
+  * **Lisaväljade järgi filtreerimine** - LISAVÄLJAD filtrigrupp on **nähtav, aga ei filtreeri veel**
+  * **Lisaväljade lisamine aruandele Lisaväljade registri kaudu** - lisavälja kaardi lipud „Nähtav aruandes" / „Filtreeritav aruandes" ei mõjuta veel aruannet
+  * **Andmekaardi väljade lisamine „Vali tulbad" alla „Valitavad väljad" kaudu** (nt Riigikonto on praegu käsitsi lisatud)
