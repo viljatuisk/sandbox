@@ -18,6 +18,7 @@ Kiire ülevaade, mida Faas I **veel ei sisalda** - kõik allolev on **tulemas Fa
   * **Vali tulbad / Valitavad väljad:** andmekaardi väljade ja lisaväljade lisamine aruandele „Valitavad väljad" kaudu ei tööta veel (nt Riigikonto on praegu käsitsi lisatud).
   * **Eksport:** Faas I-s Excel, PDF, XML; **CSV** puudub. (Väljatrükk „Trüki" nupu alt on juba Faas I-s.)
   * **Tabelihaldus:** sortimine (Sort1/Sort2), kogused, numbri täpsus - Faas II.
+  * **Keel:** aruande pealt keele valik ja **võõrkeelsed konto nimed** (konto kaardi „Võõrkeelne nimetus" alusel) - Faas II. Faas I-s eesti/inglise **süsteemi keele järgi** (vt //Keel//).
 
 
 ====== Faas I - toimiv aruanne ======
@@ -319,6 +320,13 @@ Faas I-s saab aruande andmed alla laadida **kolmes formaadis**:
 **Väljatrükk (Trüki).** Aruannet saab välja trükkida **„Trüki" nupu** alt (brauseri prindivaade) - see **toimib juba Faas I-s**.
 
 **Nupu paigutus (split-button).** Excel ja ülejäänud vormingud on **split-button** kujul: **Excel on esmane (primaarne) tegevus** eraldi nupul, sest seda kasutatakse kõige rohkem; **PDF ja XML** (hiljem ka CSV) on sama nupu **noole all** teisejärguliste valikutena. See on **teadlik UI-lahendus** (mitte ebajärjekindlus).
+
+===== Keel (Faas I) =====
+
+  - **Aruanne on praegu eesti ja inglise keeles.** Teised keeled (nt läti, leedu, soome) tulevad **Faas II-s**.
+  - **Keel tuleb süsteemi keelest** (peamenüü). Kui peamenüüst valida **inglise keel**, kuvatakse aruanne inglise keeles.
+  - **Aruande pealt eraldi keele valimist veel ei ole** - see lisandub **Faas II-s**.
+  - **Konto nimed jäävad praegu eesti keelseks** (ka ingliskeelses aruandes). Erinevalt vanast Pearaamatust ei toeta uus aruanne veel konto kaardile märgitud **võõrkeelse nimetuse** (lisaväli „Võõrkeelne nimetus", nt „Bank Account EUR" / ENG) kasutamist - st ingliskeelses aruandes ei tule konto nimi automaatselt inglise keelseks. See tugi lisandub **Faas II-s**.
 
 
 ====== Faas II - täiendused ======
