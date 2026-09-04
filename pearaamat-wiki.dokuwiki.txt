@@ -400,7 +400,7 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
   * **Vali tulbad** - aruande veergude näitamine/peitmine. **Põhifunktsioon (näita/peida) toimib juba Faas I-s;** Faas II lisab andmekaardi väljade ja lisaväljade valimise. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita). Vt //Vali tulbad - märkused//.
   * **Numbri täpsus** - ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
-  * **Vali lisainfo väljad** - lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
+  * **Vali lisainfo väljad** - lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr.
   * **Sortimine** - Sort1 / Sort2.
   * **Kogused** - koguste veerud.
 
@@ -412,7 +412,7 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
 **Objekti tasemed hierarhilise noolega.** „Vali tulbad" loendis on iga **objekti tase** kuvatud kujul **„Objekt ▸ [taseme nimi]"** (nt //Objekt ▸ Osakond//, //Objekt ▸ Isik//, //Objekt ▸ Kalamaja//). Nool ''▸'' näitab, et tegu on objekti **alamtaseme (dimensiooni)** veeruga, mitte üldise „Objekt" veeruga.
 
-**Andmekaardi väljade lisamine „Valitavad väljad" kaudu - Faas II.** Praegu **ei tööta** veel andmekaartide väljade ega andmekaartide lisaväljade lisamine „Vali tulbad" valikusse aruande **„Valitavad väljad"** seadistuse kaudu - see funktsionaalsus tuleb **Faas II-s** (vt //Aruandepõhine „Valitavad väljad"//).
+**Andmekaardi väljade lisamine „Valitavad väljad" kaudu - Faas II.** Praegu **ei tööta** veel andmekaartide väljade ega andmekaartide lisaväljade lisamine „Vali tulbad" valikusse aruande **„Valitavad väljad"** seadistuse kaudu - see funktsionaalsus tuleb **Faas II-s**.
 
   * Näiteks väli **„Riigikonto"** (konto kaardi andmeväli) on praegu „Vali tulbad" loendisse **käsitsi lisatud**, kuna see on pearaamatu aruande jaoks arvatavasti oluline väli.
   * Faas II-s, kui „Valitavad väljad" toimib aruande kaudu, saab **kasutaja ise** valida, millised andmekaardi väljad ja lisaväljad „Vali tulbad" alla ilmuvad.
@@ -465,15 +465,3 @@ Märgituna kuvatakse iga konto all:
 **NB!** Saldeerimata sakk on Faas I-s **olemas ja nähtav**, kuid **ei anna veel tulemusi** - vaade aktiveeritakse (pannakse tööle) **Faas II-s**.
 
 Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (proovibilansi loogika, loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
-
-===== Aruandepõhine „Valitavad väljad" (Faas II) ===== {{anchor:aruandepohine_valitavad_valjad}}
-
-Ettepanek muuta „Valitavad väljad" seadistus **aruande-teadlikuks** (praegu globaalne):
-
-  * **Tasand 1 - juurdepääs (globaalne):** administraator määrab, mis väljad on üldse aruannetes lubatud.
-  * **Tasand 2 - aruande kuraator (super kasutaja):** määrab, millised lubatud väljad on **selles aruandes** pakutavad / vaikimisi näidatud.
-  * **Tasand 3 - isiklik valik (lõppkasutaja):** valib pakutavatest väljadest need, mida veergudena näeb.
-
-Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (väli on kohe veeruna ees, saab peita). Super kasutaja pääseb seadistusse ka otse aruande mutrivõtme „Vali lisainfo väljad" → „Halda välju…" lingi kaudu.
-
-**Seos lisavälja kaardiga.** Lisavälja kaardil (//Süsteemi seadistused > Üldine > Lisaväljad//) on juba olemas lipud **„Nähtav aruandes"** ja **„Filtreeritav aruandes"**, mis on mõeldud määrama, kas lisaväli ilmub aruandesse veeruna ja kas selle järgi saab filtreerida. **Praegu (Faas I) need lipud pearaamatu aruannet ei mõjuta** - kirjeldatud aruande-teadlik mehhanism (nii andmekaardi väljade kui lisaväljade aruandesse toomine ja filtreeritavus) rakendub **Faas II-s**.
