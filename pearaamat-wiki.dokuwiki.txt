@@ -345,11 +345,28 @@ Testbaas: Aeg 01.01.2026-31.07.2026, Kontod ''0:Z'', Kronoloogiline, muid filtre
 ===== Vaated (Faas I) =====
 
   * **Detailvaade** - kõik kanderead, grupeeritud konto kaupa. Iga grupi kohta **Algsaldo**, **Kokku (periood)** ja **Lõppsaldo** read.
-  * **Koondvaade** - üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. Toetab korrespondeerivate kontode lahustust (konto → korr-kontode Deebet/Kreedit).
+  * **Koondvaade** - üks rida konto kohta: Algsaldo, Deebet, Kreedit, Muutus, Lõppsaldo. **NB!** Korrespondeerivate kontode lõikes lahustus (konto -> korr-kontode Deebet/Kreedit, „Korr. konto" valik) **ei ole Faas I-s** - see lisandub **Faas II-s** (vt //Koondvaade korr. kontode lõikes (Faas II)//).
   * **Kronoloogiline** - kõik kanded ajalises järjekorras (kontode üleselt), koos algsaldo ja lõppsaldo raamnumbritega.
-  * **Vahesumma** - grupeering valitud dimensiooni (nt Objekt, Projekt, Erisoodustus) järgi. Toimib nii Detailvaates (tehingute kaupa) kui Koondvaates (ainult summa).
+  * **Vahesumma** (Näita vahesummat) - grupeerib tulemuse valitud dimensiooni järgi. Toimib nii Detailvaates (tehingute kaupa) kui Koondvaates (ainult summa). **Faas I-s on valitav ainult „Objekti lõikes" ja „Projekti lõikes".** Ülejäänud valikud lisanduvad Faas II-s (vt tabel allpool).
 
-==== Vahesumma erisoodustuse lõikes ====
+==== Vahesumma valikud ja faasid ====
+
+„Näita vahesummat" rippmenüü valikud:
+
+^ Vahesumma lõikes ^ Faas ^
+| **Objekti lõikes** | **Faas I** |
+| **Projekti lõikes** | **Faas I** |
+| Kliendi lõikes | Faas II |
+| Hankija lõikes | Faas II |
+| KM koodi lõikes | Faas II |
+| Valuuta lõikes | Faas II |
+| Erisoodustuse lõikes | Faas II |
+
+**NB!** Faas I-s **ei ole** rippmenüüs ülejäänud viit valikut (Klient, Hankija, KM kood, Valuuta, Erisoodustus) - need on ajutiselt eemaldatud ja lisanduvad Faas II-s.
+
+==== Vahesumma erisoodustuse lõikes (Faas II) ====
+
+(Faas II valik - vt //Vahesumma valikud ja faasid//.)
 
 Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa - mõeldud EMTA-sse saadetava TSD andmestiku kontrollimiseks. Erisoodustuse kood on määratud **konto kaardil** (väli ERISOODUSTUS), seega seos on konto tasemel, mitte kande tasemel.
 
@@ -427,7 +444,20 @@ Riigi konto **veeru** saab aruandesse lisada „Vali tulbad" alt (linnuke „Rii
 
 **NB! Lisavälja objekt.** „Lisaväljad" on objekti-mõttes mitmetähenduslik (lisavälju on nii konto kaardil kui kanderea/vautšeri tasemel). Väli läheb sinna sektsiooni, mille objektile ta kuulub: **konto kaardi** lisaväli → grupp „Kontode lisaväljad" (KONTOD juures); **kande** lisaväli → KANDED. Aruande praeguse lisaväljade filtri objekti-tase tuleb arendajaga üle kontrollida.
 
+===== Koondvaade korr. kontode lõikes (Faas II) =====
+
+Koondvaates saab iga konto all näidata **korrespondeerivate kontode lahustust**. Lülitatakse sisse „Näita vahesummat" järel oleva **„Korr. konto" linnukesega**; märkimata jätab tavalise Koondvaate (üks rida konto kohta).
+
+Märgituna kuvatakse iga konto all:
+  * **korrespondeerivad kontod** koodi ja nimega, igaüks oma Deebet/Kreedit summaga;
+  * korr-konto näidatakse **oma loomulikul poolel** (topeltkirje: konto deebet vastab vastaskonto kreedile ja vastupidi - nt konto 211000 (Ostjad) deebet -> vastaskonto Müügitulu **kreedil**);
+  * **„Korr. kontod kokku"** summarida. Topeltkirje tõttu korr-kokku Deebet võrdub konto Kreediti summaga ja vastupidi.
+
+**Faas:** Faas II. Faas I-s Koondvaade korr. kontode lõikes lahustust **ei näita**.
+
 ===== Saldeerimata vaade (Faas II) =====
+
+**NB!** Saldeerimata sakk on Faas I-s **olemas ja nähtav**, kuid **ei anna veel tulemusi** - vaade aktiveeritakse (pannakse tööle) **Faas II-s**.
 
 Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (proovibilansi loogika, loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
 
@@ -444,11 +474,12 @@ Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (
 
 ====== Mida Faas I kasutajale EI näita ======
 
-Järgnev on kavandatud **Faas II-s** ja Faas I-s kasutajale ei kuvata:
+Järgnev on kavandatud **Faas II-s**. Osa on Faas I-s **peidetud**, osa **nähtav, aga veel mitteaktiivne** (sakk/valik on olemas, kuid ei anna tulemust):
 
   * **Simulatsiooni filter**
   * **Kontsern filter**
-  * **Kontoklass filter**
-  * **Oma või Riigi konto** valik
+  * **Oma või Riigi konto** valik (Riigikonto „+" filter)
   * **Filtrite „Vali lisaväljad" funktsionaalsus** (nt Projekt, Klient, Hankija jne andmeväljad)
-  * **Saldeerimata vaade**
+  * **Vahesumma lisavalikud** - Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes (Faas I-s on ainult Objekti ja Projekti lõikes)
+  * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke Koondvaates)
+  * **Saldeerimata vaade** - sakk on **nähtav, aga ei anna tulemusi** (aktiveerub Faas II-s)
