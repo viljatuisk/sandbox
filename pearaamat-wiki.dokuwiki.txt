@@ -46,13 +46,7 @@ Filtrid on jaotatud **nelja sektsiooni (voldikusse)**: **PERIOOD**, **KONTOD**, 
 | ::: | Muutus | Muutuse (summa) suurus: //suurem/väiksem/võrdub/ei võrdu//; märk ''+''/''-'' - vt //Muutus filter (+ / - märk)//. |
 | ::: | Viide | Viite järgi. |
 | ::: | Tasemeta | Välistab **rea tasandil** kanderead, millel vastava **objekti tase** on täidetud (märkida taseme number); alles jäävad read, kus see tase on tühi. Filter rakendub üksikute ridade, mitte terve kande tasandil, seega summad on korrektsed. |
-| **LISAVÄLJAD** | (kande lisaväljad) | Kande/dokumendi lisaväljade järgi (nt Artikli kood, Olemus). **Ei filtreeri veel - Faas II** (vt //Lisaväljad (KANDED - kande lisaväljad)//). |
-
-==== Lisaväljad (KANDED - kande lisaväljad) ====
-
-KANDED all on eraldi grupp **LISAVÄLJAD** (nt „Artikli kood", „Olemus" vm) - mõeldud filtreerimiseks **kande/dokumendi lisaväljade** järgi. Need on **kande tasandi** lisaväljad ja **erinevad** KONTOD juures olevast grupist **„Kontode lisaväljad"** (konto kaardi lisaväljad). Objekti-tasandi loogika: konto kaardi lisaväli -> KONTOD „Kontode lisaväljad"; kande lisaväli -> KANDED „Lisaväljad" (vt märkus //Lisavälja objekt// jaotises //Filtrite loogiline jaotus: KONTOD vs KANDED//).
-
-**NB! Lisaväljade järgi filtreerimine ei tööta veel - Faas II.** LISAVÄLJAD filtrigrupp on **nähtav**, kuid **ei filtreeri veel** andmeid. Samuti **ei tööta veel lisaväljade lisamine aruandele Lisaväljade registri kaudu**: kuigi lisavälja kaardil (//Süsteemi seadistused > Üldine > Lisaväljad//) on olemas valikud **„Nähtav aruandes"** ja **„Filtreeritav aruandes"**, need ei mõjuta praegu pearaamatu aruannet. Kogu see mehhanism (lisavälja kaardilt aruandesse tuleku ja filtreeritavuse juhtimine) aktiveeritakse **Faas II-s** (vt //Aruandepõhine „Valitavad väljad"//).
+| **LISAVÄLJAD** | (kande lisaväljad) | Kande/dokumendi lisaväljade järgi (nt Artikli kood, Olemus). **Ei filtreeri veel - Faas II.** |
 
 ==== Otsingu põhimõte: VÕI (OR) ja JA (AND) ====
 
