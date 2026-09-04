@@ -392,7 +392,7 @@ Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa - m
 
   * **Algsaldo** ja **Lõppsaldo** kuvatakse **märgiga arvuna Saldo tulbas** (mitte Deebet/Kreedit tulpades). Aktivakonto negatiivne saldo = kreeditsaldo (miinusmärgiga).
   * **Deebet ja Kreedit** tulbad näitavad **perioodi käivet**, mitte saldosid.
-  * Summaridade sildid (Algsaldo / Kokku (periood) / Lõppsaldo) on alati vahetult Deebeti ees ega kao ega nihku, kui mõni veerg peita.
+  * **Summaridade siltide asukoht (NB!).** Summaridade nimetused **Algsaldo**, **KOKKU (periood)** ja **Lõppsaldo** on praegu **KMK veerus**. **Ära peida „Vali tulbad" alt KMK veergu** - vastasel juhul **kaovad need nimetused** ära. **Faas II-s** seotakse sildid KMK väljast lahti (omaette asukoht), nii et KMK peitmine neid enam ei mõjuta.
 
 ===== Eksport (Faas I) =====
 
@@ -415,7 +415,7 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
 
 ===== Tabelihaldus (Faas II) =====
 
-  * **Vali tulbad** - aruande veergude näitamine/peitmine. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita).
+  * **Vali tulbad** - aruande veergude näitamine/peitmine. **Põhifunktsioon (näita/peida) toimib juba Faas I-s;** Faas II lisab andmekaardi väljade ja lisaväljade valimise. **Konto, Deebet, Kreedit** on kohustuslikud veerud (lukus, ei saa peita). Vt //Vali tulbad - märkused//.
   * **Numbri täpsus** - ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
   * **Vali lisainfo väljad** - lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
   * **Sortimine** - Sort1 / Sort2.
@@ -423,6 +423,10 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
   * **Kogused** - koguste veerud.
 
 ==== Vali tulbad - märkused ====
+
+**Veergude näitamine/peitmine toimib juba Faas I-s.** Aruande enda veerge saab „Vali tulbad" alt näidata/peita juba praegu. (Faas II lisab sellele juurde andmekaardi väljade ja lisaväljade lisamise - vt allpool.)
+
+**NB! Ära peida KMK veergu.** Summaridade nimetused (Algsaldo / KOKKU (periood) / Lõppsaldo) on praegu **KMK veerus** - kui KMK „Vali tulbad" alt peita, **kaovad need nimetused**. Faas II-s seotakse sildid KMK-st lahti. Vt //Saldode kuva//.
 
 **Objekti tasemed hierarhilise noolega.** „Vali tulbad" loendis on iga **objekti tase** kuvatud kujul **„Objekt ▸ [taseme nimi]"** (nt //Objekt ▸ Osakond//, //Objekt ▸ Isik//, //Objekt ▸ Kalamaja//). Nool ''▸'' näitab, et tegu on objekti **alamtaseme (dimensiooni)** veeruga, mitte üldise „Objekt" veeruga.
 
