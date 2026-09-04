@@ -408,6 +408,15 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
   * **Väljatrükk** - vormindatud trükivaade.
   * **Kogused** - koguste veerud.
 
+==== Vali tulbad - märkused ====
+
+**Objekti tasemed hierarhilise noolega.** „Vali tulbad" loendis on iga **objekti tase** kuvatud kujul **„Objekt ▸ [taseme nimi]"** (nt //Objekt ▸ Osakond//, //Objekt ▸ Isik//, //Objekt ▸ Kalamaja//). Nool ''▸'' näitab, et tegu on objekti **alamtaseme (dimensiooni)** veeruga, mitte üldise „Objekt" veeruga.
+
+**Andmekaardi väljade lisamine „Valitavad väljad" kaudu - Faas II.** Praegu **ei tööta** veel andmekaartide väljade ega andmekaartide lisaväljade lisamine „Vali tulbad" valikusse aruande **„Valitavad väljad"** seadistuse kaudu - see funktsionaalsus tuleb **Faas II-s** (vt //Aruandepõhine „Valitavad väljad"//).
+
+  * Näiteks väli **„Riigikonto"** (konto kaardi andmeväli) on praegu „Vali tulbad" loendisse **käsitsi lisatud**, kuna see on pearaamatu aruande jaoks arvatavasti oluline väli.
+  * Faas II-s, kui „Valitavad väljad" toimib aruande kaudu, saab **kasutaja ise** valida, millised andmekaardi väljad ja lisaväljad „Vali tulbad" alla ilmuvad.
+
 ===== Laiendatud filtrid (Faas II) =====
 
   * **Kontoklass** - filtreerimine kontoklasside järgi. Paikneb **KONTOD** sektsioonis (kontoklass on konto kaardi omadus), mitte eraldi filtrigrupina.
