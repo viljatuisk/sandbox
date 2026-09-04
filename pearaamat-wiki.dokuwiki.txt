@@ -464,4 +464,4 @@ Märgituna kuvatakse iga konto all:
 
 **NB!** Saldeerimata sakk on Faas I-s **olemas ja nähtav**, kuid **ei anna veel tulemusi** - vaade aktiveeritakse (pannakse tööle) **Faas II-s**.
 
-Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (proovibilansi loogika, loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
+Bruto (saldeerimata) esitus: Algsaldo ja Lõppsaldo jaotatakse **Deebet ja Kreedit** tulpadesse (loomulikul poolel), erinevalt Detailvaate neto-esitusest, kus saldo on märgiga Saldo tulbas.
