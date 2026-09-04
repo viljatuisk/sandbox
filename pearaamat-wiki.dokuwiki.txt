@@ -3,7 +3,7 @@
 Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud perioodil. Aruanne tarnitakse kasutajatele **kahes faasis**:
 
   * **Faas I** (~oktoobri algus) - toimiv pearaamatuaruanne, millega kasutaja saab teha päringuid, tulemusi filtreerida (saldo, muutused, konto, objekt), valida vaate tüüpi (detail, koond, kronoloogiline, vahesumma) ja andmeid eksportida.
-  * **Faas II** (aeg otsustamisel) - sama aruanne täiendatuna paindlikuma tabelihaldusega (sortimine, väljatrükk, kogused, andmekaardi väljade ja lisaväljade lisamine veergudena; veergude näita/peida põhifunktsioon on juba Faas I-s), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
+  * **Faas II** (aeg otsustamisel) - sama aruanne täiendatuna paindlikuma tabelihaldusega (sortimine, kogused, andmekaardi väljade ja lisaväljade lisamine veergudena; veergude näita/peida põhifunktsioon ja väljatrükk on juba Faas I-s), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
 
 //See wiki on töös ja täieneb: kui prototüüpi lisandub uusi funktsioone, lisatakse need siia vastava faasi alla.//
 
@@ -16,8 +16,7 @@ Kiire ülevaade, mida Faas I **veel ei sisalda** - kõik allolev on **tulemas Fa
   * **Koondvaade korr. kontode lõikes** („Korr. konto" linnuke).
   * **Saldeerimata vaade** - sakk on nähtav, aga **ei anna veel tulemusi**.
   * **Vali tulbad / Valitavad väljad:** andmekaardi väljade ja lisaväljade lisamine aruandele „Valitavad väljad" kaudu ei tööta veel (nt Riigikonto on praegu käsitsi lisatud).
-  * **Eksport:** Faas I-s Excel, PDF, XML; **CSV** puudub.
-  * **Väljatrükk:** vormindatud trükivaade puudub (Faas I-s andmete eksport).
+  * **Eksport:** Faas I-s Excel, PDF, XML; **CSV** puudub. (Väljatrükk „Trüki" nupu alt on juba Faas I-s.)
   * **Tabelihaldus:** sortimine (Sort1/Sort2), kogused, numbri täpsus - Faas II.
 
 
@@ -394,7 +393,7 @@ Grupeerib kontod ja saldod **erisoodustuse koodi (TSD lisa 4/5 rida)** kaupa - m
   * **Deebet ja Kreedit** tulbad näitavad **perioodi käivet**, mitte saldosid.
   * **Summaridade siltide asukoht (NB!).** Summaridade nimetused **Algsaldo**, **KOKKU (periood)** ja **Lõppsaldo** on praegu **KMK veerus**. **Ära peida „Vali tulbad" alt KMK veergu** - vastasel juhul **kaovad need nimetused** ära. **Faas II-s** seotakse sildid KMK väljast lahti (omaette asukoht), nii et KMK peitmine neid enam ei mõjuta.
 
-===== Eksport (Faas I) =====
+===== Eksport ja väljatrükk (Faas I) =====
 
 Faas I-s saab aruande andmed alla laadida **kolmes formaadis**:
 
@@ -404,7 +403,7 @@ Faas I-s saab aruande andmed alla laadida **kolmes formaadis**:
 
 **CSV** eksport **ei ole Faas I-s** - lisandub **Faas II-s**.
 
-**Märkus:** vormindatud **väljatrükk** (trükivaade) tuleb samuti Faas II-s; Faas I-s on **andmete eksport**, mitte trükivorming.
+**Väljatrükk (Trüki).** Aruannet saab välja trükkida **„Trüki" nupu** alt (brauseri prindivaade) - see **toimib juba Faas I-s**.
 
 **Nupu paigutus (split-button).** Excel ja ülejäänud vormingud on **split-button** kujul: **Excel on esmane (primaarne) tegevus** eraldi nupul, sest seda kasutatakse kõige rohkem; **PDF ja XML** (hiljem ka CSV) on sama nupu **noole all** teisejärguliste valikutena. See on **teadlik UI-lahendus** (mitte ebajärjekindlus).
 
@@ -419,7 +418,6 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
   * **Numbri täpsus** - ühik/täpsus kõigile numbriveergudele korraga: ''0,01'' / ''0,1'' / ''1'' / ''1000'' / ''1 mln''.
   * **Vali lisainfo väljad** - lisaveerud seotud andmekaartidelt (Hankija, Klient jne), nt Hankija reg nr. Vt [[#aruandepohine_valitavad_valjad|Aruandepõhine „Valitavad väljad"]].
   * **Sortimine** - Sort1 / Sort2.
-  * **Väljatrükk** - vormindatud trükivaade.
   * **Kogused** - koguste veerud.
 
 ==== Vali tulbad - märkused ====
