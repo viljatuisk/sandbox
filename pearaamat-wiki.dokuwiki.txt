@@ -1,4 +1,4 @@
-====== Pearaamatu aruanne ======
+====== Uus pearaamatu aruanne ======
 
 Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud perioodil. Aruanne tarnitakse kasutajatele **kahes faasis**:
 
