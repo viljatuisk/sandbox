@@ -3,7 +3,7 @@
 Pearaamatu aruanne annab ülevaate kontode käibest ja saldodest valitud perioodil. Aruanne tarnitakse kasutajatele **kahes faasis**:
 
   * **Faas I** (~oktoobri algus) - toimiv pearaamatuaruanne, millega kasutaja saab teha päringuid, tulemusi filtreerida (saldo, muutused, konto, objekt), valida vaate tüüpi (detail, koond, kronoloogiline, vahesumma) ja andmeid eksportida.
-  * **Faas II** - sama aruanne täiendatuna paindlikuma tabelihaldusega (veergude valimine, sortimine, väljatrükk, kogused), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
+  * **Faas II** (aeg otsustamisel) - sama aruanne täiendatuna paindlikuma tabelihaldusega (veergude valimine, sortimine, väljatrükk, kogused), laiendatud filtrikomplektiga (kontoklassid, hankija/klient, kasutaja) ning saldeerimata vaatega.
 
 //See wiki on töös ja täieneb: kui prototüüpi lisandub uusi funktsioone, lisatakse need siia vastava faasi alla.//
 
