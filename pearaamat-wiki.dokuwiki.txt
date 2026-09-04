@@ -37,7 +37,7 @@ Filtrid on jaotatud **nelja sektsiooni (voldikusse)**: **PERIOOD**, **KONTOD**, 
 | **KANDED** | Korr. konto | Kande **vastaskonto** järgi. NB! Erineb konto kaardi „Korr. konto" väljast (viimane tuleb Faas II-s KONTOD „+" filtrina). |
 | ::: | Objekt / Objekti tase | Objektifilter. Objektil ''+'' = VÕI, '','' = JA; ''%''/''#'' täidetud/tühi - vt //Objekt ja Objekti tase - väljade käitumine//. |
 | ::: | Kanne | Kande tüüp (nt ARVE, FIN, INV, KULUTUS, LAEK, PALK, TASU jne). |
-| ::: | Projekt | Projekti järgi. |
+| ::: | Projekt | Projekti järgi. **Arvestab pea-/alamprojekti hierarhiat:** kui filtrisse panna **peaprojekt**, millega on seotud alamprojektid, näitab aruanne andmeid ka kõigi selle **alamprojektide** kohta. Alamprojekti sisestamisel kuvatakse ainult selle projekti kanded. |
 | ::: | Klient | Kliendi järgi. //(Faas II)// |
 | ::: | Hankija | Hankija järgi. //(Faas II)// |
 | ::: | Rea sisu | Kanderea sisu/seletuse teksti järgi. (Varem/prototüübis „Selgitus" - täpsustada arendajaga.) |
