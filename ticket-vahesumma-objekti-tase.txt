@@ -1,0 +1,97 @@
+TICKET: Pearaamat > Vahesumma "objekti lõikes" - koondamine VALITUD objekti taseme järgi
+Faas: täpsustada (I või II)
+
+=========================================================================
+TAUST / MIKS + KES
+=========================================================================
+Kandel võivad olla objektid mitmel tasemel korraga (nt tase 1, 2, 3, 4).
+Praegu grupeerib Pearaamatu Vahesumma "objekti lõikes" summad KOGU
+objektijada (kombinatsiooni) järgi - iga unikaalne jada on omaette rida.
+
+Klient soovib näha koondvaadet nii, et summad koondatakse ainult tema
+VALITUD objekti TASEME järgi (nt ainult tase 1), liites kokku kõik jadad,
+millel on sama selle taseme objekt. Muud tasemed ei tohiks koondamisel
+tekitada eraldi ridu.
+
+
+=========================================================================
+NÄIDE
+=========================================================================
+Kanded (konto 5210), objektijada [tase 1, tase 2]:
+
+  K1  OSAK_A, TLN     tase1 = OSAK_A   100
+  K2  OSAK_A, TARTU   tase1 = OSAK_A   150
+  K3  OSAK_B, TLN     tase1 = OSAK_B   200
+  K4  OSAK_B, MÜÜK    tase1 = OSAK_B   300
+
+PRAEGU (kogu jada lõikes) - 4 rida:
+  OSAK_A,TLN -> 100 | OSAK_A,TARTU -> 150 | OSAK_B,TLN -> 200 | OSAK_B,MÜÜK -> 300
+
+SOOVITUD (tase 1 lõikes) - 2 rida:
+  OSAK_A -> 250 (100+150)
+  OSAK_B -> 500 (200+300)
+
+
+=========================================================================
+SOOV / NÕUE
+=========================================================================
+1. Kui on valitud Objekti tase (nt tase 1) JA Vahesumma "objekti lõikes",
+   siis koondada summad selle taseme objekti kaupa - iga kande jadast
+   võetakse VALITUD taseme objekt ja summad grupeeritakse selle järgi.
+2. Kande muude tasemete objektid ignoreeritakse koondamisel (ei teki
+   eraldi ridu kombinatsioonide kaupa).
+3. Ilma valitud tasemeta jääb kehtima praegune käitumine (kogu jada lõikes).
+
+
+=========================================================================
+KÄITUMINE
+=========================================================================
+KOONDVAADE:
+  - Üks rida iga valitud taseme objekti kohta: Algsaldo, Deebet, Kreedit,
+    Muutus, Lõppsaldo.
+  - Lõpus "Kokku".
+
+DETAILVAADE (kui vahesumma detailis toetatud):
+  - Kanded grupeeritud valitud taseme objekti sektsioonide alla; iga
+    sektsiooni vahesumma.
+
+SALDOD:
+  - Algsaldo/Lõppsaldo arvutatakse sama taseme-objekti dimensioonis, nii
+    et Algsaldo + Muutus = Lõppsaldo klapib taseme-objekti tasemel (sama
+    põhimõte nagu "Objekti/taseme filtri mõju saldodele").
+
+
+=========================================================================
+TESTID
+=========================================================================
+1. Vahesumma "objekti lõikes" + Objekti tase = 1 -> summad koondatud
+   taseme-1 objektide kaupa (nt OSAK_A 250, OSAK_B 500), mitte kogu jada
+   kaupa.
+2. Sama andmestik tasemeta (Vahesumma objekti lõikes ilma tasemeta) ->
+   praegune käitumine (kogu jada lõikes).
+3. Summade klappivus: taseme-lõike ridade summa = kõigi kaasatud kannete
+   üldsumma.
+4. Algsaldo + Muutus = Lõppsaldo klapib nii taseme-objekti rea kui
+   üldkokku tasemel.
+5. Kande, millel valitud tasemel objekti pole - vt lahtine küsimus.
+
+
+=========================================================================
+LAHTISED KÜSIMUSED (kinnitada tootejuht / klient)
+=========================================================================
+- TASEMETA KANNE: kui kandel valitud tasemel objekti pole, kas kuvada
+  eraldi rida "(tase X määramata)" või jätta koondist välja?
+- MITU OBJEKTI SAMAL TASEMEL (harv): kui kande jadas on samal tasemel
+  mitu objekti, kuidas käituda (mõlema alla arvestada / esimene)?
+- FAAS: kas Faas I või Faas II?
+- Kas taseme valik võiks olla ka Vahesumma valikus otse (nt "Objekti tase
+  1 lõikes"), või piisab olemasolevast "Objekti tase" + "objekti lõikes"
+  kombinatsioonist?
+
+
+=========================================================================
+PROTOTÜÜP / DEMO
+=========================================================================
+Loogika demo (kogu jada vs taseme lõige) saab teha eraldi HTML-failina
+(analoogselt pearaamat-projekt-tyyp-demo.html omaga). Praegu prototüübis
+seda vaadet ei ole.
