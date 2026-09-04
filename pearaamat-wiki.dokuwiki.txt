@@ -66,15 +66,7 @@ Kuigi VÕI/JA **põhimõte on sama**, on Konto ja Objekti väljal nende **märgi
 
 === Miks Objekt erineb Kontost ===
 
-Erinevuse põhjus on **objekti väärtuse enda ehituses**. Objekt võib koosneda mitmest tasemest (nt osakond + projekt) ja need tasemed **eraldatakse omavahel komaga** (nt ''Tallinn,Müük''). Koma on seega juba **objekti väärtuse osa** - tasemete eraldaja.
-
-Seetõttu **ei saa** Objekti väljal koma kasutada „otsi mitut väärtust" (VÕI) tähenduses - see läheks vastuollu koma tähendusega väärtuse sees. Objektil:
-  * '','' (koma) = **JA** - kombineerib objekti tasemeid, mis peavad samal real korraga kehtima;
-  * ''+'' (pluss) = **VÕI** - liidab kokku read, mis vastavad kummalegi otsingule eraldi.
-
-Kontol seda probleemi **ei ole** - konto väärtus koma ei sisalda, seega Kontol saab koma vabalt kasutada VÕI (mitme väärtuse) tähenduses.
-
-**Kokkuvõte:** VÕI/JA loogika on universaalne, aga **märgid peavad kohanduma andmega**. Objekti väljal on koma juba hõivatud (väärtuse struktuuri osa), seega OR/AND märgid on seal paratamatult teised. Neid **ei saa kunstlikult ühtseks teha** - süntaksierinevus on põhjendatud ja jääb püsima.
+Põhjus on **objekti väärtuse ehituses**: objekt võib koosneda mitmest tasemest, mis **eraldatakse komaga** (nt ''Tallinn,Müük''). Koma on seega juba objekti väärtuse osa (tasemete eraldaja), mistõttu seda **ei saa** Objektil kasutada „mitme väärtuse" (VÕI) tähenduses - selleks jääb ''+''; koma tähendab Objektil **JA**. Kontol seda probleemi pole (konto väärtus koma ei sisalda), seega Kontol tähendab koma **VÕI**. Loogika on universaalne, aga **märgid kohanduvad andmega** ega ole seetõttu Konto ja Objekti vahel ühtsed.
 
 === Objekti kombinatsioonide näited ===
 
@@ -169,18 +161,7 @@ Aruande filtriväljad **Objekt** ja **Objekti tase** piiravad, milliseid kanderi
 
 Käsitsi sisestatav tekstiväli, mille kõrval on asetaja (''🔍'', Matrix-asetaja) objektide valimiseks. Kes objektikoode peast teab, saab need otse sisestada; ülejäänud saavad avada asetaja, kus objektid on grupeeritud objekti taseme kaupa.
 
-Filtrisse võib sisestada ühe või mitu objekti, kasutades eraldajaid:
-
-Objekt kasutab sama VÕI/JA **põhimõtet**, aga **eri märke** kui Konto (põhjus: objekti väärtus sisaldab juba koma - vt //Konto ja Objekt kasutavad eri märke//):
-
-^ Märk ^ Tähendus ^ Näide ^ Tulemus ^
-| ''+'' (pluss) | **VÕI** - vähemalt üks valitud objektidest (liidab eraldi otsingud) | ''MÜÜK+TOOTMINE'' | Read, millel on objekt MÜÜK //või// TOOTMINE |
-| '','' (koma) | **JA** - kõik valitud objektid korraga samal real (kombineerib tasemeid) | ''LADU,TLN'' | Read, millel on korraga //nii// LADU //kui// TLN |
-
-VÕI ja JA saab omavahel kombineerida (koma/JA seob tugevamalt, pluss/VÕI liidab grupid):
-
-> **Objekt:** ''(LADU,TLN) + (MÜÜK,TLN)'' \\
-> Kuvatakse read, millel on korraga **LADU ja TLN**, //või// korraga **MÜÜK ja TLN**. Vt lisanäited jaotises //Objekti kombinatsioonide näited//.
+Sisestada saab ühe või mitu objekti. Objektil ''+'' = VÕI ja '','' = JA (märgid erinevad Kontost, sest objekti väärtus sisaldab juba koma - tasemete eraldaja). Kõik operaatorid ja kombinatsiooninäited on koondatud jaotustesse //Objekt välja legend - täismärgid// ja //Objekti kombinatsioonide näited//.
 
 ==== Väli „Objekti tase" ====
 
@@ -208,17 +189,6 @@ Kui väljale „Objekt" on sisestatud objekt, mis **ei kuulu** valitud tasemele,
 >
 > Kui väljale „Objekt" oleks lisatud objekt mõnest muust tasemest (nt linn TLN), siis selle objektiga ridu ei kuvata, sest valitud tase on Osakond.
 
-==== Täidetud ja täitmata objekt ====
-
-Kanderidadel võib objekt olla nii määratud kui määramata. Objekti täidetuse järgi piiramiseks kasutatakse **sümboleid** otse „Objekt" väljal (Objekt-välja legendis, ⊞ nupp):
-
-^ Sisestus ^ Tulemus ^
-| //(tühi)// | Kõik read (nii objektiga kui ilma) |
-| ''%'' | Ainult read, millel objekt **on täidetud** |
-| ''#'' | Ainult read, millel objekt **on täitmata** |
-
-''#'' on **süsteemiseadistustes määratud tühja välja märk**.
-
 ==== Objekt välja legend - täismärgid ====
 
 Objekt-välja legend (⊞ nupp) katab kõik objekti otsimise võimalused:
@@ -239,42 +209,11 @@ Näited täidetud/täitmata objekti kohta: [[https://wiki.directo.ee/et/fin_aru_
 
 ==== Objekt filtri päringuloogika (vana Pearaamat) ====
 
-Alljärgnev selgitab, kuidas vana Pearaamat objekti filtri sisestuse **päringutingimuseks tõlgib** (legacy funktsioon ''onobjekt''). See on „mootori" tasandi taust.
+Taust „mootori" tasandil (legacy funktsioon ''onobjekt''). Uue aruande Objekt-väli **järgib sama loogikat** - operaatorite tähendus ei muutu (''+'' = VÕI, '','' = JA, ''%''/''#'' täidetud/tühi, ''!'' eitus; vt //Objekt välja legend//).
 
-**NB!** Objekti väljal **jääb sama loogika kehtima ka uues aruandes**: ''+'' = VÕI, '','' = JA. Objekti märgid ei muutu (erinevalt Konto väljast, kus VÕI läks ''+''-lt komale). Vt //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
-
-=== Kust objekti otsitakse (dokument + rida) ===
-
-Objekti otsitakse korraga **kahelt tasandilt**:
-
-  * kui kanderea tasandil on oma objektiväli, ühendatakse **dokumendi objekt + rea objekt** üheks komaga eraldatud tekstiks;
-  * kui rea tasandi objektivälja pole, kasutatakse ainult **dokumendi objekti**.
-
-Tühjad (NULL) väärtused käsitletakse tühja tekstina. Seega vastab rida, kui otsitav objekt esineb kas dokumendi või rea objektide seas.
-
-=== Erimärgid ja operaatorid ===
-
-^ Sisestus ^ Tähendus (päringus) ^
-| ''#'' (tühja otsingu märk, seadistatav) | Objekt on **tühi** - kuvatakse ainult objektita read. |
-| ''%'' üksi | Objekt on **olemas** (mitte tühi) - kuvatakse ainult objektiga read. |
-| ''+'' | **VÕI** - sisestus tükeldatakse ''+'' järgi ja osad ühendatakse ''OR''-iga (piisab ühest vastest). |
-| '','' | **JA** - komaga loend, kus **kõik** objektid peavad real korraga olema (osad ühendatakse ''AND''-iga). |
-| ''!'' alguses | **EI (NOT)** - tingimus pööratakse ümber; kuvatakse read, mis ''ei'' vasta. |
-| ''&'' või ''\|'' (mitme otsingu märk) | Seadistatav mitme-tingimuse eraldaja: seadistuse ''mitme_otsingu_char'' väärtus „1" annab märgiks ''&'', väärtus „3" märgiks ''\|''. (Sama loogika nagu Konto väljal.) |
-
-=== Vaste-loogika (LIKE) ===
-
-Iga otsitava objekti kohta ehitatakse muster: objektide tekst ümbritsetakse komadega ja otsitakse SQL-avaldisega <nowiki>LIKE '%,objekt,%'</nowiki>. Komadega ümbritsemine tagab **täpse vaste** - nt otsing ''10'' ei vasta objektile ''100''.
-
-=== Objektide hierarhia laiendus ===
-
-Otsingut laiendatakse ka **objektid_master** kaudu (objektide hierarhia / master-objektid), et vaste hõlmaks seotud objekte.
-
-**NB!** Selle laienduse **täpne loogika oli koodinäites kärbitud** - kui see peab uude aruandesse üle tulema samamoodi, tuleb täpne käitumine arendajaga üle täpsustada. Mul puudub selle osa kohta koodist täielik info.
-
-=== Seos uue aruandega ===
-
-Uue aruande Objekt-välja loogika **on sama** nagu see legacy-päring: ''+'' = VÕI, '','' = JA, ''%''/''#'' täidetud/tühi, ''!'' eitus. Objekti märgid **ei muutunud**. Konto väljal seevastu läks VÕI ''+''-lt komale - see erinevus on põhjendatud objekti väärtuse ehitusega (koma on objektil juba tasemete eraldaja). Vt //Otsingu põhimõte: VÕI (OR) ja JA (AND)//.
+  * **Kust otsitakse:** objekti otsitakse korraga **dokumendi + rea** tasandilt - kui real on oma objektiväli, ühendatakse dokumendi ja rea objektid komaga, muidu ainult dokumendi objekt (tühjad väärtused = tühi tekst).
+  * **Vaste-loogika (LIKE):** objektide tekst ümbritsetakse komadega ja otsitakse <nowiki>LIKE '%,objekt,%'</nowiki> - komad tagavad **täpse vaste** (nt ''10'' ei vasta objektile ''100'').
+  * **Hierarhia:** otsingut laiendatakse ka **objektid_master** kaudu (master-objektid). **NB!** selle laienduse täpne loogika oli koodinäites kärbitud - kui see peab uude aruandesse üle tulema, täpsustada arendajaga.
 
 ==== Objekti/taseme filtri mõju saldodele ====
 
