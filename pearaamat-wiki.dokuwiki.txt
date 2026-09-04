@@ -47,6 +47,57 @@ Filtrid on jaotatud **nelja sektsiooni (voldikusse)**: **PERIOOD**, **KONTOD**, 
 | ::: | Tasemeta | Välistab **rea tasandil** kanderead, millel vastava **objekti tase** on täidetud (märkida taseme number); alles jäävad read, kus see tase on tühi. Filter rakendub üksikute ridade, mitte terve kande tasandil, seega summad on korrektsed. |
 | **LISAVÄLJAD** | (kande lisaväljad) | Kande/dokumendi lisaväljade järgi (nt Artikli kood, Olemus). **Ei filtreeri veel - Faas II.** |
 
+==== Konto otsingu süntaks ja näited ====
+
+Konto väljal saab kombineerida erinevaid otsingumeetodeid.
+
+=== 0:Z - kõik kontod ===
+
+^ Sisestus ^ Tähendus ^
+| ''0:Z'' | kõik kontod |
+
+=== : - vahemik ===
+
+^ Sisestus ^ Tähendus ^
+| ''1000:1999'' | kontod 1000-1999 |
+| ''010:1011'' | kontod 010-1011 |
+
+=== , - mitu väärtust (VÕI) ===
+
+Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
+
+^ Sisestus ^ Tähendus ^
+| ''1000,2000'' | konto 1000 või konto 2000 |
+| ''10101,111201,521000'' | kontod 10101, 111201 või 521000 |
+| ''10%,52%'' | kontod, mis algavad „10" või „52" |
+
+=== & - kõik tingimused (JA) ===
+
+Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega.
+
+^ Sisestus ^ Tähendus ^
+| ''10%&%5'' | kontod, mis algavad „10" ning lõppevad „5-ga" |
+| ''10%&%5%'' | kontod, mis algavad „10" ning sisaldavad „5" |
+| ''10%&!%5%'' | kontod, mis algavad „10", aga ei sisalda „5" |
+
+**Märk on seadistatav.** „Kõik tingimused korraga" märgi määrab süsteemiseadistus **„Mitme teksti korraga otsingu märk"**. Valikud: ''&'', ''+'', ''|'' või **tühi** (märki pole määratud). Legendis kuvatav sümbol sõltub sellest seadistusest - näiteks kui seadistus on ''+'', kuvatakse legendis ''&'' asemel ''+''. Funktsioon on sama (JA - kõik tingimused peavad kehtima), muutub ainult kasutatav sümbol. Tühi valik tähendab, et seda otsingumärki pole määratud ja mitme tingimuse korraga otsingut ei saa kasutada.
+
+=== % - metamärk (asendab tähti/numbreid) ===
+
+^ Sisestus ^ Tähendus ^
+| ''10%'' | kontod, mis algavad „10" |
+| ''%5'' | kontod, mis lõppevad „5-ga" |
+| ''%50%'' | kontod, mis sisaldavad „50" |
+
+=== ! - eitus (välistus) ===
+
+''!'' eemaldab vastavad kontod tulemusest. **NB!** ''!'' üksi ei tööta - ette peab tulema kontode hulk (vahemik, ''0:Z'' vms), millest välistatakse.
+
+^ Sisestus ^ Tähendus ^
+| ''0:Z,!1000'' | kõik kontod, välja arvatud konto 1000 |
+| ''010:1011,!1000'' | kontod 010-1011, välja arvatud konto 1000 |
+| ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
+
 ==== Otsingu põhimõte: VÕI (OR) ja JA (AND) ====
 
 Filtrites otsimise aluseks on kaks lihtsat põhitehet - **VÕI** ja **JA**:
@@ -101,57 +152,6 @@ Kuna koma = JA, **ei loo sulud eraldi gruppe** - süsteem loeb selle üheks JA-a
 
   * **Objekti** väljal jääb loogika **samaks** nagu vanas (koma = JA, pluss = VÕI) - siin harjumus ei muutu.
   * **Konto** väljal muutub: vanas kombineeriti ''+''-ga, uues komaga. Vana harjumusega kasutaja peab Kontol ümber õppima (''+'' -> '','').
-
-==== Konto otsingu süntaks ja näited ====
-
-Konto väljal saab kombineerida erinevaid otsingumeetodeid.
-
-=== 0:Z - kõik kontod ===
-
-^ Sisestus ^ Tähendus ^
-| ''0:Z'' | kõik kontod |
-
-=== : - vahemik ===
-
-^ Sisestus ^ Tähendus ^
-| ''1000:1999'' | kontod 1000-1999 |
-| ''010:1011'' | kontod 010-1011 |
-
-=== , - mitu väärtust (VÕI) ===
-
-Konto vastab **vähemalt ühele** loetletud väärtusele (laiendab tulemust).
-
-^ Sisestus ^ Tähendus ^
-| ''1000,2000'' | konto 1000 või konto 2000 |
-| ''10101,111201,521000'' | kontod 10101, 111201 või 521000 |
-| ''10%,52%'' | kontod, mis algavad „10" või „52" |
-
-=== & - kõik tingimused (JA) ===
-
-Konto peab vastama **kõigile** tingimustele korraga (kitsendab tulemust). Mõttekas koos mustritega.
-
-^ Sisestus ^ Tähendus ^
-| ''10%&%5'' | kontod, mis algavad „10" ning lõppevad „5-ga" |
-| ''10%&%5%'' | kontod, mis algavad „10" ning sisaldavad „5" |
-| ''10%&!%5%'' | kontod, mis algavad „10", aga ei sisalda „5" |
-
-**Märk on seadistatav.** „Kõik tingimused korraga" märgi määrab süsteemiseadistus **„Mitme teksti korraga otsingu märk"**. Valikud: ''&'', ''+'', ''|'' või **tühi** (märki pole määratud). Legendis kuvatav sümbol sõltub sellest seadistusest - näiteks kui seadistus on ''+'', kuvatakse legendis ''&'' asemel ''+''. Funktsioon on sama (JA - kõik tingimused peavad kehtima), muutub ainult kasutatav sümbol. Tühi valik tähendab, et seda otsingumärki pole määratud ja mitme tingimuse korraga otsingut ei saa kasutada.
-
-=== % - metamärk (asendab tähti/numbreid) ===
-
-^ Sisestus ^ Tähendus ^
-| ''10%'' | kontod, mis algavad „10" |
-| ''%5'' | kontod, mis lõppevad „5-ga" |
-| ''%50%'' | kontod, mis sisaldavad „50" |
-
-=== ! - eitus (välistus) ===
-
-''!'' eemaldab vastavad kontod tulemusest. **NB!** ''!'' üksi ei tööta - ette peab tulema kontode hulk (vahemik, ''0:Z'' vms), millest välistatakse.
-
-^ Sisestus ^ Tähendus ^
-| ''0:Z,!1000'' | kõik kontod, välja arvatud konto 1000 |
-| ''010:1011,!1000'' | kontod 010-1011, välja arvatud konto 1000 |
-| ''4%,!42%'' | kontod, mis algavad „4", välja arvatud need, mis algavad „42" |
 
 ===== Objekt ja Objekti tase - väljade käitumine =====
 
