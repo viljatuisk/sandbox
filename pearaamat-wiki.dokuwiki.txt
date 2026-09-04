@@ -45,10 +45,8 @@ Filtrid on jaotatud **nelja sektsiooni (voldikusse)**: **PERIOOD**, **KONTOD**, 
 | ::: | Valuuta | Valuuta järgi. |
 | ::: | Muutus | Muutuse (summa) suurus: //suurem/väiksem/võrdub/ei võrdu//; märk ''+''/''-'' - vt //Muutus filter (+ / - märk)//. |
 | ::: | Viide | Viite järgi. |
-| ::: | Tasemeta | Välistab kanded, millel teatud **objekti tase** on täidetud (märkida taseme number); alles jäävad read, kus tase on tühi. |
+| ::: | Tasemeta | Välistab **rea tasandil** kanderead, millel vastava **objekti tase** on täidetud (märkida taseme number); alles jäävad read, kus see tase on tühi. Filter rakendub üksikute ridade, mitte terve kande tasandil, seega summad on korrektsed. |
 | **LISAVÄLJAD** | (kande lisaväljad) | Kande/dokumendi lisaväljade järgi (nt Artikli kood, Olemus). **Ei filtreeri veel - Faas II** (vt //Lisaväljad (KANDED - kande lisaväljad)//). |
-
-**NB! „Tasemeta" reapõhisus.** „Tasemeta" peab rakenduma **rea tasandil** - välistatakse üksikud kanderead, millel vastava taseme objekt on täidetud, mitte terve kanne. Kui filter rakendub kande/dokumendi tasandil, satuvad tulemusse ka täidetud tasemega read -> valed summad.
 
 ==== Lisaväljad (KANDED - kande lisaväljad) ====
 
