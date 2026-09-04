@@ -205,14 +205,6 @@ Märkide VÕI/JA loogika ja põhjus, **miks Objekti märgid erinevad Konto omade
 
 Näited täidetud/täitmata objekti kohta: [[https://wiki.directo.ee/et/fin_aru_pea#taeidetud_ja_taeitmata_objekt|wiki: Täidetud ja täitmata objekt]].
 
-==== Objekt filtri päringuloogika (vana Pearaamat) ====
-
-Taust „mootori" tasandil (legacy funktsioon ''onobjekt''). Uue aruande Objekt-väli **järgib sama loogikat** - operaatorite tähendus ei muutu (''+'' = VÕI, '','' = JA, ''%''/''#'' täidetud/tühi, ''!'' eitus; vt //Objekt välja legend//).
-
-  * **Kust otsitakse:** objekti otsitakse korraga **dokumendi + rea** tasandilt - kui real on oma objektiväli, ühendatakse dokumendi ja rea objektid komaga, muidu ainult dokumendi objekt (tühjad väärtused = tühi tekst).
-  * **Vaste-loogika (LIKE):** objektide tekst ümbritsetakse komadega ja otsitakse <nowiki>LIKE '%,objekt,%'</nowiki> - komad tagavad **täpse vaste** (nt ''10'' ei vasta objektile ''100'').
-  * **Hierarhia:** otsingut laiendatakse ka **objektid_master** kaudu (master-objektid). **NB!** selle laienduse täpne loogika oli koodinäites kärbitud - kui see peab uude aruandesse üle tulema, täpsustada arendajaga.
-
 ==== Objekti/taseme filtri mõju saldodele ====
 
 **Objekti või objekti taseme filter mõjub ka kontode saldode arvutusse** (mitte ainult kannete kuvamisele). Ehk kui filtreerid objekti järgi, arvutatakse:
