@@ -439,7 +439,7 @@ Faas II lisab paindliku tabelihalduse, laiendatud filtrid ja saldeerimata vaate.
   * **Hankija / Klient** - koos nende andmeväljade valikuga (vali lisaväljad).
   * **Kasutaja** - kasutajapõhine filter.
   * **Simulatsioon** - simulatsioonikannete kaasamine/välistamine.
-  * **Kontsern** - kontserni/firmade valik.
+  * **Kontsern** - kontserni firmade valik. **NB!** Kontserni baasis on selle filtri nimetus **„Firma"** - mitmikvalik kontserni kuuluvate firmade seast.
   * **Konto lisa filter (Riigikonto jne)** - Konto filtri kõrval „+" (mutrivõti), mille kaudu saab lisada täiendava filtri **konto kaardi väljade** järgi. Esimene väli: **Riigikonto** (konto kaardi standardväli). Kombineerub Konto filtriga (JA) ja toetab sama süntaksit nagu Konto - eelkõige **vahemikku** (nt ''550000:559999''). Vt allpool „Riigikonto filter".
 
 ===== Riigikonto filter (Konto + lisa filter) (Faas II) =====
@@ -510,7 +510,7 @@ Lipud: **Pakutav aruandes** (väli ilmub valikusse) ja **Vaikimisi näidatud** (
 Järgnev on kavandatud **Faas II-s**. Osa on Faas I-s **peidetud**, osa **nähtav, aga veel mitteaktiivne** (sakk/valik on olemas, kuid ei anna tulemust):
 
   * **Simulatsiooni filter**
-  * **Kontsern filter**
+  * **Kontsern filter** (kontserni baasis nimetusega „Firma")
   * **Oma või Riigi konto** valik (Riigikonto „+" filter)
   * **Filtrite „Vali lisaväljad" funktsionaalsus** (nt Projekt, Klient, Hankija jne andmeväljad)
   * **Vahesumma lisavalikud** - Kliendi, Hankija, KM koodi, Valuuta ja Erisoodustuse lõikes (Faas I-s on ainult Objekti ja Projekti lõikes)
