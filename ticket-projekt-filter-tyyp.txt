@@ -1,0 +1,96 @@
+TICKET: Pearaamat > Projekt filter + Projekti tüüp (lisafilter)
+Faas: täpsustada (I või II)
+
+=========================================================================
+TAUST / MIKS + KES
+=========================================================================
+Projekti kaardil on: oma KOOD, PEAPROJEKT (hierarhia) ja TÜÜP (nt
+"Elektritööd", "Santehnika"). Kanne on märgitud KONKREETSE projektiga
+(nt alamprojekt P001).
+
+Kasutaja soovib Pearaamatus filtreerida:
+  a) Projekti järgi - kas peaprojekti VÕI alamprojekti kaudu;
+  b) Projekti TÜÜBI järgi (projekti kaardi omadus) - lisafiltrina Projekt
+     välja kõrval ("+"), sarnaselt Konto "+" lisafiltrile (Riigikonto).
+
+
+=========================================================================
+NÕUE / LAHENDUS
+=========================================================================
+1. PROJEKT FILTER (hierarhia):
+   - Peaprojekt (nt P) -> aruanne kaasab KÕIK alamprojektid, mille kaardil
+     Peaprojekt = P (nt P001, P002, P003).
+   - Alamprojekt (nt P001) -> ainult selle projekti kanded.
+   - Tühi Projekt filter ei piira midagi.
+
+2. TÜÜP LISAFILTER (projekti kaardi väli):
+   - Projekt filtri kõrval "+" (mutrivõti) kaudu saab lisada filtri projekti
+     kaardi TÜÜP järgi (piltlikult nagu Konto "+" Riigikonto lisafilter).
+   - Filter kasutab kande PROJEKTI KAARDI "Tüüp" välja (mitte kande enda
+     tunnust) - kuvatakse ainult need kanded, mille projekti tüüp vastab.
+
+3. KOMBINEERIMINE = JA:
+   - Projekt (nt P) + Tüüp (nt Elektritööd) -> ainult need P alamprojektid,
+     mille kaardi Tüüp = Elektritööd.
+   - Mõlemad valikulised; koos peavad mõlemad kehtima.
+
+
+=========================================================================
+NÄIDE (vt prototüübi demo)
+=========================================================================
+Projektid:
+  P     (peaprojekt)              Tüüp -
+  P001  Peaprojekt P   Projekt 1  Tüüp Elektritööd
+  P002  Peaprojekt P   Projekt 2  Tüüp Santehnika
+  P003  Peaprojekt P   Projekt 3  Tüüp Elektritööd
+  Q001  Peaprojekt Q   Projekt Q1 Tüüp Elektritööd
+
+Kanded: P001=100, P002=200, P003=300, Q001=400.
+
+  Projekt P                        -> P001+P002+P003 = 600
+  Projekt P + Tüüp Elektritööd     -> P001+P003 = 400 (P002 Santehnika välja)
+  Projekt P001                     -> 100
+  Projekt P001 + Tüüp Santehnika   -> TÜHI (P001 on Elektritööd -> JA ei klapi)
+  Ainult Tüüp Elektritööd          -> P001+P003+Q001 = 800 (ka teine peaprojekt)
+
+
+=========================================================================
+KÄITUMINE VAADETES
+=========================================================================
+- Detailvaade: kuvatakse ainult filtrile vastavate projektide kanded.
+- Koondvaade: rida konto kohta, piirdudes vastavate projektide kannetega.
+- Projekti veeru saab aruandesse jätta (kande projekt), et näha, millise
+  alamprojektiga kanne seotud on.
+
+
+=========================================================================
+TESTID
+=========================================================================
+1. Projekt = peaprojekt -> kaasatakse kõik alamprojektid (mitte ainult
+   peaprojekti enda kanded).
+2. Projekt = alamprojekt -> ainult selle projekti kanded.
+3. Tüüp = X -> ainult kanded, mille projekti kaardi Tüüp = X.
+4. Projekt + Tüüp koos = JA (nt P + Elektritööd -> P002 Santehnika välja).
+5. Vastuoluline valik (alamprojekt + tüüp, mis ei klapi) -> tühi tulemus.
+6. Summade klappivus: kuvatud kannete summa = filtri tulemuse summa.
+
+
+=========================================================================
+LAHTISED KÜSIMUSED (kinnitada tootejuht)
+=========================================================================
+- PEAPROJEKTI HIERARHIA SÜGAVUS: kas kaasatakse ainult otsesed alamad või
+  kogu puu (alam-alamprojektid)?
+- TÜÜP: kas mitmikvalik (mitu tüüpi korraga) või üksikvalik?
+- MEHHANISM: kas Tüüp tuleb sama universaalse "+" lisafiltri kaudu nagu
+  Konto Riigikonto (andmekaardi väljade filter), st laiendatav ka teistele
+  projekti kaardi väljadele?
+- FAAS: kas Faas I või Faas II?
+
+
+=========================================================================
+PROTOTÜÜP / DEMO
+=========================================================================
+pearaamat-projekt-tyyp-demo.html - TOIMIV demo:
+- Näidisprojektid (peaprojekt/alamprojekt + Tüüp), näidiskanded.
+- Projekt filter (peaprojekt kaasab alamad) + Tüüp filter, kombineeruvad JA.
+- Elav tõlge näitab kaasatud alamprojektid ja tulemuse.
