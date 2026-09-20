@@ -790,7 +790,7 @@
           <div class="chip-select" id="csGrup" data-ctrl="grup" onclick="pvOpen('grup', event)"></div>
         </div>
         <div class="pivot-col">
-          <div class="pivot-label" title="Jaotab tabeli tulbad valitud tunnuse väärtuste alusel eraldi tulpadesse (pöördtabel). Toimib koos Grupeeriga; ilma Grupeerita jooksevad read kontode kaupa.">Tükelda</div>
+          <div class="pivot-label" title="Jaotab ühe veeru väärtused eraldi tulpadesse. Pearaamatus = Objekti tükeldamine tasemeteks: üks Objekt-veerg (nt AADU,LADU,HOOLDUS) -> Pinnad/Masin/Isik/Liin/Osakond/Alamosakond/Auto/Erikord eraldi veergudesse.">Tükelda</div>
           <div class="chip-select" id="csTyk" data-ctrl="tyk" onclick="pvOpen('tyk', event)"></div>
         </div>
         <div class="pivot-checks">
@@ -1157,7 +1157,7 @@
             <td></td>
             <td class="muted">411000</td>
             <td class="link">ARVE.20001</td>
-            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PROJ2025</td>
+            <td>AADU,LADU,HOOLDUS,423CBV</td><td></td><td>AADU</td><td></td><td></td><td>LADU</td><td>HOOLDUS</td><td>423CBV</td><td></td><td>PROJ2025</td>
             <td>15.01.2025</td>
             <td>Eestimaa Kaubandus AS</td>
             <td>Müügitulu kassasse</td>
@@ -1178,7 +1178,7 @@
             <td></td>
             <td class="muted">552000</td>
             <td class="link">KULUTUS.30001</td>
-            <td>TALLINN</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>HAKKUR3</td><td></td><td>HAKKUR3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
             <td>08.02.2025</td>
             <td>Kontorikulu</td>
             <td>Kontorikulu tasumine</td>
@@ -1199,7 +1199,7 @@
             <td></td>
             <td class="muted">551000</td>
             <td class="link">KULUTUS.30002</td>
-            <td>TARTU</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IT-ARENDUS</td>
+            <td>GARAAZ1,FELIKS</td><td>GARAAZ1</td><td></td><td>FELIKS</td><td></td><td></td><td></td><td></td><td></td><td>IT-ARENDUS</td>
             <td>14.02.2025</td>
             <td>Transpordikulu</td>
             <td>Tallinn-Tartu sõidukulu</td>
@@ -3625,7 +3625,11 @@
     { key:'bySpecialDiscount',label:'Erisoodustus' },
     { key:'byDate',           label:'Aeg' },
   ];
-  const PV_LABEL = Object.fromEntries(PV_DIMS.map(d => [d.key, d.label]));
+  // Tükeldal on OMA loend: Pearaamatus on tükeldamise päris vajadus Objekti tasemeteks jagamine
+  // (vana "tasemed" linnuke) - üks Objekt-veerg -> Pinnad/Masin/Isik/Liin/Osakond/Alamosakond/Auto/Erikord.
+  const PV_TYK_DIMS = [{ key:'tasemed', label:'Objekti tasemed' }];
+  const PV_LISTS = { vahe: PV_DIMS, grup: PV_DIMS, tyk: PV_TYK_DIMS };
+  const PV_LABEL = Object.fromEntries([...PV_DIMS, ...PV_TYK_DIMS].map(d => [d.key, d.label]));
   // Detailtabeli veeru-indeks (0-põhine <td>) tunnuse kohta.
   const PV_COL = { konto:0, byObject:4, byProject:13, byCustomer:16, bySupplier:16, byVatCode:17, byCurrency:22, byDate:14 };
   const PV_MULTI = { vahe:false, grup:true, tyk:false }; // multiselekt AINULT Grupeeril
@@ -3649,7 +3653,7 @@
       dd += '<label onclick="event.stopPropagation()"><input type="radio" name="pvdd_' + ctrl + '" ' +
         (sel.length ? '' : 'checked') + ' onchange="pvSet(\'' + ctrl + '\',\'\',true)"> <i>(puudub)</i></label>';
     }
-    dd += PV_DIMS.map(d => {
+    dd += PV_LISTS[ctrl].map(d => {
       const on = sel.includes(d.key);
       return '<label onclick="event.stopPropagation()"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="pvdd_' + ctrl + '" ' +
         (on ? 'checked' : '') + ' onchange="pvSet(\'' + ctrl + '\',\'' + d.key + '\',this.checked)"> ' + d.label + '</label>';
@@ -3734,30 +3738,29 @@
     const korr    = document.getElementById('cbSummaCorr').checked;
     pvClearNote();
 
+    const grup = PV.grup.slice();
+    const vahe = PV.vahe[0] || null;
+    const tas  = (PV.tyk[0] === 'tasemed'); // Tükelda = Objekti tasemed
+
+    // Tükelda = Objekti tasemed: detailvaates asendame ühe Objekt-veeru tasemete veergudega.
+    colVisible.tasemed = tas;
+    colVisible.objekt  = !tas;
+    if (typeof buildColPicker === 'function') buildColPicker();
+
     if (_summaOn) exitSummaView();
     restoreDetail();
     _summaShowCorr = korr;
 
-    const grup = PV.grup.slice();
-    const vahe = PV.vahe[0] || null;
-    const tyk  = PV.tyk[0]  || null;
-
-    // Kronoloogiline (ainult kui pole Grupeeri/Tükelda) = kanded ajalises järjekorras üle kontode.
-    if (krono && !grup.length && !tyk) {
+    // Kronoloogiline (ainult kui pole Grupeeri) = kanded ajalises järjekorras üle kontode.
+    if (krono && !grup.length) {
       document.getElementById('selVahesumma').value = (vahe === 'byObject') ? 'byObject' : '';
       showTab('vaheldumisi-kontod');
       pvNote('Kronoloogiline: kanded ajalises järjekorras üle kontode. Sama tulemuse annab Grupeeri = „Aeg".');
       return;
     }
 
-    // GRUPEERI ja/või TÜKELDA -> koondvaade / pöördtabel
-    if (grup.length || tyk) {
-      const rowKey = grup[0] || 'konto';
-      if (tyk) {
-        enterSummaView();
-        pvApplyPivot(rowKey, tyk);
-        return;
-      }
+    // GRUPEERI -> koondvaade (üks või mitu tunnust)
+    if (grup.length) {
       const NATIVE = ['konto', 'byObject', 'byProject', 'bySpecialDiscount'];
       if (grup.length === 1 && NATIVE.includes(grup[0])) {
         document.getElementById('selVahesumma').value = (grup[0] === 'konto') ? '' : grup[0];
@@ -3766,6 +3769,7 @@
         enterSummaView();
         pvRenderGenericSummary(grup);
       }
+      if (tas) pvNote('„Objekti tasemed" (Tükelda) kehtib detailvaates; koondvaates see ei rakendu.');
       return;
     }
 
