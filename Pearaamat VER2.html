@@ -3759,19 +3759,21 @@
       return;
     }
 
-    // GRUPEERI aktiivne -> koondvaade (Müügistatistika mudel).
-    // Näita vahesummat = VÄLIMINE kokkuklapitav vahesumma-grupp; Grupeeri = SISEMISED read (veergudena).
-    // Nt Näita vahesummat=Konto + Grupeeri=Objekt -> Konto ▾ grupp (konto-vahesummad), Objekt read all.
+    // GRUPEERI aktiivne. Konto = VÄLIMINE ▾ plokk (Näita vahesummat=Konto).
+    // Grupeeri hoiab DETAILREAD alles ja grupeerib need konto ploki sees valitud tunnuse järgi
+    // (alagrupi päis + vahesumma). AINULT Grupeeri=Konto annab kompaktse Koondvaate (üks rida/konto).
     if (grup.length) {
-      const effOuter = vahe || grup[0];
-      const effInner = vahe ? grup.filter(d => d !== vahe) : grup.slice(1);
-      const NATIVE = ['konto', 'byObject', 'byProject', 'bySpecialDiscount'];
-      if (effInner.length === 0 && NATIVE.includes(effOuter)) {
-        document.getElementById('selVahesumma').value = (effOuter === 'konto') ? '' : effOuter;
+      // Sisemised grupeerimistunnused: kõik peale Konto (Konto on alati välimine plokk).
+      const inner = grup.filter(d => d !== 'konto');
+      if (vahe && vahe !== 'konto' && !inner.includes(vahe)) inner.unshift(vahe);
+      if (inner.length === 0) {
+        // Ainult Konto grupeering -> kompaktne Koondvaade (üks rida konto kohta).
+        document.getElementById('selVahesumma').value = '';
         enterSummaView();
       } else {
-        enterSummaView();
-        pvRenderMuugistat(effOuter, effInner);
+        // Detail jääb alles, grupeeritud konto ploki sees.
+        pvRenderDetailGrouped(inner, (saldeer ? 'saldeerimata' : null));
+        if (korr) document.querySelectorAll('#mainTbody [data-corr-sub]').forEach(r => r.style.display = '');
       }
       if (tas) pvNote('„Objekti tasemed" (Tükelda) kehtib detailvaates; koondvaates see ei rakendu.');
       return;
@@ -3840,75 +3842,75 @@
     if (tog) tog.textContent = collapse ? '▸' : '▾';
   }
 
-  // ── Koondvaade Müügistatistika mudelis ──
-  // outerDim = Näita vahesummat (välimine kokkuklapitav vahesumma-grupp);
-  // innerDims = Grupeeri (sisemised read, iga tunnus omaette veerus).
-  // Algsaldo/Lõppsaldo on ainult konto-tasemel (algsaldot ei jaotata dimensioonideks).
-  function pvRenderMuugistat(outerDim, innerDims) {
+  // ── Grupeeri: DETAILE HOIDEV grupeering ──
+  // Konto = välimine ▾ plokk (natiivne konto päis/Algsaldo/Kokku/Lõppsaldo säilib).
+  // innerDims = grupeerimistunnused konto ploki SEES: iga grupp saab alagrupi päise + vahesumma,
+  // aga ÜKSIKUD detailread (kõik veerud) JÄÄVAD ALLES. Kokkuklapil (▾) jääb ainult konto vahesumma.
+  function pvRenderDetailGrouped(innerDims, mode) {
     const tbody = document.getElementById('mainTbody');
-    const theadRow = document.querySelector('table thead tr');
-    const dimCols = [outerDim, ...innerDims];
-    const nDim = dimCols.length;
-    const kontoIsOuter = outerDim === 'konto';
-    const nimetusMap = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
-    const algMap = new Map(SUMMA_DATA.map(r => [r.konto, r.algsaldo]));
+    const src = document.createElement('tbody');
+    src.innerHTML = _detailOrig || '';
+    const EMPTY = (a, b) => { let s = ''; for (let c = a; c <= b; c++) s += '<td></td>'; return s; };
 
-    // päis: dimensiooniveerud + 5 mõõdikut
-    let th = '';
-    dimCols.forEach((d, i) => th += '<th style="width:' + (i === 0 ? 130 : 110) + 'px">' + PV_LABEL[d] + '</th>');
-    th += '<th class="r" style="width:100px">Algsaldo</th><th class="r" style="width:100px">Deebet</th>' +
-      '<th class="r" style="width:100px">Kreedit</th><th class="r" style="width:100px">Muutus</th>' +
-      '<th class="r" style="width:100px">Lõppsaldo</th>';
-    theadRow.innerHTML = th;
-
-    // agregeeri: outer -> {d,k,konto, inner: Map(comboKey -> {vals,d,k})}
-    const outerMap = new Map();
-    pvIterDetail((tds, konto) => {
-      const ov = pvDimVal(tds, konto, outerDim);
-      const dr = _parseNum(tds[18]), cr = _parseNum(tds[19]);
-      if (!outerMap.has(ov)) outerMap.set(ov, { d: 0, k: 0, konto: (outerDim === 'konto' ? konto : null), inner: new Map() });
-      const og = outerMap.get(ov); og.d += dr; og.k += cr;
-      const vals = innerDims.map(d => pvDimVal(tds, konto, d));
-      const ck = vals.join('||');
-      if (!og.inner.has(ck)) og.inner.set(ck, { vals, d: 0, k: 0 });
-      const ig = og.inner.get(ck); ig.d += dr; ig.k += cr;
+    // Kogu konto plokid järjekorras.
+    const blocks = []; let cur = null;
+    Array.from(src.children).forEach(row => {
+      if (row.classList.contains('grp-header')) { cur = { gid: row.dataset.group, header: row, data: [], foot: [] }; blocks.push(cur); }
+      else if (row.classList.contains('data') && row.dataset.grp) { if (cur) cur.data.push(row); }
+      else if (row.classList.contains('grp-sub') && row.dataset.grp) { if (cur) cur.foot.push(row); }
     });
 
-    const sortA = (arr) => arr.sort((a, b) => a === '(määramata)' ? 1 : b === '(määramata)' ? -1 : String(a).localeCompare(String(b), 'et'));
-    const outerKeys = sortA([...outerMap.keys()]);
-
-    const measCells = (alg, d, k, bold) => {
-      const m = d - k, lopp = (alg != null) ? alg + m : null, fw = bold ? 'font-weight:700;' : '';
-      return '<td class="r" style="' + fw + '">' + (alg != null ? fmtNum(alg) : '') + '</td>' +
-        '<td class="r" style="' + fw + '">' + fmtNum(d) + '</td>' +
-        '<td class="r" style="' + fw + '">' + fmtNum(k) + '</td>' +
-        '<td class="r" style="' + fw + (m < 0 ? 'color:#b00;' : '') + '">' + fmtNum(m) + '</td>' +
-        '<td class="r" style="font-weight:700;' + ((lopp != null && lopp < 0) ? 'color:#b00;' : '') + '">' + (lopp != null ? fmtNum(lopp) : '') + '</td>';
-    };
-
-    // grand total
-    let gD = 0, gK = 0, gA = 0;
-    outerKeys.forEach(ov => { const og = outerMap.get(ov); gD += og.d; gK += og.k; if (kontoIsOuter) gA += (algMap.get(og.konto) ?? 0); });
-
-    let html = '<tr class="grp-total"><td colspan="' + nDim + '">KOKKU</td>' + measCells(kontoIsOuter ? gA : null, gD, gK, true) + '</tr>';
-
-    let gi = 0;
-    outerKeys.forEach(ov => {
-      gi++; const sg = 'msg' + gi;
-      const og = outerMap.get(ov);
-      const alg = kontoIsOuter ? (algMap.get(og.konto) ?? 0) : null;
-      const label = (outerDim === 'konto') ? (ov + ' ' + (nimetusMap.get(og.konto) || '')) : ((outerDim === 'bySpecialDiscount' ? '' : '') + ov);
-      html += '<tr class="grp-header" style="cursor:pointer;" data-psg="' + sg + '" onclick="pvToggleSub(\'' + sg + '\',this)">' +
-        '<td colspan="' + nDim + '"><span class="grp-toggle">▾</span> ' + label + '</td>' +
-        measCells(alg, og.d, og.k, true) + '</tr>';
-      const combos = [...og.inner.values()].sort((a, b) => a.vals.join('||').localeCompare(b.vals.join('||'), 'et'));
-      combos.forEach(ig => {
-        let cells = '<td></td>'; // välimine veerg detailreal tühi
-        ig.vals.forEach(v => cells += '<td>' + (v === '(määramata)' ? '<span style="color:#9aa5b0">' + v + '</span>' : v) + '</td>');
-        html += '<tr class="data" data-psg="' + sg + '">' + cells + measCells(null, ig.d, ig.k, false) + '</tr>';
+    const colOf = (d) => PV_COL[d];
+    let html = '';
+    blocks.forEach(b => {
+      const gid = b.gid;
+      html += b.header.outerHTML; // konto päis (toggleGroup, Algsaldo)
+      // grupeeri detailread innerDims järgi
+      const groups = new Map();
+      b.data.forEach(r => {
+        const tds = r.querySelectorAll('td');
+        const vals = innerDims.map(d => { const i = colOf(d); return ((i != null && tds[i]) ? tds[i].textContent.trim() : '') || '(määramata)'; });
+        const key = vals.join(' · ');
+        if (!groups.has(key)) groups.set(key, { vals, rows: [], d: 0, k: 0 });
+        const g = groups.get(key); g.rows.push(r); g.d += _parseNum(tds[18]); g.k += _parseNum(tds[19]);
       });
+      // Sordi grupid: kuupäeva-tunnus kronoloogiliselt, muidu tähestikuliselt.
+      const dkey = (s) => { const m = /(\d{2})\.(\d{2})\.(\d{4})/.exec(s); return m ? (m[3] + m[2] + m[1]) : s; };
+      const dateFirst = innerDims[0] === 'byDate';
+      const keys = [...groups.keys()].sort((a, b2) => {
+        if (a.startsWith('(määramata)')) return 1;
+        if (b2.startsWith('(määramata)')) return -1;
+        return dateFirst ? dkey(a).localeCompare(dkey(b2)) : a.localeCompare(b2, 'et');
+      });
+      keys.forEach(key => {
+        const g = groups.get(key);
+        const label = innerDims.map((d, i) => PV_LABEL[d] + ': ' + g.vals[i]).join(' · ');
+        // alagrupi päis (kokkuklapil peidetud, sest pole grp-sub)
+        html += '<tr class="grp-subhdr" data-grp="' + gid + '"><td colspan="29" style="padding-left:24px;background:#eef4fa;font-style:italic;color:#2a4a6a;border-top:1px solid #dbe6f0;">' + label + '</td></tr>';
+        // detailread (kõik veerud alles)
+        g.rows.forEach(r => {
+          let rowHtml = r.outerHTML;
+          if (mode === 'saldeerimata') {
+            // saldeerimatus ei muuda detailridu (need on juba bruto); jäta nagu on
+          }
+          html += rowHtml;
+        });
+        // alagrupi vahesumma (kokkuklapil peidetud - klass pole grp-sub)
+        if (g.rows.length > 1) {
+          const m = g.d - g.k;
+          html += '<tr class="grp-innersub" data-grp="' + gid + '">' + EMPTY(1, 18) +
+            '<td class="r" style="font-weight:600;">' + fmtNum(g.d) + '</td>' +
+            '<td class="r" style="font-weight:600;">' + fmtNum(g.k) + '</td>' + EMPTY(21, 25) +
+            '<td class="r" style="font-weight:600;">' + fmtNum(m) + '</td>' + EMPTY(27, 29) + '</tr>';
+        }
+      });
+      // konto jalus (Kokku periood, Lõppsaldo)
+      b.foot.forEach(f => html += f.outerHTML);
     });
     tbody.innerHTML = html;
+    applyColStyles();
+    if (typeof applyPrecisionDetail === 'function') applyPrecisionDetail();
+    if (typeof positionSummaryLabels === 'function') positionSummaryLabels();
   }
 
   // ── Pöördtabel (Tükelda) ──
