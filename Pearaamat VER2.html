@@ -3751,11 +3751,11 @@
     restoreDetail();
     _summaShowCorr = korr;
 
-    // Kronoloogiline (ainult kui pole Grupeeri) = kanded ajalises järjekorras üle kontode.
+    // Kronoloogiline (ainult kui pole Grupeeri) = lame päevaraamat: kõik kanded ajalises
+    // järjekorras ÜLE KONTODE (ilma konto-grupeeringuta), jooksva Saldoga. Eraldi vaate tüüp.
     if (krono && !grup.length) {
-      document.getElementById('selVahesumma').value = (vahe === 'byObject') ? 'byObject' : '';
-      showTab('vaheldumisi-kontod');
-      pvNote('Kronoloogiline: kanded ajalises järjekorras üle kontode. Sama tulemuse annab Grupeeri = „Aeg".');
+      pvRenderKronoloogiline();
+      pvNote('Kronoloogiline: kõik kanded ajalises järjekorras üle kontode, jooksva saldoga (kontode-ülene päevaraamat).');
       return;
     }
 
@@ -3840,6 +3840,54 @@
     const collapse = tog ? tog.textContent.trim() === '▾' : true;
     rows.forEach(r => { if (r !== hdr) r.style.display = collapse ? 'none' : ''; });
     if (tog) tog.textContent = collapse ? '▸' : '▾';
+  }
+
+  // ── Kronoloogiline: lame kontode-ülene päevaraamat jooksva saldoga ──
+  function pvDateKey(s) { const m = /(\d{2})\.(\d{2})\.(\d{4})/.exec(s || ''); return m ? (m[3] + m[2] + m[1]) : (s || ''); }
+  function pvRenderKronoloogiline() {
+    const tbody = document.getElementById('mainTbody');
+    const src = document.createElement('tbody');
+    src.innerHTML = _detailOrig || '';
+    const EMPTY = (a, b) => { let s = ''; for (let c = a; c <= b; c++) s += '<td></td>'; return s; };
+    // kogu detailread + konto/nimi grp-headerist
+    const items = []; let curKonto = '', curName = '';
+    Array.from(src.children).forEach(row => {
+      if (row.classList.contains('grp-header')) {
+        const t = row.querySelectorAll('td');
+        curKonto = t[0] ? t[0].textContent.trim().replace(/^[▾▸]\s*/, '') : '';
+        curName = t[1] ? t[1].textContent.trim() : '';
+        return;
+      }
+      if (row.classList.contains('data') && row.dataset.grp) {
+        const t = row.querySelectorAll('td');
+        items.push({ row, konto: curKonto, name: curName, dr: _parseNum(t[18]), cr: _parseNum(t[19]), dk: pvDateKey(t[14] ? t[14].textContent.trim() : '') });
+      }
+    });
+    // stabiilne sort kuupäeva järgi
+    items.map((it, i) => it._i = i);
+    items.sort((a, b) => a.dk === b.dk ? a._i - b._i : a.dk.localeCompare(b.dk));
+
+    const grandAlg = SUMMA_DATA.reduce((s, r) => s + r.algsaldo, 0);
+    let running = grandAlg;
+    const totalRow = (label, val) => '<tr class="grp-sub"><td style="font-weight:700;">' + label + '</td>' + EMPTY(2, 26) +
+      '<td class="r" style="font-weight:700;">' + fmtNum(val) + '</td>' + EMPTY(28, 29) + '</tr>';
+
+    let html = totalRow('Algsaldo', grandAlg);
+    items.forEach(it => {
+      const r = it.row.cloneNode(true);
+      const t = r.querySelectorAll('td');
+      t[0].textContent = it.konto; t[0].className = '';   // Konto number
+      if (t[1]) t[1].textContent = it.name;               // nimi
+      const m = it.dr - it.cr;
+      running += m;
+      if (t[25]) t[25].textContent = fmtNum(m);           // change (muutus)
+      if (t[26]) t[26].textContent = fmtNum(running);     // balance (jooksev saldo)
+      html += r.outerHTML;
+    });
+    html += totalRow('Lõppsaldo', running);
+    tbody.innerHTML = html;
+    applyColStyles();
+    if (typeof applyPrecisionDetail === 'function') applyPrecisionDetail();
   }
 
   // ── Grupeeri: DETAILE HOIDEV grupeering ──
