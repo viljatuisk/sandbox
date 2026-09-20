@@ -227,6 +227,29 @@
   .tab-modifiers input[type=checkbox] { accent-color: #3a6a9a; }
   .tab-modifiers .mod-sep { width: 1px; height: 14px; background: #d0dae6; }
 
+  /* ── PIVOT-RIBA (Näita vahesummat / Grupeeri / Tükelda) ── */
+  .pivot-bar { display: flex; align-items: stretch; flex: 1; }
+  .pivot-col { display: flex; flex-direction: column; min-width: 175px; border-right: 1px solid #d4dde6; }
+  .pivot-label { font-size: 11px; font-weight: 700; color: #2a4a6a; padding: 4px 10px 3px; background: #e4ecf4; border-bottom: 1px solid #d4dde6; white-space: nowrap; cursor: default; user-select: none; }
+  .pivot-label[title]::after { content: ' ⓘ'; font-size: 9px; color: #7aaad4; font-weight: 400; }
+  .chip-select { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 3px; min-height: 25px; padding: 2px 20px 2px 5px; background: #fff; cursor: pointer; }
+  .chip-select::after { content: '▾'; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 9px; color: #6a8ab0; pointer-events: none; }
+  .chip-select .cs-placeholder { color: #9aabbd; font-size: 11px; font-style: italic; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; background: #dce8f4; border: 1px solid #b8cce0; border-radius: 3px; padding: 1px 3px 1px 6px; font-size: 11px; color: #1a3a5a; white-space: nowrap; }
+  .chip .chip-x { cursor: pointer; color: #5a7a9a; font-weight: 700; line-height: 1; padding: 0 2px; }
+  .chip .chip-x:hover { color: #b00; }
+  .chip-dd { display: none; position: absolute; left: 0; top: 100%; min-width: 100%; background: #fff; border: 1px solid #aabccc; border-radius: 2px; z-index: 1000; box-shadow: 0 3px 8px rgba(0,0,0,0.25); max-height: 260px; overflow-y: auto; }
+  .chip-dd.open { display: block; }
+  .chip-dd label { display: flex; align-items: center; gap: 6px; padding: 4px 9px; font-size: 11px; color: #1a2a3a; cursor: pointer; white-space: nowrap; }
+  .chip-dd label:hover { background: #eef4fa; }
+  .chip-dd input { accent-color: #3a6a9a; margin: 0; }
+  .chip-dd .cs-single-note { padding: 3px 9px; font-size: 9px; color: #8aa0b4; border-bottom: 1px solid #eef2f6; font-style: italic; }
+  .pivot-checks { display: flex; align-items: center; gap: 14px; padding: 0 14px; font-size: 11px; color: #4a6a8a; }
+  .pivot-checks label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+  .pivot-checks input[type=checkbox] { accent-color: #3a6a9a; }
+  .pivot-checks label[title]::after { content: ' ⓘ'; font-size: 9px; color: #7aaad4; font-weight: 400; }
+  .pivot-note { font-size: 10px; color: #8a6a2a; background: #fdf6e3; border: 1px solid #eadcb0; border-radius: 3px; padding: 2px 8px; margin: 4px 8px; display: inline-block; }
+
   /* ── TABLE ── */
   .table-wrap { flex: 1; overflow: auto; }
   table { width: auto; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
@@ -757,17 +780,27 @@
 
     <!-- TABS + OPTIONS -->
     <div class="table-controls">
-      <div class="tabs">
-        <div class="tab active">Detailvaade</div>
-        <div class="tab" title="vanas 'Ainult summa'">Koondvaade</div>
-        <div class="tab">Saldeerimata</div>
+      <div class="pivot-bar">
+        <div class="pivot-col">
+          <div class="pivot-label" title="Lisab tabelisse rea, mis summeerib kirjed valitud tunnuse alusel. Detailread jäävad näha, plokk on kinni-lahti klõpsitav. Konto = tavaline detailvaade.">Näita vahesummat</div>
+          <div class="chip-select" id="csVahe" data-ctrl="vahe" onclick="pvOpen('vahe', event)"></div>
+        </div>
+        <div class="pivot-col">
+          <div class="pivot-label" title="Koondab tabeli read valitud tunnuse väärtuste alusel gruppideks (detailread peidetakse). Konto = koondvaade.">Grupeeri</div>
+          <div class="chip-select" id="csGrup" data-ctrl="grup" onclick="pvOpen('grup', event)"></div>
+        </div>
+        <div class="pivot-col">
+          <div class="pivot-label" title="Jaotab tabeli tulbad valitud tunnuse väärtuste alusel eraldi tulpadesse (pöördtabel). Toimib koos Grupeeriga; ilma Grupeerita jooksevad read kontode kaupa.">Tükelda</div>
+          <div class="chip-select" id="csTyk" data-ctrl="tyk" onclick="pvOpen('tyk', event)"></div>
+        </div>
+        <div class="pivot-checks">
+          <label title="Deebet/Kreedit eraldi (bruto) - saldot ei tasaarveldata. Kehtib konto-detailvaates."><input type="checkbox" id="cbSaldeerimata" onchange="applyView()"> Saldeerimata</label>
+          <label id="modLblKronoloogiline" title="vanas 'Vaheldumisi kontod' - kanded ajalises järjekorras üle kontode"><input type="checkbox" id="cbVaheldumisi" onchange="applyView()"> Kronoloogiline</label>
+          <label id="modLblKorrKonto" title="Näita iga konto all korrespondeerivate kontode lahustust"><input type="checkbox" id="cbSummaCorr" onchange="applyView()"> Korr. konto</label>
+        </div>
       </div>
-      <div class="view-controls" id="viewControls">
-        <label id="modLblKronoloogiline" title="vanas 'Vaheldumisi kontod'"><input type="checkbox" id="cbVaheldumisi" onchange="modVaheldumisiChange(this.checked)"> Kronoloogiline</label>
-        <div class="view-ctrl-sep" id="viewCtrlSep"></div>
-        <label>Vahesumma <select id="selVahesumma" onchange="modVahesummaChange(this.value)" style="height:22px;font-size:11px;font-family:Arial,sans-serif;border:1px solid #b8c4d0;border-radius:2px;background:#fff;color:#2a4a6a;padding:0 4px;"></select></label>
-        <label id="modLblKorrKonto" title="Näita iga konto all korrespondeerivate kontode lahustust" style="display:none;"><input type="checkbox" id="cbSummaCorr" onchange="summaCorrToggle(this.checked)"> Korr. konto</label>
-      </div>
+      <!-- Mootor loeb endiselt selVahesumma väärtust; hoiame selle peidetuna. -->
+      <select id="selVahesumma" style="display:none"></select>
       <div class="table-options">
         <div class="col-picker-wrap" id="colPickerWrap">
           <button class="col-picker-btn" id="colPickerBtn" title="Vali tulbad" onclick="toggleColPicker()">🔧</button>
@@ -1753,23 +1786,10 @@
     ).join('');
   })();
 
+  // Vana sakipõhine modifikaatorite haldus - uues pivot-loogikas ei peida enam linnukesi.
+  // Jäetud alles ainult _currentTab jälgimiseks (mootori sisemine olek).
   function updateTabModifiers(tabName) {
     _currentTab = tabName;
-    const cbV = document.getElementById('cbVaheldumisi');
-    if (cbV) cbV.checked = false;
-    const sel = document.getElementById('selVahesumma');
-    if (sel) sel.value = '';
-    const cbKorr = document.getElementById('cbSummaCorr');
-    if (cbKorr) cbKorr.checked = false;
-    _summaShowCorr = false;
-    const isKoond = tabName === 'koondvaade';
-    const lblK = document.getElementById('modLblKronoloogiline');
-    const sep  = document.getElementById('viewCtrlSep');
-    if (lblK) lblK.style.display = isKoond ? 'none' : '';
-    if (sep)  sep.style.display  = isKoond ? 'none' : '';
-    // "Korr. konto" linnuke ainult Koondvaates
-    const lblKorr = document.getElementById('modLblKorrKonto');
-    if (lblKorr) lblKorr.style.display = isKoond ? '' : 'none';
   }
 
   function modVaheldumisiChange(checked) {
@@ -3587,6 +3607,352 @@
   buildColFieldsList();
   buildFieldPicker();
   applyColStyles();
+
+  /* ═══════════════════════════════════════════════════════════════════
+     PIVOT-LOOGIKA: Näita vahesummat / Grupeeri / Tükelda (asendab sakid)
+     - Näita vahesummat: ÜKS tunnus. Detailread + vahesumma-read (kinni-lahti).
+     - Grupeeri: MITU tunnust (pesastatud). Koondab read gruppideks.
+     - Tükelda: ÜKS tunnus. Pöördtabel (tulbad tunnuse väärtuste kaupa).
+     ═══════════════════════════════════════════════════════════════════ */
+  const PV_DIMS = [
+    { key:'konto',            label:'Konto' },
+    { key:'byObject',         label:'Objekt' },
+    { key:'byProject',        label:'Projekt' },
+    { key:'byCustomer',       label:'Klient' },
+    { key:'bySupplier',       label:'Hankija' },
+    { key:'byVatCode',        label:'KM kood' },
+    { key:'byCurrency',       label:'Valuuta' },
+    { key:'bySpecialDiscount',label:'Erisoodustus' },
+    { key:'byDate',           label:'Aeg' },
+  ];
+  const PV_LABEL = Object.fromEntries(PV_DIMS.map(d => [d.key, d.label]));
+  // Detailtabeli veeru-indeks (0-põhine <td>) tunnuse kohta.
+  const PV_COL = { konto:0, byObject:4, byProject:13, byCustomer:16, bySupplier:16, byVatCode:17, byCurrency:22, byDate:14 };
+  const PV_MULTI = { vahe:false, grup:true, tyk:false }; // multiselekt AINULT Grupeeril
+  const PV = { vahe:['konto'], grup:[], tyk:[] };        // vaikimisi: Näita vahesummat = Konto
+  const PV_BOX = { vahe:'csVahe', grup:'csGrup', tyk:'csTyk' };
+  let _detailOrig = null; // puhas detailtabeli tbody (peale init-teisendusi)
+
+  function pvChipHtml(ctrl) {
+    const sel = PV[ctrl];
+    if (!sel.length) return '<span class="cs-placeholder">— vali —</span>';
+    return sel.map(k => '<span class="chip">' + PV_LABEL[k] +
+      '<span class="chip-x" onclick="pvRemove(event,\'' + ctrl + '\',\'' + k + '\')">×</span></span>').join('');
+  }
+  function pvRender(ctrl) {
+    const box = document.getElementById(PV_BOX[ctrl]);
+    const sel = PV[ctrl];
+    const multi = PV_MULTI[ctrl];
+    let dd = '<div class="chip-dd" id="dd_' + ctrl + '">';
+    dd += '<div class="cs-single-note">' + (multi ? 'mitu valikut (pesastatud)' : 'üks valik korraga') + '</div>';
+    if (!multi) {
+      dd += '<label onclick="event.stopPropagation()"><input type="radio" name="pvdd_' + ctrl + '" ' +
+        (sel.length ? '' : 'checked') + ' onchange="pvSet(\'' + ctrl + '\',\'\',true)"> <i>(puudub)</i></label>';
+    }
+    dd += PV_DIMS.map(d => {
+      const on = sel.includes(d.key);
+      return '<label onclick="event.stopPropagation()"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="pvdd_' + ctrl + '" ' +
+        (on ? 'checked' : '') + ' onchange="pvSet(\'' + ctrl + '\',\'' + d.key + '\',this.checked)"> ' + d.label + '</label>';
+    }).join('');
+    dd += '</div>';
+    box.innerHTML = pvChipHtml(ctrl) + dd;
+  }
+  function pvSet(ctrl, key, on) {
+    const sel = PV[ctrl];
+    if (PV_MULTI[ctrl]) {
+      const i = sel.indexOf(key);
+      if (on) { if (i < 0) sel.push(key); } else { if (i >= 0) sel.splice(i, 1); }
+    } else {
+      PV[ctrl] = key ? [key] : [];
+    }
+    pvRender(ctrl);
+    applyView();
+  }
+  function pvRemove(ev, ctrl, key) {
+    ev.stopPropagation();
+    const i = PV[ctrl].indexOf(key);
+    if (i >= 0) PV[ctrl].splice(i, 1);
+    pvRender(ctrl);
+    applyView();
+  }
+  function pvOpen(ctrl, ev) {
+    if (ev && ev.target.closest('.chip-x')) return;
+    const dd = document.getElementById('dd_' + ctrl);
+    const isOpen = dd.classList.contains('open');
+    document.querySelectorAll('.chip-dd').forEach(d => d.classList.remove('open'));
+    if (!isOpen) dd.classList.add('open');
+    if (ev) ev.stopPropagation();
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.chip-select')) document.querySelectorAll('.chip-dd').forEach(d => d.classList.remove('open'));
+  });
+
+  // ── Abifunktsioonid ──
+  function pvClearNote() { document.querySelectorAll('.pivot-note').forEach(n => n.remove()); }
+  function pvNote(txt) {
+    pvClearNote();
+    const wrap = document.querySelector('.table-wrap');
+    if (!wrap) return;
+    const div = document.createElement('div');
+    div.className = 'pivot-note';
+    div.textContent = txt;
+    wrap.parentNode.insertBefore(div, wrap);
+  }
+  function restoreDetail() {
+    const tbody = document.getElementById('mainTbody');
+    if (_detailOrig != null) tbody.innerHTML = _detailOrig;
+    _vaheObjOn = false; _origTbodyVahe = null;
+    applyColStyles();
+    if (typeof applyPrecisionDetail === 'function') applyPrecisionDetail();
+  }
+  function pvIterDetail(cb) {
+    const src = document.createElement('tbody');
+    src.innerHTML = _detailOrig || '';
+    let curKonto = '';
+    Array.from(src.querySelectorAll('tr')).forEach(row => {
+      if (row.classList.contains('grp-header')) {
+        const td0 = row.querySelector('td');
+        curKonto = td0 ? td0.textContent.trim().replace(/^[▾▸]\s*/, '') : '';
+        return;
+      }
+      if (!row.classList.contains('data') || !row.getAttribute('data-grp')) return;
+      cb(row.querySelectorAll('td'), curKonto);
+    });
+  }
+  function pvDimVal(tds, konto, key) {
+    if (key === 'konto') return konto;
+    if (key === 'bySpecialDiscount') return (erisoodustusKey(konto) || '(määramata)');
+    const idx = PV_COL[key];
+    const v = (idx != null && tds[idx]) ? tds[idx].textContent.trim() : '';
+    return v || '(määramata)';
+  }
+
+  // ── PÕHIDISPATCHER ──
+  function applyView() {
+    const krono   = document.getElementById('cbVaheldumisi').checked;
+    const saldeer = document.getElementById('cbSaldeerimata').checked;
+    const korr    = document.getElementById('cbSummaCorr').checked;
+    pvClearNote();
+
+    if (_summaOn) exitSummaView();
+    restoreDetail();
+    _summaShowCorr = korr;
+
+    const grup = PV.grup.slice();
+    const vahe = PV.vahe[0] || null;
+    const tyk  = PV.tyk[0]  || null;
+
+    // Kronoloogiline (ainult kui pole Grupeeri/Tükelda) = kanded ajalises järjekorras üle kontode.
+    if (krono && !grup.length && !tyk) {
+      document.getElementById('selVahesumma').value = (vahe === 'byObject') ? 'byObject' : '';
+      showTab('vaheldumisi-kontod');
+      pvNote('Kronoloogiline: kanded ajalises järjekorras üle kontode. Sama tulemuse annab Grupeeri = „Aeg".');
+      return;
+    }
+
+    // GRUPEERI ja/või TÜKELDA -> koondvaade / pöördtabel
+    if (grup.length || tyk) {
+      const rowKey = grup[0] || 'konto';
+      if (tyk) {
+        enterSummaView();
+        pvApplyPivot(rowKey, tyk);
+        return;
+      }
+      const NATIVE = ['konto', 'byObject', 'byProject', 'bySpecialDiscount'];
+      if (grup.length === 1 && NATIVE.includes(grup[0])) {
+        document.getElementById('selVahesumma').value = (grup[0] === 'konto') ? '' : grup[0];
+        enterSummaView();
+      } else {
+        enterSummaView();
+        pvRenderGenericSummary(grup);
+      }
+      return;
+    }
+
+    // NÄITA VAHESUMMAT -> detailvaade + vahesumma-read
+    if (!vahe || vahe === 'konto') {
+      showTab(saldeer ? 'saldeerimata' : 'detailvaade');
+      if (korr) document.querySelectorAll('#mainTbody [data-corr-sub]').forEach(r => r.style.display = '');
+      return;
+    }
+    if (vahe === 'bySpecialDiscount') {
+      document.getElementById('selVahesumma').value = 'bySpecialDiscount';
+      showTab('detailvaade');
+      applyErisoodustusDetail();
+      return;
+    }
+    pvRenderDetailSubtotals(PV_COL[vahe], PV_LABEL[vahe]);
+    if (saldeer) pvNote('Saldeerimata kehtib praegu ainult Näita vahesummat = Konto vaates.');
+  }
+
+  // ── Detailvaade + vahesumma-read (üldine, mis tahes tunnus) ──
+  function pvRenderDetailSubtotals(colIdx, label) {
+    const tbody = document.getElementById('mainTbody');
+    const src = document.createElement('tbody');
+    src.innerHTML = _detailOrig || '';
+    const groups = new Map();
+    Array.from(src.querySelectorAll('tr.data[data-grp]')).forEach(r => {
+      const tds = r.querySelectorAll('td');
+      const key = ((colIdx != null && tds[colIdx]) ? tds[colIdx].textContent.trim() : '') || '(määramata)';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(r);
+    });
+    const keys = [...groups.keys()].sort((a, b) => a === '(määramata)' ? 1 : b === '(määramata)' ? -1 : a.localeCompare(b, 'et'));
+    tbody.innerHTML = '';
+    let gi = 0;
+    keys.forEach(key => {
+      gi++; const sg = 'psg' + gi;
+      const rows = groups.get(key);
+      let sumDr = 0, sumCr = 0;
+      const hdr = document.createElement('tr');
+      hdr.className = 'grp-header'; hdr.style.cursor = 'pointer'; hdr.dataset.psg = sg;
+      hdr.setAttribute('onclick', "pvToggleSub('" + sg + "',this)");
+      hdr.innerHTML = '<td colspan="29"><span class="grp-toggle">▾</span> ' + label + ': <b>' + key + '</b></td>';
+      tbody.appendChild(hdr);
+      rows.forEach(r => {
+        const c = r.cloneNode(true); c.dataset.psg = sg; tbody.appendChild(c);
+        const t = c.querySelectorAll('td'); sumDr += _parseNum(t[18]); sumCr += _parseNum(t[19]);
+      });
+      const kokku = document.createElement('tr');
+      kokku.className = 'grp-sub'; kokku.dataset.psg = sg;
+      kokku.innerHTML = '<td colspan="18" style="text-align:right;font-style:italic;">' + label + ' „' + key + '" kokku</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(sumDr) + '</td>' +
+        '<td class="r" style="font-weight:600;">' + fmtNum(sumCr) + '</td>' +
+        '<td colspan="9"></td>';
+      tbody.appendChild(kokku);
+    });
+    applyColStyles();
+    if (typeof applyPrecisionDetail === 'function') applyPrecisionDetail();
+  }
+  function pvToggleSub(sg, hdr) {
+    const rows = document.querySelectorAll('#mainTbody tr[data-psg="' + sg + '"]');
+    const tog = hdr.querySelector('.grp-toggle');
+    const collapse = tog ? tog.textContent.trim() === '▾' : true;
+    rows.forEach(r => { if (r !== hdr) r.style.display = collapse ? 'none' : ''; });
+    if (tog) tog.textContent = collapse ? '▸' : '▾';
+  }
+
+  // ── Üldine koondvaade (üks või mitu tunnust, pesastatud) ──
+  function pvSubtotal(node) {
+    if (node.__leaf) return { d: node.d, k: node.k };
+    let d = 0, k = 0;
+    node.forEach(child => { const s = pvSubtotal(child); d += s.d; k += s.k; });
+    return { d, k };
+  }
+  function pvRenderGenericSummary(dims) {
+    const tbody = document.getElementById('mainTbody');
+    const theadRow = document.querySelector('table thead tr');
+    theadRow.innerHTML =
+      '<th style="width:90px">' + PV_LABEL[dims[0]] + '</th>' +
+      '<th style="width:200px">' + (dims.length > 1 ? PV_LABEL[dims[dims.length - 1]] : 'Nimetus') + '</th>' +
+      '<th class="r" style="width:110px">Algsaldo</th>' +
+      '<th class="r" style="width:110px">Deebet</th>' +
+      '<th class="r" style="width:110px">Kreedit</th>' +
+      '<th class="r" style="width:110px">Muutus</th>' +
+      '<th class="r" style="width:110px">Lõppsaldo</th>';
+    const root = new Map();
+    pvIterDetail((tds, konto) => {
+      const dr = _parseNum(tds[18]), cr = _parseNum(tds[19]);
+      let node = root;
+      dims.forEach((dim, i) => {
+        const val = pvDimVal(tds, konto, dim);
+        const last = i === dims.length - 1;
+        if (!node.has(val)) node.set(val, last ? { __leaf: true, d: 0, k: 0, kontos: new Set() } : new Map());
+        if (last) { const L = node.get(val); L.d += dr; L.k += cr; L.kontos.add(konto); }
+        node = node.get(val);
+      });
+    });
+    const nimetusMap = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
+    const algMap = new Map(SUMMA_DATA.map(r => [r.konto, r.algsaldo]));
+    const leafIsKonto = dims[dims.length - 1] === 'konto';
+    const algOf = (kontos) => { let s = 0; kontos.forEach(kn => { if (algMap.has(kn)) s += algMap.get(kn); }); return s; };
+    const sortKeys = (m) => [...m.keys()].sort((a, b) => a === '(määramata)' ? 1 : b === '(määramata)' ? -1 : String(a).localeCompare(String(b), 'et'));
+    let html = '', gA = 0, gD = 0, gK = 0;
+    function walk(node, depth) {
+      sortKeys(node).forEach(key => {
+        const child = node.get(key);
+        const indent = depth * 14;
+        if (child.__leaf) {
+          const d = child.d, k = child.k, m = d - k;
+          const alg = leafIsKonto ? algOf(child.kontos) : null;
+          const lopp = (alg != null) ? alg + m : null;
+          gA += alg || 0; gD += d; gK += k;
+          const label = leafIsKonto ? (key + ' ' + (nimetusMap.get(key) || '')) : key;
+          html += '<tr class="data">' +
+            '<td colspan="2" style="padding-left:' + (6 + indent) + 'px">' + label + '</td>' +
+            '<td class="r">' + (alg != null ? fmtNum(alg) : '') + '</td>' +
+            '<td class="r">' + fmtNum(d) + '</td>' +
+            '<td class="r">' + fmtNum(k) + '</td>' +
+            '<td class="r"' + (m < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(m) + '</td>' +
+            '<td class="r" style="font-weight:700' + ((lopp != null && lopp < 0) ? ';color:#b00' : '') + '">' + (lopp != null ? fmtNum(lopp) : '') + '</td></tr>';
+        } else {
+          const st = pvSubtotal(child), sm = st.d - st.k;
+          html += '<tr class="grp-sub" style="background:#d8e8f4;">' +
+            '<td colspan="2" style="font-weight:700;padding-left:' + (6 + indent) + 'px">' + PV_LABEL[dims[depth]] + ': ' + key + '</td>' +
+            '<td class="r"></td>' +
+            '<td class="r">' + fmtNum(st.d) + '</td>' +
+            '<td class="r">' + fmtNum(st.k) + '</td>' +
+            '<td class="r"' + (sm < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(sm) + '</td>' +
+            '<td class="r"></td></tr>';
+          walk(child, depth + 1);
+        }
+      });
+    }
+    walk(root, 0);
+    const gM = gD - gK;
+    html += '<tr class="grp-total"><td colspan="2">Kokku</td>' +
+      '<td class="r">' + (leafIsKonto ? fmtNum(gA) : '') + '</td>' +
+      '<td class="r">' + fmtNum(gD) + '</td>' +
+      '<td class="r">' + fmtNum(gK) + '</td>' +
+      '<td class="r"' + (gM < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(gM) + '</td>' +
+      '<td class="r">' + (leafIsKonto ? fmtNum(gA + gM) : '') + '</td></tr>';
+    tbody.innerHTML = html;
+    if (!leafIsKonto) pvNote('Koondvaade tunnuse „' + dims.map(d => PV_LABEL[d]).join(' › ') + '" järgi: Algsaldo/Lõppsaldo kuvatakse konto-tasemel (lisa Grupeeri lõppu „Konto").');
+  }
+
+  // ── Pöördtabel (Tükelda) ──
+  function pvApplyPivot(rowKey, colKey) {
+    const tbody = document.getElementById('mainTbody');
+    const theadRow = document.querySelector('table thead tr');
+    const nimetusMap = new Map(SUMMA_DATA.map(r => [r.konto, r.nimetus]));
+    const rows = [], rowIndex = new Map(), colSet = new Set();
+    pvIterDetail((tds, konto) => {
+      const rVal = pvDimVal(tds, konto, rowKey);
+      const cVal = pvDimVal(tds, konto, colKey);
+      const m = _parseNum(tds[18]) - _parseNum(tds[19]);
+      colSet.add(cVal);
+      if (!rowIndex.has(rVal)) { rowIndex.set(rVal, new Map()); rows.push(rVal); }
+      const rm = rowIndex.get(rVal); rm.set(cVal, (rm.get(cVal) || 0) + m);
+    });
+    const cols = [...colSet].sort((a, b) => a === '(määramata)' ? 1 : b === '(määramata)' ? -1 : String(a).localeCompare(String(b), 'et'));
+    rows.sort((a, b) => String(a).localeCompare(String(b), 'et'));
+    const rowLabel = (rk) => rowKey === 'konto' ? (rk + ' ' + (nimetusMap.get(rk) || '')) : rk;
+    theadRow.innerHTML = '<th style="width:210px">' + PV_LABEL[rowKey] + ' \\ ' + PV_LABEL[colKey] + '</th>' +
+      cols.map(c => '<th class="r" style="width:100px">' + c + '</th>').join('') +
+      '<th class="r" style="width:110px">Kokku</th>';
+    let html = ''; const colTot = {}; let grand = 0;
+    rows.forEach(rk => {
+      const rm = rowIndex.get(rk); let rt = 0; let cells = '<td>' + rowLabel(rk) + '</td>';
+      cols.forEach(c => {
+        const v = rm.get(c) || 0; rt += v; colTot[c] = (colTot[c] || 0) + v;
+        cells += '<td class="r"' + (v < 0 ? ' style="color:#b00"' : '') + '>' + (v ? fmtNum(v) : '·') + '</td>';
+      });
+      grand += rt;
+      cells += '<td class="r" style="font-weight:700' + (rt < 0 ? ';color:#b00' : '') + '">' + fmtNum(rt) + '</td>';
+      html += '<tr class="data">' + cells + '</tr>';
+    });
+    let ft = '<td>Kokku</td>';
+    cols.forEach(c => { const v = colTot[c] || 0; ft += '<td class="r"' + (v < 0 ? ' style="color:#b00"' : '') + '>' + fmtNum(v) + '</td>'; });
+    ft += '<td class="r" style="font-weight:700' + (grand < 0 ? ';color:#b00' : '') + '">' + fmtNum(grand) + '</td>';
+    html += '<tr class="grp-total">' + ft + '</tr>';
+    tbody.innerHTML = html;
+    pvNote('Pöördtabel (Tükelda): mõõdik = Muutus (Deebet − Kreedit). Read = ' + PV_LABEL[rowKey] + ', tulbad = ' + PV_LABEL[colKey] + '.');
+  }
+
+  // ── Käivitus ──
+  _detailOrig = document.getElementById('mainTbody').innerHTML;
+  ['vahe', 'grup', 'tyk'].forEach(pvRender);
+  applyView();
 </script>
 </body>
 </html>
